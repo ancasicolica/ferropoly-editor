@@ -24,7 +24,7 @@ var initServer = function () {
   app.use(express.static(path.join(__dirname, 'public')));
   login.init(app, settings);
   app.use('/', routes);
-
+  configuration.init(app, settings);
 
   var server = require('http').Server(app);
   var io = require('socket.io')(server);
