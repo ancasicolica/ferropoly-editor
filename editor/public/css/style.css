@@ -1,0 +1,50 @@
+html,
+body {
+    font   : 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    width  : 100%;
+    height : 100%;
+}
+
+a {
+    color : #00B7FF;
+}
+
+.header {
+    background-color : black;
+    color            : white;
+    padding-top      : 5px;
+    padding-bottom   : 5px;
+}
+
+.logout {
+    text-align : right;
+}
+
+.ferropoly-control {
+    font-size : inherit;
+    height    : auto;
+}
+
+.ferropoly-button {
+    font-size : inherit;
+    height    : auto;
+}
+
+
+/* Wrapper for page content to push down footer */
+#wrap {
+    min-height : 100%;
+    height     : auto;
+    /* Negative indent footer by its height */
+    margin     : 0 auto -20px;
+    /* Pad bottom by footer height */
+    padding    : 0 0 20px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+    height           : 20px;
+    background-color : black;
+    color            : white;
+    z-index          : 100;
+}

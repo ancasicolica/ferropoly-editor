@@ -1,0 +1,15 @@
+extends layout
+
+block head
+  link(rel='stylesheet', href='/css/signin.css')
+
+block content
+
+  form(action='login' method='post' class='form-signin')
+    h3 Ferropoly Administrator Tools Login
+    label(for='inputUserName' class='sr-only') Benutzername
+    input(type='text' name='username' id='inputUserName' class='form-control' placeholder='Benutzername' required autofocus)
+    label(for='inputPassword' class='sr-only') Passwort
+    input(type='password' name='password' id='inputPassword' class='form-control' placeholder='Passwort' required)
+    button(class='btn btn-lg btn-primary btn-block' type='submit') Login
+

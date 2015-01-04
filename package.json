@@ -1,0 +1,49 @@
+{
+  "name": "Ferropoly-Editor",
+  "version": "0.0.1",
+  "description": "Ferropoly Web Version",
+  "keywords": [
+    "Ferropoly",
+    "SBB",
+    "ZVV"
+  ],
+  "author": {
+    "name": "Christian Kuster",
+    "email": "christian@kusti.ch",
+    "url": "http://www.kusti.ch/"
+  },
+  "homepage": "http://www.ferropoly.ch/",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/christian_kuster/ferropoly_editor"
+  },
+  "engines": {
+    "node": ">= 0.10.0",
+    "npm": ">= 2.1.0"
+  },
+  "private": true,
+  "scripts": {
+    "start": "supervisor server.js"
+  },
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.9.0",
+    "body-parser": "~1.8.1",
+    "cookie-parser": "~1.3.3",
+    "morgan": "~1.3.0",
+    "serve-favicon": "~2.1.3",
+    "debug": "~2.0.0",
+    "jade": "~1.6.0",
+    "multer":"0.1.6",
+    "socket.io": "1.2.*",
+    "mongodb": "~2.0",
+    "viewmodel": "1.2.*",
+    "mongoose": "3.8.*",
+    "passport":"0.2.*",
+    "passport-local":"1.*",
+    "connect-flash" : "~0.1.1",
+    "express-session": "~1.0.0",
+    "devDependencies": {},
+    "bundleDependencies": []
+  }
+}
