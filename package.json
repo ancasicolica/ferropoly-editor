@@ -1,7 +1,7 @@
 {
   "name": "Ferropoly-Editor",
   "version": "0.0.1",
-  "description": "Ferropoly Web Version",
+  "description": "Ferropoly Spiel Editor",
   "keywords": [
     "Ferropoly",
     "SBB",
@@ -34,16 +34,26 @@
     "serve-favicon": "~2.1.3",
     "debug": "~2.0.0",
     "jade": "~1.6.0",
-    "multer":"0.1.6",
+    "multer": "0.1.6",
     "socket.io": "1.2.*",
     "mongodb": "~2.0",
-    "viewmodel": "1.2.*",
     "mongoose": "3.8.*",
-    "passport":"0.2.*",
-    "passport-local":"1.*",
-    "connect-flash" : "~0.1.1",
+    "passport": "0.2.*",
+    "passport-local": "1.*",
+    "connect-flash": "~0.1.1",
     "express-session": "~1.0.0",
-    "devDependencies": {},
-    "bundleDependencies": []
-  }
+    "node-uuid": "1.4.2"
+  },
+  "devDependencies": {
+    "expect.js": "0.3.1",
+    "grunt": "0.4.5",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-copy": "0.7.0",
+    "grunt-eslint": "3.0.0",
+    "grunt-mocha-test": "0.12.1",
+    "load-grunt-tasks": "2.0.0",
+    "mocha": "1.21.5"
+  },
+  "bundleDependencies": []
 }
+

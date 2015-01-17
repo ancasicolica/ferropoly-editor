@@ -6,8 +6,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var login = require('./routes/login');
+var signup = require('./routes/signup');
 var configuration = require('./routes/configuration');
 var settings = require('./settings');
+var authStrategy = require('../common/lib/authStrategy');
+var passport = require('passport');
+var session = require('express-session');
+var flash = require('connect-flash');
 var app = express();
 
 var initServer = function () {
@@ -22,7 +27,24 @@ var initServer = function () {
   app.use(bodyParser.urlencoded({extended: false}));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
+
+  // Define Strategy, login
+  passport.use(authStrategy.strategy);
+  // Session serializing of the user
+  passport.serializeUser(authStrategy.serializeUser);
+  // Session deserialisation of the user
+  passport.deserializeUser(authStrategy.deserializeUser);
+  // required for passport: configuration
+  app.use(session({secret: 'ferropolyIsAGameWithAVeryLargePlayground'})); // session secret
+  app.use(passport.initialize());
+  app.use(passport.session()); // persistent login sessions
+  app.use(flash()); // use connect-flash for flash messages stored in session
+
+
+  signup.init(app, settings);
   login.init(app, settings);
+
+
   app.use('/', routes);
   configuration.init(app, settings);
 

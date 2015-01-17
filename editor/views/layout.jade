@@ -12,7 +12,6 @@ html
     link(rel='stylesheet', href='/css/style.css')
     block head
 
-
   body
     #wrap
       .container-fluid
@@ -22,7 +21,12 @@ html
           .col-md-9.header
             |&nbsp;
           .col-md-1.header.logout
-            a(href='/logout') Logout
+            if !hideLogout
+              a(href='/logout') Logout
+            else if showSignUp
+              a(href='/signup') Anmelden
+            else
+              | &nbsp;
 
         block content
 
