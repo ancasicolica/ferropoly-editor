@@ -42,7 +42,8 @@
     "passport-local": "1.*",
     "connect-flash": "~0.1.1",
     "express-session": "~1.0.0",
-    "node-uuid": "1.4.2"
+    "node-uuid": "1.4.2",
+    "validator": "3.27.0"
   },
   "devDependencies": {
     "expect.js": "0.3.1",

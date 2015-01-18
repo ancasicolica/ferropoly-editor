@@ -36,8 +36,11 @@ module.exports = {
     app.get('*', function (req, res, next) {
       var uri = url.parse(req.url).pathname;
 
-      if (uri == '/signup') {
+      if (uri === '/signup') {
         console.log('Signup !');
+        return next();
+      }
+      if (uri === '/configuration.js') {
         return next();
       }
       if (!req.session.passport.user) {

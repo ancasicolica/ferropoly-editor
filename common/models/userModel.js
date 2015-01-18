@@ -138,6 +138,18 @@ var updateUser = function (user, password, callback) {
   });
 };
 
+var getUserByMailAddress = function(emailAddress, callback) {
+  User.find({'personalData.email': emailAddress}, function(err, docs) {
+    if (err) {
+      return callback(err);
+    }
+    if (docs.length === 0) {
+      return callback();
+    }
+    callback(null, docs[0]);
+  });
+};
+
 module.exports = {
   /**
    * Initialize the user model / connection to the DB
@@ -159,7 +171,7 @@ module.exports = {
   updateUser: updateUser,
 
   generatePasswordHash: generatePasswordHash,
-  verifyPassword: verifyPassword
-
+  verifyPassword: verifyPassword,
+  getUserByMailAddress: getUserByMailAddress
 
 };

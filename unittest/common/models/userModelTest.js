@@ -86,5 +86,25 @@ describe('UserModel Tests', function () {
         done();
       });
     });
+
+    it('Checking if the user exists should work', function(done) {
+      users.getUserByMailAddress('olivia@kunz.ch', function(err, user){
+        if (err) {
+          done(err);
+        }
+        expect(user.personalData.email).to.be('olivia@kunz.ch');
+        done(err);
+      })
+    })
+
+    it('Checking if an unkown exists should return none', function(done) {
+      users.getUserByMailAddress('olivia@kunz-huber.ch', function(err, user){
+        if (err) {
+          done(err);
+        }
+        expect(user).to.be(undefined);
+        done(err);
+      })
+    })
   });
 });

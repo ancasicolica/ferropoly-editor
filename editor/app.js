@@ -1,3 +1,10 @@
+/**
+ * FERROPOLY GAME EDITOR APP
+ *
+ * (c) 2015 Christian Kuster, CH-8342 Wernetshausen
+ *
+ * @type {*|exports}
+ */
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -84,8 +91,8 @@ var initServer = function () {
   });
 
   io.on('connection', function (socket) {
-    // Initialize locations for listening to the socket.io events
-    locations.addSocket(socket);
+    console.log('socket.io connection');
+    signup.onSocketConnection(socket);
   });
 
   app.set('port', settings.server.port);
