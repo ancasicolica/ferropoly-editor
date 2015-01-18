@@ -6,6 +6,7 @@
 
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
+var users = require('../models/userModel');
 
 // For test purposes only!
 var localUser = {
@@ -32,11 +33,19 @@ var createHash = function (password) {
  */
 var strategy = new LocalStrategy(
   function (username, password, done) {
-    console.log(username + ":" + password);
-    if (username == localUser.username && createHash(password) == localUser.hash) {
-      return done(null, localUser);
-    }
-    return done(null, false);
+    console.log('Login attempt: ' + username);
+    users.getUserByMailAddress(username, function (err, foundUser) {
+      if (err || !foundUser) {
+        return done(null, false);
+      }
+
+      if (users.verifyPassword(foundUser, password)) {
+        foundUser.info.lastLogin = new Date();
+        users.updateUser(foundUser, null, function() {
+          return done(null, foundUser);
+        });
+      }
+    });
   }
 );
 
@@ -47,7 +56,7 @@ var strategy = new LocalStrategy(
  */
 var serializeUser = function (user, done) {
   console.log("serializeUser:" + user);
-  done(null, user.id);
+  done(null, user.personalData.email);
 };
 
 /**
@@ -58,15 +67,23 @@ var serializeUser = function (user, done) {
  */
 var deserializeUser = function (user, done) {
   console.log("deserializeUser:" + user);
-  if (user == 1) {
-    return done(null, localUser);
-  }
-  return done("not logged in", null);
+  return users.getUserByMailAddress(user, function (err, foundUser) {
+    if (err || !foundUser) {
+      return done("not logged in", null);
+    }
+    return done(null, foundUser);
+  });
 };
 
 module.exports = {
 
   strategy: strategy,
   serializeUser: serializeUser,
-  deserializeUser: deserializeUser
+  deserializeUser: deserializeUser,
+
+  init: function (settings, callback) {
+    users.init(settings, function (err) {
+      callback(err);
+    })
+  }
 };

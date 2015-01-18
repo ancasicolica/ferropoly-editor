@@ -104,7 +104,12 @@ var initServer = function () {
   console.log('Ferropoly Editor server listening on port ' + app.get('port'));
 };
 
-initServer();
+
+authStrategy.init(settings, function(err) {
+  console.log(err);
+  initServer();
+});
+
 
 
 module.exports = app;

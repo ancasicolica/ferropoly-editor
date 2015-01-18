@@ -100,31 +100,40 @@ var createPasswordHash = function (salt, password) {
  * @param callback
  */
 var updateUser = function (user, password, callback) {
-  User.find({'personalData.email': user.personalData.email}, function (err, docs) {
+  User.find({_id: user._id}, function (err, docs) {
     if (err) {
       return callback(err);
     }
 
     if (docs.length === 0) {
-      // New User
-      console.log('New user:' + user.personalData.email);
-      if (!password) {
-        return callback(new Error('Password missing'));
-      }
-      generatePasswordHash(user, password);
-      user.info.registrationDate = new Date();
-      return user.save(function (err, savedUser) {
+      // New User OR invalid created user
+      return getUserByMailAddress(user.personalData.email, function(err, foundUser) {
         if (err) {
           return callback(err);
         }
-        return callback(null, savedUser);
+        if (foundUser) {
+          return callback(new Error('User with this email-address already exists, retrieve first!'));
+        }
+        console.log('New user:' + user.personalData.email);
+        if (!password) {
+          return callback(new Error('Password missing'));
+        }
+        generatePasswordHash(user, password);
+        user.info.registrationDate = new Date();
+        return user.save(function (err, savedUser) {
+          if (err) {
+            return callback(err);
+          }
+          return callback(null, savedUser);
+        });
       });
+
     }
     else {
       var editedUser = docs[0];
-      copyUser(editedUser, user);
+      copyUser(user, editedUser);
       // Update User
-      console.log('Update user:' + editedUser.personalData.email);
+      console.log('Update user:' + user.personalData.email);
       if (password) {
         generatePasswordHash(editedUser, password);
       }

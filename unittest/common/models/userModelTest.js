@@ -51,7 +51,7 @@ describe('UserModel Tests', function () {
   });
 
   describe('Updating / creating', function () {
-    var user1 = new users.Model({personalData: {surname: 'Kunz', forename: 'Olivia', email:'olivia@kunz.ch'}});
+    var user1 = new users.Model({personalData: {surname: 'Kunz', forename: 'Olivia', email: 'olivia@kunz.ch'}});
     user1.roles.editor = true;
     var password1 = 'erstfeld';
 
@@ -69,26 +69,32 @@ describe('UserModel Tests', function () {
           expect(savedUser.login.passwordHash.length).to.be(64);
           expect(savedUser.login.passwordSalt.length).to.be(64);
           expect(users.verifyPassword(savedUser, password1)).to.be(true);
+          user1 = savedUser;
           done();
         })
       });
     });
 
     it('Changing a users parameter should work', function (done) {
-      user1.personalData.surname = 'Huber-Kunz';
-      users.updateUser(user1, null, function (err, savedUser) {
+      users.getUserByMailAddress('olivia@kunz.ch', function (err, foundUser) {
         if (err) {
           done(err);
         }
-        expect(savedUser.personalData.surname).to.be('Huber-Kunz');
-        expect(savedUser.personalData.forename).to.be('Olivia');
-        expect(users.verifyPassword(savedUser, password1)).to.be(true);
-        done();
+        foundUser.personalData.surname = 'Huber-Kunz';
+        users.updateUser(foundUser, null, function (err, savedUser) {
+          if (err) {
+            done(err);
+          }
+          expect(savedUser.personalData.surname).to.be('Huber-Kunz');
+          expect(savedUser.personalData.forename).to.be('Olivia');
+          expect(users.verifyPassword(savedUser, password1)).to.be(true);
+          done();
+        });
       });
     });
 
-    it('Checking if the user exists should work', function(done) {
-      users.getUserByMailAddress('olivia@kunz.ch', function(err, user){
+    it('Checking if the user exists should work', function (done) {
+      users.getUserByMailAddress('olivia@kunz.ch', function (err, user) {
         if (err) {
           done(err);
         }
@@ -97,8 +103,8 @@ describe('UserModel Tests', function () {
       })
     })
 
-    it('Checking if an unkown exists should return none', function(done) {
-      users.getUserByMailAddress('olivia@kunz-huber.ch', function(err, user){
+    it('Checking if an unkown exists should return none', function (done) {
+      users.getUserByMailAddress('olivia@kunz-huber.ch', function (err, user) {
         if (err) {
           done(err);
         }
