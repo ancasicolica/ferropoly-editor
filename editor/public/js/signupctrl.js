@@ -17,6 +17,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
   $scope.surname = undefined;
   $scope.password = undefined;
   $scope.passwordVerify = undefined;
+  $scope.agbAccepted = false;
   $scope.emailInvalid = false;
   $scope.passwordInvalid = false;
   $scope.passwordRepeatInvalid = false;

@@ -37,8 +37,25 @@ block content
           input(type='password' class='form-control' id='passwordRepeat' placeholder='12345678' ng-model='passwordVerify' ng-blur='verifyRepeatPassword()')
           span(id='emailRepeatInfo' class='help-block' ng-hide='!passwordRepeatInvalid') Das Passwort stimmt nicht überein
 
-        button(type='submit' class='btn btn-default' ng-disabled='!formDataValid()' ng-click='createUser()') Weiter
+        button(type='submit' class='btn btn-default' ng-disabled='!formDataValid()' ng-click='view = 1') Weiter
     div(ng-show='view === 1')
+      h1 AGBs
+      | Leider kommen wir nicht um AGBs herum, es gibt hier ein paar Dinge, die wichtig sind und deshalb geklärt sein müssen. Bitte lies das genau durch und
+      | mach nur weiter, wenn Du damit einverstanden bist.
+      h2
+      | Gegenwärtig steht hier nur, dass die Sache in Entwicklung ist und man ja nicht ein Ferropoly damit planen soll... die Daten auf der Datenbank
+      | werden zur Zeit beliebig gelöscht! Rückmeldungen zu Fehlern und Wünschen sind jedoch erwünscht, die Kontaktdaten findet man auf
+      a(href='http://www.ferropoly.ch') www.ferropoly.ch
+      br
+      br
+
+      label
+        input(type='checkbox' ng-model='agbAccepted')
+        | Ich habe die AGBs gelesen, verstanden und akzeptiert
+      br
+      button(class='btn btn-default' ng-disabled='!agbAccepted' ng-click='createUser()') Registrierung abschliessen
+
+    div(ng-show='view === 2')
       | Vielen Dank für die Registrierung. Gegenwärtig gibt es noch keine Email-Verifikation, deshalb kann sogleich eingeloggt werden.
       h2
         a(href='/') Hier geht es zum Login
