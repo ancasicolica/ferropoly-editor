@@ -14,6 +14,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
+var useradmin = require('./routes/useradmin');
 var configuration = require('./routes/configuration');
 var settings = require('./settings');
 var authStrategy = require('../common/lib/authStrategy');
@@ -21,8 +22,11 @@ var passport = require('passport');
 var session = require('express-session');
 var flash = require('connect-flash');
 var app = express();
+var users = require('../common/models/userModel');
 
 var initServer = function () {
+  authStrategy.init(settings, users);
+
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
@@ -48,9 +52,9 @@ var initServer = function () {
   app.use(flash()); // use connect-flash for flash messages stored in session
 
 
-  signup.init(app, settings);
+  signup.init(app, settings, users);
   login.init(app, settings);
-
+  useradmin.init(app, settings, users);
 
   app.use('/', routes);
   configuration.init(app, settings);
@@ -104,11 +108,14 @@ var initServer = function () {
   console.log('Ferropoly Editor server listening on port ' + app.get('port'));
 };
 
-
-authStrategy.init(settings, function(err) {
-  console.log(err);
+users.init(settings, function(err) {
+  if (err) {
+    console.log(err);
+  }
   initServer();
 });
+
+
 
 
 

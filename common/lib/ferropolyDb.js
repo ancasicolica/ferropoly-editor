@@ -9,11 +9,21 @@ var mongoose = require('mongoose');
 module.exports = {
 
   init: function (settings, callback) {
+    console.log('Connecting to MongoDb');
     // Connect to the MongoDb
-    mongoose.connect(settings.locationDbSettings.mongoDbUrl);
+    var options = {
+      server: {
+        socketOptions: {keepAlive: 1}
+      },
+      replset: {
+        socketOptions: {keepAlive: 1}
+      }
+    };
+    mongoose.connect(settings.locationDbSettings.mongoDbUrl, options);
     db = mongoose.connection;
 
     db.on('error', console.error.bind(console, 'MongoDb: connection error:'));
+
 
     db.once('open', function cb() {
       console.log('yay!');

@@ -7,7 +7,7 @@
 
 var express = require('express');
 var router = express.Router();
-var users = require('../../common/models/userModel');
+var users;
 var validator = require('validator');
 
 /* GET Sign-up page */
@@ -22,12 +22,10 @@ var settings;
  * @type {{init: Function}}
  */
 module.exports = {
-  init: function (app, _settings) {
+  init: function (app, _settings, _users) {
     app.use('/signup', router);
     settings = _settings;
-    users.init(settings, function (err) {
-      console.log(err);
-    });
+    users = _users;
   },
 
   onSocketConnection: function (socket) {

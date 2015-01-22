@@ -6,7 +6,7 @@
 
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
-var users = require('../models/userModel');
+var users;
 
 // For test purposes only!
 var localUser = {
@@ -81,9 +81,7 @@ module.exports = {
   serializeUser: serializeUser,
   deserializeUser: deserializeUser,
 
-  init: function (settings, callback) {
-    users.init(settings, function (err) {
-      callback(err);
-    })
+  init: function (settings, _users) {
+    users = _users;
   }
 };
