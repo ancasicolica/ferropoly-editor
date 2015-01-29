@@ -8,14 +8,6 @@ var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 var users;
 
-// For test purposes only!
-var localUser = {
-  username: 'kc',
-  hash: '50d0ad23795260afc8722b960e16276ea67ae488857371a53d1031659ab63aaf',
-  realName: 'Christian',
-  id: 1
-};
-
 /**
  * Create a hash
  * @param password

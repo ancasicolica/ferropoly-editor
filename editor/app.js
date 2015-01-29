@@ -15,6 +15,8 @@ var routes = require('./routes/index');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
 var useradmin = require('./routes/useradmin');
+var newgame = require('./routes/newgame');
+var authtoken = require('./routes/authtoken');
 var configuration = require('./routes/configuration');
 var settings = require('./settings');
 var authStrategy = require('../common/lib/authStrategy');
@@ -54,9 +56,11 @@ var initServer = function () {
 
   signup.init(app, settings, users);
   login.init(app, settings);
+  authtoken.init(app);
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
+  newgame.init(app);
   configuration.init(app, settings);
 
   var server = require('http').Server(app);
