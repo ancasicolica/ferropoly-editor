@@ -13,6 +13,13 @@ describe('UserModel Tests', function () {
     });
   });
 
+  // Close DB afterwards
+  after(function (done) {
+    users.close(function(err) {
+      done(err);
+    });
+  });
+
   var user = new users.Model();
 
   describe('Generating a new password hash', function () {
@@ -54,6 +61,16 @@ describe('UserModel Tests', function () {
     var user1 = new users.Model({personalData: {surname: 'Kunz', forename: 'Olivia', email: 'olivia@kunz.ch'}});
     user1.roles.editor = true;
     var password1 = 'erstfeld';
+
+    describe('Removing user 1', function () {
+      it('should work if it exits', function (done) {
+        users.removeUser(user1.personalData.email, function (err) {
+          console.log('Result:');
+          console.log(err);
+          done();
+        });
+      });
+    });
 
     describe('Tests with user 1', function () {
       it('Adding the user should work', function (done) {

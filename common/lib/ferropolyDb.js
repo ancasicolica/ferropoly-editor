@@ -6,10 +6,19 @@
 
 var mongoose = require('mongoose');
 
+var db = undefined;
+var mongooseThis = undefined;
+
 module.exports = {
 
   init: function (settings, callback) {
     console.log('Connecting to MongoDb');
+
+    // Already initialized
+    if (db) {
+      callback(null, db);
+    }
+
     // Connect to the MongoDb
     var options = {
       server: {
@@ -19,7 +28,7 @@ module.exports = {
         socketOptions: {keepAlive: 1}
       }
     };
-    mongoose.connect(settings.locationDbSettings.mongoDbUrl, options);
+    mongooseThis = mongoose.connect(settings.locationDbSettings.mongoDbUrl, options);
     db = mongoose.connection;
 
     db.on('error', console.error.bind(console, 'MongoDb: connection error:'));
@@ -29,5 +38,15 @@ module.exports = {
       console.log('yay!');
       return callback(null, db);
     });
+  },
+
+  close: function(callback) {
+    console.log('Disconnecting MongoDb');
+    if (mongooseThis) {
+      mongooseThis.disconnect(function(err){
+        db = undefined;
+        callback(err);
+      })
+    }
   }
 };

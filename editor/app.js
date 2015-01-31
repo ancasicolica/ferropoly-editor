@@ -25,7 +25,7 @@ var session = require('express-session');
 var flash = require('connect-flash');
 var app = express();
 var users = require('../common/models/userModel');
-
+var gameplays = require('../common/models/gameplayModel');
 var initServer = function () {
   authStrategy.init(settings, users);
 
@@ -60,7 +60,7 @@ var initServer = function () {
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
-  newgame.init(app);
+  newgame.init(app, settings, gameplays);
   configuration.init(app, settings);
 
   var server = require('http').Server(app);

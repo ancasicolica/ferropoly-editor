@@ -94,6 +94,17 @@ var createPasswordHash = function (salt, password) {
 };
 
 /**
+ * Removes a user from the DB
+ * @param emailAddress
+ * @param callback
+ */
+var removeUser = function(emailAddress, callback){
+  User.remove({'personalData.email': emailAddress}, function(err) {
+    callback(err);
+  });
+};
+
+/**
  * Update a user: update if it exists, otherwise create it
  * @param user
  * @param password
@@ -147,6 +158,11 @@ var updateUser = function (user, password, callback) {
   });
 };
 
+/**
+ * Get a user by its email address
+ * @param emailAddress
+ * @param callback
+ */
 var getUserByMailAddress = function(emailAddress, callback) {
   User.find({'personalData.email': emailAddress}, function(err, docs) {
     if (err) {
@@ -175,12 +191,19 @@ module.exports = {
     });
   },
 
+  close: function (callback) {
+    ferropolyDb.close(function(err) {
+      callback(err);
+    })
+  },
+
   Model: User,
 
   updateUser: updateUser,
 
   generatePasswordHash: generatePasswordHash,
   verifyPassword: verifyPassword,
-  getUserByMailAddress: getUserByMailAddress
+  getUserByMailAddress: getUserByMailAddress,
+  removeUser:removeUser
 
 };

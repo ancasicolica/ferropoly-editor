@@ -7,6 +7,7 @@
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
+var Moniker = require('moniker');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -21,7 +22,9 @@ router.post('/', function(req, res) {
   if (req.body.authToken !== req.session.authToken) {
     return res.send({status: 'error', message:'Permission denied (2)'});
   }
-  return res.send('Invalid request you fool');
+
+  var names = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]);
+  return res.send(names.choose());
 });
 
 
