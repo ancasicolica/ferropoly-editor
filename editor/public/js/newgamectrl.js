@@ -27,16 +27,23 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   });
 
   $scope.validateAndSave = function () {
-    $http.post('/newgame', {gamename: $scope.gamename, map: $scope.map, authToken: authToken}).
+    $http.post('/gameplay/createnew', {gamename: $scope.gamename, map: $scope.map, authToken: authToken}).
       success(function (data, status) {
-        console.log('Game saved');
-        self.location = '/edit?id=' + data.gameplay;
+        if (data.success) {
+          console.log('Game saved');
+          self.location = '/edit?id=' + data.gameId;
+        }
+        else {
+          console.log('Error')
+          console.log(data);
+          $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
+        }
       }).
       error(function (data, status) {
         console.log('ERROR');
         console.log(data);
         console.log(status);
-        $scope.errorMessage = 'Leider trat ein Fehler auf: ' + data.message;
+        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
       });
   }
 }]);

@@ -1,14 +1,32 @@
 extends layout
 
+block head
+  script(src='/js/indexctrl.js')
+
 block content
-  h1 Ferropoly Editor
+  div(ng-app='indexApp' ng-controller='indexCtrl')
+    h1 Ferropoly Editor
 
-  | Willkommen beim Ferropoly Editor. Diese Applikation ist gegenwärtig in Entwicklung.
-  p 4.1.15, Christian Kuster, christian@kusti.ch
+    | Willkommen beim Ferropoly Editor. Diese Applikation ist gegenwärtig in Entwicklung.
+    p 4.1.15, Christian Kuster, christian@kusti.ch
 
 
-  p
-    a(href='/newgame') Neues Spiel
+    p
+      a(href='/newgame') Neues Spiel
 
-  p
-    a(href='/edit') Seite um Spiele zu bearbeiten
+    p
+      a(href='/edit') Seite um Spiele zu bearbeiten
+
+    h2 Meine Spiele
+    div(ng-show='gameplays.length === 0')
+      | Du hast noch keine Spiele angelegt.&nbsp;
+      a(href='/newgame') Neues Spiel anlegen.
+    div(ng-show='gameplays.length > 0')
+      .row
+        div(class='col-md-3' data-ng-repeat='gameplay in gameplays' )
+          p
+            a(href='/edit?id={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
+          p Karte: {{gameplay.internal.map}}
+          p Erstellt: {{gameplay.log.created}}
+          p Letzte Bearbeitung: {{gameplay.log.lastEdited}}
+          p ID: {{gameplay.internal.gameId}}

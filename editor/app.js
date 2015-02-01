@@ -17,6 +17,7 @@ var signup = require('./routes/signup');
 var useradmin = require('./routes/useradmin');
 var edit = require('./routes/edit');
 var newgame = require('./routes/newgame');
+var gameplay = require('./routes/gameplay');
 var authtoken = require('./routes/authtoken');
 var configuration = require('./routes/configuration');
 var settings = require('./settings');
@@ -63,6 +64,7 @@ var initServer = function () {
   app.use('/', routes);
   newgame.init(app, settings, gameplays);
   edit.init(app, settings, gameplays, users);
+  gameplay.init(app, settings, gameplays);
   configuration.init(app, settings);
 
   var server = require('http').Server(app);

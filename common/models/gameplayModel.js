@@ -68,6 +68,8 @@ var createGameplay = function(gpOptions, callback) {
   gp.gamename = gpOptions.name;
   gp.internal.gameId = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
 
+  // ToDo: check if name already exists!
+
   gp.save(function(err, savedGp) {
     if (err) {
       return callback(err);
