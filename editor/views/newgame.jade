@@ -4,6 +4,7 @@
 extends layout
 block head
    script(src='/js/newgamectrl.js')
+   link(rel='stylesheet', href='/css/newgame.css')
 block content
    div(ng-app='newgameApp' ng-controller='newgameCtrl')
       h1 Neues Spiel anlegen
@@ -26,4 +27,7 @@ block content
                        | Ganzes Schweizer Bahn- und Busnetz (GA Gültigkeitsbereich)
                   span(id='helpmap' class='help-block') Die Spielkarte bestimmt, aus welchen Orten man die Preisliste gestalten kann. Der Kartentyp kann später nicht mehr geändert werden.
                button(type='submit' class='btn btn-default' ng-click='validateAndSave()') Spiel anlegen
+
+               p(id='error-message')
+                 |{{errorMessage}}
 

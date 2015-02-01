@@ -24,7 +24,7 @@ router.post('/', function(req, res) {
   }
 
   var names = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]);
-  return res.send(names.choose());
+  return res.send({gameplay: names.choose()});
 });
 
 
