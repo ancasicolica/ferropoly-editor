@@ -19,14 +19,16 @@ router.get('/mygames', function (req, res) {
       return res.send({success: false, message: err.message});
     }
     var retVal = {success: true, gameplays: []};
-    gameplays.forEach(function (gameplay) {
-      retVal.gameplays.push({
-        internal: gameplay.internal,
-        gamename: gameplay.gamename,
-        scheduling: gameplay.scheduling,
-        log: gameplay.log
-      })
-    });
+    if (gameplays) {
+      gameplays.forEach(function (gameplay) {
+        retVal.gameplays.push({
+          internal: gameplay.internal,
+          gamename: gameplay.gamename,
+          scheduling: gameplay.scheduling,
+          log: gameplay.log
+        })
+      });
+    }
     return res.send(retVal);
   });
 });
