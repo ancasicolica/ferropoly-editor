@@ -2,6 +2,7 @@ extends layout
 
 block head
   script(src='/js/indexctrl.js')
+  link(rel='stylesheet', href='/css/index.css')
 
 block content
   div(ng-app='indexApp' ng-controller='indexCtrl')
@@ -14,19 +15,17 @@ block content
     p
       a(href='/newgame') Neues Spiel
 
-    p
-      a(href='/edit') Seite um Spiele zu bearbeiten
-
     h2 Meine Spiele
     div(ng-show='gameplays.length === 0')
       | Du hast noch keine Spiele angelegt.&nbsp;
       a(href='/newgame') Neues Spiel anlegen.
     div(ng-show='gameplays.length > 0')
       .row
-        div(class='col-md-3' data-ng-repeat='gameplay in gameplays' )
-          p
-            a(href='/edit?id={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
-          p Karte: {{gameplay.internal.map}}
-          p Erstellt: {{gameplay.log.created}}
-          p Letzte Bearbeitung: {{gameplay.log.lastEdited}}
-          p ID: {{gameplay.internal.gameId}}
+        div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
+          div(class='gameplay-card')
+            p(class='gameplay-title')
+              a(href='/edit?id={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
+            p Karte: {{gameplay.internal.map.toUpperCase()}}
+            p Erstellt: {{parseDate(gameplay.log.created)}}
+            p Letzte Bearbeitung: {{parseDate(gameplay.log.lastEdited)}}
+            p(class='gameplay-id') ID: {{gameplay.internal.gameId}}

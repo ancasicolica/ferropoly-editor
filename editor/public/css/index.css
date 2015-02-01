@@ -1,0 +1,21 @@
+.gameplay-card {
+    border: solid 1px;
+    border-color: #c4e3f3;
+    margin: 1px;
+    margin-bottom: 5px;
+    padding-left: 2px;
+}
+
+.gameplay-id {
+    color:rgba(115, 115, 115, 0.73);
+    font-size: x-small;
+}
+
+.gameplay-title {
+    font-size: larger;
+}
+
+#gameplay-list {
+    overflow: scroll;
+    height: 200px;
+}

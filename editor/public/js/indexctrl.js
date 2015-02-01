@@ -9,6 +9,12 @@ indexControl.controller('indexCtrl', ['$scope', '$http', '$interval', function (
 
   $scope.gameplays = [];
 
+  $scope.parseDate = function(ds) {
+    var date = new Date(ds);
+    console.log(date);
+    console.log(ds);
+    return date.toString("d.M.yy HH:mm")
+  };
   // When document ready, load gameplays
   $(document).ready(function () {
     $http.get('/gameplay/mygames').
@@ -21,6 +27,12 @@ indexControl.controller('indexCtrl', ['$scope', '$http', '$interval', function (
         }
         console.log(data);
         console.log('Gameplays loaded, nb:' + $scope.gameplays.length);
+
+        $scope.gameplays.forEach(function(gp) {
+          var d = new Date(gp.log.lastEdited);
+          console.log(d);
+          console.log(gp.log.lastEdited);
+        });
       }).
       error(function (data, status) {
         console.log('error:');
