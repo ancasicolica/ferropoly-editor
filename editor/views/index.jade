@@ -24,7 +24,7 @@ block content
         div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
           div(class='gameplay-card')
             p(class='gameplay-title')
-              a(href='/edit?id={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
+              a(href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
             p Karte: {{gameplay.internal.map.toUpperCase()}}
             p Erstellt: {{parseDate(gameplay.log.created)}}
             p Letzte Bearbeitung: {{parseDate(gameplay.log.lastEdited)}}

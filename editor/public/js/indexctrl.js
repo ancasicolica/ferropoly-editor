@@ -13,7 +13,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', '$interval', function (
     var date = new Date(ds);
     console.log(date);
     console.log(ds);
-    return date.toString("d.M.yy HH:mm")
+    return date.toString("d.M.yy HH:mm");
   };
   // When document ready, load gameplays
   $(document).ready(function () {

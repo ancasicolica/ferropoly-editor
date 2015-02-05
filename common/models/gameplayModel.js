@@ -30,10 +30,25 @@ var gameplaySchema = mongoose.Schema({
   },
   gameParams: {
     interestInterval: {type: Number, default: 60}, // Interval in minutes of the interests
-    interest: {type: Number, default: 4000}, // "Stargeld"
+    interest: {type: Number, default: 4000}, // "Startgeld"
+    interestCyclesAtEndOfGame: {type: Number, default: 2}, // number of interests at end of game
     startCapital: {type: Number, default: 4000}, // "Startkapital"
     debtInterest: {type: Number, default: 20},    // fee on debts
-    housePrice: {type: Number, default: 1000}
+    housePrices: {type: Number, default: .5},
+    properties: {
+      lowestPrice: {type: Number, default: 1000},
+      highestPrice: {type: Number, default: 8000},
+      numberOfPriceLevels: {type: Number, default: 8},
+      numberOfPropertiesPerGroup: {type: Number, default: 2}
+    },
+    rentFactors: {
+      noHouse: {type: Number, default: .125},
+      oneHouse: {type: Number, default: .5},
+      twoHouses: {type: Number, default: 2},
+      threeHouses: {type: Number, default: 3},
+      fourHouses: {type: Number, default: 4},
+      hotel: {type: Number, default: 5}
+    }
   },
   internal: {
     gameId: String, // Identifier of the game
@@ -57,7 +72,7 @@ var Gameplay = mongoose.model('Gameplay', gameplaySchema);
  * @param gpOptions is an object with at least 'map', 'ownerEmail' and 'name'
  * @param callback
  */
-var createGameplay = function(gpOptions, callback) {
+var createGameplay = function (gpOptions, callback) {
   var gp = new Gameplay();
   if (!gpOptions.map || !gpOptions.ownerEmail || !gpOptions.name) {
     return callback(new Error('Missing parameter'));
@@ -70,7 +85,7 @@ var createGameplay = function(gpOptions, callback) {
 
   // ToDo: check if name already exists!
 
-  gp.save(function(err, savedGp) {
+  gp.save(function (err, savedGp) {
     if (err) {
       return callback(err);
     }
@@ -82,8 +97,8 @@ var createGameplay = function(gpOptions, callback) {
  * @param ownerEmail
  * @param callback
  */
-var getGameplaysForUser = function(ownerEmail, callback) {
-  Gameplay.find({'internal.owner': ownerEmail}, function(err, docs) {
+var getGameplaysForUser = function (ownerEmail, callback) {
+  Gameplay.find({'internal.owner': ownerEmail}, function (err, docs) {
     if (err) {
       return callback(err);
     }
@@ -100,8 +115,8 @@ var getGameplaysForUser = function(ownerEmail, callback) {
  * @param ownerEmail
  * @param callback
  */
-var getGameplay = function(gameId, ownerEmail, callback) {
-  Gameplay.find({'internal.owner': ownerEmail, 'internal.gameId': gameId}, function(err, docs) {
+var getGameplay = function (gameId, ownerEmail, callback) {
+  Gameplay.find({'internal.owner': ownerEmail, 'internal.gameId': gameId}, function (err, docs) {
     if (err) {
       return callback(err);
     }
@@ -118,12 +133,12 @@ var getGameplay = function(gameId, ownerEmail, callback) {
  * @param callback
  * @returns {*}
  */
-var removeGameplay = function(gp, callback) {
+var removeGameplay = function (gp, callback) {
   if (!gp || !gp.internal || !gp.internal.gameId) {
     return callback(new Error('Invalid gameplay'));
   }
 
-  Gameplay.remove({'internal.gameId': gp.internal.gameId}, function(err) {
+  Gameplay.remove({'internal.gameId': gp.internal.gameId}, function (err) {
     callback(err);
   });
 };
@@ -133,9 +148,9 @@ var removeGameplay = function(gp, callback) {
  * @param gp
  * @param callback
  */
-var updateGameplay = function(gp, callback) {
+var updateGameplay = function (gp, callback) {
   gp.log.lastEdited = new Date();
-  gp.save(function(err, gpSaved, nbAffected) {
+  gp.save(function (err, gpSaved, nbAffected) {
     if (err) {
       return callback(err);
     }
@@ -161,7 +176,7 @@ module.exports = {
   },
 
   close: function (callback) {
-    ferropolyDb.close(function(err) {
+    ferropolyDb.close(function (err) {
       callback(err);
     })
   },
