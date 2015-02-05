@@ -16,21 +16,29 @@ html
 
   body
     #wrap
-      .container-fluid
-        .row
-          .col-md-2.header
-            div=title
-          .col-md-9.header
-            |&nbsp;
-          .col-md-1.header.logout
+      nav(class='navbar navbar-inverse navbar-navbar-fixed-top')
+        .navbar-header
+          button(type='button' data-target='#navbarCollapse' data-toggle='collapse' class='navbar-toggle')
+            span(class='icon-bar')
+            span(class='icon-bar')
+            span(class='icon-bar')
+          a(href='#' class='navbar-brand') Ferropoly
+        div(id='navbarCollapse' class='collapse navbar-collapse')
+          ul(class='nav navbar-nav')
+            block navbar
+
+          ul(class='nav navbar-nav navbar-right')
             if !hideLogout
-              a(href='/logout') Logout
+              li
+                a(href='/logout') Logout
             else if showSignUp
-              a(href='/signup') Anmelden
+              li
+                a(href='/signup') Anmelden
             else
               | &nbsp;
 
-        block content
+      block content
+        .container-fluid
 
     #footer
       .container-fluid
