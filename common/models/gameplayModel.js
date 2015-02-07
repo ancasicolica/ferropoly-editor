@@ -150,6 +150,31 @@ var removeGameplay = function (gp, callback) {
  */
 var updateGameplay = function (gp, callback) {
   gp.log.lastEdited = new Date();
+
+  if (!gp.save) {
+    // If this not a gameplay object, we have to load the existing game and update it
+    console.log('nod a gameplay, converting');
+    return getGameplay(gp.internal.gameId, gp.internal.owner, function(err, loadedGp) {
+      if (err) {
+        console.log('Error while loading gameplay: ' + err.message)
+        return(err);
+      }
+      // we need to assign the data now to this gameplay loaded
+      loadedGp.gamename = gp.gamename;
+      loadedGp.owner = gp.owner;
+      loadedGp.scheduling = gp.scheduling;
+      loadedGp.gameParams = gp.gameParams;
+      loadedGp.log = gp.log;
+      loadedGp.pricelist = gp.pricelist;
+      // we do not copy internal as this does not change (must not change!)
+
+      // Call update again (this is recursive)
+      return updateGameplay(loadedGp, function(err, gp2) {
+        return callback(err, gp2);
+      })
+    });
+  }
+  // Save in DB
   gp.save(function (err, gpSaved, nbAffected) {
     if (err) {
       return callback(err);
@@ -159,6 +184,10 @@ var updateGameplay = function (gp, callback) {
   });
 };
 
+/**
+ * Exports of this module
+ * @type {{init: Function, close: Function, Model: (*|Model), createGameplay: Function, getGameplaysForUser: Function, removeGameplay: Function, updateGameplay: Function, getGameplay: Function}}
+ */
 module.exports = {
   /**
    * Initialize the user model / connection to the DB

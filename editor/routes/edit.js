@@ -37,6 +37,23 @@ router.get('/load-game', function (req, res) {
   });
 });
 
+/* Save a game */
+router.post('/save', function(req, res) {
+  if (!req.body.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (1)'});
+  }
+  if (req.body.authToken !== req.session.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (2)'});
+  }
+  console.log('Save game ' + req.body.gameplay.internal.gameId);
+  gameplays.updateGameplay(req.body.gameplay, function (err, gameplay) {
+    if (err) {
+      return res.send({success: false, message: err.message});
+    }
+    return res.send({success: true, gameId: gameplay.internal.gameId});
+  });
+});
+
 module.exports = {
   init: function (app, _settings, _gameplays, _users) {
     app.use('/edit', router);

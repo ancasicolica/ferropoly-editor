@@ -6,7 +6,7 @@
 var editControl = angular.module('editApp', ['ui.bootstrap']);
 editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
 
-  $scope.panel='init';
+  $scope.panel = 'init';
   $scope.errorMessage = '';
   $scope.gameplay = {};
   $scope.gameplayReadOnly = {};
@@ -14,10 +14,28 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
   var authToken = 'none';
 
 
-  $scope.save = function(nextPanel) {
-    if (nextPanel) {
-      $scope.panel = nextPanel;
-    }
+  $scope.save = function (nextPanel) {
+    $http.post('/edit/save', {gameplay: $scope.gameplay, authToken: authToken}).
+      success(function (data, status) {
+        if (data.success) {
+          console.log('Game saved');
+          if (nextPanel) {
+            $scope.panel = nextPanel;
+          }
+        }
+        else {
+          console.log('Error');
+          console.log(data);
+          $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
+        }
+      }).
+      error(function (data, status) {
+        console.log('ERROR');
+        console.log(data);
+        console.log(status);
+        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+      });
+
   };
 
   $(document).ready(function () {
