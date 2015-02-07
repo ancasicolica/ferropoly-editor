@@ -1,0 +1,21 @@
+h1 Startgeld & Zins
+.row
+  .col-md-4
+    label(for='startCapital') Guthaben zu Beginn des Spieles
+    input(class='form-control' type='number' id='startCapital' min='0' max='50000' step='1000' ng-model='gameplay.gameParams.startCapital')
+    span(class='help-block') Empfohlen: 4000
+    label(for='interest') Startgeld pro Spielrunde
+    input(class='form-control' type='number' id='interest' min='1000' max='10000' step='1000' ng-model='gameplay.gameParams.interest')
+    span(class='help-block') Empfohlen: 4000
+    label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
+    input(class='form-control' type='number' id='interestInterval' min='15' max='120' step='15' ng-model='gameplay.gameParams.interestInterval')
+    span(class='help-block') Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten
+    label(for='interestCyclesAtEndOfGame') Anzahl Zinsrunden am Spielende
+    input(class='form-control' type='number' id='interestCyclesAtEndOfGame' min='0' max='4' step='1' ng-model='gameplay.gameParams.interestCyclesAtEndOfGame')
+    span(class='help-block') Wenn am Ende des Spieles nochmals Zins ausbezahlt wird, dann lohnt es sich für die Teams länger zu kaufen und bauen. Empfohlen: 2
+    label(for='debtInterest') Strafzinssatz
+    input(class='form-control' type='number' id='debtInterest' min='0' max='25' step='1' ng-model='gameplay.gameParams.debtInterest')
+    span(class='help-block') Zinsatz in Prozent, welcher auf ein negatives Vermögen am Ende einer Spielrunde zu Gunsten des Parkplatzes erhoben wird
+    label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
+    input(class='form-control' type='number' id='interestInterval' min='15' max='120' step='15' ng-model='gameplay.gameParams.interestInterval')
+    span(class='help-block') Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten

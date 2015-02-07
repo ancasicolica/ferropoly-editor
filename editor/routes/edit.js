@@ -18,7 +18,7 @@ router.get('/', function (req, res) {
   if (!req.query.gameId) {
     req.query.gameId = 'this-aint-a-useful-id';
   }
-  res.render('edit', {title: 'Spiel bearbeiten', hideLogout: false, gameId: req.query.gameId});
+  res.render('edit', {title: 'Spiel bearbeiten', hideLogout: false, gameId: req.query.gameId, ngController:'editCtrl', ngApp:'editApp', ngFile:'/js/editctrl.js' });
 });
 
 /* Load a game */

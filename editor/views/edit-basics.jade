@@ -1,0 +1,47 @@
+h1 Preisliste
+form(name='basicsForm')
+  .row
+    .col-md-4
+      label(for='lowestPrice') Preis günstigstes Ort
+      input(class='form-control' type='number' name='lowestPrice' id='lowestPrice' min='100' max='4000' step='100' ng-model='gameplay.gameParams.properties.lowestPrice')
+      span(class='help-block') Empfohlen: 1000, gültiger Bereich ist zwischen 100 und 4000.
+      p(class='bg-danger' ng-hide='basicsForm.lowestPrice.$valid') Ungültige Eingabe: Es sind nur Zahlen zwischen 100 und 4000 erlaubt.
+
+      label(for='highestPrice') Preis teuerstes Ort
+      input(class='form-control' type='number' name='highestPrice' id='highestPrice' min='1000' max='10000' step='100' ng-model='gameplay.gameParams.properties.highestPrice')
+      span(class='help-block') Empfohlen: 4000, gültiger Bereich ist zwischen 1000 und 10000.
+      p(class='bg-danger' ng-hide='basicsForm.highestPrice.$valid') Ungültige Eingabe: Es sind nur Zahlen zwischen 1000 und 10000 erlaubt.
+
+      label(for='numberOfPriceLevels') Anzahl Preisstufen
+      select(class='form-control' name='numberOfPriceLevels' id='numberOfPriceLevels' ng-model='gameplay.gameParams.properties.numberOfPriceLevels')
+        option 1
+        option 2
+        option 3
+        option 4
+        option 5
+        option 6
+        option 7
+        option 8
+        option 9
+        option 10
+        option 12
+        option 14
+        option 15
+        option 16
+        option 20
+        option 24
+        option 25
+        option 30
+        option 32
+      span(class='help-block') Bestimmt die Preisunterschiede zwischen zwei Orten: die Differenz zwischen teuerstem und billigstem Ort wird durch diesen Wert geteilt. Empfohlen sind 8 Preisstufen. Beim Spezialwert '1' werden die Preisstufen deaktiviert (alle Orte haben einen unterschiedlichen Preis).
+
+      label(for='numberOfPropertiesPerGroup') Grösse der Liegenschaftsgruppen
+      select(class='form-control' ng-model='gameplay.gameParams.properties.numberOfPropertiesPerGroup')
+        option 1
+        option 2
+        option 3
+        option 4
+      span(class='help-block') Bei einem Wert grösser 1 werden die in der Preisliste beieinander liegenden Orte zu Gruppen zusammengefasst. Besitzt eine Spielergruppe alle Orte einer Ortsgruppe, dann verdoppeln sich die Einnahmen. Empfohlen sind 2.
+
+    .col-md-4
+      button(class='btn btn-default' type='submit' ng-disabled='!basicsForm.$valid' ng-click="save('interests')") Speichern und weiter

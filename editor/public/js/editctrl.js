@@ -6,12 +6,19 @@
 var editControl = angular.module('editApp', ['ui.bootstrap']);
 editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
 
-  $scope.initialized = false;
+  $scope.panel='init';
   $scope.errorMessage = '';
   $scope.gameplay = {};
   $scope.gameplayReadOnly = {};
 
   var authToken = 'none';
+
+
+  $scope.save = function(nextPanel) {
+    if (nextPanel) {
+      $scope.panel = nextPanel;
+    }
+  };
 
   $(document).ready(function () {
     $http.get('/authtoken').
@@ -26,7 +33,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
             $scope.gameplayReadOnly.lastEdited = new Date($scope.gameplay.log.lastEdited).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.map = $scope.gameplay.internal.map.toUpperCase();
             $scope.gameplayReadOnly.gameId = $scope.gameplay.internal.gameId;
-            $scope.initialized = true;
+            $scope.panel = 'gameplay';
           }).
           error(function (data, status) {
             console.log('load-game-error');

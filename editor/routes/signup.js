@@ -12,7 +12,10 @@ var validator = require('validator');
 
 /* GET Sign-up page */
 router.get('/', function (req, res) {
-  res.render('signup', {title: 'Anmelden', hideLogout: true});
+  res.render('signup', {title: 'Anmelden', hideLogout: true,
+    ngController: 'signupCtrl',
+    ngApp: 'signupApp',
+    ngFile: '/js/signupctrl.js' });
 });
 
 var settings;

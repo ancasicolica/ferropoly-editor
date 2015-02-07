@@ -1,31 +1,28 @@
 extends layout
 
 block head
-  script(src='/js/indexctrl.js')
   link(rel='stylesheet', href='/css/index.css')
 
 block content
-  div(ng-app='indexApp' ng-controller='indexCtrl')
-    h1 Ferropoly Editor
+  h1 Ferropoly Editor
 
-    | Willkommen beim Ferropoly Editor. Diese Applikation ist gegenwärtig in Entwicklung.
-    p 4.1.15, Christian Kuster, christian@kusti.ch
+  | Willkommen beim Ferropoly Editor. Diese Applikation ist gegenwärtig in Entwicklung.
+  p 4.1.15, Christian Kuster, christian@kusti.ch
 
+  p
+    a(href='/newgame') Neues Spiel
 
-    p
-      a(href='/newgame') Neues Spiel
-
-    h2 Meine Spiele
-    div(ng-show='gameplays.length === 0')
-      | Du hast noch keine Spiele angelegt.&nbsp;
-      a(href='/newgame') Neues Spiel anlegen.
-    div(ng-show='gameplays.length > 0')
-      .row
-        div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
-          div(class='gameplay-card')
-            p(class='gameplay-title')
-              a(href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
-            p Karte: {{gameplay.internal.map.toUpperCase()}}
-            p Erstellt: {{parseDate(gameplay.log.created)}}
-            p Letzte Bearbeitung: {{parseDate(gameplay.log.lastEdited)}}
-            p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
+  h2 Meine Spiele
+  div(ng-show='gameplays.length === 0')
+    | Du hast noch keine Spiele angelegt.&nbsp;
+    a(href='/newgame') Neues Spiel anlegen.
+  div(ng-show='gameplays.length > 0')
+    .row
+      div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
+        div(class='gameplay-card')
+          p(class='gameplay-title')
+            a(href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") {{gameplay.gamename}}
+          p Karte: {{gameplay.internal.map.toUpperCase()}}
+          p Erstellt: {{parseDate(gameplay.log.created)}}
+          p Letzte Bearbeitung: {{parseDate(gameplay.log.lastEdited)}}
+          p(class='gameplay-id') ID: {{gameplay.internal.gameId}}

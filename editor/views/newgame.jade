@@ -3,17 +3,15 @@
 
 extends layout
 block head
-   script(src='/js/newgamectrl.js')
    link(rel='stylesheet', href='/css/newgame.css')
 block content
-   div(ng-app='newgameApp' ng-controller='newgameCtrl')
       h1 Neues Spiel anlegen
       .row
          .col-md-6
             form
                .form-group
                   label(for='gamename1') Spielname
-                  input(type='text' id='gamename1' class='form-control' ng-model='gamename')
+                  input(type='text' id='gamename1' class='form-control' ng-required ng-minlength='3' ng-maxlength='40' ng-model='gamename')
                   span(id='helpname' class='help-block') Gib Deinem Spiel einen passenden Namen, diesen sehen später auch die Teilnehmer. Der Name kann jederzeit geändert werden.
                .form-group
                   label(for='map') Spielkarte

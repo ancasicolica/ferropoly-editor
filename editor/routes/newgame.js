@@ -11,7 +11,7 @@ var Moniker = require('moniker');
 
 /* GET page for new gameplay */
 router.get('/', function(req, res) {
-  res.render('newgame', { title: 'Neues Spiel' });
+  res.render('newgame', { title: 'Neues Spiel',ngController:'newgameCtrl', ngApp:'newgameApp', ngFile:'/js/newgamectrl.js' });
 });
 
 /**

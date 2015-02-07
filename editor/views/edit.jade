@@ -6,80 +6,34 @@ block head
   link(rel='stylesheet', href='/css/edit.css')
   script
     | var gameId = '#{gameId}';
-  script(src='/js/editctrl.js')
+
 block navbar
   li(class='dropdown')
-    a(data-toggle='dropdown' class='dropdown-toggle' href='#') Preisliste
+    a(data-toggle='dropdown' class='dropdown-toggle' href='#') Spielparameter
     ul(role='menu' class='dropdown-menu')
       li
-        a(href='#') Grunddaten
+        a(href='' ng-click="panel='gameplay'") Spieldaten
       li
-        a(href='#') Zins
+        a(href='' ng-click="panel='basics'") Preisliste
       li
-        a(href='#') Haus und Hotel
+        a(href='' ng-click="panel='interests'") Stargeld & Zins
+      li
+        a(href='' ng-click="panel='properties'") Häuser & Hotel
   li
     a(href='#') Karte
   li
     a(href='#') Test
 
 block content
-  div(ng-app='editApp' ng-controller='editCtrl')
-    div(ng-hide='initialized')
-      h1 Lade die Daten... einen Moment bitte
-      p
-      a(href='/') Zurück zur Hauptseite
-    div(ng-show='initialized')
-
-
-
-      .row
-        .col-md-4
-          h2 Grundparameter
-          label(for='gameName') Spielname
-          input(class='form-control' type='text' id='gameName' ng-model='gameplay.gamename')
-
-          label(for='created') Erstellungsdatum
-          input(class='form-control' type='text' id='created' readonly='true' ng-model='gameplayReadOnly.created')
-
-          label(for='lastEdited') Letzte Änderung
-          input(class='form-control' type='text' id='lastEdited' readonly='true' ng-model='gameplayReadOnly.lastEdited')
-
-          label(for='map') Karte
-          input(class='form-control' type='text' id='map' readonly='true' ng-model='gameplayReadOnly.map')
-
-          label(for='gameId') Spiel ID
-          input(class='form-control' type='text' id='gameId' readonly='true' ng-model='gameplayReadOnly.gameId')
-          span(class='help-block') Die Spiel ID wurde beim Anlegen des Spieles zufällig gewürfelt und wird intern für dieses Spiel verwendet. Bei Support-Anfragen bitte immer diese ID angeben.
-        .col-md-4
-          h2 Startgeld & Zins
-          label(for='startCapital') Guthaben zu Beginn des Spieles
-          input(class='form-control' type='number' id='startCapital' min='0' max='50000' step='1000' ng-model='gameplay.gameParams.startCapital')
-          span(class='help-block') Empfohlen: 4000
-
-          label(for='interest') Startgeld pro Spielrunde
-          input(class='form-control' type='number' id='interest' min='1000' max='10000' step='1000' ng-model='gameplay.gameParams.interest')
-          span(class='help-block') Empfohlen: 4000
-
-          label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
-          input(class='form-control' type='number' id='interestInterval' min='15' max='120' step='15' ng-model='gameplay.gameParams.interestInterval')
-          span(class='help-block') Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten
-
-          label(for='interestCyclesAtEndOfGame') Anzahl Zinsrunden am Spielende
-          input(class='form-control' type='number' id='interestCyclesAtEndOfGame' min='0' max='4' step='1' ng-model='gameplay.gameParams.interestCyclesAtEndOfGame')
-          span(class='help-block') Wenn am Ende des Spieles nochmals Zins ausbezahlt wird, dann lohnt es sich für die Teams länger zu kaufen und bauen. Empfohlen: 2
-
-          label(for='debtInterest') Strafzinssatz
-          input(class='form-control' type='number' id='debtInterest' min='0' max='25' step='1' ng-model='gameplay.gameParams.debtInterest')
-          span(class='help-block') Zinsatz in Prozent, welcher auf ein negatives Vermögen am Ende einer Spielrunde zu Gunsten des Parkplatzes erhoben wird
-
-          label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
-          input(class='form-control' type='number' id='interestInterval' min='15' max='120' step='15' ng-model='gameplay.gameParams.interestInterval')
-          span(class='help-block') Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten
-
-          label(for='interestCyclesAtEndOfGame') Anzahl Zinsrunden am Spielende
-          input(class='form-control' type='number' id='interestCyclesAtEndOfGame' min='0' max='4' step='1' ng-model='gameplay.gameParams.interestCyclesAtEndOfGame')
-          span(class='help-block') Wenn am Ende des Spieles nochmals Zins ausbezahlt wird, dann lohnt es sich für die Teams länger zu kaufen und bauen. Empfohlen: 2
-
-          label(for='debtInterest') Strafzinssatz
-          input(class='form-control' type='number' id='debtInterest' min='0' max='25' step='1' ng-model='gameplay.gameParams.debtInterest')
-          span(class='help-block') Zinsatz in Prozent, welcher auf ein negatives Vermögen am Ende einer Spielrunde zu Gunsten des Parkplatzes erhoben wird
+  div(ng-show='panel === "init"')
+    h1 Lade die Daten... einen Moment bitte
+    p
+    a(href='/') Zurück zur Hauptseite
+  div(ng-show='panel === "gameplay"')
+    include edit-gameplay
+  div(ng-show='panel === "basics"')
+    include edit-basics
+  div(ng-show='panel === "interests"')
+    include edit-interests
+  div(ng-show='panel === "properties"')
+    include edit-properties

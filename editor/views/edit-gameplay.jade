@@ -1,0 +1,33 @@
+
+h1 Spieldaten
+form(name='gameplayForm')
+   .row
+      .col-md-4
+         label(for='gamename') Spielname
+         input(class='form-control' type='text' name='gamename' id='gamename' ng-required ng-minlength='3' ng-maxlength='60' ng-model='gameplay.gamename')
+         p(class='bg-danger' ng-show='gameplayForm.gamename.$error.minlength') Der Name muss mindestens 3 Zeichen lang sein
+
+         label(for='created') Erstellungsdatum
+         input(class='form-control' type='text' id='created' readonly='true' ng-model='gameplayReadOnly.created')
+
+         label(for='lastEdited') Letzte Änderung
+         input(class='form-control' type='text' id='lastEdited' readonly='true' ng-model='gameplayReadOnly.lastEdited')
+
+         label(for='map') Karte
+         input(class='form-control' type='text' id='map' readonly='true' ng-model='gameplayReadOnly.map')
+
+         label(for='gameId') Spiel ID
+         input(class='form-control' type='text' id='gameId' readonly='true' ng-model='gameplayReadOnly.gameId')
+         span(class='help-block') Die Spiel ID wurde beim Anlegen des Spieles zufällig gewürfelt und wird intern für dieses Spiel verwendet. Bei Support-Anfragen bitte immer diese ID angeben.
+
+      .col-md-4
+         label(for='gameStart') Spielstart
+         input(class='form-control' type='datetime-local' name='gameStart' id='gameStart' required ng-model='gameplay.scheduling.gameStart')
+         p(class='bg-danger' ng-show='gameplayForm.gameStart.$error.required') Der Spielstart muss gesetzt werden
+
+         label(for='gameEnd') Spielende
+         input(class='form-control' type='datetime-local' name='gameEnd' id='gameEnd' required ng-model='gameplay.scheduling.gameEnd')
+         p(class='bg-danger' ng-show='gameplayForm.gameEnd.$error.required') Das Spielende muss gesetzt werden
+
+      .col-md-4
+         button(class='btn btn-default' type='submit' ng-disabled='!gameplayForm.$valid' ng-click="save('basics')") Speichern und weiter
