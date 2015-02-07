@@ -18,13 +18,13 @@ form(name='gameplayForm')
 
          label(for='organisatorEmail') Email-Adresse des Organisators
          input(class='form-control' type='email' name='organisatorEmail' id='organisatorEmail' ng-required ng-minlength='3' ng-maxlength='60' ng-model='gameplay.owner.organisatorEmail')
-         p(class='bg-danger' ng-hide='gameplayForm.gamename.$valid') Die Email-Adresse ist nicht gültig.
+         p(class='bg-danger' ng-hide='gameplayForm.organisatorEmail.$valid') Die Email-Adresse ist nicht gültig.
 
          label(for='organisatorPhone') Telefonnummer während dem Spiel
          input(class='form-control' type='text' name='organisatorPhone' id='organisatorPhone' ng-required ng-minlength='7' ng-maxlength='60' ng-model='gameplay.owner.organisatorPhone')
          p(class='bg-danger' ng-hide='gameplayForm.organisatorPhone.$valid') Die Telefonnummer muss angegeben werden.
          p
-         
+
       .col-md-4
          label(for='gameStart') Spielstart
          input(class='form-control' type='datetime-local' name='gameStart' id='gameStart' required ng-model='gameplay.scheduling.gameStart')
