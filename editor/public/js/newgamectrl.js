@@ -31,7 +31,7 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
       success(function (data, status) {
         if (data.success) {
           console.log('Game saved');
-          self.location = '/edit?id=' + data.gameId;
+          self.location = '/edit?gameId=' + data.gameId;
         }
         else {
           console.log('Error')

@@ -46,6 +46,10 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
         $http.get('/edit/load-game?gameId=' + gameId).
           success(function (data) {
             console.log(data);
+            if (!data.success) {
+              $scope.errorMessage = 'Ladefehler';
+              return;
+            }
             $scope.gameplay = data.gameplay;
             $scope.gameplayReadOnly.created = new Date($scope.gameplay.log.created).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.lastEdited = new Date($scope.gameplay.log.lastEdited).toString("d.M.yy HH:mm");
