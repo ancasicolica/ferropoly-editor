@@ -54,7 +54,8 @@ html(lang='de')
       .container-fluid
         .row
           #footer-status.col-md-6
-           | {{statusText}}
+            if(ngFile)
+              | {{statusText}}
           #footer-placeholder.col-md-5
           #footer-time.col-md-1
 //
