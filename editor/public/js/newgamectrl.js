@@ -10,6 +10,9 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   $scope.map = 'zvv';
   $scope.gamename = 'Ferropoly Spiel';
   $scope.errorMessage = '';
+  $scope.gamedate = '';
+  $scope.dateError = undefined;
+
   var authToken = 'none';
 
   $(document).ready(function () {
@@ -26,15 +29,24 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
       });
   });
 
+  $scope.validateDate = function() {
+    if (new Date($scope.gamedate) < new Date()) {
+      $scope.dateError = 'Das Datum muss in der Zukunft liegen.';
+    }
+    else {
+      $scope.dateError = undefined;
+    }
+  };
+
   $scope.validateAndSave = function () {
-    $http.post('/gameplay/createnew', {gamename: $scope.gamename, map: $scope.map, authToken: authToken}).
+    $http.post('/gameplay/createnew', {gamename: $scope.gamename, map: $scope.map, gamedate: $scope.gamedate, authToken: authToken}).
       success(function (data, status) {
         if (data.success) {
           console.log('Game saved');
           self.location = '/edit?gameId=' + data.gameId;
         }
         else {
-          console.log('Error')
+          console.log('Error');
           console.log(data);
           $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
         }

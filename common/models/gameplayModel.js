@@ -25,8 +25,9 @@ var gameplaySchema = mongoose.Schema({
     organisatorPhone: String
   },
   scheduling: {
-    gameStart: Date,
-    gameEnd: Date
+    gameDate: Date,
+    gameStart: String, // hh:mm
+    gameEnd: String // hh:mm
   },
   gameParams: {
     interestInterval: {type: Number, default: 60}, // Interval in minutes of the interests
@@ -80,10 +81,13 @@ var createGameplay = function (gpOptions, callback) {
 
   gp.internal.map = gpOptions.map;
   gp.internal.owner = gpOptions.ownerEmail;
+  gp.owner.organisatorEmail = gpOptions.ownerEmail;
+  gp.owner.organisatorName = gpOptions.organisatorName;
+  gp.scheduling.gameDate = gpOptions.gameDate;
+  gp.scheduling.gameStart = gpOptions.gameStart;
+  gp.scheduling.gameEnd = gpOptions.gameEnd;
   gp.gamename = gpOptions.name;
   gp.internal.gameId = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
-
-  // ToDo: check if name already exists!
 
   gp.save(function (err, savedGp) {
     if (err) {

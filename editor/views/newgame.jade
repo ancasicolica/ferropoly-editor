@@ -8,24 +8,32 @@ block content
       h1 Neues Spiel anlegen
       .row
          .col-md-6
-            form
-               .form-group
-                  label(for='gamename1') Spielname
-                  input(type='text' id='gamename1' class='form-control' ng-required ng-minlength='3' ng-maxlength='40' ng-model='gamename')
-                  span(id='helpname' class='help-block') Gib Deinem Spiel einen passenden Namen, diesen sehen später auch die Teilnehmer. Der Name kann jederzeit geändert werden.
-               .form-group
-                  label(for='map') Spielkarte
-                  .radio
-                     label
-                       input(type='radio' name='map' value='zvv' ng-model='map')
-                       | Zürcher Verkehrsverbund ZVV
-                  .radio
-                     label
-                       input(type='radio' name='map' value='sbb' ng-model='map')
-                       | Ganzes Schweizer Bahn- und Busnetz (GA Gültigkeitsbereich)
-                  span(id='helpmap' class='help-block') Die Spielkarte bestimmt, aus welchen Orten man die Preisliste gestalten kann. Der Kartentyp kann später nicht mehr geändert werden.
-               button(type='submit' class='btn btn-default' ng-click='validateAndSave()') Spiel anlegen
+            form(name='newForm')
 
-               p(id='error-message')
-                 |{{errorMessage}}
+              label(for='gamename1') Spielname
+              input(type='text' id='gamename1' name='gamename1' class='form-control' required ng-minlength='3' ng-maxlength='60' ng-model='gamename')
+              span(id='helpname' class='help-block') Gib Deinem Spiel einen passenden Namen, diesen sehen später auch die Teilnehmer. Der Name kann jederzeit geändert werden.
+              p(class='bg-danger' ng-hide='newForm.gamename1.$valid') Ungültige Eingabe: Der Name muss zwischen 3 und 60 Zeichen lang sein
 
+
+              label(for='map') Spielkarte
+              .radio
+                 label
+                   input(type='radio' name='map' value='zvv' ng-model='map')
+                   | Zürcher Verkehrsverbund ZVV
+              .radio
+                 label
+                   input(type='radio' name='map' value='sbb' ng-model='map')
+                   | Ganzes Schweizer Bahn- und Busnetz (GA Gültigkeitsbereich)
+              span(id='helpmap' class='help-block') Die Spielkarte bestimmt, aus welchen Orten man die Preisliste gestalten kann. Diese Einstellung kann später nicht mehr geändert werden.
+
+              label(for='gamedate') Datum
+              input(class='form-control' type='date' id='gamedate' name='gamedate' ng-model='gamedate' ng-change='validateDate()' required)
+              span(class='help-block') Gegenwärtig werden nur eintägige Spiele unterstützt. Die Start- und Endzeit kann in den Spileinstellungen später angepasst werden.
+              p(class='bg-danger' ng-hide='newForm.gamedate.$valid') Das Spieldatum muss angegeben werden.
+              p(class='bg-danger' ng-show='dateError') {{dateError}}
+
+              button(type='submit' class='btn btn-default' ng-click='validateAndSave()' ng-disabled='(!newForm.$valid)||dateError') Spiel anlegen
+
+              p(id='error-message')
+                |{{errorMessage}}

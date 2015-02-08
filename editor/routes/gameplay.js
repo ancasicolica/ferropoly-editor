@@ -8,6 +8,7 @@ var express = require('express');
 var router = express.Router();
 var multer = require('multer');
 var Moniker = require('moniker');
+var date = require('datejs');
 
 var options;
 var gameplayModel;
@@ -35,25 +36,35 @@ router.get('/mygames', function (req, res) {
 
 /* Post params of a new game */
 router.post('/createnew', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
-  }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
-  }
-
-  var userMail = req.session.passport.user;
-  console.log('New game for ' + userMail);
-  gameplayModel.createGameplay({
-    map: req.body.map,
-    name: req.body.gamename,
-    ownerEmail: userMail
-  }, function (err, gameplay) {
-    if (err) {
-      return res.send({success: false, message: err.message});
+  try {
+    if (!req.body.authToken) {
+      return res.send({status: 'error', message: 'Permission denied (1)'});
     }
-    return res.send({success: true, gameId: gameplay.internal.gameId});
-  });
+    if (req.body.authToken !== req.session.authToken) {
+      return res.send({status: 'error', message: 'Permission denied (2)'});
+    }
+    
+    var userMail = req.session.passport.user;
+    console.log('New game for ' + userMail);
+    gameplayModel.createGameplay({
+      map: req.body.map,
+      name: req.body.gamename,
+      ownerEmail: userMail,
+      gameStart: '05:00',
+      gameEnd: '18:00',
+      gameDate: req.body.gamedate
+    }, function (err, gameplay) {
+      if (err) {
+        return res.send({success: false, message: err.message});
+      }
+      return res.send({success: true, gameId: gameplay.internal.gameId});
+    });
+  }
+  catch(e) {
+    console.log('Exception in gameplay.post');
+    console.error(e);
+    return res.send({success: false, message: e.message});
+  }
 
 });
 

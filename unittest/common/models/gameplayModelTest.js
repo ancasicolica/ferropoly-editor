@@ -30,7 +30,7 @@ describe('UserModel Tests', function () {
         expect(res.internal.owner).to.be('olivia@kunz.ch');
         expect(res.internal.map).to.be('zvv');
         expect(res.gamename).to.be('testspiel 1');
-        expect(res.gameParams.housePrice).to.be(1000);
+        expect(res.gameParams.housePrices).to.be(.5);
         done(err);
       })
     });
@@ -41,7 +41,7 @@ describe('UserModel Tests', function () {
         expect(res.internal.owner).to.be('olivia@kunz.ch');
         expect(res.internal.map).to.be('sbb');
         expect(res.gamename).to.be('testspiel 2');
-        expect(res.gameParams.housePrice).to.be(1000);
+        expect(res.gameParams.housePrices).to.be(.5);
         done(err);
       })
     });
@@ -56,7 +56,7 @@ describe('UserModel Tests', function () {
         expect(res.internal.owner).to.be('christian@kusti.ch');
         expect(res.internal.map).to.be('zvv');
         expect(res.gamename).to.be('testspiel 3');
-        expect(res.gameParams.housePrice).to.be(1000);
+        expect(res.gameParams.housePrices).to.be(.5);
         done(err);
       })
     });

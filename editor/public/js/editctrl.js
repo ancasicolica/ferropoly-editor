@@ -55,6 +55,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
             $scope.gameplayReadOnly.lastEdited = new Date($scope.gameplay.log.lastEdited).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.map = $scope.gameplay.internal.map.toUpperCase();
             $scope.gameplayReadOnly.gameId = $scope.gameplay.internal.gameId;
+            $scope.gameplayReadOnly.gamedate = new Date($scope.gameplay.scheduling.gameStart).toString("d.M.yy");
             $scope.panel = 'gameplay';
           }).
           error(function (data, status) {
