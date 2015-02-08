@@ -3,6 +3,10 @@ extends layout
 block head
   link(rel='stylesheet', href='/css/signin.css')
 
+block navbar-right
+  li
+    a(href='http://www.ferropoly.ch') Impressum / Kontakt
+
 block content
 
   form(action='login' method='post' class='form-signin')

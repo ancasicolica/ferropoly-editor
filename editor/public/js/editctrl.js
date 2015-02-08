@@ -10,6 +10,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
   $scope.errorMessage = '';
   $scope.gameplay = {};
   $scope.gameplayReadOnly = {};
+  $scope.statusText = '';
 
   var authToken = 'none';
 
@@ -19,6 +20,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
       success(function (data, status) {
         if (data.success) {
           console.log('Game saved');
+          $scope.statusText = 'Spiel gespeichert';
           if (nextPanel) {
             $scope.panel = nextPanel;
           }
@@ -27,6 +29,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
           console.log('Error');
           console.log(data);
           $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
+          $scope.statusText = 'Fehler beim Speichern: ' + data.message;
         }
       }).
       error(function (data, status) {
@@ -34,6 +37,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
         console.log(data);
         console.log(status);
         $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+        $scope.statusText = 'Fehler beim Speichern: ' + data.message;
       });
 
   };
@@ -47,7 +51,8 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
           success(function (data) {
             console.log(data);
             if (!data.success) {
-              $scope.errorMessage = 'Ladefehler';
+              $scope.panel = 'error';
+              $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
               return;
             }
             $scope.gameplay = data.gameplay;
@@ -57,11 +62,13 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
             $scope.gameplayReadOnly.gameId = $scope.gameplay.internal.gameId;
             $scope.gameplayReadOnly.gamedate = new Date($scope.gameplay.scheduling.gameStart).toString("d.M.yy");
             $scope.panel = 'gameplay';
+            $scope.statusText = 'Spiel geladen';
           }).
           error(function (data, status) {
             console.log('load-game-error');
             console.log(data);
             console.log(status);
+            $scope.panel = 'error';
             $scope.errorMessage = 'Ladefehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
           });
 
@@ -70,6 +77,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
         console.log('error:');
         console.log(data);
         console.log(status);
+        $scope.panel = 'error';
         $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
       });
   });

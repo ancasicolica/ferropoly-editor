@@ -1,7 +1,11 @@
 doctype html
-html
+html(lang='de')
   head
     title= title
+    meta(name='keywords' content='Ferropoly, SBB, ZVV, Spiel, Christian Kuster')
+    meta(name='description' content='Ferropoly ist ein Spiel auf dem Schweizer Eisenbahnnetz.')
+    meta(charset='UTF-8')
+    meta(name='author' content='Christian Kuster, CH-8342 Wernetshausen, www.kusti.ch')
     link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
     link(rel='stylesheet', href='/bootstrap/css/bootstrap-theme.min.css')
     script(src='/configuration.js')
@@ -27,7 +31,7 @@ html
             span(class='icon-bar')
             span(class='icon-bar')
             span(class='icon-bar')
-          a(href='http://www.ferropoly.ch' target='_blank' class='navbar-brand') Ferropoly
+          a(href='/' class='navbar-brand') Ferropoly
         div(id='navbarCollapse' class='collapse navbar-collapse')
           ul(class='nav navbar-nav')
             block navbar
@@ -50,6 +54,7 @@ html
       .container-fluid
         .row
           #footer-status.col-md-6
+           | {{statusText}}
           #footer-placeholder.col-md-5
           #footer-time.col-md-1
 //

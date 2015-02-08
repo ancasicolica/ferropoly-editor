@@ -26,7 +26,7 @@ form(name='gameplayForm')
          p
 
       .col-md-4
-         p Das Spiel ist für den {{gameplayReadOnly.gamedate}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden.
+         p Das Spiel ist für den {{gameplay.scheduling.gameDate | date:'d. M. yyyy'}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden.
          label(for='gameStart') Spielstart
          input(class='form-control' type='time' name='gameStart' id='gameStart' required ng-model='gameplay.scheduling.gameStart')
          p(class='bg-danger' ng-show='gameplayForm.gameStart.$error.required') Der Spielstart muss gesetzt werden

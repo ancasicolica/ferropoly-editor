@@ -43,7 +43,7 @@ router.post('/createnew', function (req, res) {
     if (req.body.authToken !== req.session.authToken) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
-    
+
     var userMail = req.session.passport.user;
     console.log('New game for ' + userMail);
     gameplayModel.createGameplay({

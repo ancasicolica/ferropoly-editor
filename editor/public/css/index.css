@@ -19,3 +19,7 @@
     overflow: scroll;
     height: 200px;
 }
+
+.separator {
+    margin-right: 10px;
+}
