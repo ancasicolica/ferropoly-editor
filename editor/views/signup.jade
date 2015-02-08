@@ -4,6 +4,12 @@ block head
   link(rel='stylesheet', href='/css/signin.css')
   script(src='')
 
+block navbar-right
+  ul(class='nav navbar-nav navbar-right')
+    li
+      a(href='/login') Login &nbsp;
+
+
 block content
     div(ng-show='view === 0')
       h1 Ferropoly Anmeldung
