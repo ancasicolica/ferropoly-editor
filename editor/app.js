@@ -28,6 +28,8 @@ var flash = require('connect-flash');
 var app = express();
 var users = require('../common/models/userModel');
 var gameplays = require('../common/models/gameplayModel');
+var ferropolyDb = require('../common/lib/ferropolyDb');
+
 var initServer = function () {
   authStrategy.init(settings, users);
 
@@ -62,7 +64,7 @@ var initServer = function () {
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
-  newgame.init(app, settings, gameplays);
+  newgame.init(app);
   edit.init(app, settings, gameplays, users);
   gameplay.init(app, settings, gameplays);
   configuration.init(app, settings);
@@ -116,15 +118,17 @@ var initServer = function () {
   console.log('Ferropoly Editor server listening on port ' + app.get('port'));
 };
 
-users.init(settings, function(err) {
+/**
+ * Initialize DB connection, has to be only once for all models
+ */
+ferropolyDb.init(settings, function(err) {
   if (err) {
-    console.log(err);
+    console.log('Failed to init ferropolyDb');
+    console.error(err);
   }
   initServer();
+
 });
-
-
-
 
 
 module.exports = app;

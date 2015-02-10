@@ -9,9 +9,6 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var uuid = require('node-uuid');
-var db;
-var ferropolyDb = require('../lib/ferropolyDb');
-
 
 /**
  * The mongoose schema for an user
@@ -176,27 +173,6 @@ var getUserByMailAddress = function(emailAddress, callback) {
 };
 
 module.exports = {
-  /**
-   * Initialize the user model / connection to the DB
-   * @param settings
-   * @param callback
-   */
-  init: function (settings, callback) {
-    ferropolyDb.init(settings, function (err, _db) {
-      if (err) {
-        return callback(err);
-      }
-      db = _db;
-      return callback();
-    });
-  },
-
-  close: function (callback) {
-    ferropolyDb.close(function(err) {
-      callback(err);
-    })
-  },
-
   Model: User,
 
   updateUser: updateUser,

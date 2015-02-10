@@ -1,5 +1,8 @@
 /**
- * This is the model of a location
+ * This is the model of a location. A location can be used for games and belongs to different
+ * kinds of maps. If it is used in a game, it becomes a property (in the game itself, only
+ * properties are used. Locations are created in the admin-app and transformed to properties
+ * in the editor app).
  *
  * Created by kc on 02.01.15.
  */

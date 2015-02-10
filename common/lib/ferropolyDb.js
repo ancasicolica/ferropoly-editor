@@ -10,6 +10,13 @@ var db = undefined;
 var mongooseThis = undefined;
 
 module.exports = {
+  /**
+   * Get the DB of the module
+   * @returns {undefined}
+   */
+  getDb: function() {
+    return db;
+  },
 
   init: function (settings, callback) {
     console.log('Connecting to MongoDb');
