@@ -5,19 +5,17 @@
 var expect = require('expect.js');
 var users = require('./../../../common/models/userModel');
 var settings = require('./../../../editor/settings');
-
+var db = require('./../../../common/lib/ferropolyDb');
 describe('UserModel Tests', function () {
   before(function (done) {
-    users.init(settings, function (err) {
+    db.init(settings, function (err) {
       done(err);
     });
   });
 
   // Close DB afterwards
   after(function (done) {
-    users.close(function(err) {
-      done(err);
-    });
+    db.close(done);
   });
 
   var user = new users.Model();

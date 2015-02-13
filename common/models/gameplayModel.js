@@ -50,15 +50,14 @@ var gameplaySchema = mongoose.Schema({
     }
   },
   internal: {
-    gameId: String, // Identifier of the game
+    gameId: {type: String, index: true}, // Identifier of the game
     owner: String,  // Owner of the game
     map: String     // map to use
   },
   log: {
     created: {type: Date, default: Date.now},
     lastEdited: {type: Date, default: Date.now}
-  },
-  pricelist: [mongoose.Schema.Types.Mixed]
+  }
 }, {autoIndex: false});
 
 /**
@@ -158,7 +157,7 @@ var updateGameplay = function (gp, callback) {
     console.log('nod a gameplay, converting');
     return getGameplay(gp.internal.gameId, gp.internal.owner, function(err, loadedGp) {
       if (err) {
-        console.log('Error while loading gameplay: ' + err.message)
+        console.log('Error while loading gameplay: ' + err.message);
         return(err);
       }
       // we need to assign the data now to this gameplay loaded

@@ -30,26 +30,11 @@ locationSchema.index({uuid: 1, type: -1}); // schema level
 var Location = mongoose.model('Location', locationSchema);
 
 /**
- * Convert Model Data to Object as used in Ferropoly
- * @param data is a Location Model
- * @returns {{}} Ferropoly alike object
- */
-var convertModelDataToObject = function (data) {
-  var retVal = {};
-  retVal.name = data.name;
-  retVal.uuid = data.uuid;
-  retVal.position = data.position;
-  retVal.accessibility = data.accessibility;
-  retVal.maps = data.maps;
-  return retVal;
-};
-
-/**
  * Returns all locations in ferropoly style
  * @param callback
  */
 var getAllLocations = function (callback) {
-  Location.find({}, function (err, docs) {
+  Location.find({}).lean().exec(function (err, docs) {
     if (err) {
       console.log(err.message);
       return callback(err);
@@ -62,6 +47,31 @@ var getAllLocations = function (callback) {
   });
 };
 
+/**
+ * Returns all locations in ferropoly style (no mongoose overhead, by using lean)
+ * @param map : map ('zvv' or 'sbb')
+ * @param callback
+ */
+var getAllLocationsForMap = function (map, callback) {
+  var query = {};
+  if (map === 'zvv') {
+    query = {'maps.zvv' : true};
+  }
+  else {
+    query = {'maps.sbb' : true};
+  }
+  Location.find(query).lean().exec(function (err, docs) {
+    if (err) {
+      console.log(err.message);
+      return callback(err);
+    }
+    var locations = [];
+    for (var i = 0; i < docs.length; i++) {
+      locations.push(docs[i]);
+    }
+    return callback(null, locations);
+  });
+};
 /**
  * Gets one location by its uuid (or null, if it does not exist)
  * @param uuid
@@ -85,25 +95,10 @@ var getLocationByUuid = function (uuid, callback) {
  * @param location
  * @param callback
  */
-var saveLocation = function(location, callback) {
-  location.save(function(err, savedLocation) {
+var saveLocation = function (location, callback) {
+  location.save(function (err, savedLocation) {
     callback(err, savedLocation);
   })
-};
-
-/**
- * Convert a mongoose data model object to a plain object used in ferropoly
- * @param data read from the DB
- * @returns {{}} Object for ferropoly
- */
-var convertModelDataToObject = function (data) {
-  var retVal = {};
-  retVal.name = data.name;
-  retVal.uuid = data.uuid;
-  retVal.position = data.position;
-  retVal.accessibility = data.accessibility;
-  retVal.maps = data.maps;
-  return retVal;
 };
 
 module.exports = {
@@ -113,22 +108,14 @@ module.exports = {
   Model: Location,
 
   /**
-   * Convert a mongoose data model object to a plain object used in ferropoly
-   * @param data read from the DB
-   * @returns {{}} Object for ferropoly
-   */
-  convertModelDataToObject: convertModelDataToObject,
-
-  /**
-   * Convert DataModel to Ferropoly Location (no model overhead)
-   */
-  convertModelDataToObject: convertModelDataToObject,
-
-  /**
    * Get all locations
    */
   getAllLocations: getAllLocations,
 
+  /**
+   * Gets all locations for a map
+   */
+  getAllLocationsForMap: getAllLocationsForMap,
   /**
    * Get one single location by its UUID (or null, if it does not exist)
    */
@@ -138,4 +125,5 @@ module.exports = {
    * Save the location
    */
   saveLocation: saveLocation
+
 };

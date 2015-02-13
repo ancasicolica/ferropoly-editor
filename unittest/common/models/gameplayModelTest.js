@@ -5,21 +5,20 @@
 'use strict';
 
 var expect = require('expect.js');
+var db = require('./../../../common/lib/ferropolyDb');
 var gameplays = require('./../../../common/models/gameplayModel');
 var settings = require('./../../../editor/settings');
 
 describe('UserModel Tests', function () {
   before(function (done) {
-    gameplays.init(settings, function (err) {
+    db.init(settings, function (err) {
       done(err);
     });
   });
 
   // Close DB afterwards
   after(function (done) {
-    gameplays.close(function (err) {
-      done(err);
-    });
+    db.close(done);
   });
 
   describe('Creating a new gameplay', function () {
