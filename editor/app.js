@@ -28,6 +28,8 @@ var flash = require('connect-flash');
 var app = express();
 var users = require('../common/models/userModel');
 var gameplays = require('../common/models/gameplayModel');
+var properties = require('../common/models/propertyModel');
+var locations = require('../common/models/locationModel');
 var ferropolyDb = require('../common/lib/ferropolyDb');
 
 var initServer = function () {
@@ -66,7 +68,7 @@ var initServer = function () {
   app.use('/', routes);
   newgame.init(app);
   edit.init(app, settings, gameplays, users);
-  gameplay.init(app, settings, gameplays);
+  gameplay.init(app, settings, gameplays, locations, properties);
   configuration.init(app, settings);
 
   var server = require('http').Server(app);

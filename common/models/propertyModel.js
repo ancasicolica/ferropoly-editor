@@ -177,7 +177,7 @@ var getPropertiesForGameplay = function (gameId, query, callback) {
 };
 
 /**
- * Removes one property from the gameplay
+ * Removes one property from the gameplay (deletes them in the DB)
  * @param gameId
  * @param locationId
  * @param callback

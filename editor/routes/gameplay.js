@@ -9,9 +9,11 @@ var router = express.Router();
 var multer = require('multer');
 var Moniker = require('moniker');
 var date = require('datejs');
-
+var gameplayLib = require('../../common/lib/gameplayLib');
 var options;
 var gameplayModel;
+var locationModel;
+var propertyModel;
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -44,28 +46,24 @@ router.post('/createnew', function (req, res) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
 
-    var userMail = req.session.passport.user;
-    console.log('New game for ' + userMail);
-    gameplayModel.createGameplay({
+    // Use the unit-test tested gameplay lib for this
+    gameplayLib.createNewGameplay({
+      email: req.session.passport.user,
       map: req.body.map,
-      name: req.body.gamename,
-      ownerEmail: userMail,
-      gameStart: '05:00',
-      gameEnd: '18:00',
-      gameDate: req.body.gamedate
-    }, function (err, gameplay) {
+      gamename: req.body.gamename,
+      gamedate: req.body.gamedate
+    }, gameplayModel, locationModel, propertyModel, function (err, gp) {
       if (err) {
         return res.send({success: false, message: err.message});
       }
-      return res.send({success: true, gameId: gameplay.internal.gameId});
+      return res.send({success: true, gameId: gp.internal.gameId});
     });
   }
-  catch(e) {
+  catch (e) {
     console.log('Exception in gameplay.post');
     console.error(e);
     return res.send({success: false, message: e.message});
   }
-
 });
 
 
@@ -74,9 +72,11 @@ router.post('/createnew', function (req, res) {
  * @type {{init: Function}}
  */
 module.exports = {
-  init: function (app, _options, _gameplays) {
+  init: function (app, _options, _gameplays, _locations, _properties) {
     options = _options;
     gameplayModel = _gameplays;
+    locationModel = _locations;
+    propertyModel = _properties;
     app.use(multer()); // for parsing multipart/form-data
     app.use('/gameplay', router);
   }

@@ -10,13 +10,13 @@ var properties = require('./../../../common/models/propertyModel');
 var settings = require('./../../../editor/settings');
 
 var gameId = 'gameplay-test-id';
-var locations;
+var foundLocations;
 
 describe('PropertyModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       locations.getAllLocationsForMap('zvv', function (err, _locations) {
-        locations = _locations;
+        foundLocations = _locations;
         done(err);
       });
     });
@@ -35,16 +35,16 @@ describe('PropertyModel Tests', function () {
 
   describe('Add some locations to the properties', function () {
     it('should add the first location', function(done) {
-      properties.createPropertyFromLocation(gameId, locations[0], function(err, prop){
-        expect(prop.location.uuid).to.be(locations[0].uuid);
+      properties.createPropertyFromLocation(gameId, foundLocations[0], function(err, prop){
+        expect(prop.location.uuid).to.be(foundLocations[0].uuid);
         expect(prop.gameId).to.be(gameId);
         expect(prop.uuid.length > 6).to.be(true);
         done(err);
       })
     });
     it('should not add the first location twice', function(done) {
-      properties.createPropertyFromLocation(gameId, locations[0], function(err, prop){
-        expect(prop.location.uuid).to.be(locations[0].uuid);
+      properties.createPropertyFromLocation(gameId, foundLocations[0], function(err, prop){
+        expect(prop.location.uuid).to.be(foundLocations[0].uuid);
         expect(prop.gameId).to.be(gameId);
         expect(prop.uuid.length > 6).to.be(true);
         properties.getPropertiesForGameplay(gameId, null, function(err, props) {
@@ -55,8 +55,8 @@ describe('PropertyModel Tests', function () {
       })
     });
     it('should add the second location', function(done) {
-      properties.createPropertyFromLocation(gameId, locations[1], function(err, prop){
-        expect(prop.location.uuid).to.be(locations[1].uuid);
+      properties.createPropertyFromLocation(gameId, foundLocations[1], function(err, prop){
+        expect(prop.location.uuid).to.be(foundLocations[1].uuid);
         expect(prop.gameId).to.be(gameId);
         expect(prop.uuid.length > 6).to.be(true);
         properties.getPropertiesForGameplay(gameId, null, function(err, props) {
