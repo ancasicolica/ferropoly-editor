@@ -4,5 +4,18 @@
   .col-md-8
     #map_canvas
   .col-md-4
-    p 1234
-    p abcd
+    div(ng-show='currentMarker.property')
+      h3 {{currentMarker.property.data.location.name}}
+      p Erreichbarkeit: {{currentMarker.property.data.location.accessibility}}
+      form(class='form-inline')
+
+        .form-group
+          label(for='usage') Verwendung:
+            select(class='form-control ferropoly-control' id='usage' ng-change='currentMarker.property.dataChanged()' ng-model='currentMarker.property.data.pricelist.priceRange')
+              option(value='-1') nicht in Preisliste
+              option(value='0') sehr billig
+              option(value='1') billig
+              option(value='2') unteres Mittelfeld
+              option(value='3') oberes Mittelfeld
+              option(value='4') teuer
+              option(value='5') sehr teuer

@@ -12,6 +12,13 @@ var Property = function(loadedProperty) {
   var ICON_CABLECAR_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/purple.png';
   var ICON_OTHER_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/pink.png';
 
+  var iconPriceLabels = ['A.png','B.png','C.png','D.png','E.png','F.png'];
+  var ICON_TRAIN_LOCATION_USED = '/images/markers/letters/green_Marker';
+  var ICON_BUS_LOCATION_USED = '/images/markers/letters/yellow_Marker';
+  var ICON_BOAT_LOCATION_USED = '/images/markers/letters/blue_Marker';
+  var ICON_CABLECAR_LOCATION_USED = '/images/markers/letters/purple_Marker';
+  var ICON_OTHER_LOCATION_USED = '/images/markers/letters/pink_Marker';
+
   if (!(this instanceof Property)) {
     return new Property();
   }
@@ -20,6 +27,7 @@ var Property = function(loadedProperty) {
   this.data = loadedProperty;
 
   this.marker = null; // The marker contains the coordinates
+  this.dataChanged = false;
 
   /**
    * Attaches a google maps marker to this object
@@ -29,6 +37,10 @@ var Property = function(loadedProperty) {
     this.marker = marker;
   };
 
+  this.dataChanged = function() {
+    this.dataChanged = true;
+  };
+
 
   /**
    * Set the icon for this location in the map
@@ -36,29 +48,58 @@ var Property = function(loadedProperty) {
    */
   this.setMarkerIcon = function (editMode) {
     if (this.marker) {
+      var x = -1;
+      if (this.data.pricelist) {
+        x = this.data.pricelist.priceRange;
+      }
       if (editMode) {
         this.marker.setIcon(ICON_EDIT_LOCATION);
       }
       else {
         switch (this.data.location.accessibility) {
           case 'train':
-            this.marker.setIcon(ICON_TRAIN_LOCATION);
+            if (x === -1) {
+              this.marker.setIcon(ICON_TRAIN_LOCATION);
+            }
+            else {
+              this.marker.setIcon(ICON_TRAIN_LOCATION_USED + iconPriceLabels[x]);
+            }
             break;
 
           case 'bus':
-            this.marker.setIcon(ICON_BUS_LOCATION);
+            if (x === -1) {
+              this.marker.setIcon(ICON_BUS_LOCATION);
+            }
+            else {
+              this.marker.setIcon(ICON_BUS_LOCATION_USED + iconPriceLabels[x]);
+            }
             break;
 
           case 'boat':
-            this.marker.setIcon(ICON_BOAT_LOCATION);
+            if (x === -1) {
+              this.marker.setIcon(ICON_BOAT_LOCATION);
+            }
+            else {
+              this.marker.setIcon(ICON_BOAT_LOCATION_USED + iconPriceLabels[x]);
+            }
             break;
 
           case 'cablecar':
-            this.marker.setIcon(ICON_CABLECAR_LOCATION);
+            if (x === -1) {
+              this.marker.setIcon(ICON_CABLECAR_LOCATION);
+            }
+            else {
+              this.marker.setIcon(ICON_CABLECAR_LOCATION_USED + iconPriceLabels[x]);
+            }
             break;
 
           default:
-            this.marker.setIcon(ICON_OTHER_LOCATION);
+            if (x === -1) {
+              this.marker.setIcon(ICON_OTHER_LOCATION);
+            }
+            else {
+              this.marker.setIcon(ICON_OTHER_LOCATION_USED + iconPriceLabels[x]);
+            }
             break;
         }
       }

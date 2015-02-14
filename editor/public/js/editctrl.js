@@ -42,7 +42,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
     if (!marker) {
       return;
     }
-    if ($scope.currentMarker) {
+    if ($scope.currentMarker && $scope.currentMarker.property) {
       $scope.currentMarker.property.setMarkerIcon(false);
     }
     marker.property.setMarkerIcon(true);
