@@ -1,0 +1,26 @@
+#map_canvas {
+    width: 100%;
+    height : 600px;
+}
+
+#location-list {
+    overflow : auto;
+    height   : 200px;
+}
+
+#places-list {
+    overflow : auto;
+    height   : 200px;
+}
+
+#location-editor {
+
+}
+
+#location-list-title {
+    font-weight : bold;
+}
+
+#places-list-title {
+    font-weight : bold;
+}
