@@ -67,7 +67,7 @@ var initServer = function () {
 
   app.use('/', routes);
   newgame.init(app);
-  edit.init(app, settings, gameplays, users);
+  edit.init(app, settings, gameplays, users, properties);
   gameplay.init(app, settings, gameplays, locations, properties);
   configuration.init(app, settings);
 

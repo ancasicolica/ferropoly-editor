@@ -9,6 +9,7 @@ var router = express.Router();
 var gameplays;
 var settings;
 var users;
+var properties;
 
 /* GET edit page */
 router.get('/', function (req, res) {
@@ -18,7 +19,14 @@ router.get('/', function (req, res) {
   if (!req.query.gameId) {
     req.query.gameId = 'this-aint-a-useful-id';
   }
-  res.render('edit', {title: 'Spiel bearbeiten', hideLogout: false, gameId: req.query.gameId, ngController:'editCtrl', ngApp:'editApp', ngFile:'/js/editctrl.js' });
+  res.render('edit', {
+    title: 'Spiel bearbeiten',
+    hideLogout: false,
+    gameId: req.query.gameId,
+    ngController: 'editCtrl',
+    ngApp: 'editApp',
+    ngFile: '/js/editctrl.js'
+  });
 });
 
 /* Load a game */
@@ -26,19 +34,29 @@ router.get('/load-game', function (req, res) {
   if (!req.query || !req.query.gameId) {
     return res.send({success: false, message: 'Parameter error'});
   }
-  gameplays.getGameplay(req.query.gameId, req.session.passport.user, function (err, data) {
+  return gameplays.getGameplay(req.query.gameId, req.session.passport.user, function (err, gameplayData) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    if (!data) {
+    if (!gameplayData) {
       return res.send({success: false, message: 'Spiel nicht gefunden'});
     }
-    return res.send({success: true, gameplay: data});
+    // Now get all properties of this gameplay
+    return properties.getPropertiesForGameplay(req.query.gameId, null, function (err, propertyData) {
+      if (err) {
+        return res.send({success: false, message: err.message});
+      }
+      if (!propertyData) {
+        return res.send({success: false, message: 'Spielfeld konnte nicht geladen werden'});
+      }
+      res.send({success: true, gameplay: gameplayData, properties: propertyData});
+    });
+
   });
 });
 
 /* Save a game */
-router.post('/save', function(req, res) {
+router.post('/save', function (req, res) {
   if (!req.body.authToken) {
     return res.send({status: 'error', message: 'Permission denied (1)'});
   }
@@ -55,10 +73,11 @@ router.post('/save', function(req, res) {
 });
 
 module.exports = {
-  init: function (app, _settings, _gameplays, _users) {
+  init: function (app, _settings, _gameplays, _users, _properties) {
     app.use('/edit', router);
     settings = _settings;
     gameplays = _gameplays;
     users = _users;
+    properties = _properties;
   }
 };

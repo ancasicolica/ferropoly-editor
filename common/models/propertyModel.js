@@ -149,7 +149,7 @@ var getPropertyByLocationId = function (gameId, locationId, callback) {
 };
 
 /**
- * Get all properties for a gameplay
+ * Get all properties for a gameplay as REDUCED dataset (lean).
  * @param gameId
  * @param query , null if none
  * @param callback
@@ -160,7 +160,7 @@ var getPropertiesForGameplay = function (gameId, query, callback) {
     return callback(new Error('No gameId supplied'));
   }
   if (query === null) {
-    return Property.find({gameId: gameId}, function (err, docs) {
+    return Property.find({gameId: gameId}).lean().exec(function (err, docs) {
       if (err) {
         return callback(err);
       }
