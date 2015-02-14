@@ -19,6 +19,8 @@ block navbar
         a(href='' ng-click="panel='interests'") Stargeld & Zins
       li
         a(href='' ng-click="panel='properties'") Häuser & Hotel
+  li
+    a(href='' ng-click="panel='map'") Ortauswahl
 
 block content
   div(ng-show='panel === "init"')
@@ -43,3 +45,5 @@ block content
     include edit-interests
   div(ng-show='panel === "properties"')
     include edit-properties
+  div(ng-show='panel=== "map"')
+    include edit-map

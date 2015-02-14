@@ -9,6 +9,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
   $scope.panel = 'init';
   $scope.errorMessage = '';
   $scope.gameplay = {};
+  $scope.properties = [];
   $scope.gameplayReadOnly = {};
   $scope.statusText = '';
 
@@ -56,6 +57,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
               return;
             }
             $scope.gameplay = data.gameplay;
+            $scope.properties = data.properties;
             $scope.gameplayReadOnly.created = new Date($scope.gameplay.log.created).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.lastEdited = new Date($scope.gameplay.log.lastEdited).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.map = $scope.gameplay.internal.map.toUpperCase();
