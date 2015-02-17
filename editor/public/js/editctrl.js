@@ -183,5 +183,43 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
     setMapHeight();
   };
 
+  /*
+  Data of the current property changed
+   */
+  $scope.currentPropertyChanged = function() {
+    if (!$scope.currentMarker || !$scope.currentMarker.property) {
+      // This should not happen
+      console.log('Can not save, no marker or property');
+      return;
+    }
+    $http.post('/edit/saveProperty', {property: $scope.currentMarker.property.data, authToken: authToken}).
+      success(function (data, status) {
+      if (data.success) {
+        console.log('Game saved');
+        $scope.statusText = data.message;
+      }
+      else {
+        console.log('Error');
+        console.log(data);
+        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
+        $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+      }
+    }).
+      error(function (data, status) {
+        console.log('ERROR');
+        console.log(data);
+        console.log(status);
+        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+        $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+      });
+  }
+
+  $scope.currentLocationAccessibility = function() {
+    if (!$scope.currentMarker || !$scope.currentMarker.property) {
+      // This should not happen
+      return 'n/a';
+    }
+    return $scope.currentMarker.property.getAccessibilityText();
+  }
 
 }]);

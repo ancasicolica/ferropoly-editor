@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var Property = function(loadedProperty) {
+var Property = function (loadedProperty) {
   var ICON_EDIT_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png';
   var ICON_TRAIN_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/green.png';
   var ICON_BUS_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/yellow.png';
@@ -12,7 +12,7 @@ var Property = function(loadedProperty) {
   var ICON_CABLECAR_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/purple.png';
   var ICON_OTHER_LOCATION = 'https://maps.gstatic.com/mapfiles/ms2/micons/pink.png';
 
-  var iconPriceLabels = ['A.png','B.png','C.png','D.png','E.png','F.png'];
+  var iconPriceLabels = ['A.png', 'B.png', 'C.png', 'D.png', 'E.png', 'F.png'];
   var ICON_TRAIN_LOCATION_USED = '/images/markers/letters/green_Marker';
   var ICON_BUS_LOCATION_USED = '/images/markers/letters/yellow_Marker';
   var ICON_BOAT_LOCATION_USED = '/images/markers/letters/blue_Marker';
@@ -37,7 +37,7 @@ var Property = function(loadedProperty) {
     this.marker = marker;
   };
 
-  this.dataChanged = function() {
+  this.dataChanged = function () {
     this.dataChanged = true;
   };
 
@@ -105,4 +105,23 @@ var Property = function(loadedProperty) {
       }
     }
   };
+};
+
+Property.prototype.getAccessibilityText = function () {
+  switch (this.data.location.accessibility) {
+    case 'train':
+      return 'Zug';
+
+    case 'bus':
+      return 'Bus';
+
+    case 'boat':
+      return 'Schiff';
+
+    case 'cablecar':
+      return 'Seilbahn / Standseilbahn';
+
+    default:
+     return 'Andere (Tram, U-Bahn,...)';
+  }
 };

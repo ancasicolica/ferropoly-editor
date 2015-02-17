@@ -72,6 +72,27 @@ router.post('/save', function (req, res) {
   });
 });
 
+/* Save Property */
+router.post('/saveProperty', function (req, res) {
+  if (!req.body.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (1)'});
+  }
+  if (req.body.authToken !== req.session.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (2)'});
+  }
+  if (!req.body.property || !req.body.property.location) {
+    return res.send({status: 'error', message: 'Invalid parameters'});
+  }
+  var prop = req.body.property;
+  console.log('Save property ' + prop.location.name);
+  properties.updateProperty(prop.gameId, prop, function (err, updatedProp) {
+    if (err) {
+      return res.send({status: 'error', message: err.message});
+    }
+    return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+  });
+});
+
 module.exports = {
   init: function (app, _settings, _gameplays, _users, _properties) {
     app.use('/edit', router);

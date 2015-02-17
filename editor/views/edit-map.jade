@@ -6,12 +6,12 @@
   .col-md-4
     div(ng-show='currentMarker.property')
       h3 {{currentMarker.property.data.location.name}}
-      p Erreichbarkeit: {{currentMarker.property.data.location.accessibility}}
+      p Erreichbarkeit: {{currentLocationAccessibility()}}
       form(class='form-inline')
 
         .form-group
           label(for='usage') Verwendung:
-            select(class='form-control ferropoly-control' id='usage' ng-change='currentMarker.property.dataChanged()' ng-model='currentMarker.property.data.pricelist.priceRange')
+            select(class='form-control ferropoly-control' id='usage' ng-change='currentPropertyChanged()' ng-model='currentMarker.property.data.pricelist.priceRange')
               option(value='-1') nicht in Preisliste
               option(value='0') sehr billig
               option(value='1') billig
