@@ -4,9 +4,7 @@
   .col-md-8
     #map_canvas
   .col-md-4
-    div(ng-hide='currentMarker.property')
-      | Beliebiges Ort anclicken um zu starten.
-    div(ng-show='currentMarker.property')
+    #property-info
       h3 {{currentMarker.property.data.location.name}}
       p Erreichbarkeit: {{currentLocationAccessibility()}}
       form(class='form-inline')
@@ -21,12 +19,34 @@
               option(value=3) oberes Mittelfeld
               option(value=4) teuer
               option(value=5) sehr teuer
-    h3 Ortfilter
-    select(class='form-control ferropoly-control' ng-model='propertyFilter' ng-change='setVisibleMarkers()')
-      option(value='all' default) alle
-      option(value='-1') nicht in Preisliste
-      option(value='0') sehr billig
-      option(value='2') unteres Mittelfeld
-      option(value='3') oberes Mittelfeld
-      option(value='4') teuer
-      option(value='5') sehr teuer
+
+    #property-filter
+      h3 Ortfilter
+      select(class='form-control ferropoly-control' ng-model='propertyFilter' ng-change='setVisibleMarkers()')
+        option(value='all' default) alle
+        option(value='allInList' default) alle in Preisliste
+        option(value='-1') nicht in Preisliste
+        option(value='0') sehr billig
+        option(value='2') unteres Mittelfeld
+        option(value='3') oberes Mittelfeld
+        option(value='4') teuer
+        option(value='5') sehr teuer
+
+    #property-list-header
+      h3 Ortliste
+      #property-list-title Anzahl: {{displayedProperties.length}}
+    #property-list
+      table(class='table table-striped table.condensed')
+        thead
+          th
+            a(href='' ng-click="propertiesPredicate='data.location.name';reverse=!reverse") Ort
+          th
+            a(href='' ng-click="propertiesPredicate='[data.location.accessibility, data.location.name]';reverse=!reverse") Erreichbarkeit
+          th
+            a(href='' ng-click="propertiesPredicate='[data.pricelist.priceRange, data.location.name]';reverse=!reverse") Preisklasse
+        tbody
+          tr(data-ng-repeat='property in displayedProperties | orderBy:propertiesPredicate:reverse' )
+            td
+              a(href='' ng-click="") {{property.data.location.name}}
+            td {{property.getAccessibilityText()}}
+            td {{property.getPriceRangeText()}}

@@ -18,7 +18,8 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   $scope.statusText = '';
   $scope.currentMarker = undefined;
   $scope.propertyFilter = 'all';
-
+  $scope.propertiesPredicate = 'data.location.name';
+  $scope.reverse = false;
   var map = null; // the google map handle
   var authToken = 'none';
   var mapCenter = new google.maps.LatLng(0, 0);
@@ -31,10 +32,10 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     var h = dh - 95;
     mc.style.height = h.toString() + 'px';
     google.maps.event.trigger(map, 'resize');
-    /*
-     var locList = document.querySelector('#location-list');
-     h = dh - 45 - $('#location-editor').height() - $('#location-list-title').height() - $('#tablist').height();
-     locList.style.height = h.toString() + 'px';*/
+
+    var locList = document.querySelector('#property-list');
+    h = dh - 110 - $('#property-info').height() - $('#property-filter').height() - $('#property-list-header').height() - $('#ferropoly-navbar').height();
+    locList.style.height = h.toString() + 'px';
   };
 
   /**
@@ -57,12 +58,14 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    */
   $scope.setVisibleMarkers = function () {
     console.log($scope.propertyFilter);
+    $scope.displayedProperties = [];
     var mapToSet = null;
     var filter = {priceRange: $scope.propertyFilter};
 
     for (var i = 0; i < $scope.markers.length; i++) {
       if ($scope.markers[i].property.fitsFilterCriteria(filter)) {
         mapToSet = map;
+        $scope.displayedProperties.push($scope.markers[i].property);
       }
       else {
         mapToSet = null;
@@ -83,7 +86,6 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       }
     }
   };
-
 
   /**
    * Initializes all markers of the properties array
@@ -122,7 +124,8 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         }
       })(newMarker));
     }
-
+    setCurrentProperty($scope.markers[0]);
+    $scope.setVisibleMarkers();
     mapCenter = new google.maps.LatLng(latSum / i, lngSum / i)
   };
 
@@ -264,6 +267,10 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       });
   };
 
+  /**
+   * Gets the text for the current locations accessibility
+   * @returns {string}
+   */
   $scope.currentLocationAccessibility = function () {
     if (!$scope.currentMarker || !$scope.currentMarker.property) {
       // This should not happen

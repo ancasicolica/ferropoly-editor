@@ -113,7 +113,7 @@ var Property = function (loadedProperty) {
  * @param filter object, one filter at any time only
  * @returns {boolean} true if filter fits
  */
-Property.prototype.fitsFilterCriteria = function(filter) {
+Property.prototype.fitsFilterCriteria = function (filter) {
   if (!filter) {
     return false;
   }
@@ -122,16 +122,22 @@ Property.prototype.fitsFilterCriteria = function(filter) {
     if (filter.priceRange === 'all') {
       return true;
     }
+    if (filter.priceRange === 'allInList') {
+      return (parseInt(this.data.pricelist.priceRange) > -1);
+    }
     try {
       return (parseInt(filter.priceRange) === parseInt(this.data.pricelist.priceRange));
     }
-    catch(e) {
+    catch (e) {
       console.warning(e);
       return false;
     }
   }
 };
-
+/**
+ * Gets the text for the GUI for accessibility
+ * @returns {string}
+ */
 Property.prototype.getAccessibilityText = function () {
   switch (this.data.location.accessibility) {
     case 'train':
@@ -147,6 +153,34 @@ Property.prototype.getAccessibilityText = function () {
       return 'Seilbahn / Standseilbahn';
 
     default:
-     return 'Andere (Tram, U-Bahn,...)';
+      return 'Andere (Tram, U-Bahn,...)';
   }
 };
+
+Property.prototype.getPriceRangeText = function() {
+  switch(parseInt(this.data.pricelist.priceRange)) {
+    case -1:
+      return 'unbenutzt';
+
+    case 0:
+      return 'sehr billig';
+
+    case 1:
+      return 'billig';
+
+    case 2:
+      return 'unt. Mittelf.';
+
+    case 3:
+      return 'ob. Mittelf.';
+
+    case 4:
+      return 'teuer';
+
+    case 5:
+      return 'sehr teuer';
+
+    default:
+      return '?';
+  }
+}
