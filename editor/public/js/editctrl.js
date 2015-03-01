@@ -37,7 +37,13 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     h = dh - 110 - $('#property-info').height() - $('#property-filter').height() - $('#property-list-header').height() - $('#ferropoly-navbar').height();
     locList.style.height = h.toString() + 'px';
   };
-
+  /**
+   * Setting current property, available from GUI
+   * @param marker
+   */
+  $scope.setCurrentProperty = function (marker) {
+    setCurrentProperty(marker);
+  };
   /**
    * Called when a marker is new set or a set marker is selected
    * @param marker

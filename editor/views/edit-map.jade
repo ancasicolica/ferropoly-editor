@@ -47,6 +47,6 @@
         tbody
           tr(data-ng-repeat='property in displayedProperties | orderBy:propertiesPredicate:reverse' )
             td
-              a(href='' ng-click="") {{property.data.location.name}}
+              a(href='' ng-click="setCurrentProperty(property.marker)") {{property.data.location.name}}
             td {{property.getAccessibilityText()}}
             td {{property.getPriceRangeText()}}

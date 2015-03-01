@@ -157,6 +157,10 @@ Property.prototype.getAccessibilityText = function () {
   }
 };
 
+/**
+ * Get the price range as text
+ * @returns {string}
+ */
 Property.prototype.getPriceRangeText = function() {
   switch(parseInt(this.data.pricelist.priceRange)) {
     case -1:
