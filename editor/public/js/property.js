@@ -107,6 +107,31 @@ var Property = function (loadedProperty) {
   };
 };
 
+/**
+ * Returns true if a filter option fits. Currently supported filters:
+ * - priceRange
+ * @param filter object, one filter at any time only
+ * @returns {boolean} true if filter fits
+ */
+Property.prototype.fitsFilterCriteria = function(filter) {
+  if (!filter) {
+    return false;
+  }
+  if (filter.priceRange) {
+    // Price range filter
+    if (filter.priceRange === 'all') {
+      return true;
+    }
+    try {
+      return (parseInt(filter.priceRange) === parseInt(this.data.pricelist.priceRange));
+    }
+    catch(e) {
+      console.warning(e);
+      return false;
+    }
+  }
+};
+
 Property.prototype.getAccessibilityText = function () {
   switch (this.data.location.accessibility) {
     case 'train':

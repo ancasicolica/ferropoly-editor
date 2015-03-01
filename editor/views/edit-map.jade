@@ -4,6 +4,8 @@
   .col-md-8
     #map_canvas
   .col-md-4
+    div(ng-hide='currentMarker.property')
+      | Beliebiges Ort anclicken um zu starten.
     div(ng-show='currentMarker.property')
       h3 {{currentMarker.property.data.location.name}}
       p Erreichbarkeit: {{currentLocationAccessibility()}}
@@ -12,10 +14,19 @@
         .form-group
           label(for='usage') Verwendung:
             select(class='form-control ferropoly-control' id='usage' ng-change='currentPropertyChanged()' ng-model='currentMarker.property.data.pricelist.priceRange')
-              option(value='-1') nicht in Preisliste
-              option(value='0') sehr billig
-              option(value='1') billig
-              option(value='2') unteres Mittelfeld
-              option(value='3') oberes Mittelfeld
-              option(value='4') teuer
-              option(value='5') sehr teuer
+              option(value=-1) nicht in Preisliste
+              option(value=0) sehr billig
+              option(value=1) billig
+              option(value=2) unteres Mittelfeld
+              option(value=3) oberes Mittelfeld
+              option(value=4) teuer
+              option(value=5) sehr teuer
+    h3 Ortfilter
+    select(class='form-control ferropoly-control' ng-model='propertyFilter' ng-change='setVisibleMarkers()')
+      option(value='all' default) alle
+      option(value='-1') nicht in Preisliste
+      option(value='0') sehr billig
+      option(value='2') unteres Mittelfeld
+      option(value='3') oberes Mittelfeld
+      option(value='4') teuer
+      option(value='5') sehr teuer

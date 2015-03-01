@@ -6,19 +6,22 @@
 
 /**********************************************************************************************************************/
 var editControl = angular.module('editApp', ['ui.bootstrap']);
-editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
+editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
 
   $scope.panel = 'init';
   $scope.errorMessage = '';
   $scope.gameplay = {};
-  $scope.properties = [];
+  $scope.allProperties = [];
+  $scope.markers = [];
+  $scope.displayedProperties = [];
   $scope.gameplayReadOnly = {};
   $scope.statusText = '';
   $scope.currentMarker = undefined;
+  $scope.propertyFilter = 'all';
 
   var map = null; // the google map handle
   var authToken = 'none';
-  var mapCenter = new google.maps.LatLng(0,0);
+  var mapCenter = new google.maps.LatLng(0, 0);
   /**
    * Sets the heigth of the map as large as possible. Workaround as I haven't found a fitting css rule!
    */
@@ -27,7 +30,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
     var mc = document.querySelector('#map_canvas');
     var h = dh - 95;
     mc.style.height = h.toString() + 'px';
-    google.maps.event.trigger(map,'resize');
+    google.maps.event.trigger(map, 'resize');
     /*
      var locList = document.querySelector('#location-list');
      h = dh - 45 - $('#location-editor').height() - $('#location-list-title').height() - $('#tablist').height();
@@ -49,13 +52,53 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
     $scope.currentMarker = marker;
   };
 
-  var initPropertyMarkers = function(map, properties) {
+  /**
+   * Sets the visibility of the markers according to the propertyFilter
+   */
+  $scope.setVisibleMarkers = function () {
+    console.log($scope.propertyFilter);
+    var mapToSet = null;
+    var filter = {priceRange: $scope.propertyFilter};
+
+    for (var i = 0; i < $scope.markers.length; i++) {
+      if ($scope.markers[i].property.fitsFilterCriteria(filter)) {
+        mapToSet = map;
+      }
+      else {
+        mapToSet = null;
+      }
+
+      // This prevents flickering in the map
+      if (mapToSet) {
+        // Set map only if not already set
+        if (!$scope.markers[i].map) {
+          $scope.markers[i].setMap(mapToSet);
+        }
+      }
+      else {
+        // Remove map only if map is currently set
+        if ($scope.markers[i].map) {
+          $scope.markers[i].setMap(null);
+        }
+      }
+    }
+  };
+
+
+  /**
+   * Initializes all markers of the properties array
+   * @param map  Google Map to use
+   * @param properties Array with the properties
+   */
+  var initPropertyMarkers = function (map, properties) {
     var latSum = 0;
     var lngSum = 0;
 
+    $scope.markers = [];
+
     for (var i = 0; i < properties.length; i++) {
       var newMarker = new google.maps.Marker({
-        position:new google.maps.LatLng(properties[i].location.position.lat, properties[i].location.position.lng) ,
+        position: new google.maps.LatLng(properties[i].location.position.lat, properties[i].location.position.lng),
         map: map,
         draggable: false
       });
@@ -67,20 +110,20 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
       newMarker.property.attachToMarker(newMarker);
       newMarker.property.setMarkerIcon();
 
-      // This is a special procedure allowing all markers to be unique (scope issue)!
+      $scope.markers.push(newMarker);
+
+      // This is a special procedure allowing all markers to be unique (scope problem)!
       google.maps.event.addListener(newMarker, 'click', (function (newMarker) {
         return function () {
           setCurrentProperty(newMarker);
           // newMarker.setIcon('https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png');
-         // document.getElementById('placeName').focus();
+          // document.getElementById('placeName').focus();
           $scope.$apply();
         }
       })(newMarker));
     }
 
     mapCenter = new google.maps.LatLng(latSum / i, lngSum / i)
-
-
   };
 
   /**
@@ -114,12 +157,18 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
 
   };
 
-  $scope.showMapTab = function() {
-    $scope.panel='map';
-    setMapHeight();
-    console.log(mapCenter);
-    map.setCenter(mapCenter);
+  /**
+   * Show the map tab
+   */
+  $scope.showMapTab = function () {
+    $scope.panel = 'map';
 
+    // This delay is needed as otherwise google maps does not initialize using the complete screen
+    $timeout(function () {
+      setMapHeight();
+      console.log(mapCenter);
+      map.setCenter(mapCenter);
+    }, 250);
   };
   /**
    * When document loaded & ready
@@ -139,7 +188,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
               return;
             }
             $scope.gameplay = data.gameplay;
-            $scope.properties = data.properties;
+            $scope.allProperties = data.properties;
             $scope.gameplayReadOnly.created = new Date($scope.gameplay.log.created).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.lastEdited = new Date($scope.gameplay.log.lastEdited).toString("d.M.yy HH:mm");
             $scope.gameplayReadOnly.map = $scope.gameplay.internal.map.toUpperCase();
@@ -148,7 +197,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
             $scope.panel = 'gameplay';
             $scope.statusText = 'Spiel geladen';
 
-            initPropertyMarkers(map, $scope.properties);
+            initPropertyMarkers(map, $scope.allProperties);
           }).
           error(function (data, status) {
             console.log('load-game-error');
@@ -184,9 +233,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
   };
 
   /*
-  Data of the current property changed
+   Data of the current property changed
    */
-  $scope.currentPropertyChanged = function() {
+  $scope.currentPropertyChanged = function () {
     if (!$scope.currentMarker || !$scope.currentMarker.property) {
       // This should not happen
       console.log('Can not save, no marker or property');
@@ -194,17 +243,18 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
     }
     $http.post('/edit/saveProperty', {property: $scope.currentMarker.property.data, authToken: authToken}).
       success(function (data, status) {
-      if (data.success) {
-        console.log('Game saved');
-        $scope.statusText = data.message;
-      }
-      else {
-        console.log('Error');
-        console.log(data);
-        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
-        $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-      }
-    }).
+        if (data.success) {
+          console.log('Game saved');
+          $scope.statusText = data.message;
+          $scope.setVisibleMarkers();
+        }
+        else {
+          console.log('Error');
+          console.log(data);
+          $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
+          $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+        }
+      }).
       error(function (data, status) {
         console.log('ERROR');
         console.log(data);
@@ -212,9 +262,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', function ($s
         $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
         $scope.statusText = 'Fehler beim Speichern: ' + data.message;
       });
-  }
+  };
 
-  $scope.currentLocationAccessibility = function() {
+  $scope.currentLocationAccessibility = function () {
     if (!$scope.currentMarker || !$scope.currentMarker.property) {
       // This should not happen
       return 'n/a';

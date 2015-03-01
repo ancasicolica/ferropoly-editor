@@ -23,38 +23,38 @@ describe('UserModel Tests', function () {
 
   describe('Creating a new gameplay', function () {
     it('should work for #1 (user 1)', function (done) {
-      gameplays.createGameplay({name: 'testspiel 1', ownerEmail: 'olivia@kunz.ch', map: 'zvv'}, function (err, res) {
+      gameplays.createGameplay({name: 'testspiel 1 (UnitTest)', ownerEmail: 'olivia@kunz.ch', map: 'zvv'}, function (err, res) {
         expect(res._id).to.be.a('object');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('olivia@kunz.ch');
         expect(res.internal.map).to.be('zvv');
-        expect(res.gamename).to.be('testspiel 1');
+        expect(res.gamename).to.be('testspiel 1 (UnitTest)');
         expect(res.gameParams.housePrices).to.be(.5);
         done(err);
       })
     });
     it('should work for #2 (user 1)', function (done) {
-      gameplays.createGameplay({name: 'testspiel 2', ownerEmail: 'olivia@kunz.ch', map: 'sbb'}, function (err, res) {
+      gameplays.createGameplay({name: 'testspiel 2 (UnitTest)', ownerEmail: 'olivia@kunz.ch', map: 'sbb'}, function (err, res) {
         expect(res._id).to.be.a('object');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('olivia@kunz.ch');
         expect(res.internal.map).to.be('sbb');
-        expect(res.gamename).to.be('testspiel 2');
+        expect(res.gamename).to.be('testspiel 2 (UnitTest)');
         expect(res.gameParams.housePrices).to.be(.5);
         done(err);
       })
     });
     it('should work for #3 (user 2)', function (done) {
       gameplays.createGameplay({
-        name: 'testspiel 3',
-        ownerEmail: 'christian@kusti.ch',
+        name: 'testspiel 3 (UnitTest)',
+        ownerEmail: 'christine@meyer.com',
         map: 'zvv'
       }, function (err, res) {
         expect(res._id).to.be.a('object');
         expect(res.internal.gameId.length > 9).to.be(true);
-        expect(res.internal.owner).to.be('christian@kusti.ch');
+        expect(res.internal.owner).to.be('christine@meyer.com');
         expect(res.internal.map).to.be('zvv');
-        expect(res.gamename).to.be('testspiel 3');
+        expect(res.gamename).to.be('testspiel 3 (UnitTest)');
         expect(res.gameParams.housePrices).to.be(.5);
         done(err);
       })
@@ -75,7 +75,7 @@ describe('UserModel Tests', function () {
       })
     });
     it('should return some for user 2', function (done) {
-      gameplays.getGameplaysForUser('christian@kusti.ch', function (err, gps) {
+      gameplays.getGameplaysForUser('christine@meyer.com', function (err, gps) {
         expect(gps.length > 0).to.be(true);
         gp3 = gps[0];
         gps.forEach(function (gp) {
@@ -95,7 +95,7 @@ describe('UserModel Tests', function () {
       })
     });
     it('should return none for an invalid user', function (done) {
-      gameplays.getGameplay(gp1.internal.gameId, 'christian@kusti.ch', function (err, gp) {
+      gameplays.getGameplay(gp1.internal.gameId, 'christine@meyer.com', function (err, gp) {
         expect(gp).to.be(undefined);
         done(err);
       })
@@ -104,7 +104,7 @@ describe('UserModel Tests', function () {
 
   describe('Updating a gameplay', function () {
     it('should work', function (done) {
-      gameplays.getGameplay(gp3.internal.gameId, 'christian@kusti.ch', function (err, gp) {
+      gameplays.getGameplay(gp3.internal.gameId, 'christine@meyer.com', function (err, gp) {
         expect(gp).to.be.a('object');
         expect(gp.internal.gameId).to.be(gp3.internal.gameId);
         gp.gameParams.startCapital = 4555;
@@ -134,15 +134,22 @@ describe('UserModel Tests', function () {
       })
     });
     it('should work with #3', function (done) {
-      gameplays.getGameplay(gp3.internal.gameId, 'christian@kusti.ch', function (err, gp) {
+      gameplays.getGameplay(gp3.internal.gameId, 'christine@meyer.com', function (err, gp) {
         gameplays.removeGameplay(gp, function (err) {
           done(err);
         });
       })
     });
 
-    it('verify by getting all gameplays should return some for user 1', function (done) {
+    it('verify by getting all gameplays should return none for user 1', function (done) {
       gameplays.getGameplaysForUser('olivia@kunz.ch', function (err, gps) {
+        expect(gps).to.be(undefined);
+        done(err);
+      })
+    });
+
+    it('verify by getting all gameplays should return none for user 2', function (done) {
+      gameplays.getGameplaysForUser('christine@meyer.com', function (err, gps) {
         expect(gps).to.be(undefined);
         done(err);
       })
