@@ -141,7 +141,7 @@ Property.prototype.fitsFilterCriteria = function (filter) {
 Property.prototype.getAccessibilityText = function () {
   switch (this.data.location.accessibility) {
     case 'train':
-      return 'Zug';
+      return 'Bahn';
 
     case 'bus':
       return 'Bus';

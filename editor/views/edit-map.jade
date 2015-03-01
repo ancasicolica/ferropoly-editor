@@ -4,37 +4,40 @@
   .col-md-8
     #map_canvas
   .col-md-4
-    #property-info
-      h3 {{currentMarker.property.data.location.name}}
-      p Erreichbarkeit: {{currentLocationAccessibility()}}
-      form(class='form-inline')
+    #property-info.panel.panel-default
+      .panel-heading Ausgewähltes Ort
+      .panel-body
+        b {{currentMarker.property.data.location.name}}
+        .row
+          .col-md-3 Erreichbarkeit
+          .col-md-9 {{currentLocationAccessibility()}}
+        .row
+          .col-md-3  Verwendung
+          .col-md-9
+              select(class='form-control ferropoly-control' id='usage' ng-change='currentPropertyChanged()' ng-model='currentMarker.property.data.pricelist.priceRange')
+                option(value=-1) nicht in Preisliste
+                option(value=0) sehr billig
+                option(value=1) billig
+                option(value=2) unteres Mittelfeld
+                option(value=3) oberes Mittelfeld
+                option(value=4) teuer
+                option(value=5) sehr teuer
 
-        .form-group
-          label(for='usage') Verwendung:
-            select(class='form-control ferropoly-control' id='usage' ng-change='currentPropertyChanged()' ng-model='currentMarker.property.data.pricelist.priceRange')
-              option(value=-1) nicht in Preisliste
-              option(value=0) sehr billig
-              option(value=1) billig
-              option(value=2) unteres Mittelfeld
-              option(value=3) oberes Mittelfeld
-              option(value=4) teuer
-              option(value=5) sehr teuer
-
-    #property-filter
-      h3 Ortfilter
-      select(class='form-control ferropoly-control' ng-model='propertyFilter' ng-change='setVisibleMarkers()')
-        option(value='all' default) alle
-        option(value='allInList' default) alle in Preisliste
-        option(value='-1') nicht in Preisliste
-        option(value='0') sehr billig
-        option(value='2') unteres Mittelfeld
-        option(value='3') oberes Mittelfeld
-        option(value='4') teuer
-        option(value='5') sehr teuer
+    #property-filter.panel.panel-default
+      .panel-heading Ortfilter
+      .panel-body
+        select(class='form-control ferropoly-control' ng-model='propertyFilter' ng-change='setVisibleMarkers()')
+          option(value='all' default) alle
+          option(value='allInList' default) alle in Preisliste
+          option(value='-1') nicht in Preisliste
+          option(value='0') sehr billig
+          option(value='2') unteres Mittelfeld
+          option(value='3') oberes Mittelfeld
+          option(value='4') teuer
+          option(value='5') sehr teuer
 
     #property-list-header
-      h3 Ortliste
-      #property-list-title Anzahl: {{displayedProperties.length}}
+      #property-list-title Anzahl Orte: {{displayedProperties.length}}
     #property-list
       table(class='table table-striped table.condensed')
         thead
