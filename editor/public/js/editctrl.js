@@ -32,9 +32,18 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     stop: function (e, ui) {
       console.log("stop");
       for (var i = 0; i < $scope.lists.class0.length; i++) {
-        $scope.lists.class0[i].property.data.pricelist.positionInPriceRange = i;
+        $scope.lists.class0[i].property.setPositionInPriceRange(i);
         console.log($scope.lists.class0[i].property.data.location.name);
       }
+
+      var pu = [];
+      for (var i = 0; i < $scope.lists.class0.length; i++) {
+        var p = $scope.lists.class0[i].property.getPricelistPositionSaveSet();
+        if (p) {
+          pu.push(p);
+        }
+      }
+      console.log(pu);
     }
   };
 

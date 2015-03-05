@@ -161,8 +161,8 @@ Property.prototype.getAccessibilityText = function () {
  * Get the price range as text
  * @returns {string}
  */
-Property.prototype.getPriceRangeText = function() {
-  switch(parseInt(this.data.pricelist.priceRange)) {
+Property.prototype.getPriceRangeText = function () {
+  switch (parseInt(this.data.pricelist.priceRange)) {
     case -1:
       return 'unbenutzt';
 
@@ -187,4 +187,28 @@ Property.prototype.getPriceRangeText = function() {
     default:
       return '?';
   }
-}
+};
+
+/**
+ * Sets the position in the price range. Always use this function to set it, as only this triggers
+ * the save process!
+ * @param pos
+ */
+Property.prototype.setPositionInPriceRange = function (pos) {
+  this.data.pricelist.positionInPriceRangeChanged = (this.data.pricelist.positionInPriceRange !== pos);
+  this.data.pricelist.positionInPriceRange = pos;
+};
+/**
+ * Returns the set of the position for the priceslist, null if it didn't change
+ * @returns {*}
+ */
+Property.prototype.getPricelistPositionSaveSet = function () {
+  if (!this.data.pricelist.positionInPriceRangeChanged) {
+    return null;
+  }
+
+  return {
+    propertyUuid: this.data.uuid,
+    positionInPriceRange: this.data.pricelist.positionInPriceRange
+  };
+};
