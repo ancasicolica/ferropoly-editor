@@ -93,6 +93,50 @@ router.post('/saveProperty', function (req, res) {
   });
 });
 
+/**
+ * Saves _ONLY_ the position in the pricelist
+ */
+router.post('/savePositionInPricelist', function (req, res) {
+  if (!req.body.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (1)'});
+  }
+  if (req.body.authToken !== req.session.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (2)'});
+  }
+  if (!req.body.properties) {
+    return res.send({status: 'error', message: 'Invalid parameters'});
+  }
+  var props = req.body.properties;
+  var updated = 0;
+  var headersSent = false;
+
+  // Iterate through positions, abort if failing
+  for (var i = 0; i < props.length; i++) {
+    properties.updatePositionInPriceList(req.body.gameId, props[i].uuid, props[i].positionInPriceRange, function (err) {
+      if (err) {
+        if (!headersSent) {
+          res.send({status: 'error', message: err.message});
+          headersSent = true;
+        }
+        return;
+      }
+      updated++;
+      if (updated === props.length) {
+        if (!headersSent) {
+          res.send({
+            success: true,
+            status: 'ok',
+            message: props.length + ' Orte gespeichert',
+            nbSaved: props.length
+          });
+          headersSent = true;
+        }
+        return;
+      }
+    });
+  }
+});
+
 module.exports = {
   init: function (app, _settings, _gameplays, _users, _properties) {
     app.use('/edit', router);

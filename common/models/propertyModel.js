@@ -123,6 +123,33 @@ var updateProperty = function (gameId, property, callback) {
     });
   }
 };
+/**
+ * Updates the position in the pricelist for a single position
+ * @param gameId
+ * @param propertyId
+ * @param position
+ * @param callback
+ * @returns {*}
+ */
+var updatePositionInPriceList = function (gameId, propertyId, position, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  Property.find({gameId: gameId, uuid: propertyId}, function (err, docs) {
+    if (err) {
+      return callback(err);
+    }
+    if (docs.length === 0) {
+      console.log('Did not find location with uuid ' + propertyId);
+      return callback(new Error('location not available'));
+    }
+    docs[0].pricelist.positionInPriceRange = position;
+    docs[0].save(function(err, savedProperty) {
+      console.log(savedProperty.location.name + ' updated');
+      callback(err, savedProperty);
+    });
+  });
+};
 
 /**
  * Get a property by its location ID
@@ -218,5 +245,6 @@ module.exports = {
   getPropertiesForGameplay: getPropertiesForGameplay,
   getPropertyByLocationId: getPropertyByLocationId,
   updateProperty: updateProperty,
-  createPropertyFromLocation: createPropertyFromLocation
+  createPropertyFromLocation: createPropertyFromLocation,
+  updatePositionInPriceList: updatePositionInPriceList
 };

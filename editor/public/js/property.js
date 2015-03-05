@@ -208,7 +208,7 @@ Property.prototype.getPricelistPositionSaveSet = function () {
   }
 
   return {
-    propertyUuid: this.data.uuid,
+    uuid: this.data.uuid,
     positionInPriceRange: this.data.pricelist.positionInPriceRange
   };
 };

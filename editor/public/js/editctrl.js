@@ -44,6 +44,24 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         }
       }
       console.log(pu);
+      $http.post('/edit/savePositionInPricelist', {gameId: $scope.gameplay.internal.gameId, authToken: authToken, properties: pu}).
+        success(function (data, status) {
+          if (data.success) {
+            console.log('Game saved');
+            $scope.statusText = data.message;
+          }
+          else {
+            console.log('Error');
+            console.log(data);
+            $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+          }
+        }).
+        error(function (data, status) {
+          console.log('ERROR');
+          console.log(data);
+          console.log(status);
+          $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+        });
     }
   };
 
