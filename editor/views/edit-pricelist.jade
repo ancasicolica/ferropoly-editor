@@ -1,8 +1,54 @@
 //
    Created by kc on 05.03.15.
 
-h3 Liste
+div(role='tabpanel')
+  ul(id='tablist' class='nav nav-tabs' role='tablist')
+    li(role='presentation' class='active')
+      a(href='#class0' aria-controls='class0' role='tab' data-toggle='tab') Sehr billig
+    li(role='presentation')
+      a(href='#class1' aria-controls='class1' role='tab' data-toggle='tab') Billige Orte
+    li(role='presentation')
+      a(href='#class2' aria-controls='class2' role='tab' data-toggle='tab') Unteres Mittelfeld
+    li(role='presentation')
+      a(href='#class3' aria-controls='class3' role='tab' data-toggle='tab') Oberes Mittelfeld
+    li(role='presentation')
+      a(href='#class4' aria-controls='class4' role='tab' data-toggle='tab') Teuer
+    li(role='presentation')
+      a(href='#class5' aria-controls='class5' role='tab' data-toggle='tab') Sehr Teuer
 
-ul(ui-sortable='sortableOptions' ng-model='lists.class0' class='list')
-  li(ng-repeat='t in lists.class0' class='item') {{t.property.data.location.name}} {{t.property.data.pricelist.positionInPriceRange}}
+  .tab-content
+    div(role='tabpanel' class='tab-pane active' id='class0')
+      .row
+        .col-md-12
+          ul(ui-sortable='sortableOptions[0]' ng-model='priceRangeLists[0]' class='list list-group row')
+            li(ng-repeat='t in priceRangeLists[0]' class='list-group-item item col-xs-6') {{t.property.data.pricelist.positionInPriceRange + 1}}: {{t.property.data.location.name}}
 
+    div(role='tabpanel' class='tab-pane' id='class1')
+      .row
+        .col-md-12
+          ul(ui-sortable='sortableOptions[1]' ng-model='priceRangeLists[1]' class='list list-group row')
+            li(ng-repeat='t in priceRangeLists[1]' class='list-group-item item col-xs-6') {{t.property.data.pricelist.positionInPriceRange + 1}}: {{t.property.data.location.name}}
+
+    div(role='tabpanel' class='tab-pane' id='class2')
+      .row
+        .col-md-12
+          ul(ui-sortable='sortableOptions[2]' ng-model='priceRangeLists[2]' class='list list-group row')
+            li(ng-repeat='t in priceRangeLists[2]' class='list-group-item item col-xs-6') {{t.property.data.pricelist.positionInPriceRange + 1}}: {{t.property.data.location.name}}
+
+    div(role='tabpanel' class='tab-pane' id='class3')
+      .row
+        .col-md-12
+          ul(ui-sortable='sortableOptions[3]' ng-model='priceRangeLists[3]' class='list list-group row')
+            li(ng-repeat='t in priceRangeLists[3]' class='list-group-item item col-xs-6') {{t.property.data.pricelist.positionInPriceRange + 1}}: {{t.property.data.location.name}}
+
+    div(role='tabpanel' class='tab-pane' id='class4')
+      .row
+        .col-md-12
+          ul(ui-sortable='sortableOptions[4]' ng-model='priceRangeLists[4]' class='list list-group row')
+            li(ng-repeat='t in priceRangeLists[4]' class='list-group-item item col-xs-6') {{t.property.data.pricelist.positionInPriceRange + 1}}: {{t.property.data.location.name}}
+
+    div(role='tabpanel' class='tab-pane' id='class5')
+      .row
+        .col-md-12
+          ul(ui-sortable='sortableOptions[5]' ng-model='priceRangeLists[5]' class='list list-group row')
+            li(ng-repeat='t in priceRangeLists[5]' class='list-group-item item col-xs-6') {{t.property.data.pricelist.positionInPriceRange + 1}}: {{t.property.data.location.name}}

@@ -21,31 +21,74 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   $scope.propertiesPredicate = 'data.location.name';
   $scope.reverse = false;
 
-  $scope.lists = {};
-  $scope.lists.class0 = [];
 
   var map = null; // the google map handle
   var authToken = 'none';
   var mapCenter = new google.maps.LatLng(0, 0);
 
-  $scope.sortableOptions = {
-    stop: function (e, ui) {
-      console.log("stop");
-      for (var i = 0; i < $scope.lists.class0.length; i++) {
-        $scope.lists.class0[i].property.setPositionInPriceRange(i);
-        console.log($scope.lists.class0[i].property.data.location.name);
-      }
+  $scope.priceRangeLists = [];
+  $scope.sortableOptions = [];
+  /**
+   * Init the sortable options
+   */
+  var initSortableOptions = function () {
 
-      var pu = [];
-      for (var i = 0; i < $scope.lists.class0.length; i++) {
-        var p = $scope.lists.class0[i].property.getPricelistPositionSaveSet();
-        if (p) {
-          pu.push(p);
-        }
+    $scope.sortableOptions[0] = {
+      stop: function () {
+        handleChangedPositionInPricelist($scope.priceRangeLists[0]);
       }
-      console.log(pu);
-      $http.post('/edit/savePositionInPricelist', {gameId: $scope.gameplay.internal.gameId, authToken: authToken, properties: pu}).
-        success(function (data, status) {
+    };
+    $scope.sortableOptions[1] = {
+      stop: function () {
+        handleChangedPositionInPricelist($scope.priceRangeLists[1]);
+      }
+    };
+    $scope.sortableOptions[2] = {
+      stop: function () {
+        handleChangedPositionInPricelist($scope.priceRangeLists[2]);
+      }
+    };
+    $scope.sortableOptions[3] = {
+      stop: function () {
+        handleChangedPositionInPricelist($scope.priceRangeLists[3]);
+      }
+    };
+    $scope.sortableOptions[4] = {
+      stop: function () {
+        handleChangedPositionInPricelist($scope.priceRangeLists[4]);
+      }
+    };
+    $scope.sortableOptions[5] = {
+      stop: function () {
+        handleChangedPositionInPricelist($scope.priceRangeLists[5]);
+      }
+    }
+
+  };
+  /**
+   * Handles a changed position in a given list (ordering inside a price range). Saves the data immediately
+   * @param priceList
+   */
+  var handleChangedPositionInPricelist = function (priceList) {
+    var pu = [];
+
+    for (var i = 0; i < priceList.length; i++) {
+      priceList[i].property.setPositionInPriceRange(i);
+
+      var p = priceList[i].property.getPricelistPositionSaveSet();
+      if (p) {
+        pu.push(p);
+      }
+    }
+
+    console.log(pu);
+    if (pu.length > 0) {
+      $http.post('/edit/savePositionInPricelist', {
+        gameId: $scope.gameplay.internal.gameId,
+        authToken: authToken,
+        properties: pu
+      }).
+        success(function (data) {
           if (data.success) {
             console.log('Game saved');
             $scope.statusText = data.message;
@@ -62,6 +105,61 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
           console.log(status);
           $scope.statusText = 'Fehler beim Speichern: ' + data.message;
         });
+    }
+  };
+
+  /**
+   * Sortable Options for class 0 list (cheapest)
+   * @type {{stop: Function}}
+   */
+  $scope.sortableOptionsClass0 = {
+    stop: function (e, ui) {
+      handleChangedPositionInPricelist($scope.priceRangeLists.class0);
+    }
+  };
+  /**
+   * Sortable Options for class 1 list (cheap)
+   * @type {{stop: Function}}
+   */
+  $scope.sortableOptionsClass1 = {
+    stop: function (e, ui) {
+      handleChangedPositionInPricelist($scope.priceRangeLists.class1);
+    }
+  };
+  /**
+   * Sortable Options for class 2 list (lower average)
+   * @type {{stop: Function}}
+   */
+  $scope.sortableOptionsClass2 = {
+    stop: function (e, ui) {
+      handleChangedPositionInPricelist($scope.priceRangeLists.class2);
+    }
+  };
+  /**
+   * Sortable Options for class 3 list (higher average)
+   * @type {{stop: Function}}
+   */
+  $scope.sortableOptionsClass3 = {
+    stop: function (e, ui) {
+      handleChangedPositionInPricelist($scope.priceRangeLists.class3);
+    }
+  };
+  /**
+   * Sortable Options for class 4 list (expensive)
+   * @type {{stop: Function}}
+   */
+  $scope.sortableOptionsClass4 = {
+    stop: function (e, ui) {
+      handleChangedPositionInPricelist($scope.priceRangeLists.class4);
+    }
+  };
+  /**
+   * Sortable Options for class 5 list (most expensive)
+   * @type {{stop: Function}}
+   */
+  $scope.sortableOptionsClass1 = {
+    stop: function (e, ui) {
+      handleChangedPositionInPricelist($scope.priceRangeLists.class5);
     }
   };
 
@@ -222,24 +320,35 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       map.setCenter(mapCenter);
     }, 250);
   };
-
+  /**
+   * Lodash helps us to extract the properties of a given price range out of all in the map (already sorted)
+   * @param range
+   * @returns {*}
+   */
+  var extractPropertiesOfPriceRange = function (range) {
+    return _.sortBy(_.filter($scope.markers, function (p) {
+      return parseInt(p.property.data.pricelist.priceRange) === range
+    }), function (n) {
+      return parseInt(n.property.data.pricelist.positionInPriceRange)
+    });
+  };
   /**
    * Show the price list, create the list
    */
   $scope.showPriceList = function () {
     $scope.panel = 'pricelist';
-    $scope.lists.class0 = _.sortBy(_.filter($scope.markers, function (p) {
-      return parseInt(p.property.data.pricelist.priceRange) === 0
-    }), function (n) {
-      return parseInt(n.property.data.pricelist.positionInPriceRange)
-    });
-    console.log('in class 0:' + $scope.lists.class0.length);
+    for (var i = 0; i < 6; i++) {
+      $scope.priceRangeLists[i] = extractPropertiesOfPriceRange(i);
+      // this will only trigger a save if something changed
+      handleChangedPositionInPricelist($scope.priceRangeLists[i]);
+    }
   };
   /**
    * When document loaded & ready
    */
   $(document).ready(function () {
     initializeMap();
+    initSortableOptions();
     $http.get('/authtoken').
       success(function (data) {
         authToken = data.authToken;
@@ -341,4 +450,6 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     return $scope.currentMarker.property.getAccessibilityText();
   }
 
-}]);
+}
+])
+;

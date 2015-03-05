@@ -107,6 +107,15 @@ router.post('/savePositionInPricelist', function (req, res) {
     return res.send({status: 'error', message: 'Invalid parameters'});
   }
   var props = req.body.properties;
+  if (props.length === 0) {
+    return res.send({
+      success: true,
+      status: 'ok',
+      message: 'Orte sind aktuell',
+      nbSaved: 0
+    });
+  }
+
   var updated = 0;
   var headersSent = false;
 
