@@ -29,3 +29,22 @@
 .table > tbody > tr > td {
     padding : 1px;
 }
+
+.list {
+    list-style: none outside none;
+    margin: 10px 0 30px;
+}
+
+.item {
+    width: 200px;
+    padding: 5px 10px;
+    margin: 5px 0;
+    border: 2px solid #444;
+    border-radius: 5px;
+    background-color: #EA8A8A;
+
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    cursor: move;
+}

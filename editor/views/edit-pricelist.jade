@@ -1,0 +1,8 @@
+//
+   Created by kc on 05.03.15.
+
+h3 Liste
+
+ul(ui-sortable='sortableOptions' ng-model='lists.class0' class='list')
+  li(ng-repeat='t in lists.class0' class='item') {{t.property.data.location.name}} {{t.property.data.pricelist.positionInPriceRange}}
+

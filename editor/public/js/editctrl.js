@@ -5,7 +5,7 @@
 'use strict';
 
 /**********************************************************************************************************************/
-var editControl = angular.module('editApp', ['ui.bootstrap']);
+var editControl = angular.module('editApp', ['ui.bootstrap', 'ui.sortable']);
 editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
 
   $scope.panel = 'init';
@@ -20,9 +20,25 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   $scope.propertyFilter = 'all';
   $scope.propertiesPredicate = 'data.location.name';
   $scope.reverse = false;
+
+  $scope.lists = {};
+  $scope.lists.class0 = [];
+
   var map = null; // the google map handle
   var authToken = 'none';
   var mapCenter = new google.maps.LatLng(0, 0);
+
+  $scope.sortableOptions = {
+    stop: function (e, ui) {
+      console.log("stop");
+      for (var i = 0; i < $scope.lists.class0.length; i++) {
+        $scope.lists.class0[i].property.data.pricelist.positionInPriceRange = i;
+        console.log($scope.lists.class0[i].property.data.location.name);
+      }
+    }
+  };
+
+
   /**
    * Sets the heigth of the map as large as possible. Workaround as I haven't found a fitting css rule!
    */
@@ -178,6 +194,19 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       console.log(mapCenter);
       map.setCenter(mapCenter);
     }, 250);
+  };
+
+  /**
+   * Show the price list, create the list
+   */
+  $scope.showPriceList = function () {
+    $scope.panel = 'pricelist';
+    $scope.lists.class0 = _.sortBy(_.filter($scope.markers, function (p) {
+      return parseInt(p.property.data.pricelist.priceRange) === 0
+    }), function (n) {
+      return parseInt(n.property.data.pricelist.positionInPriceRange)
+    });
+    console.log('in class 0:' + $scope.lists.class0.length);
   };
   /**
    * When document loaded & ready

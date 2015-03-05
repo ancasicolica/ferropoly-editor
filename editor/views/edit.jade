@@ -23,6 +23,8 @@ block navbar
         a(href='' ng-click="panel='properties'") Häuser & Hotel
   li
     a(href='' ng-click="showMapTab()") Ortauswahl
+  li
+    a(href='' ng-click="showPriceList()") Preisliste
 
 block content
   div(ng-show='panel === "init"')
@@ -49,3 +51,5 @@ block content
     include edit-properties
   div(ng-show='panel=== "map"')
     include edit-map
+  div(ng-show='panel==="pricelist"')
+    include edit-pricelist
