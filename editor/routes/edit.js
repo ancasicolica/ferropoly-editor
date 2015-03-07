@@ -94,6 +94,25 @@ router.post('/saveProperty', function (req, res) {
 });
 
 /**
+ * Just updates the "gameplay changed" field. This is done once (in the angular app) when adding a location or
+ * changing the price ranges
+ */
+router.post('/dataChanged', function (req, res) {
+  if (!req.body.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (1)'});
+  }
+  if (req.body.authToken !== req.session.authToken) {
+    return res.send({status: 'error', message: 'Permission denied (2)'});
+  }
+  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.body.gameId, function(err) {
+    if (err) {
+      console.log('Error while updating gameplay: ' + err.message);
+    }
+    res.send({success: true, status: 'ok'});
+  })
+});
+
+/**
  * Saves _ONLY_ the position in the pricelist
  */
 router.post('/savePositionInPricelist', function (req, res) {
@@ -145,6 +164,7 @@ router.post('/savePositionInPricelist', function (req, res) {
     });
   }
 });
+
 
 module.exports = {
   init: function (app, _settings, _gameplays, _users, _properties) {

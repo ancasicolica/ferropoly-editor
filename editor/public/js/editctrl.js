@@ -25,6 +25,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   var map = null; // the google map handle
   var authToken = 'none';
   var mapCenter = new google.maps.LatLng(0, 0);
+  var gameplayEditDateUpdatedCounter = -1;
 
   $scope.priceRangeLists = [];
   $scope.sortableOptions = [];
@@ -92,6 +93,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
           if (data.success) {
             console.log('Game saved');
             $scope.statusText = data.message;
+            updateEditDate();
           }
           else {
             console.log('Error');
@@ -308,6 +310,33 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   };
 
   /**
+   * Update the edit date of the gameplay when adding a property or changing the order in a price range. This is only
+   * done from time to time
+   */
+  var updateEditDate = function () {
+    gameplayEditDateUpdatedCounter++;
+    if ((gameplayEditDateUpdatedCounter % 40) > 0) {
+      return;
+    }
+
+    $http.post('/edit/dataChanged', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
+      success(function (data, status) {
+        if (data.success) {
+          console.log('Game edit updated');
+        }
+        else {
+          console.log('Error');
+          console.log(data);
+        }
+      }).
+      error(function (data, status) {
+        console.log('ERROR');
+        console.log(data);
+        console.log(status);
+      });
+
+  };
+  /**
    * Show the map tab
    */
   $scope.showMapTab = function () {
@@ -415,12 +444,17 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       console.log('Can not save, no marker or property');
       return;
     }
+
+    // Reset position in price range
+    $scope.currentMarker.property.setPositionInPriceRange(-1);
+
     $http.post('/edit/saveProperty', {property: $scope.currentMarker.property.data, authToken: authToken}).
       success(function (data, status) {
         if (data.success) {
           console.log('Game saved');
           $scope.statusText = data.message;
           $scope.setVisibleMarkers();
+          updateEditDate();
         }
         else {
           console.log('Error');
@@ -448,8 +482,45 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       return 'n/a';
     }
     return $scope.currentMarker.property.getAccessibilityText();
-  }
+  };
 
-}
-])
-;
+  /**
+   * Returns the game duration in minutes
+   * @returns {number}
+   */
+  $scope.getGameDuration = function () {
+    if ($scope.gameplay && $scope.gameplay.scheduling) {
+      var start = Date.parse($scope.gameplay.scheduling.gameStart).getTime();
+      var end = Date.parse($scope.gameplay.scheduling.gameEnd).getTime();
+      return ((end - start) / 60 / 1000);
+    }
+    return 0;
+  };
+
+  /**
+   * True when the duration of the game is valid
+   * @returns {boolean}
+   */
+  $scope.gameDurationValid = function () {
+    return ($scope.getGameDuration() >= 4);
+  };
+
+  /**
+   * Returns the number of properties in the list
+   * @returns {*}
+   */
+  $scope.getNumberOfProperties = function () {
+    return (_.filter($scope.markers, function (p) {
+      return parseInt(p.property.data.pricelist.priceRange) >= 0
+    }).length);
+  };
+  /**
+   * True, when the gameplay is valid
+   * @returns {*|boolean}
+   */
+  $scope.gameplayValid = function () {
+    return ($scope.gameDurationValid() && ($scope.getNumberOfProperties > 19))
+  };
+
+
+}]);

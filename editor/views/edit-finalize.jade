@@ -1,0 +1,19 @@
+h1 Preisliste erstellen
+
+| Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
+p
+
+div(ng-hide='gameDurationValid()')
+  .alert.alert-danger(ng-show='(getGameDuration() < 240) && (getGameDuration() >= 0)' ) Die Spieldauer muss mindestens 4 Stunden betragen. Lösung:
+    a(class='alert-link' href='#' ng-click="panel='gameplay'") &nbsp;Spielstart und -ende anpassen.
+  .alert.alert-danger(ng-show='getGameDuration() < 0' ng-click="panel='gameplay'") Das Spielende muss nach dem Spielstart sein. Lösung:
+    a(class='alert-link' href='#' ng-click="panel='gameplay'") &nbsp;Spielstart und -ende anpassen.
+
+div(ng-show='getNumberOfProperties() < 20')
+  .alert.alert-danger Es sind zuwenige Orte in der Preisliste ({{getNumberOfProperties()}}), mindestens 20 sind nötig. Lösung:
+    a(class='alert-link' href='#' ng-click="showMapTab()") &nbsp;Orte hinzufügen.
+
+div(ng-show='gameplayValid()')
+  .alert.alert-success Super! Die Spieldaten sind soweit gültig, die Preisliste kann generiert werden.
+
+

@@ -186,6 +186,31 @@ var updateGameplay = function (gp, callback) {
 };
 
 /**
+ * Just updates the gamplay 'last saved' field
+ * @param ownerEmail
+ * @param gameId
+ * @param callback
+ * @returns {*}
+ */
+var updateGameplayLastChangedField = function(ownerEmail, gameId, callback) {
+  if (!gameId || !ownerEmail) {
+    return callback(new Error('no gameplay name or email supplied'));
+  }
+  Gameplay.find({'internal.owner': ownerEmail, 'internal.gameId': gameId}, function (err, docs) {
+    if (err) {
+      return callback(err);
+    }
+    if (docs.length === 0) {
+      return callback();
+    }
+    var gp = docs[0];
+    gp.log.lastEdited = new Date();
+    gp.save(function(err) {
+      return callback(err);
+    })
+  });
+};
+/**
  * Exports of this module
  * @type {{init: Function, close: Function, Model: (*|Model), createGameplay: Function, getGameplaysForUser: Function, removeGameplay: Function, updateGameplay: Function, getGameplay: Function}}
  */
@@ -196,5 +221,6 @@ module.exports = {
   getGameplaysForUser: getGameplaysForUser,
   removeGameplay: removeGameplay,
   updateGameplay: updateGameplay,
-  getGameplay: getGameplay
+  getGameplay: getGameplay,
+  updateGameplayLastChangedField: updateGameplayLastChangedField
 };
