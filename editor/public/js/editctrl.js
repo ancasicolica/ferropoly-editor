@@ -519,7 +519,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    * @returns {*|boolean}
    */
   $scope.gameplayValid = function () {
-    return ($scope.gameDurationValid() && ($scope.getNumberOfProperties > 19))
+    return ($scope.gameDurationValid() && ($scope.getNumberOfProperties() > 19))
   };
 
 

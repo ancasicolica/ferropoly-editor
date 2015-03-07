@@ -1,4 +1,4 @@
-h1 Preisliste erstellen
+h1 Preisliste berechnen
 
 | Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
 p
@@ -14,6 +14,6 @@ div(ng-show='getNumberOfProperties() < 20')
     a(class='alert-link' href='#' ng-click="showMapTab()") &nbsp;Orte hinzufügen.
 
 div(ng-show='gameplayValid()')
-  .alert.alert-success Super! Die Spieldaten sind soweit gültig, die Preisliste kann generiert werden.
+  .alert.alert-success Super! Die Spieldaten sind soweit gültig, die Preisliste kann berechnet werden.
 
-
+  a(class='btn btn-default' href='#' role='button') Preisliste berechnen
