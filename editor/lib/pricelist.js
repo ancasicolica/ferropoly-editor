@@ -87,7 +87,6 @@ var createPriceListArray = function (ranges) {
  * @returns {*}
  */
 var setPropertyPrices = function (gameplay, pricelist) {
-
   try {
     var priceMin = gameplay.gameParams.properties.lowestPrice;
     var priceMax = gameplay.gameParams.properties.highestPrice;
@@ -129,12 +128,36 @@ var setPropertyPrices = function (gameplay, pricelist) {
   }
 };
 
+/**
+ * Sets the prices for a house and the rents with the different hous levels
+ * @param gameplay
+ * @param pricelist
+ * @returns {*}
+ */
+var setPropertyHousePricing = function (gameplay, pricelist) {
+  var rentFactor = gameplay.gameParams.rentFactors;
+
+  for (var i = 0; i < pricelist.length; i++) {
+    var p = pricelist[i].pricelist.price;
+    pricelist[i].pricelist.pricePerHouse = Math.floor(p * gameplay.gameParams.housePrices / 10) * 10;
+    pricelist[i].pricelist.rents = {
+      noHouse: Math.floor(p * rentFactor.noHouse / 10) * 10,
+      oneHouse: Math.floor(p * rentFactor.oneHouse / 10) * 10,
+      twoHouses: Math.floor(p * rentFactor.twoHouses / 10) * 10,
+      threeHouses: Math.floor(p * rentFactor.threeHouses / 10) * 10,
+      fourHouses: Math.floor(p * rentFactor.fourHouses / 10) * 10,
+      hotel: Math.floor(p * rentFactor.hotel / 10) * 10
+    };
+  }
+  return pricelist;
+};
 
 module.exports = {
   create: createPriceList,
   internal: {
     extractRanges: extractRanges,
     createPriceListArray: createPriceListArray,
-    setPropertyPrices: setPropertyPrices
+    setPropertyPrices: setPropertyPrices,
+    setPropertyHousePricing: setPropertyHousePricing
   }
 };

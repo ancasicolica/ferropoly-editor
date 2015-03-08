@@ -199,4 +199,38 @@ describe.only('Pricelist lib Tests', function () {
     });
   });
 
+  describe('Calculating house prices', function () {
+    it('should work with the standard setting', function () {
+      var lp = 1000;
+      var hp = 8000;
+      var l = pll.internal.setPropertyPrices({
+        gameParams: {
+          properties: {
+            numberOfPriceLevels: 8,
+            lowestPrice: lp,
+            highestPrice: hp
+          }
+        }
+      }, pricelist);
+
+      l = pll.internal.setPropertyHousePricing({
+        gameParams: {
+          housePrices: 0.5, rentFactors: {
+            noHouse: 0.125, oneHouse: 0.5, twoHouses: 2, threeHouses: 3, fourHouses: 4, hotel: 5
+          }
+        }
+      }, l);
+
+      expect(l[0].pricelist.pricePerHouse).to.be(500);
+      expect(l[72].pricelist.pricePerHouse).to.be(2500);
+      expect(l[119].pricelist.pricePerHouse).to.be(4000);
+      expect(l[0].pricelist.rents.noHouse).to.be(120);
+      expect(l[0].pricelist.rents.hotel).to.be(5000);
+      expect(l[72].pricelist.rents.noHouse).to.be(620);
+      expect(l[72].pricelist.rents.hotel).to.be(25000);
+      expect(l[119].pricelist.rents.noHouse).to.be(1000);
+      expect(l[119].pricelist.rents.hotel).to.be(40000);
+    });
+  });
+
 });
