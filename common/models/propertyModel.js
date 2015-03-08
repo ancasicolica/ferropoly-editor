@@ -27,6 +27,7 @@ var propertySchema = mongoose.Schema({
   pricelist: {
     priceRange: {type: Number, default: -1},
     positionInPriceRange: {type: Number, default: -1},
+    position: {type: Number, default: -1},// Position inside complete price list
     price: Number,
     pricePerHouse: Number,
     rents: {
