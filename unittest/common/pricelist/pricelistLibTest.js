@@ -13,7 +13,7 @@ var properties; // The faked properties
 var ranges;
 var pricelist;
 
-describe.only('Pricelist lib Tests', function () {
+describe('Pricelist lib Tests', function () {
   before(function () {
     properties = [];
     for (var i = 0; i < 120; i++) {
@@ -232,5 +232,36 @@ describe.only('Pricelist lib Tests', function () {
       expect(l[119].pricelist.rents.hotel).to.be(40000);
     });
   });
+
+  describe('Setting the property groups', function () {
+    it('should work with standard settings (2 party groups)', function () {
+      var l = pll.internal.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 2}}}, pricelist);
+      expect(l[0].pricelist.propertyGroup).to.be(1);
+      expect(l[1].pricelist.propertyGroup).to.be(1);
+      expect(l[2].pricelist.propertyGroup).to.be(2);
+      expect(l[119].pricelist.propertyGroup).to.be(60);
+
+    });
+    it('should work with standard settings (3 party groups)', function () {
+      var l = pll.internal.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 3}}}, pricelist);
+      expect(l[0].pricelist.propertyGroup).to.be(1);
+      expect(l[1].pricelist.propertyGroup).to.be(1);
+      expect(l[2].pricelist.propertyGroup).to.be(1);
+      expect(l[119].pricelist.propertyGroup).to.be(40);
+
+    });
+    it('should work with standard settings (3 party groups)', function () {
+      var l = pll.internal.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 4}}}, pricelist);
+      expect(l[0].pricelist.propertyGroup).to.be(1);
+      expect(l[1].pricelist.propertyGroup).to.be(1);
+      expect(l[2].pricelist.propertyGroup).to.be(1);
+      expect(l[3].pricelist.propertyGroup).to.be(1);
+      expect(l[4].pricelist.propertyGroup).to.be(2);
+      expect(l[119].pricelist.propertyGroup).to.be(30);
+      for (var i = 0; i < l.length; i++) {
+        console.log(i + '. ' + l[i].pricelist.propertyGroup);
+      }
+    });
+  })
 
 });

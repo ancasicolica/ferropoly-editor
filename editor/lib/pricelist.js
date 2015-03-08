@@ -152,12 +152,31 @@ var setPropertyHousePricing = function (gameplay, pricelist) {
   return pricelist;
 };
 
+/**
+ * Sets the property groups: several properties belonging to each other
+ * @param gameplay
+ * @param pricelist
+ */
+var setPropertyGroups = function (gameplay, pricelist) {
+  var nbOfPropertiesInGroup = gameplay.gameParams.properties.numberOfPropertiesPerGroup;
+  var n = 1;
+
+  for (var i = 0; i < pricelist.length; i += nbOfPropertiesInGroup) {
+    for (var t = 0; t < nbOfPropertiesInGroup; t++) {
+      pricelist[i + t].pricelist.propertyGroup = n;
+    }
+    n++;
+  }
+  return pricelist;
+};
+
 module.exports = {
   create: createPriceList,
   internal: {
     extractRanges: extractRanges,
     createPriceListArray: createPriceListArray,
     setPropertyPrices: setPropertyPrices,
-    setPropertyHousePricing: setPropertyHousePricing
+    setPropertyHousePricing: setPropertyHousePricing,
+    setPropertyGroups:setPropertyGroups
   }
 };
