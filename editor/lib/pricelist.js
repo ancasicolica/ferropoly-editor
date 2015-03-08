@@ -37,6 +37,10 @@ var createPriceList = function (gameId, ownerEmail, callback) {
 var createPriceListInternal = function (gp, props, callback) {
 
   var priceRangeLists = extractRanges(gp);
+  var priceList = createPriceListArray(priceRangeLists);
+  setPropertyPrices(gp, pricelist);
+  setPropertyHousePricing(gp, pricelist);
+  setPropertyGroups(gp, pricelist);
   callback();
 };
 
@@ -177,6 +181,6 @@ module.exports = {
     createPriceListArray: createPriceListArray,
     setPropertyPrices: setPropertyPrices,
     setPropertyHousePricing: setPropertyHousePricing,
-    setPropertyGroups:setPropertyGroups
+    setPropertyGroups: setPropertyGroups
   }
 };
