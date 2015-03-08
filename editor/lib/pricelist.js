@@ -80,11 +80,61 @@ var createPriceListArray = function (ranges) {
   }
 };
 
+/**
+ * Sets the property prices according to the number of price levels, min and max
+ * @param gameplay
+ * @param pricelist
+ * @returns {*}
+ */
+var setPropertyPrices = function (gameplay, pricelist) {
+
+  try {
+    var priceMin = gameplay.gameParams.properties.lowestPrice;
+    var priceMax = gameplay.gameParams.properties.highestPrice;
+    var steps;
+
+    if (gameplay.gameParams.properties.numberOfPriceLevels === 1) {
+      // Special case: every property has its own value
+      var priceDifference = (priceMax - priceMin) / (pricelist.length - 1);
+      for (var i = 0, p = priceMin; i < pricelist.length; i++, p += priceDifference) {
+        pricelist[i].pricelist.price = Math.floor(p / 10) * 10;
+      }
+      // make sure that the maximum price is the max!
+      pricelist[pricelist.length - 1].pricelist.price = priceMax;
+      return pricelist;
+    }
+    else {
+      // several properties together in one price group
+      var priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
+      var nbOfPropertiesInSameGroup = pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels;
+
+      var t = 0;
+      var p = priceMin;
+      do {
+        for (var i = 0; i < nbOfPropertiesInSameGroup; i++) {
+          pricelist[i + t].pricelist.price = Math.floor(p / 10) * 10;
+        }
+        p += priceDifference;
+        t += i;
+      } while (t < pricelist.length);
+
+      // make sure that the maximum price is the max!
+      pricelist[pricelist.length - 1].pricelist.price = priceMax;
+      return pricelist;
+    }
+  }
+  catch (e) {
+    console.log('Error in set pricing: ' + e.message)
+    return null;
+  }
+};
+
 
 module.exports = {
   create: createPriceList,
   internal: {
     extractRanges: extractRanges,
-    createPriceListArray: createPriceListArray
+    createPriceListArray: createPriceListArray,
+    setPropertyPrices: setPropertyPrices
   }
 };
