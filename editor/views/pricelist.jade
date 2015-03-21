@@ -1,0 +1,64 @@
+//
+   Created by kc on 21.03.15.
+
+extends layout
+block head
+  link(rel='stylesheet', href='/css/edit.css')
+  script(src='http://maps.googleapis.com/maps/api/js?key=AIzaSyClFIdi03YvYPvLikNwLSZ748yw1tfDVXU&libraries=places&sensor=TRUE')
+  script(src='/js/property.js')
+  script
+    | var gameId = '#{gameId}';
+
+block navbar
+  li(class='dropdown')
+    a(data-toggle='dropdown' class='dropdown-toggle' href='#') Spielparameter
+    ul(role='menu' class='dropdown-menu')
+      li
+        a(href='' ng-click="panel='gameplay'") Spieldaten
+      li
+        a(href='' ng-click="panel='basics'") Preisliste
+      li
+        a(href='' ng-click="panel='interests'") Stargeld & Zins
+      li
+        a(href='' ng-click="panel='properties'") Häuser & Hotel
+  li
+    a(href='' ng-click="showMapTab()") Ortauswahl
+  li
+    a(href='' ng-click="showPriceList()") Reihenfolge
+  li
+    a(href='' ng-click="panel='finalize'") Preisliste erstellen
+
+block content
+  h1 {{data.gameplay.gamename}}
+
+  |{{data.gameplay.scheduling.gameDate | date:'dd.MM.yyyy'}} {{data.gameplay.scheduling.gameStart}} - {{data.gameplay.scheduling.gameEnd}}
+
+  table(class='table table-striped table.condensed')
+    thead
+      th Pos
+      th Ort
+      th Gruppe
+      th Kaufpreis
+      th Hauspreis
+      th Miete
+      th Miete 1H
+      th Miete 2H
+      th Miete 3H
+      th Miete 4H
+      th Miete Hotel
+
+    tbody
+      tr(data-ng-repeat='p in data.pricelist' )
+        td {{p.pricelist.position + 1}}
+        td {{p.location.name}}
+        td {{p.pricelist.propertyGroup}}
+        td {{p.pricelist.price}}
+        td {{p.pricelist.pricePerHouse}}
+        td {{p.pricelist.rents.noHouse}}
+        td {{p.pricelist.rents.oneHouse}}
+        td {{p.pricelist.rents.twoHouses}}
+        td {{p.pricelist.rents.threeHouses}}
+        td {{p.pricelist.rents.fourHouses}}
+        td {{p.pricelist.rents.hotel}}
+
+  | Version {{data.gameplay.log.priceListVersion}}, Stand: {{data.gameplay.log.priceListCreated | date:'dd.MM.yyyy'}}

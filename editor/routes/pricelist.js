@@ -12,6 +12,19 @@ var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var _ = require('lodash');
 
+
+/* GET priceslist. */
+router.get('/', function (req, res) {
+  res.render('pricelist', {
+    title: 'Preisliste',
+    gameId: req.query.gameId,
+    ngController: 'pricelistCtrl',
+    ngApp: 'pricelistApp',
+    ngFile: '/js/pricelistctrl.js'
+  });
+});
+
+
 /**
  * Create a pricelist
  */
@@ -42,22 +55,23 @@ router.get('/get', function (req, res) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    properties.getPropertiesForGameplay(req.query.gameId, null, function(err, props) {
+    properties.getPropertiesForGameplay(req.query.gameId, null, function (err, props) {
       if (err) {
         return res.send({success: false, message: err.message});
       }
-      var pricelist = _.filter(props, function(p) {
-       return  p.pricelist.position > -1;
+      var pricelist = _.filter(props, function (p) {
+        return p.pricelist.position > -1;
       });
-
 
       // Filter unused data
       for (var i = 0; i < pricelist.length; i++) {
         pricelist[i].gamedata = undefined;
         pricelist[i]._id = undefined;
+        pricelist[i].__v = undefined;
+        pricelist[i].gameId = undefined;
 
       }
-      var sortedPricelist = _.sortBy(pricelist, function(p) {
+      var sortedPricelist = _.sortBy(pricelist, function (p) {
         return p.pricelist.position;
       });
 
