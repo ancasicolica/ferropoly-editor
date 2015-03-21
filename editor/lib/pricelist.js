@@ -31,8 +31,13 @@ var createPriceList = function (gameId, ownerEmail, callback) {
         if (err) {
           return callback(err);
         }
-        properties.updateProperties(pricelist, function(err) {
-          return callback(err);
+        properties.updateProperties(pricelist, function (err) {
+          if (err) {
+            return callback(err);
+          }
+          gameplays.saveNewPriceListRevision(gp, function (err) {
+            return callback(err);
+          })
         })
       })
     })

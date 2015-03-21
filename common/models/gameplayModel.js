@@ -56,7 +56,9 @@ var gameplaySchema = mongoose.Schema({
   },
   log: {
     created: {type: Date, default: Date.now},
-    lastEdited: {type: Date, default: Date.now}
+    lastEdited: {type: Date, default: Date.now},
+    priceListCreated: Date,
+    priceListVersion: {type: Number, default: 0}
   }
 }, {autoIndex: false});
 
@@ -155,10 +157,10 @@ var updateGameplay = function (gp, callback) {
   if (!gp.save) {
     // If this not a gameplay object, we have to load the existing game and update it
     console.log('nod a gameplay, converting');
-    return getGameplay(gp.internal.gameId, gp.internal.owner, function(err, loadedGp) {
+    return getGameplay(gp.internal.gameId, gp.internal.owner, function (err, loadedGp) {
       if (err) {
         console.log('Error while loading gameplay: ' + err.message);
-        return(err);
+        return (err);
       }
       // we need to assign the data now to this gameplay loaded
       loadedGp.gamename = gp.gamename;
@@ -170,7 +172,7 @@ var updateGameplay = function (gp, callback) {
       // we do not copy internal as this does not change (must not change!)
 
       // Call update again (this is recursive)
-      return updateGameplay(loadedGp, function(err, gp2) {
+      return updateGameplay(loadedGp, function (err, gp2) {
         return callback(err, gp2);
       })
     });
@@ -192,7 +194,7 @@ var updateGameplay = function (gp, callback) {
  * @param callback
  * @returns {*}
  */
-var updateGameplayLastChangedField = function(ownerEmail, gameId, callback) {
+var updateGameplayLastChangedField = function (ownerEmail, gameId, callback) {
   if (!gameId || !ownerEmail) {
     return callback(new Error('no gameplay name or email supplied'));
   }
@@ -205,11 +207,30 @@ var updateGameplayLastChangedField = function(ownerEmail, gameId, callback) {
     }
     var gp = docs[0];
     gp.log.lastEdited = new Date();
-    gp.save(function(err) {
+    gp.save(function (err) {
       return callback(err);
     })
   });
 };
+
+/**
+ * Saves a new revision of the pricelist: updates date and version
+ * @param gameplay
+ * @param callback
+ */
+var saveNewPriceListRevision = function (gameplay, callback) {
+  gameplay.log.priceListCreated = new Date();
+  if (!gameplay.log.priceListVersion) {
+    gameplay.log.priceListVersion = 1;
+  }
+  else {
+    gameplay.log.priceListVersion++;
+  }
+  gameplay.save(function(err) {
+    callback(err);
+  });
+};
+
 /**
  * Exports of this module
  * @type {{init: Function, close: Function, Model: (*|Model), createGameplay: Function, getGameplaysForUser: Function, removeGameplay: Function, updateGameplay: Function, getGameplay: Function}}
@@ -222,5 +243,6 @@ module.exports = {
   removeGameplay: removeGameplay,
   updateGameplay: updateGameplay,
   getGameplay: getGameplay,
-  updateGameplayLastChangedField: updateGameplayLastChangedField
+  updateGameplayLastChangedField: updateGameplayLastChangedField,
+  saveNewPriceListRevision: saveNewPriceListRevision
 };
