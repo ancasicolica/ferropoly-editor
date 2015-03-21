@@ -473,6 +473,27 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   };
 
   /**
+   * Finalize the pricelist
+   */
+  $scope.finalizePricelist = function() {
+    $http.post('/pricelist/create', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
+      success(function (data, status) {
+        if (data.success) {
+          console.log('pricelist created saved');
+          $scope.statusText = data.message;
+        }
+        else {
+          console.log('Error');
+          console.log(data);
+        }
+      }).
+      error(function (data, status) {
+        console.log('ERROR');
+        console.log(data);
+        console.log(status);
+      });
+  };
+  /**
    * Gets the text for the current locations accessibility
    * @returns {string}
    */

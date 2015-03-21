@@ -154,6 +154,28 @@ describe('Pricelist lib Tests', function () {
       expect(l[l.length - 1].pricelist.price).to.be(hp);
     });
 
+    it('should work with 7 price groups', function () {
+      var lp = 1000;
+      var hp = 8000;
+      var l = pll.internal.setPropertyPrices({
+        gameParams: {
+          properties: {
+            numberOfPriceLevels: 7,
+            lowestPrice: lp,
+            highestPrice: hp
+          }
+        }
+      }, pricelist);
+      expect(l[0].pricelist.price).to.be(lp);
+     /* expect(l[29].pricelist.price).to.be(1000);
+      expect(l[30].pricelist.price).to.be(3330);
+      expect(l[59].pricelist.price).to.be(3330);
+      expect(l[60].pricelist.price).to.be(5660);
+      expect(l[89].pricelist.price).to.be(5660);
+      expect(l[90].pricelist.price).to.be(8000);*/
+      expect(l[l.length - 1].pricelist.price).to.be(hp);
+    });
+
     it('should work with 8 price groups', function () {
       var lp = 1000;
       var hp = 8000;
@@ -189,12 +211,13 @@ describe('Pricelist lib Tests', function () {
           }
         }
       }, pricelist);
+
       expect(l[0].pricelist.price).to.be(lp);
-      expect(l[40].pricelist.price).to.be(3250);
-      expect(l[50].pricelist.price).to.be(3700);
-      expect(l[60].pricelist.price).to.be(4380);
-      expect(l[89].pricelist.price).to.be(5960);
-      expect(l[118].pricelist.price).to.be(7540);
+      expect(l[40].pricelist.price).to.be(3480);
+      expect(l[50].pricelist.price).to.be(4160);
+      expect(l[60].pricelist.price).to.be(4830);
+      expect(l[89].pricelist.price).to.be(6640);
+      expect(l[118].pricelist.price).to.be(8450);
       expect(l[l.length - 1].pricelist.price).to.be(hp);
     });
   });

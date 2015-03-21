@@ -16,4 +16,4 @@ div(ng-show='getNumberOfProperties() < 20')
 div(ng-show='gameplayValid()')
   .alert.alert-success Super! Die Spieldaten sind soweit gültig, die Preisliste kann berechnet werden.
 
-  a(class='btn btn-default' href='#' role='button') Preisliste berechnen
+  a(class='btn btn-default' href='#' role='button' ng-click='finalizePricelist()') Preisliste berechnen

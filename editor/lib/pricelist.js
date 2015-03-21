@@ -9,10 +9,16 @@ var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var _ = require('lodash');
 
+/**
+ * Create and save the complete price list
+ * @param gameId
+ * @param ownerEmail
+ * @param callback
+ */
 var createPriceList = function (gameId, ownerEmail, callback) {
 
   // Collect the information
-  gameplay.getGameplay(gameId, ownerEmail, function (err, gp) {
+  gameplays.getGameplay(gameId, ownerEmail, function (err, gp) {
     if (err) {
       return callback(err);
     }
@@ -21,8 +27,13 @@ var createPriceList = function (gameId, ownerEmail, callback) {
       if (err) {
         return callback(err);
       }
-      createPriceListInternal(gp, properties, function (err) {
-        return callback(err);
+      createPriceListInternal(gp, properties, function (err, pricelist) {
+        if (err) {
+          return callback(err);
+        }
+        properties.updateProperties(pricelist, function(err) {
+          return callback(err);
+        })
       })
     })
   });
@@ -36,12 +47,15 @@ var createPriceList = function (gameId, ownerEmail, callback) {
  */
 var createPriceListInternal = function (gp, props, callback) {
 
-  var priceRangeLists = extractRanges(gp);
+  var priceRangeLists = extractRanges(props);
   var priceList = createPriceListArray(priceRangeLists);
-  setPropertyPrices(gp, pricelist);
-  setPropertyHousePricing(gp, pricelist);
-  setPropertyGroups(gp, pricelist);
-  callback();
+  priceList = setPropertyPrices(gp, priceList);
+  priceList = setPropertyHousePricing(gp, priceList);
+  priceList = setPropertyGroups(gp, priceList);
+  if (!priceList) {
+    return callback(new Error('error while creating pricelist'));
+  }
+  callback(null, pricelist);
 };
 
 /**
@@ -80,7 +94,7 @@ var createPriceListArray = function (ranges) {
   }
   catch (e) {
     console.log(e);
-    return [];
+    return null;
   }
 };
 
@@ -109,16 +123,25 @@ var setPropertyPrices = function (gameplay, pricelist) {
     else {
       // several properties together in one price group
       var priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
-      var nbOfPropertiesInSameGroup = pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels;
+      var nbOfPropertiesInSameGroup = [];
+      nbOfPropertiesInSameGroup[0] = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
+      nbOfPropertiesInSameGroup[1] = Math.ceil(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
 
       var t = 0;
+      var n = 0;
       var p = priceMin;
       do {
-        for (var i = 0; i < nbOfPropertiesInSameGroup; i++) {
-          pricelist[i + t].pricelist.price = Math.floor(p / 10) * 10;
+        for (var i = 0; i < nbOfPropertiesInSameGroup[n % 2]; i++) {
+          if (!pricelist[i + t]) {
+            console.log(i + ' / ' + t);
+          }
+          if ((i + t) < pricelist.length) {
+            pricelist[i + t].pricelist.price = Math.floor(p / 10) * 10;
+          }
         }
         p += priceDifference;
         t += i;
+        n++;
       } while (t < pricelist.length);
 
       // make sure that the maximum price is the max!
@@ -127,7 +150,8 @@ var setPropertyPrices = function (gameplay, pricelist) {
     }
   }
   catch (e) {
-    console.log('Error in set pricing: ' + e.message)
+    console.log('Error in set pricing: ' + e.message);
+    console.error(e);
     return null;
   }
 };
@@ -139,21 +163,29 @@ var setPropertyPrices = function (gameplay, pricelist) {
  * @returns {*}
  */
 var setPropertyHousePricing = function (gameplay, pricelist) {
-  var rentFactor = gameplay.gameParams.rentFactors;
+  try {
+    var rentFactor = gameplay.gameParams.rentFactors;
 
-  for (var i = 0; i < pricelist.length; i++) {
-    var p = pricelist[i].pricelist.price;
-    pricelist[i].pricelist.pricePerHouse = Math.floor(p * gameplay.gameParams.housePrices / 10) * 10;
-    pricelist[i].pricelist.rents = {
-      noHouse: Math.floor(p * rentFactor.noHouse / 10) * 10,
-      oneHouse: Math.floor(p * rentFactor.oneHouse / 10) * 10,
-      twoHouses: Math.floor(p * rentFactor.twoHouses / 10) * 10,
-      threeHouses: Math.floor(p * rentFactor.threeHouses / 10) * 10,
-      fourHouses: Math.floor(p * rentFactor.fourHouses / 10) * 10,
-      hotel: Math.floor(p * rentFactor.hotel / 10) * 10
-    };
+    for (var i = 0; i < pricelist.length; i++) {
+      var p = pricelist[i].pricelist.price;
+      pricelist[i].pricelist.pricePerHouse = Math.floor(p * gameplay.gameParams.housePrices / 10) * 10;
+      pricelist[i].pricelist.rents = {
+        noHouse: Math.floor(p * rentFactor.noHouse / 10) * 10,
+        oneHouse: Math.floor(p * rentFactor.oneHouse / 10) * 10,
+        twoHouses: Math.floor(p * rentFactor.twoHouses / 10) * 10,
+        threeHouses: Math.floor(p * rentFactor.threeHouses / 10) * 10,
+        fourHouses: Math.floor(p * rentFactor.fourHouses / 10) * 10,
+        hotel: Math.floor(p * rentFactor.hotel / 10) * 10
+      };
+    }
+    return pricelist;
   }
-  return pricelist;
+  catch (e) {
+    console.log('error in setPropertyHousePricing');
+    console.error(e);
+    return null
+  }
+
 };
 
 /**
@@ -162,16 +194,23 @@ var setPropertyHousePricing = function (gameplay, pricelist) {
  * @param pricelist
  */
 var setPropertyGroups = function (gameplay, pricelist) {
-  var nbOfPropertiesInGroup = gameplay.gameParams.properties.numberOfPropertiesPerGroup;
-  var n = 1;
+  try {
+    var nbOfPropertiesInGroup = gameplay.gameParams.properties.numberOfPropertiesPerGroup;
+    var n = 1;
 
-  for (var i = 0; i < pricelist.length; i += nbOfPropertiesInGroup) {
-    for (var t = 0; t < nbOfPropertiesInGroup; t++) {
-      pricelist[i + t].pricelist.propertyGroup = n;
+    for (var i = 0; i < pricelist.length; i += nbOfPropertiesInGroup) {
+      for (var t = 0; t < nbOfPropertiesInGroup; t++) {
+        pricelist[i + t].pricelist.propertyGroup = n;
+      }
+      n++;
     }
-    n++;
+    return pricelist;
   }
-  return pricelist;
+  catch (e) {
+    console.log('error in setPropertyGroups');
+    console.error(e);
+    return null
+  }
 };
 
 module.exports = {

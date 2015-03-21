@@ -18,8 +18,8 @@
     "url": "https://bitbucket.org/christian_kuster/ferropoly_editor"
   },
   "engines": {
-    "node": ">= 0.10.0",
-    "npm": ">= 2.1.0"
+    "node": ">= 0.12.0",
+    "npm": ">= 2.7.0"
   },
   "private": true,
   "scripts": {

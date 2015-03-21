@@ -61,6 +61,30 @@ var createPropertyFromLocation = function (gameId, location, callback) {
 };
 
 /**
+ * Updates the given properties which must be properties objects
+ * @param properties
+ * @param callback
+ */
+var updateProperties = function (properties, callback) {
+  for (var i = 0; i < properties.length; i++) {
+    if (!(properties[i] instanceof Property)) {
+      return callback(new Error('not real properties'));
+    }
+    var nb = 0;
+    for (var i = 0; i < properties.length; i++) {
+      properties[i].save(function(err) {
+        if (err) {
+          console.log('ERROR in updateProperties: ' + err.message);
+        }
+        nb++;
+        if (nb === properties.length) {
+          return callback();
+        }
+      })
+    }
+  }
+};
+/**
  * Updates a property, if not existing, creates a new one
  * @param gameId
  * @param property
@@ -146,7 +170,7 @@ var updatePositionInPriceList = function (gameId, propertyId, position, callback
       return callback(new Error('location not available'));
     }
     docs[0].pricelist.positionInPriceRange = position;
-    docs[0].save(function(err, savedProperty) {
+    docs[0].save(function (err, savedProperty) {
       console.log(savedProperty.location.name + ' updated');
       callback(err, savedProperty);
     });
@@ -248,5 +272,6 @@ module.exports = {
   getPropertyByLocationId: getPropertyByLocationId,
   updateProperty: updateProperty,
   createPropertyFromLocation: createPropertyFromLocation,
-  updatePositionInPriceList: updatePositionInPriceList
+  updatePositionInPriceList: updatePositionInPriceList,
+  updateProperties:updateProperties
 };
