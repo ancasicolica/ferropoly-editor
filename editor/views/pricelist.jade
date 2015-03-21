@@ -10,23 +10,10 @@ block head
     | var gameId = '#{gameId}';
 
 block navbar
-  li(class='dropdown')
-    a(data-toggle='dropdown' class='dropdown-toggle' href='#') Spielparameter
-    ul(role='menu' class='dropdown-menu')
-      li
-        a(href='' ng-click="panel='gameplay'") Spieldaten
-      li
-        a(href='' ng-click="panel='basics'") Preisliste
-      li
-        a(href='' ng-click="panel='interests'") Stargeld & Zins
-      li
-        a(href='' ng-click="panel='properties'") Häuser & Hotel
   li
-    a(href='' ng-click="showMapTab()") Ortauswahl
+    a(href='' ng-click="showMapTab()") Bildschirmversion
   li
-    a(href='' ng-click="showPriceList()") Reihenfolge
-  li
-    a(href='' ng-click="panel='finalize'") Preisliste erstellen
+    a(href='' ng-click="showPriceList()") Druckversion
 
 block content
   h1 {{data.gameplay.gamename}}

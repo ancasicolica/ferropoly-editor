@@ -479,8 +479,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     $http.post('/pricelist/create', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
       success(function (data, status) {
         if (data.success) {
-          console.log('pricelist created saved');
+          console.log('pricelist created');
           $scope.statusText = data.message;
+          self.location = '/pricelist?gameId=' + data.gameId;
         }
         else {
           console.log('Error');
