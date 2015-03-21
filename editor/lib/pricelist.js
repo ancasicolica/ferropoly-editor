@@ -23,11 +23,11 @@ var createPriceList = function (gameId, ownerEmail, callback) {
       return callback(err);
     }
 
-    properties.getPropertiesForGameplay(gameId, null, function (err, properties) {
+    properties.getPropertiesForGameplay(gameId, {gameId: gameId}, function (err, props) {
       if (err) {
         return callback(err);
       }
-      createPriceListInternal(gp, properties, function (err, pricelist) {
+      createPriceListInternal(gp, props, function (err, pricelist) {
         if (err) {
           return callback(err);
         }
@@ -55,7 +55,7 @@ var createPriceListInternal = function (gp, props, callback) {
   if (!priceList) {
     return callback(new Error('error while creating pricelist'));
   }
-  callback(null, pricelist);
+  callback(null, priceList);
 };
 
 /**

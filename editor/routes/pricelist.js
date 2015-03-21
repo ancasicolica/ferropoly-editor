@@ -24,7 +24,7 @@ router.post('/create', function (req, res) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    return res.send({success: true, gameId: gameplay.internal.gameId});
+    return res.send({success: true, gameId: req.body.gameId});
   });
 
 });

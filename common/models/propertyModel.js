@@ -72,7 +72,7 @@ var updateProperties = function (properties, callback) {
     }
     var nb = 0;
     for (var i = 0; i < properties.length; i++) {
-      properties[i].save(function(err) {
+      properties[i].save(function (err) {
         if (err) {
           console.log('ERROR in updateProperties: ' + err.message);
         }
@@ -273,5 +273,5 @@ module.exports = {
   updateProperty: updateProperty,
   createPropertyFromLocation: createPropertyFromLocation,
   updatePositionInPriceList: updatePositionInPriceList,
-  updateProperties:updateProperties
+  updateProperties: updateProperties
 };
