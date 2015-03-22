@@ -26,13 +26,14 @@ block content
           p Karte: {{gameplay.internal.map.toUpperCase()}}
           p Erstellt: {{gameplay.log.created | date:'d.M.yyyy H:mm'}}
           p Letzte Bearbeitung: {{gameplay.log.lastEdited | date:'d.M.yyyy H:mm'}}
+          p(ng-show='gameplay.log.priceListVersion > 0') Preisliste: {{gameplay.log.priceListCreated | date:'d.M.yyyy H:mm'}}
           p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
           p
             a(class='btn btn-default btn-xs' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Bearbeiten
               span(class='glyphicon glyphicon-pencil' aria-hidden='true')
             | &nbsp;
-            a(class='btn btn-default btn-xs' href='/pricelist?gameId={{gameplay.internal.gameId}}' ng-click="") Ansehen
-              span(class='glyphicon glyphicon-folder-open' aria-hidden='true')
+            a(class='btn btn-default btn-xs' href='/pricelist?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste
+              span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
             | &nbsp;
             a(class='btn btn-default btn-xs' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Löschen
                 span(class='glyphicon glyphicon-trash' aria-hidden='true')

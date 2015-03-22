@@ -3,7 +3,7 @@
 
 extends layout
 block head
-  link(rel='stylesheet', href='/css/edit.css')
+  link(rel='stylesheet', href='/css/pricelist.css')
   script(src='http://maps.googleapis.com/maps/api/js?key=AIzaSyClFIdi03YvYPvLikNwLSZ748yw1tfDVXU&libraries=places&sensor=TRUE')
   script(src='/js/property.js')
   script
@@ -11,10 +11,7 @@ block head
 
 block navbar
   li
-    a(href='' ng-click="showMapTab()") Bildschirmversion
-  li
-    a(href='' ng-click="showPriceList()") Druckversion
-
+    a(href='#' onclick="javascript:window.print()") Drucken
 block content
   h1 {{data.gameplay.gamename}}
 
@@ -24,28 +21,28 @@ block content
     thead
       th Pos
       th Ort
-      th Gruppe
-      th Kaufpreis
-      th Hauspreis
-      th Miete
-      th Miete 1H
-      th Miete 2H
-      th Miete 3H
-      th Miete 4H
-      th Miete Hotel
+      th.pricelist Gruppe
+      th.pricelist Kaufpreis
+      th.pricelist Hauspreis
+      th.pricelist Miete
+      th.pricelist Miete 1H
+      th.pricelist Miete 2H
+      th.pricelist Miete 3H
+      th.pricelist Miete 4H
+      th.pricelist Miete Hotel
 
     tbody
       tr(data-ng-repeat='p in data.pricelist' )
         td {{p.pricelist.position + 1}}
         td {{p.location.name}}
-        td {{p.pricelist.propertyGroup}}
-        td {{p.pricelist.price}}
-        td {{p.pricelist.pricePerHouse}}
-        td {{p.pricelist.rents.noHouse}}
-        td {{p.pricelist.rents.oneHouse}}
-        td {{p.pricelist.rents.twoHouses}}
-        td {{p.pricelist.rents.threeHouses}}
-        td {{p.pricelist.rents.fourHouses}}
-        td {{p.pricelist.rents.hotel}}
+        td.pricelist {{p.pricelist.propertyGroup}}
+        td.pricelist {{p.pricelist.price}}
+        td.pricelist {{p.pricelist.pricePerHouse}}
+        td.pricelist {{p.pricelist.rents.noHouse}}
+        td.pricelist {{p.pricelist.rents.oneHouse}}
+        td.pricelist {{p.pricelist.rents.twoHouses}}
+        td.pricelist {{p.pricelist.rents.threeHouses}}
+        td.pricelist {{p.pricelist.rents.fourHouses}}
+        td.pricelist {{p.pricelist.rents.hotel}}
 
   | Version {{data.gameplay.log.priceListVersion}}, Stand: {{data.gameplay.log.priceListCreated | date:'dd.MM.yyyy'}}
