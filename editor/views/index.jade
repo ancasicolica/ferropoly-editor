@@ -35,6 +35,9 @@ block content
             a(class='btn btn-default btn-xs' href='/pricelist?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste
               span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
             | &nbsp;
+            a(class='btn btn-default btn-xs' href='/player?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler
+              span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
+            | &nbsp;
             a(class='btn btn-default btn-xs' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Löschen
                 span(class='glyphicon glyphicon-trash' aria-hidden='true')
 

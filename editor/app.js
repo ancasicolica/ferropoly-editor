@@ -32,6 +32,7 @@ var properties = require('../common/models/propertyModel');
 var locations = require('../common/models/locationModel');
 var ferropolyDb = require('../common/lib/ferropolyDb');
 var pricelist = require('./routes/pricelist');
+var player = require('./routes/player');
 var initServer = function () {
   authStrategy.init(settings, users);
 
@@ -71,6 +72,7 @@ var initServer = function () {
   gameplay.init(app, settings, gameplays, locations, properties);
   configuration.init(app, settings);
   app.use('/pricelist', pricelist);
+  app.use('/player', player);
 
   var server = require('http').Server(app);
   var io = require('socket.io')(server);
