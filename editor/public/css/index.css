@@ -1,19 +1,4 @@
-.gameplay-card {
-    border: solid 1px;
-    border-color: #c4e3f3;
-    margin: 1px;
-    margin-bottom: 5px;
-    padding-left: 2px;
-}
 
-.gameplay-id {
-    color:rgba(115, 115, 115, 0.73);
-    font-size: x-small;
-}
-
-.gameplay-title {
-    font-size: larger;
-}
 
 #gameplay-list {
     overflow: scroll;
@@ -23,3 +8,14 @@
 .separator {
     margin-right: 10px;
 }
+
+.btn-gameplay {
+    margin-top: 8px;
+    margin-right: 8px;
+}
+
+.gameplay-id {
+     color:rgba(115, 115, 115, 0.73);
+     font-size: x-small;
+ }
+

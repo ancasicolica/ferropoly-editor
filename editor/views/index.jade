@@ -20,24 +20,26 @@ block content
   div(ng-show='gameplays.length > 0')
     .row
       div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
-        div(class='gameplay-card')
-          p(class='gameplay-title') {{gameplay.gamename}}
-          p Spieldatum: {{gameplay.scheduling.gameDate | date:'d.M.yyyy'}}
-          p Karte: {{gameplay.internal.map.toUpperCase()}}
-          p Erstellt: {{gameplay.log.created | date:'d.M.yyyy H:mm'}}
-          p Letzte Bearbeitung: {{gameplay.log.lastEdited | date:'d.M.yyyy H:mm'}}
-          p(ng-show='gameplay.log.priceListVersion > 0') Preisliste: {{gameplay.log.priceListCreated | date:'d.M.yyyy H:mm'}}
-          p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
-          p
-            a(class='btn btn-default btn-xs' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Bearbeiten
-              span(class='glyphicon glyphicon-pencil' aria-hidden='true')
-            | &nbsp;
-            a(class='btn btn-default btn-xs' href='/pricelist?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste
-              span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
-            | &nbsp;
-            a(class='btn btn-default btn-xs' href='/player?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler
-              span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
-            | &nbsp;
-            a(class='btn btn-default btn-xs' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Löschen
-                span(class='glyphicon glyphicon-trash' aria-hidden='true')
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title {{gameplay.gamename}}
+          .panel-body
+            p Spieldatum: {{gameplay.scheduling.gameDate | date:'d.M.yyyy'}}
+            p Karte: {{gameplay.internal.map.toUpperCase()}}
+            p Erstellt: {{gameplay.log.created | date:'d.M.yyyy H:mm'}}
+            p Letzte Bearbeitung: {{gameplay.log.lastEdited | date:'d.M.yyyy H:mm'}}
+            p(ng-show='gameplay.log.priceListVersion > 0') Preisliste: {{gameplay.log.priceListCreated | date:'d.M.yyyy H:mm'}}
+            p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
+            p
+              a(class='btn btn-default btn-xs btn-gameplay' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Bearbeiten
+                span(class='glyphicon glyphicon-pencil' aria-hidden='true')
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/pricelist?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste
+                span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/player?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler
+                span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Löschen
+                  span(class='glyphicon glyphicon-trash' aria-hidden='true')
 
