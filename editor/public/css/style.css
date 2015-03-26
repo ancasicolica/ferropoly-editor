@@ -49,3 +49,11 @@ a {
     color            : white;
     z-index          : 100;
 }
+
+.edit-basics-pic {
+    max-width:100%;
+    max-height:800px;
+    position:relative;
+    display:inline-block;
+    overflow:hidden;
+}

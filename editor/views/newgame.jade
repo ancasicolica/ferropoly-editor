@@ -29,7 +29,7 @@ block content
 
               label(for='gamedate') Datum
               input(class='form-control' type='date' id='gamedate' name='gamedate' ng-model='gamedate' ng-change='validateDate()' required)
-              span(class='help-block') Gegenwärtig werden nur eintägige Spiele unterstützt. Die Start- und Endzeit kann in den Spileinstellungen später angepasst werden.
+              span(class='help-block') Gegenwärtig werden nur eintägige Spiele unterstützt. Die Start- und Endzeit kann in den Spieleinstellungen später angepasst werden.
               p(class='bg-danger' ng-hide='newForm.gamedate.$valid') Das Spieldatum muss angegeben werden.
               p(class='bg-danger' ng-show='dateError') {{dateError}}
 
