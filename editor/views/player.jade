@@ -3,11 +3,12 @@
 
 extends layout
 block head
+  link(rel='stylesheet', href='css/player.css',  type='text/css')
   script
     | var gameId = '#{gameId}';
 block navbar
   li
-    a(href='#' ng-click='newPlayer()') Neue&nbsp;Gruppe
+    a(href='#' ng-click='newTeam()') Neue&nbsp;Gruppe
 
 block content
   .modal.fade(id='saveModal')
@@ -19,52 +20,57 @@ block content
           p Soll die Gruppe wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!
         .modal-footer
           button(type='button' class='btn btn-default' data-dismiss='modal') Nein
-          button(type='button' class='btn btn-primary' ng-click='deletePlayer()' data-dismiss='modal') Ja
+          button(type='button' class='btn btn-primary' ng-click='deleteTeam()' data-dismiss='modal') Ja
   .row
     .col-md-5
       .panel.panel-default
         .panel-heading
           h3.panel-title Teilnehmende Gruppen
         .panel-body
+          .alert.alert-info(ng-hide='teams.length > 0') Es sind noch keine Gruppen vorhanden. Mit 'Neue Gruppe" können Gruppen hinzugefügt werden.
           .list-group
-            a(class='list-group-item' href='#' ng-click='setCurrentTeam(p)' data-ng-repeat='p in players')
-              h4(class='list-group-item-heading') {{p.name}}
+            a(class='list-group-item' href='#' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
+              h4(class='list-group-item-heading') {{p.data.name}}
+              | {{p.data.organization}}
 
     .col-md-7
       .panel.panel-default(ng-hide='currentTeam === undefined')
         .panel-heading
           h3.panel-title Gruppe bearbeiten
         .panel-body
-          form.form-horizontal
+          form.form-horizontal(name='playerForm')
             .form-group
               label.col-sm-2.control-label(for='name') Team-Name
               .col-sm-10
-                input(class='form-control' type='text' id='name' placeholder='Team Name' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.name')
+                input(class='form-control' type='text' id='name' name='name' placeholder='Team Name' ng-blur='validateForm()' ng-change='sortTeams();validateForm()' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.name')
 
             .form-group
               label.col-sm-2.control-label(for='contactName') Kontaktperson
               .col-sm-10
-                input(class='form-control' type='text' id='contactName' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.teamLeader.name')
+                input(class='form-control' type='text' id='contactName' name='contactName' ng-blur='validateForm()' ng-change='validateForm()' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.name')
 
             .form-group
               label.col-sm-2.control-label(for='organisation') Organisation
               .col-sm-10
-                input(class='form-control' type='text' id='organization' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.organization')
+                input(class='form-control' type='text' id='organization' placeholder=''  ng-model='currentTeam.data.organization')
 
             .form-group
               label.col-sm-2.control-label(for='phone') Telefon
               .col-sm-10
-                input(class='form-control' type='text' id='phone' placeholder='044 111 22 33'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.teamLeader.phone')
+                input(class='form-control' type='text' id='phone' placeholder='044 111 22 33'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.phone')
 
             .form-group
               label.col-sm-2.control-label(for='email') E-Mail
               .col-sm-10
-                input(class='form-control' type='text' id='phone' placeholder='spieler@ferropoly.ch' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.teamLeader.email')
+                input(class='form-control' type='text' id='email' name='email' ng-blur='validateForm()' ng-change='validateForm()'  placeholder='spieler@ferropoly.ch' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
 
             .form-group
               label.col-sm-2.control-label(for='remarks') Bemerkungen
               .col-sm-10
                 textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-model='currentTeam.remarks')
 
+            button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid') Gruppe speichern
+              span(class='glyphicon glyphicon-save' aria-hidden='true')
+            | &nbsp;
             button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal') Gruppe löschen
               span(class='glyphicon glyphicon-trash' aria-hidden='true')

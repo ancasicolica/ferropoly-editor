@@ -56,12 +56,22 @@ var updateTeam = function (team, callback) {
       return callback(err);
     }
     if (!docs || docs.length === 0) {
-      return callback(new Error('Team not found'));
+      if (!team.gameId) {
+        return callback(new Error('no game id'));
+      }
+      return createTeam(team, team.gameId, function(err, newTeam) {
+        if (err) {
+          return callback(new Error('can not create new team: ' + err.message));
+        }
+        return callback(null, newTeam);
+      });
     }
-    docs[0].data = team.data;
-    docs[0].save(function (err, team) {
-      callback(err, team);
-    });
+    else {
+      docs[0].data = team.data;
+      docs[0].save(function (err, team) {
+        callback(err, team);
+      });
+    }
   })
 };
 

@@ -1,0 +1,7 @@
+.valid-data {
+ border-color: #cccccc;
+}
+
+.invalid-data {
+    border-color: red;
+}
