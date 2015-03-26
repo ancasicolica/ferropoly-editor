@@ -8,7 +8,7 @@ block head
     | var gameId = '#{gameId}';
 block navbar
   li
-    a(href='#' ng-click='newTeam()') Neue&nbsp;Gruppe
+    a(href='#' ng-click='newTeam()' ng-hide='teams.length >= maxGroupNb') Neue&nbsp;Gruppe
 
 block content
   .modal.fade(id='saveModal')
@@ -25,11 +25,11 @@ block content
     .col-md-5
       .panel.panel-default
         .panel-heading
-          h3.panel-title Teilnehmende Gruppen
+          h3.panel-title Teilnehmende Gruppen ({{teams.length}} / max {{maxGroupNb}})
         .panel-body
           .alert.alert-info(ng-hide='teams.length > 0') Es sind noch keine Gruppen vorhanden. Mit 'Neue Gruppe" können Gruppen hinzugefügt werden.
           .list-group
-            a(class='list-group-item' href='#' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
+            a(class='list-group-item' href='#' ng-disabled='!playerForm.$valid' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
               h4(class='list-group-item-heading') {{p.data.name}}
               | {{p.data.organization}}
 
@@ -42,32 +42,32 @@ block content
             .form-group
               label.col-sm-2.control-label(for='name') Team-Name
               .col-sm-10
-                input(class='form-control' type='text' id='name' name='name' placeholder='Team Name' ng-blur='validateForm()' ng-change='sortTeams();validateForm()' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.name')
+                input(class='form-control' type='text' id='name' name='name' placeholder='Team Name' ng-blur='validateForm()' ng-change='sortTeams();validateForm();currentDataChanged=true' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.name')
 
             .form-group
               label.col-sm-2.control-label(for='contactName') Kontaktperson
               .col-sm-10
-                input(class='form-control' type='text' id='contactName' name='contactName' ng-blur='validateForm()' ng-change='validateForm()' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.name')
+                input(class='form-control' type='text' id='contactName' name='contactName' ng-blur='validateForm()' ng-change='validateForm();currentDataChanged=true' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.name')
 
             .form-group
               label.col-sm-2.control-label(for='organisation') Organisation
               .col-sm-10
-                input(class='form-control' type='text' id='organization' placeholder=''  ng-model='currentTeam.data.organization')
+                input(class='form-control' type='text' id='organization' placeholder='' ng-change='currentDataChanged=true' ng-model='currentTeam.data.organization')
 
             .form-group
               label.col-sm-2.control-label(for='phone') Telefon
               .col-sm-10
-                input(class='form-control' type='text' id='phone' placeholder='044 111 22 33'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.phone')
+                input(class='form-control' type='text' id='phone' placeholder='044 111 22 33'  ng-minlength='3' ng-maxlength='20' ng-change='currentDataChanged=true' ng-model='currentTeam.data.teamLeader.phone')
 
             .form-group
               label.col-sm-2.control-label(for='email') E-Mail
               .col-sm-10
-                input(class='form-control' type='text' id='email' name='email' ng-blur='validateForm()' ng-change='validateForm()'  placeholder='spieler@ferropoly.ch' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
+                input(class='form-control' type='email' id='email' name='email' ng-blur='validateForm()' ng-change='validateForm();currentDataChanged=true'  placeholder='spieler@ferropoly.ch' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
 
             .form-group
               label.col-sm-2.control-label(for='remarks') Bemerkungen
               .col-sm-10
-                textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-model='currentTeam.remarks')
+                textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-change='currentDataChanged=true' ng-model='currentTeam.data.remarks')
 
             button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid') Gruppe speichern
               span(class='glyphicon glyphicon-save' aria-hidden='true')

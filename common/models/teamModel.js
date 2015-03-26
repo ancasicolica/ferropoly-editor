@@ -20,7 +20,8 @@ var teamSchema = mongoose.Schema({
       name: String,
       email: String,
       phone: String
-    }
+    },
+    remarks: String
   }
 }, {autoIndex: false});
 
