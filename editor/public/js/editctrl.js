@@ -528,6 +528,14 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   };
 
   /**
+   * Property groups fit number of properties
+   * @returns {boolean}
+   */
+  $scope.propertyGroupsValid = function() {
+    return (($scope.getNumberOfProperties() % $scope.gameplay.gameParams.properties.numberOfPropertiesPerGroup) === 0);
+  };
+
+  /**
    * Returns the number of properties in the list
    * @returns {*}
    */
@@ -541,7 +549,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    * @returns {*|boolean}
    */
   $scope.gameplayValid = function () {
-    return ($scope.gameDurationValid() && ($scope.getNumberOfProperties() > 19))
+    return ($scope.gameDurationValid() && ($scope.getNumberOfProperties() > 19) && $scope.propertyGroupsValid())
   };
 
 

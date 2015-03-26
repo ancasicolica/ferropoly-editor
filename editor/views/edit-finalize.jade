@@ -1,6 +1,8 @@
 h1 Preisliste berechnen
 
-| Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
+| Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten.
+| Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
+p Um ein versehentliches Bearbeiten zu verhindern, kann eine kontrollierte und für gut befundene Preisliste abgeschlossen werden. Dann sind keine Änderungen mehr möglich.
 p
 
 div(ng-hide='gameDurationValid()')
@@ -12,6 +14,13 @@ div(ng-hide='gameDurationValid()')
 div(ng-show='getNumberOfProperties() < 20')
   .alert.alert-danger Es sind zuwenige Orte in der Preisliste ({{getNumberOfProperties()}}), mindestens 20 sind nötig. Lösung:
     a(class='alert-link' href='#' ng-click="showMapTab()") &nbsp;Orte hinzufügen.
+
+div(ng-show='!propertyGroupsValid()')
+  .alert.alert-danger Die Zahl der Orte in der Preisliste ({{getNumberOfProperties()}}), ist nicht durch die Gruppengrösse teilbar ({{gameplay.gameParams.properties.numberOfPropertiesPerGroup}}). Lösung:
+    br
+    a(class='alert-link' href='#' ng-click="showMapTab()") &nbsp;Orte hinzufügen
+    | &nbsp;oder
+    a(class='alert-link' href='#' ng-click="panel='basics'") &nbsp;Gruppengrösse anpassen
 
 div(ng-show='gameplayValid()')
   .alert.alert-success Super! Die Spieldaten sind soweit gültig, die Preisliste kann berechnet werden.
