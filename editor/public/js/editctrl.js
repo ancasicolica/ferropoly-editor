@@ -537,4 +537,28 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   };
 
 
-}]);
+  /**
+   * Finalize the pricelist
+   */
+  $scope.generatePricelist = function() {
+    $http.post('/pricelist/create', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
+      success(function (data, status) {
+        if (data.success) {
+          console.log('pricelist created');
+          $scope.statusText = data.message;
+          self.location = '/pricelist?gameId=' + data.gameId;
+        }
+        else {
+          console.log('Error');
+          console.log(data);
+        }
+      }).
+      error(function (data, status) {
+        console.log('ERROR');
+        console.log(data);
+        console.log(status);
+      });
+  };
+
+
+ }]);
