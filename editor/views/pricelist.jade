@@ -9,38 +9,13 @@ block head
 
 block navbar
   li
+    a(href='#' ng-click='setPanel("list")') Preisliste
+  li(ng-show='panel === "list"')
     a(href='#' onclick="javascript:window.print()") Drucken
+  li
+    a(href='#' ng-click='setPanel("info")') Spielinfo
 block content
-  h1 {{data.gameplay.gamename}}
-
-  |{{data.gameplay.scheduling.gameDate | date:'dd.MM.yyyy'}} {{data.gameplay.scheduling.gameStart}} - {{data.gameplay.scheduling.gameEnd}}
-
-  table(class='table table-striped table.condensed')
-    thead
-      th Pos
-      th Ort
-      th.pricelist Gruppe
-      th.pricelist Kaufpreis
-      th.pricelist Hauspreis
-      th.pricelist Miete
-      th.pricelist Miete 1H
-      th.pricelist Miete 2H
-      th.pricelist Miete 3H
-      th.pricelist Miete 4H
-      th.pricelist Miete Hotel
-
-    tbody
-      tr(data-ng-repeat='p in data.pricelist' )
-        td {{p.pricelist.position + 1}}
-        td {{p.location.name}}
-        td.pricelist {{p.pricelist.propertyGroup}}
-        td.pricelist {{p.pricelist.price}}
-        td.pricelist {{p.pricelist.pricePerHouse}}
-        td.pricelist {{p.pricelist.rents.noHouse}}
-        td.pricelist {{p.pricelist.rents.oneHouse}}
-        td.pricelist {{p.pricelist.rents.twoHouses}}
-        td.pricelist {{p.pricelist.rents.threeHouses}}
-        td.pricelist {{p.pricelist.rents.fourHouses}}
-        td.pricelist {{p.pricelist.rents.hotel}}
-
-  | Version {{data.gameplay.log.priceListVersion}}, Stand: {{data.gameplay.log.priceListCreated | date:'dd.MM.yyyy'}}
+  div(ng-show='panel === "list"')
+    include pricelist-list
+  div(ng-show='panel === "info"')
+    include pricelist-info

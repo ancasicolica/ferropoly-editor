@@ -10,6 +10,11 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
   $scope.test = gameId;
   $scope.data = undefined;
 
+  $scope.panel = 'list';
+
+  $scope.setPanel = function(panel) {
+    $scope.panel = panel;
+  };
 
   /**
    * After loading the document, we load the gameplay and pricelist

@@ -1,0 +1,62 @@
+//
+   Created by kc on 29.03.15.
+
+h1 {{data.gameplay.gamename}}
+
+.row
+  .col-md-4
+    table(class='table')
+      tr
+        td Organisator
+        td {{data.gameplay.owner.organisatorName}}
+      tr
+        td Organisation
+        td {{data.gameplay.owner.organisation}}
+      tr
+        td E-Mail Organisator
+        td {{data.gameplay.owner.organisatorEmail}}
+      tr
+        td Telefon Organisator
+        td {{data.gameplay.owner.organisatorPhone}}
+      tr
+        td Spieldatum
+        td {{data.gameplay.scheduling.gameDate | date:'dd.MM.yyyy'}}
+      tr
+        td Spielstart
+        td {{data.gameplay.scheduling.gameStart}}
+      tr
+        td Spielende
+        td {{data.gameplay.scheduling.gameEnd}}
+  .col-md-4
+    table(class='table')
+      tr
+        td Guthaben zu Beginn des Spieles
+        td {{data.gameplay.gameParams.startCapital}}
+      tr
+        td Startgeld pro Spielrunde
+        td {{data.gameplay.gameParams.interest}}
+      tr
+        td Dauer einer Spielrunde
+        td {{data.gameplay.gameParams.interestInterval}} min
+      tr
+        td Anzahl Zinsrunden vor Spielende
+        td {{data.gameplay.gameParams.interestCyclesAtEndOfGame}}
+      tr
+        td Strafzins bei negativem Vermögen
+        td {{data.gameplay.gameParams.debtInterest}} %
+
+  .col-md-4
+    .panel.panel-default(ng-show='!data.gameplay.internal.finalized')
+      .panel-heading
+        h3.panel-title Sind alle Daten richtig?
+      .panel-body
+        | Wenn die Preisliste den Vorstellungen entspricht und die Spieldaten alle richtig sind, dann sollte das Spiel 'finalisiert' werden. Konkret heisst das folgendes:
+        ul
+          li die Spielparameter werden eingefroren und können nicht mehr verändert werden
+          li die Preisliste ist fix - es können keine Orte hinzugefügt, entfernt oder die Reihenfolge verändert werden
+        br
+        | Nach diesem Schritt hat man also das endgültige Spiel - und die Spieler können sich darauf verlassen, dass sie mit den korrekten Daten planen.
+        br
+        |  Alles klar? Dann kontrolliere die Daten und finalisiere das Spiel, bevor Du die Preisliste den Teilnehmern verschickst.
+    .jumbotron(ng-show='data.gameplay.internal.finalized')
+      | Das Spiel ist bereits finalisiert

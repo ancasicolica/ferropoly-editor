@@ -52,7 +52,8 @@ var gameplaySchema = mongoose.Schema({
   internal: {
     gameId: {type: String, index: true}, // Identifier of the game
     owner: String,  // Owner of the game
-    map: String     // map to use
+    map: String,     // map to use
+    finalized: {type: Boolean, default: false} // finalized means no edits anymore
   },
   log: {
     created: {type: Date, default: Date.now},
