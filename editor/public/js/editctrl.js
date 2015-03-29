@@ -390,6 +390,12 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
               $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
               return;
             }
+            if (data.gameplay.internal.finalized) {
+              // finalized data, we can't edit
+              $scope.panel = 'error';
+              $scope.errorMessage = 'Das Spiel wurde schon finalisiert, Du solltest eigentlich gar nicht hier sein.';
+              return;
+            }
             $scope.gameplay = data.gameplay;
             $scope.allProperties = data.properties;
             $scope.gameplayReadOnly.created = new Date($scope.gameplay.log.created).toString("d.M.yy HH:mm");
@@ -472,28 +478,6 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       });
   };
 
-  /**
-   * Finalize the pricelist
-   */
-  $scope.finalizePricelist = function() {
-    $http.post('/pricelist/create', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('pricelist created');
-          $scope.statusText = data.message;
-          self.location = '/pricelist?gameId=' + data.gameId;
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
-        console.log(data);
-        console.log(status);
-      });
-  };
   /**
    * Gets the text for the current locations accessibility
    * @returns {string}

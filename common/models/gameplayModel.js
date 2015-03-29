@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var uuid = require('node-uuid');
 var Moniker = require('moniker');
+var finalizedGameplays = [];
 /**
  * The mongoose schema for an user
  */
@@ -148,6 +149,30 @@ var removeGameplay = function (gp, callback) {
 };
 
 /**
+ * Checks if a gameplay is finalized, caches the POSITIVE results
+ * @param gameId
+ * @param callback
+ */
+var isFinalized = function (gameId, callback) {
+  if (finalizedGameplays[gameId]) {
+    // return cached value
+    console.log('return cached value');
+    return true;
+  }
+  Gameplay.find({'internal.gameId': gameId}, function (err, docs) {
+    if (err) {
+      return callback(err);
+    }
+    if (docs.length === 0) {
+      return callback(new Error('game not found: ' + gameId));
+    }
+    if (docs[0].internal.finalized) {
+      finalizedGameplays[docs[0].internal.gameId] = true;
+    }
+    callback(null, docs[0].internal.finalized);
+  });
+};
+/**
  * Updates a gameplay
  * @param gp
  * @param callback
@@ -179,6 +204,10 @@ var updateGameplay = function (gp, callback) {
     });
   }
   // Save in DB
+  if (gp.internal.finalized) {
+    // We can't save it, it is finalized!
+    return callback(new Error('already finalized'));
+  }
   gp.save(function (err, gpSaved, nbAffected) {
     if (err) {
       return callback(err);
@@ -207,6 +236,10 @@ var updateGameplayLastChangedField = function (ownerEmail, gameId, callback) {
       return callback();
     }
     var gp = docs[0];
+    if (gp.internal.finalized) {
+      // We can't save it, it is finalized!
+      return callback(new Error('already finalized'));
+    }
     gp.log.lastEdited = new Date();
     gp.save(function (err) {
       return callback(err);
@@ -220,6 +253,10 @@ var updateGameplayLastChangedField = function (ownerEmail, gameId, callback) {
  * @param callback
  */
 var saveNewPriceListRevision = function (gameplay, callback) {
+  if (gameplay.internal.finalized) {
+    // We can't save it, it is finalized!
+    return callback(new Error('already finalized'));
+  }
   gameplay.log.priceListCreated = new Date();
   if (!gameplay.log.priceListVersion) {
     gameplay.log.priceListVersion = 1;
@@ -227,7 +264,7 @@ var saveNewPriceListRevision = function (gameplay, callback) {
   else {
     gameplay.log.priceListVersion++;
   }
-  gameplay.save(function(err) {
+  gameplay.save(function (err) {
     callback(err);
   });
 };
@@ -245,5 +282,6 @@ module.exports = {
   updateGameplay: updateGameplay,
   getGameplay: getGameplay,
   updateGameplayLastChangedField: updateGameplayLastChangedField,
-  saveNewPriceListRevision: saveNewPriceListRevision
+  saveNewPriceListRevision: saveNewPriceListRevision,
+  isFinalized: isFinalized
 };

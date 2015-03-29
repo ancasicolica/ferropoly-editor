@@ -7,7 +7,6 @@
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
-var Moniker = require('moniker');
 var date = require('datejs');
 var gameplayLib = require('../../common/lib/gameplayLib');
 var options;
@@ -60,12 +59,60 @@ router.post('/createnew', function (req, res) {
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.post');
+    console.log('Exception in gameplay.createnew.post');
     console.error(e);
     return res.send({success: false, message: e.message});
   }
 });
 
+/**
+ * Finalize the gameplay
+ */
+router.post('/finalize', function(req, res) {
+  try {
+    if (!req.body.authToken) {
+      return res.send({status: 'error', message: 'Permission denied (1)'});
+    }
+    if (req.body.authToken !== req.session.authToken) {
+      return res.send({status: 'error', message: 'Permission denied (2)'});
+    }
+
+    // Get gameplay first, verify user
+    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function(err, gp) {
+      if (err) {
+        return res.send({status: 'error', message: 'Gameplay load error: ' + err.message});
+      }
+      if (!gp || gp.length === 0) {
+        return res.send({status: 'error', message: 'Gamemplay not found'});
+      }
+      if (gp.log.priceListVersion === 0) {
+        return res.send({status: 'error', message: 'Can only finalize gameplays with pricelist'});
+      }
+      if (gp.internal.finalized) {
+        return res.send({status: 'error', message: 'Gameplay is already finalized'});
+      }
+
+      gp.internal.finalized = true;
+      gameplayModel.updateGameplay(gp, function(err) {
+        if (err) {
+          return res.send({status: 'error', message: 'Error while updating gameplay: ' + err.message});
+        }
+        propertyModel.finalizeProperties(req.body.gameId, function(err) {
+          if (err) {
+            return res.send({status: 'error', message: 'Error while cleaning up properties: ' + err.message});
+          }
+          return res.send({success: true})
+        })
+      })
+    });
+
+  }
+  catch (e) {
+    console.log('Exception in gameplay.finalize.post');
+    console.error(e);
+    return res.send({status: 'error', message: e.message});
+  }
+});
 
 /**
  * The exports: an init function only

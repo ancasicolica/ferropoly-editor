@@ -246,6 +246,21 @@ var removePropertyFromGameplay = function (gameId, locationId, callback) {
 };
 
 /**
+ * Finalizes a game: removes all properties not assigned to the pricelist
+ * @param gameId
+ * @param callback
+ * @returns {*}
+ */
+var finalizeProperties = function (gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  Property.remove({gameId: gameId, 'pricelist.priceRange': -1}, function (err) {
+      callback(err);
+    }
+  )
+};
+/**
  * Removes ALL properties from the gameplay
  * @param gameId
  * @param callback
@@ -273,5 +288,6 @@ module.exports = {
   updateProperty: updateProperty,
   createPropertyFromLocation: createPropertyFromLocation,
   updatePositionInPriceList: updatePositionInPriceList,
-  updateProperties: updateProperties
+  updateProperties: updateProperties,
+  finalizeProperties: finalizeProperties
 };

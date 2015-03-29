@@ -84,13 +84,25 @@ router.post('/saveProperty', function (req, res) {
     return res.send({status: 'error', message: 'Invalid parameters'});
   }
   var prop = req.body.property;
-  console.log('Save property ' + prop.location.name);
-  properties.updateProperty(prop.gameId, prop, function (err, updatedProp) {
+
+  // load gameplay, check if finalized
+  gameplays.isFinalized(prop.gameId, function (err, finalized) {
     if (err) {
       return res.send({status: 'error', message: err.message});
     }
-    return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+    if (finalized) {
+      return res.send({status: 'error', message: 'Already finalized'});
+    }
+
+    console.log('Save property ' + prop.location.name);
+    properties.updateProperty(prop.gameId, prop, function (err, updatedProp) {
+      if (err) {
+        return res.send({status: 'error', message: err.message});
+      }
+      return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+    });
   });
+
 });
 
 /**
@@ -104,7 +116,7 @@ router.post('/dataChanged', function (req, res) {
   if (req.body.authToken !== req.session.authToken) {
     return res.send({status: 'error', message: 'Permission denied (2)'});
   }
-  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.body.gameId, function(err) {
+  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.body.gameId, function (err) {
     if (err) {
       console.log('Error while updating gameplay: ' + err.message);
     }
@@ -135,34 +147,46 @@ router.post('/savePositionInPricelist', function (req, res) {
     });
   }
 
-  var updated = 0;
-  var headersSent = false;
+  // Load gameplay, check if finalized
+  gameplays.isFinalized(req.body.gameId, function (err, finalized) {
+    if (err) {
+      return res.send({status: 'error', message: err.message});
+    }
+    if (finalized) {
+      return res.send({status: 'error', message: 'Already finalized'});
+    }
 
-  // Iterate through positions, abort if failing
-  for (var i = 0; i < props.length; i++) {
-    properties.updatePositionInPriceList(req.body.gameId, props[i].uuid, props[i].positionInPriceRange, function (err) {
-      if (err) {
-        if (!headersSent) {
-          res.send({status: 'error', message: err.message});
-          headersSent = true;
+    var updated = 0;
+    var headersSent = false;
+
+    // Iterate through positions, abort if failing
+    for (var i = 0; i < props.length; i++) {
+      properties.updatePositionInPriceList(req.body.gameId, props[i].uuid, props[i].positionInPriceRange, function (err) {
+        if (err) {
+          if (!headersSent) {
+            res.send({status: 'error', message: err.message});
+            headersSent = true;
+          }
+          return;
         }
-        return;
-      }
-      updated++;
-      if (updated === props.length) {
-        if (!headersSent) {
-          res.send({
-            success: true,
-            status: 'ok',
-            message: props.length + ' Orte gespeichert',
-            nbSaved: props.length
-          });
-          headersSent = true;
+        updated++;
+        if (updated === props.length) {
+          if (!headersSent) {
+            res.send({
+              success: true,
+              status: 'ok',
+              message: props.length + ' Orte gespeichert',
+              nbSaved: props.length
+            });
+            headersSent = true;
+          }
+          return;
         }
-        return;
-      }
-    });
-  }
+      });
+    }
+
+  });
+
 });
 
 
