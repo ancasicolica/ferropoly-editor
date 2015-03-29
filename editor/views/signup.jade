@@ -44,13 +44,8 @@ block content
 
         button(type='submit' class='btn btn-default' ng-disabled='!formDataValid()' ng-click='view = 1') Weiter
     div(ng-show='view === 1')
-      h1 AGBs
-      | Leider kommen wir nicht um AGBs herum, es gibt hier ein paar Dinge, die wichtig sind und deshalb geklärt sein müssen. Bitte lies das genau durch und
-      | mach nur weiter, wenn Du damit einverstanden bist.
-      h2
-      | Gegenwärtig steht hier nur, dass die Sache in Entwicklung ist und man ja nicht ein Ferropoly damit planen soll... die Daten auf der Datenbank
-      | werden zur Zeit beliebig gelöscht! Rückmeldungen zu Fehlern und Wünschen sind jedoch erwünscht, die Kontaktdaten findet man auf
-      a(href='http://www.ferropoly.ch') www.ferropoly.ch
+      include signup-agb-preview
+
       br
       br
 
