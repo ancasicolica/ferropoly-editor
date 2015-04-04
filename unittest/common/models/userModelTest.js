@@ -25,7 +25,7 @@ describe('UserModel Tests', function () {
       users.generatePasswordHash(user, 'taibika');
       console.log(user.passwordHash);
       console.log(user.passwordSalt);
-      expect(user.login.passwordHash.length).to.be(64);
+      expect(user.login.passwordHash.length > 60).to.be(true);
       expect(user.login.passwordSalt.length).to.be(64);
     });
   });
@@ -81,7 +81,7 @@ describe('UserModel Tests', function () {
           expect(savedUser.personalData.email).to.be(user1.personalData.email);
           expect(savedUser.roles.editor).to.be(true);
           expect(savedUser.roles.admin).to.be(undefined);
-          expect(savedUser.login.passwordHash.length).to.be(64);
+          expect(savedUser.login.passwordHash.length > 60).to.be(true);
           expect(savedUser.login.passwordSalt.length).to.be(64);
           expect(users.verifyPassword(savedUser, password1)).to.be(true);
           user1 = savedUser;

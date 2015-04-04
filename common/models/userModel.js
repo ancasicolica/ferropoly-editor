@@ -9,6 +9,7 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var uuid = require('node-uuid');
+var pbkdf2 = require('pbkdf2-sha256')
 
 /**
  * The mongoose schema for an user
@@ -85,9 +86,7 @@ var verifyPassword = function (user, enteredPassword) {
  * @returns {*}
  */
 var createPasswordHash = function (salt, password) {
-  var passwordHash = crypto.createHash('sha256');
-  passwordHash.update(salt + password);
-  return passwordHash.digest('hex');
+  return pbkdf2(password, salt, 1, 64).toString('base64');
 };
 
 /**
