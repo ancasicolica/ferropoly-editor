@@ -1,10 +1,13 @@
-/*
- This is a schema for a user. A 'user' is someone who uses ferropoly, either as game editor
- or as player.
-
- The schema offers functionality to the DB but does almost no data validation
-
- 17.1.15 KC
+/**
+ * This is a schema for a user. A 'user' is someone who uses ferropoly, either as game editor
+ * or as player.
+ *
+ * The schema offers functionality to the DB but does almost no data validation
+ *
+ * !!!! THE SOURCE IS MAINTAINED IN THE FERROPOLY-EDITOR PROJECT !!!!
+ *
+ * 17.1.15 KC
+ *
  */
 var mongoose = require('mongoose');
 var crypto = require('crypto');

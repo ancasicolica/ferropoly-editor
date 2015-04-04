@@ -4,6 +4,8 @@
  *
  * The gameplay does not store the information of the game in its model, this is found in the GameEvents.
  *
+ * !!!! THE SOURCE IS MAINTAINED IN THE FERROPOLY-EDITOR PROJECT !!!!
+ *
  * Created by kc on 22.01.15.
  */
 
