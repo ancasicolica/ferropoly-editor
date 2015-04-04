@@ -142,7 +142,7 @@ var removeGameplay = function (gp, callback) {
   if (!gp || !gp.internal || !gp.internal.gameId) {
     return callback(new Error('Invalid gameplay'));
   }
-
+  console.log('Removing gameplay ' + gp.internal.gameId + ' (' + gp.gamename + ')');
   Gameplay.remove({'internal.gameId': gp.internal.gameId}, function (err) {
     callback(err);
   });

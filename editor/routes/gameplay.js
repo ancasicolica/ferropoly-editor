@@ -13,6 +13,7 @@ var options;
 var gameplayModel;
 var locationModel;
 var propertyModel;
+var teamModel = require('../../common/models/teamModel')
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -68,7 +69,7 @@ router.post('/createnew', function (req, res) {
 /**
  * Finalize the gameplay
  */
-router.post('/finalize', function(req, res) {
+router.post('/finalize', function (req, res) {
   try {
     if (!req.body.authToken) {
       return res.send({status: 'error', message: 'Permission denied (1)'});
@@ -78,7 +79,7 @@ router.post('/finalize', function(req, res) {
     }
 
     // Get gameplay first, verify user
-    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function(err, gp) {
+    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({status: 'error', message: 'Gameplay load error: ' + err.message});
       }
@@ -93,11 +94,11 @@ router.post('/finalize', function(req, res) {
       }
 
       gp.internal.finalized = true;
-      gameplayModel.updateGameplay(gp, function(err) {
+      gameplayModel.updateGameplay(gp, function (err) {
         if (err) {
           return res.send({status: 'error', message: 'Error while updating gameplay: ' + err.message});
         }
-        propertyModel.finalizeProperties(req.body.gameId, function(err) {
+        propertyModel.finalizeProperties(req.body.gameId, function (err) {
           if (err) {
             return res.send({status: 'error', message: 'Error while cleaning up properties: ' + err.message});
           }
@@ -106,6 +107,56 @@ router.post('/finalize', function(req, res) {
       })
     });
 
+  }
+  catch (e) {
+    console.log('Exception in gameplay.finalize.post');
+    console.error(e);
+    return res.send({status: 'error', message: e.message});
+  }
+});
+
+
+/**
+ * Deletes a gameplay and everything associated to it
+ */
+router.post('/delete', function (req, res) {
+  try {
+    if (!req.body.authToken) {
+      return res.send({status: 'error', message: 'Permission denied (1)'});
+    }
+    if (req.body.authToken !== req.session.authToken) {
+      return res.send({status: 'error', message: 'Permission denied (2)'});
+    }
+
+    // Get gameplay first, verify user
+    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
+      if (err) {
+        return res.send({
+          status: 'error',
+          message: 'Gameplay load error: ' + err.message + ' GameplayId: : ' + req.body.gameId
+        });
+      }
+      // Gameplay not found (or wrong user for it)
+      if (!gp || gp.length === 0) {
+        return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
+      }
+
+      gameplayModel.removeGameplay(gp, function (err) {
+        // Remove the gamemplay data first - if we fail with the properties and other data
+        // at least there is no inconsistent state in the UI. If this fails, this is the only
+        // error, all others are not nice, but we can't fix it anyway.
+        if (err) {
+          return res.send({status: 'error', message: 'Gameplay delete error: ' + err.message});
+        }
+        // Remove Properties
+        propertyModel.removeAllPropertiesFromGameplay(gp.internal.gameId, function () {
+          // Remove Teams
+          teamModel.deleteAllTeams(gp.internal.gameId, function () {
+            return res.send({success: true, gameId: gp.internal.gameId, name: gp.gamename});
+          });
+        })
+      });
+    });
   }
   catch (e) {
     console.log('Exception in gameplay.finalize.post');

@@ -101,6 +101,7 @@ var deleteTeam = function (teamId, callback) {
  * @param callback
  */
 var deleteAllTeams = function (gameId, callback) {
+  console.log('Removing all teams for ' + gameId);
   Team.find({gameId: gameId}).remove().exec(function (err) {
     callback(err);
   });
