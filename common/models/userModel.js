@@ -46,7 +46,7 @@ var User = mongoose.model('User', userSchema);
  * @param source
  * @param target
  */
-var copyUser = function(source, target) {
+var copyUser = function (source, target) {
   target.personalData = source.personalData;
   target.roles = source.roles;
   target.info = source.info;
@@ -94,8 +94,8 @@ var createPasswordHash = function (salt, password) {
  * @param emailAddress
  * @param callback
  */
-var removeUser = function(emailAddress, callback){
-  User.remove({'personalData.email': emailAddress}, function(err) {
+var removeUser = function (emailAddress, callback) {
+  User.remove({'personalData.email': emailAddress}, function (err) {
     callback(err);
   });
 };
@@ -114,7 +114,7 @@ var updateUser = function (user, password, callback) {
 
     if (docs.length === 0) {
       // New User OR invalid created user
-      return getUserByMailAddress(user.personalData.email, function(err, foundUser) {
+      return getUserByMailAddress(user.personalData.email, function (err, foundUser) {
         if (err) {
           return callback(err);
         }
@@ -144,7 +144,7 @@ var updateUser = function (user, password, callback) {
       if (password) {
         generatePasswordHash(editedUser, password);
       }
-      return editedUser.save(function(err, savedUser) {
+      return editedUser.save(function (err, savedUser) {
         if (err) {
           return callback(err);
         }
@@ -159,8 +159,8 @@ var updateUser = function (user, password, callback) {
  * @param emailAddress
  * @param callback
  */
-var getUserByMailAddress = function(emailAddress, callback) {
-  User.find({'personalData.email': emailAddress}, function(err, docs) {
+var getUserByMailAddress = function (emailAddress, callback) {
+  User.find({'personalData.email': emailAddress}, function (err, docs) {
     if (err) {
       return callback(err);
     }
@@ -171,14 +171,44 @@ var getUserByMailAddress = function(emailAddress, callback) {
   });
 };
 
+/**
+ * Gets all users
+ * @param callback
+ */
+var getAllUsers = function (callback) {
+  User.find({}, function (err, docs) {
+    if (err) {
+      return callback(err);
+    }
+    if (docs.length === 0) {
+      return callback();
+    }
+    callback(null, docs);
+  });
+};
+
+/**
+ * Counts all users
+ * @param callback
+ */
+var countUsers = function (callback) {
+  User.count({}, function (err, nb) {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, nb);
+  });
+};
+
 module.exports = {
   Model: User,
 
   updateUser: updateUser,
-
   generatePasswordHash: generatePasswordHash,
   verifyPassword: verifyPassword,
   getUserByMailAddress: getUserByMailAddress,
-  removeUser:removeUser
+  removeUser: removeUser,
+  getAllUsers: getAllUsers,
+  countUsers: countUsers
 
 };

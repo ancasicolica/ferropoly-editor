@@ -6,7 +6,7 @@ var expect = require('expect.js');
 var users = require('./../../../common/models/userModel');
 var settings = require('./../../../editor/settings');
 var db = require('./../../../common/lib/ferropolyDb');
-describe('UserModel Tests', function () {
+describe.only('UserModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       done(err);
@@ -116,7 +116,7 @@ describe('UserModel Tests', function () {
         expect(user.personalData.email).to.be('olivia@kunz.ch');
         done(err);
       })
-    })
+    });
 
     it('Checking if an unkown exists should return none', function (done) {
       users.getUserByMailAddress('olivia@kunz-huber.ch', function (err, user) {
@@ -126,6 +126,26 @@ describe('UserModel Tests', function () {
         expect(user).to.be(undefined);
         done(err);
       })
+    });
+  });
+
+  var nb = 0;
+  describe('Getting all users', function() {
+    it('should return some', function(done) {
+      users.getAllUsers(function(err, users) {
+        nb = users.length;
+        expect(nb >= 2).to.be(true);
+        done(err);
+      });
+    })
+  });
+
+  describe('Count all users', function() {
+    it('should return some', function(done) {
+      users.countUsers(function(err, userNb) {
+        expect(userNb).to.be(nb);
+        done(err);
+      });
     })
   });
 });

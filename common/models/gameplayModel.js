@@ -129,6 +129,20 @@ var countGameplaysForUser = function (ownerEmail, callback) {
 };
 
 /**
+ * Counts all gameplays for all users
+ * @param ownerEmail
+ * @param callback
+ */
+var countGameplays = function (callback) {
+  Gameplay.count({}, function (err, nb) {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, nb);
+  });
+};
+
+/**
  * Returns exactly one (or none, if not existing) gameplay with the params supplied
  * @param gameId
  * @param ownerEmail
@@ -298,5 +312,6 @@ module.exports = {
   updateGameplayLastChangedField: updateGameplayLastChangedField,
   saveNewPriceListRevision: saveNewPriceListRevision,
   isFinalized: isFinalized,
-  countGameplaysForUser: countGameplaysForUser
+  countGameplaysForUser: countGameplaysForUser,
+  countGameplays:countGameplays
 };

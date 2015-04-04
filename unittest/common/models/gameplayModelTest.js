@@ -67,13 +67,21 @@ describe('GameplayModel Tests', function () {
         expect(nb).to.be(2);
         done(err);
       })
-    })
+    });
     it('should return the correct number for user 2', function(done) {
       gameplays.countGameplaysForUser('christine@meyer.com', function(err, nb) {
         expect(nb).to.be(1);
         done(err);
       })
-    })
+    });
+    it('should return the correct number all users', function(done) {
+      gameplays.countGameplays(function(err, nb) {
+        // the gameplays of the test users are also here
+        expect(nb >= 3).to.be(true);
+        done(err);
+      })
+    });
+
   });
 
   var gp1, gp2, gp3;
