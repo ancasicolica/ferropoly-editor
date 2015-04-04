@@ -11,7 +11,9 @@ block navbar-right
 
 
 block content
-    div(ng-show='view === 0')
+
+  div(ng-show='view === 0')
+    .signup-box.ls-box-shape
       h1 Ferropoly Anmeldung
       | Willkommen beim Ferropoly Editor. Diese Applikation ist gegenwärtig in Entwicklung, eine Registrierung ist zwar möglich,
       | doch die Logins werden periodisch gelöscht!
@@ -43,19 +45,21 @@ block content
           span(id='emailRepeatInfo' class='help-block' ng-hide='!passwordRepeatInvalid') Das Passwort stimmt nicht überein
 
         button(type='submit' class='btn btn-default' ng-disabled='!formDataValid()' ng-click='view = 1') Weiter
-    div(ng-show='view === 1')
-      include signup-agb-preview
+  div(ng-show='view === 1')
+    .agb-box.ls-box-shape(id='agb-box')
+      .agb-contents
+        include signup-agb-preview
+        br
+        br
+        label
+          input(type='checkbox' ng-model='agbAccepted')
+          | Ich habe die AGBs gelesen, verstanden und akzeptiert
+        br
+        button(class='btn btn-default' ng-disabled='!agbAccepted' ng-click='createUser()') Registrierung abschliessen
+        br
+        br
 
-      br
-      br
-
-      label
-        input(type='checkbox' ng-model='agbAccepted')
-        | Ich habe die AGBs gelesen, verstanden und akzeptiert
-      br
-      button(class='btn btn-default' ng-disabled='!agbAccepted' ng-click='createUser()') Registrierung abschliessen
-
-    div(ng-show='view === 2')
-      | Vielen Dank für die Registrierung. Gegenwärtig gibt es noch keine Email-Verifikation, deshalb kann sogleich eingeloggt werden.
-      h2
-        a(href='/') Hier geht es zum Login
+  .ls-box-shape(ng-show='view === 2')
+    | Vielen Dank für die Registrierung. Gegenwärtig gibt es noch keine Email-Verifikation, deshalb kann sogleich eingeloggt werden.
+    h2
+      a(href='/') Hier geht es zum Login

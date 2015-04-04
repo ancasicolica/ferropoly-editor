@@ -1,8 +1,31 @@
+body {
+  background-image: url("/images/ferropoly_background01.jpg");
+  background-clip: border-box;
+  background-size: cover;
+}
 
-.form-signin {
+.login-box {
     max-width: 330px;
+
+}
+.signup-box {
+    max-width: 600px;
+}
+.agb-box {
+    max-width: 80%;
+    overflow : auto;
+
+}
+.agb-contents {
+    height: inherit;
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+}
+.ls-box-shape {
     padding: 15px;
     margin: 0 auto;
+    background-color: rgba(255,255,255,0.8);
+    border-radius: 5px;
 }
 .form-signin .form-signin-heading,
 .form-signin .checkbox {

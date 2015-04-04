@@ -70,7 +70,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
    * Initialize module when the document is ready
    */
   $(document).ready(function () {
-
+    setAgbHeight();
     // Establish socket.io connection to the server
     socket = io.connect('http://' + ferropolyServer.host + ':' + ferropolyServer.port);
     // Register all handlers of this module
@@ -82,6 +82,15 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
       $scope.$apply();
     })
   });
+  /**
+   * Sets the heigth of the map as large as possible. Workaround as I haven't found a fitting css rule!
+   */
+  var setAgbHeight = function () {
+    var dh = $(window).height();
+    var mc = document.querySelector('#agb-box');
+    var h = dh - 195;
+    mc.style.height = h.toString() + 'px';
+  };
   /**
    * Verify Email Address: send request to server to do so, answer is received in 'emailVerificationResult'
    */
