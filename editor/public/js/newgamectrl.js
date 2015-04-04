@@ -4,14 +4,21 @@
  * Created by kc on 29.01.15.
  */
 'use strict';
-var newGameControl = angular.module('newgameApp', ['ui.bootstrap']);
+var newGameControl = angular.module('newgameApp', ['ui.bootstrap','pickadate']).config(function (pickadateI18nProvider) {
+  pickadateI18nProvider.translations = {
+    prev: '<i class="icon-chevron-left"></i> früher',
+    next: 'später <i class="icon-chevron-right"></i>'
+  }
+});
+
 newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
 
   $scope.map = 'zvv';
   $scope.gamename = 'Ferropoly Spiel';
   $scope.errorMessage = '';
-  $scope.gamedate = '';
+  $scope.gamedate = new Date().add(1).day().toString('yyyy-MM-dd');
   $scope.dateError = undefined;
+  $scope.minDate = Date.today().toString('yyyy-MM-dd');
 
   var authToken = 'none';
 
