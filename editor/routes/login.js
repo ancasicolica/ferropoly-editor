@@ -12,7 +12,7 @@ var router = express.Router();
 var settings;
 
 router.get('/', function (req, res) {
-  res.render('login', {title: 'Ferropoly Editor Login', hideLogout: true, showSignUp: true});
+  res.render('login', {title: 'Ferropoly Editor Login', hideLogout: true, showSignUp: true, versionInfo: settings.version});
 });
 
 
