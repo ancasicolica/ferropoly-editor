@@ -46,17 +46,28 @@ router.post('/createnew', function (req, res) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
 
-    // Use the unit-test tested gameplay lib for this
-    gameplayLib.createNewGameplay({
-      email: req.session.passport.user,
-      map: req.body.map,
-      gamename: req.body.gamename,
-      gamedate: req.body.gamedate
-    }, gameplayModel, locationModel, propertyModel, function (err, gp) {
+    gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
       if (err) {
-        return res.send({success: false, message: err.message});
+        return res.send({status: 'error', message: 'DB read error: ' + err.message});
       }
-      return res.send({success: true, gameId: gp.internal.gameId});
+      if (nb > 3) {
+        // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
+        // a user specific count. So far we have four.
+        return res.send({status: 'error', message: 'Max game number reached: ' + nb});
+      }
+
+      // Use the unit-test tested gameplay lib for this
+      gameplayLib.createNewGameplay({
+        email: req.session.passport.user,
+        map: req.body.map,
+        gamename: req.body.gamename,
+        gamedate: req.body.gamedate
+      }, gameplayModel, locationModel, propertyModel, function (err, gp) {
+        if (err) {
+          return res.send({success: false, message: err.message});
+        }
+        return res.send({success: true, gameId: gp.internal.gameId});
+      });
     });
   }
   catch (e) {

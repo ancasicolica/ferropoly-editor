@@ -5,7 +5,7 @@ block head
 
 block navbar
   li
-    a(href='/newgame') Neues Spiel
+    a(href='/newgame' ng-hide='gameplays.length > 3') Neues Spiel
 
 block content
   include index-modal-delete
