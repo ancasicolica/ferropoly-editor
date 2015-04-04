@@ -9,7 +9,7 @@ var db = require('./../../../common/lib/ferropolyDb');
 var gameplays = require('./../../../common/models/gameplayModel');
 var settings = require('./../../../editor/settings');
 
-describe('UserModel Tests', function () {
+describe('GameplayModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       done(err);
@@ -59,6 +59,21 @@ describe('UserModel Tests', function () {
         done(err);
       })
     });
+  });
+
+  describe('Counting the gameplays', function() {
+    it('should return the correct number for user 1', function(done) {
+      gameplays.countGameplaysForUser('olivia@kunz.ch', function(err, nb) {
+        expect(nb).to.be(2);
+        done(err);
+      })
+    })
+    it('should return the correct number for user 2', function(done) {
+      gameplays.countGameplaysForUser('christine@meyer.com', function(err, nb) {
+        expect(nb).to.be(1);
+        done(err);
+      })
+    })
   });
 
   var gp1, gp2, gp3;

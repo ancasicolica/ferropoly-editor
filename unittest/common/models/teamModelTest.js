@@ -12,7 +12,7 @@ var db = require('./../../../common/lib/ferropolyDb');
 var team1;
 var team2;
 
-describe.only('TeamModel Tests', function () {
+describe('TeamModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       done(err);
