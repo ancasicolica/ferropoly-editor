@@ -9,11 +9,11 @@ var router = express.Router();
 var multer = require('multer');
 var date = require('datejs');
 var gameplayLib = require('../../common/lib/gameplayLib');
-var options;
 var gameplayModel;
 var locationModel;
 var propertyModel;
 var teamModel = require('../../common/models/teamModel')
+
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -181,9 +181,8 @@ router.post('/delete', function (req, res) {
  * @type {{init: Function}}
  */
 module.exports = {
-  init: function (app, _options, _gameplays, _locations, _properties) {
-    options = _options;
-    gameplayModel = _gameplays;
+  init: function (app, _gameplays, _locations, _properties) {
+     gameplayModel = _gameplays;
     locationModel = _locations;
     propertyModel = _properties;
     app.use(multer()); // for parsing multipart/form-data

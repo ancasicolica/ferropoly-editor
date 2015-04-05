@@ -10,14 +10,20 @@ var router = express.Router();
 var teams = require('../../common/models/teamModel');
 var uuid = require('node-uuid');
 
+var settings = require('../settings');
+var ngFile = '/js/playerctrl.js';
+if (settings.minifedjs) {
+  ngFile = '/js/playerctrl.min.js'
+}
+
 /* GET player page. */
 router.get('/', function (req, res) {
   res.render('player', {
     title: 'Spieler',
     ngController: 'playerCtrl',
     ngApp: 'playerApp',
-    ngFile: '/js/playerctrl.js',
-    gameId: req.query.gameId,
+    ngFile: ngFile,
+    gameId: req.query.gameId
   });
 });
 

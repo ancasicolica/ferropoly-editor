@@ -61,15 +61,15 @@ var initServer = function () {
   app.use(flash()); // use connect-flash for flash messages stored in session
 
 
-  signup.init(app, settings, users);
+  signup.init(app, users);
   login.init(app, settings);
   authtoken.init(app);
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
   newgame.init(app);
-  edit.init(app, settings, gameplays, users, properties);
-  gameplay.init(app, settings, gameplays, locations, properties);
+  edit.init(app, gameplays, users, properties);
+  gameplay.init(app, gameplays, locations, properties);
   configuration.init(app, settings);
   app.use('/pricelist', pricelist);
   app.use('/player', player);

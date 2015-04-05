@@ -7,9 +7,14 @@
 var express = require('express');
 var router = express.Router();
 var gameplays;
-var settings;
+var settings = require('../settings');
 var users;
 var properties;
+
+var ngFile =  '/js/editctrl.js';
+if (settings.minifedjs) {
+  ngFile = '/js/editctrl.min.js'
+}
 
 /* GET edit page */
 router.get('/', function (req, res) {
@@ -25,7 +30,7 @@ router.get('/', function (req, res) {
     gameId: req.query.gameId,
     ngController: 'editCtrl',
     ngApp: 'editApp',
-    ngFile: '/js/editctrl.js'
+    ngFile: ngFile
   });
 });
 
@@ -191,9 +196,8 @@ router.post('/savePositionInPricelist', function (req, res) {
 
 
 module.exports = {
-  init: function (app, _settings, _gameplays, _users, _properties) {
+  init: function (app, _gameplays, _users, _properties) {
     app.use('/edit', router);
-    settings = _settings;
     gameplays = _gameplays;
     users = _users;
     properties = _properties;

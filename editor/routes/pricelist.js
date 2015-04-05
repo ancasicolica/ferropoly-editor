@@ -12,6 +12,11 @@ var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var _ = require('lodash');
 
+var settings = require('../settings');
+var ngFile = '/js/pricelistctrl.js';
+if (settings.minifedjs) {
+  ngFile = '/js/pricelistctrl.min.js'
+}
 
 /* GET priceslist. */
 router.get('/', function (req, res) {
@@ -20,7 +25,7 @@ router.get('/', function (req, res) {
     gameId: req.query.gameId,
     ngController: 'pricelistCtrl',
     ngApp: 'pricelistApp',
-    ngFile: '/js/pricelistctrl.js'
+    ngFile: ngFile
   });
 });
 

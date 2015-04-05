@@ -63,6 +63,9 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
         $scope.emailInvalidExplanation = 'Die Email-Adresse ist ungültig.'
       }
     }
+    else {
+      $scope.emailInvalid = false;
+    }
     $scope.$apply();
   };
 

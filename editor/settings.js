@@ -18,6 +18,17 @@ else {
   process.env.DEPLOY_TYPE = process.env.DEPLOY_TYPE || 'local';
 }
 
+if (process.env.DEBUG) {
+  console.log('DEBUG Settings used');
+  // Use minified javascript files wherever available
+  settings.minifedjs = false;
+}
+else {
+  console.log('DIST Settings with minified js files used');
+  // Use minified javascript files wherever available
+  settings.minifedjs = true;
+}
+
 console.log('DEPLOY_TYPE: ' + process.env.DEPLOY_TYPE);
 
 if (process.env.DEPLOY_TYPE && fs.existsSync(path.join(__dirname, 'settings/' + process.env.DEPLOY_TYPE + '.js'))) {

@@ -10,24 +10,28 @@ var router = express.Router();
 var users;
 var validator = require('validator');
 
+var settings = require('../settings');
+var ngFile = '/js/signupctrl.js';
+if (settings.minifedjs) {
+  ngFile = '/js/signupctrl.min.js'
+}
+
 /* GET Sign-up page */
 router.get('/', function (req, res) {
   res.render('signup', {title: 'Anmelden', hideLogout: true,
     ngController: 'signupCtrl',
     ngApp: 'signupApp',
-    ngFile: '/js/signupctrl.js' });
+    ngFile: ngFile });
 });
 
-var settings;
 
 /**
  * The exports: an init function only
  * @type {{init: Function}}
  */
 module.exports = {
-  init: function (app, _settings, _users) {
+  init: function (app, _users) {
     app.use('/signup', router);
-    settings = _settings;
     users = _users;
   },
 
