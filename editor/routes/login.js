@@ -10,6 +10,7 @@ var passport = require('passport');
 var url = require('url');
 var router = express.Router();
 var settings;
+var _ = require('lodash');
 
 router.get('/', function (req, res) {
   res.render('login', {title: 'Ferropoly Editor Login', hideLogout: true, showSignUp: true, versionInfo: settings.version});
@@ -35,12 +36,17 @@ module.exports = {
     // Filter for get, redirect to login page if not logged out
     app.get('*', function (req, res, next) {
       var uri = url.parse(req.url).pathname;
-
       if (uri === '/signup') {
         console.log('Signup !');
         return next();
       }
       if (uri === '/configuration.js') {
+        return next();
+      }
+      if(_.endsWith(uri, 'jpg')) {
+        return next();
+      }
+      if(_.endsWith(uri, 'ico')) {
         return next();
       }
       if (!req.session.passport.user) {

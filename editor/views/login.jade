@@ -2,12 +2,19 @@ extends layout
 
 block head
   link(rel='stylesheet', href='/css/signin.css')
+  script.
+    $(document).ready(function () {
+      var i = (new Date().getSeconds() % 5) + 1;
+      $('body').addClass('bg' + i);
+    });
+
 
 block navbar-right
   li
     a(href='http://www.ferropoly.ch') Impressum / Kontakt
 
 block content
+
   .login-box.ls-box-shape
     form(action='login' method='post')
       h3 Ferropoly Spiel Editor
@@ -26,3 +33,4 @@ block content
           | Diese Anwendung ist für den Chrome-Browser optimiert. Mit anderen Browsern können Probleme auftreten.
 block time
   | Version: #{versionInfo}
+

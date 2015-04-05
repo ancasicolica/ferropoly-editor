@@ -2,7 +2,11 @@ extends layout
 
 block head
   link(rel='stylesheet', href='/css/signin.css')
-  script(src='')
+  script.
+    $(document).ready(function () {
+      var i = (new Date().getSeconds() % 5) + 1;
+      $('body').addClass('bg' + i);
+    });
 
 block navbar-right
   ul(class='nav navbar-nav navbar-right')

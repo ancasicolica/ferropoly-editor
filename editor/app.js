@@ -76,7 +76,6 @@ var initServer = function () {
 
   var server = require('http').Server(app);
   var io = require('socket.io')(server);
-  //server.listen(3001);
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
