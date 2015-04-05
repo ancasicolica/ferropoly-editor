@@ -28,7 +28,7 @@ describe('GameplayLib Tests', function () {
 
   describe('Creating a complete new gameplay', function() {
     it('should create a gameplay', function(done) {
-      gplib.createNewGameplay({email: 'anyone@me.com', map:'zvv', gamename:'LibTest', gamedate:'2020-01-01'}, gameplays, locations, properties, function(err, newGp) {
+      gplib.createNewGameplay({email: 'anyone@me.com', map:'zvv', gamename:'LibTest', gamedate:'2020-01-01'}, function(err, newGp) {
         expect(newGp.gamename).to.be('LibTest');
         gp = newGp;
         done(err);
@@ -49,7 +49,7 @@ describe('GameplayLib Tests', function () {
 
   describe('Delete the complete gameplay', function() {
     it('should delete all properties of the gameplay', function(done) {
-      gplib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail:'anyone@me.com'}, gameplays, properties, function(err) {
+      gplib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail:'anyone@me.com'}, function(err) {
         if (err) {
           done(err);
         }

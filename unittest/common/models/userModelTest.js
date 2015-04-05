@@ -6,7 +6,7 @@ var expect = require('expect.js');
 var users = require('./../../../common/models/userModel');
 var settings = require('./../../../editor/settings');
 var db = require('./../../../common/lib/ferropolyDb');
-describe.only('UserModel Tests', function () {
+describe('UserModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       done(err);

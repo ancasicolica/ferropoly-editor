@@ -69,7 +69,7 @@ var initServer = function () {
   app.use('/', routes);
   newgame.init(app);
   edit.init(app, gameplays, users, properties);
-  gameplay.init(app, gameplays, locations, properties);
+  gameplay.init(app);
   configuration.init(app, settings);
   app.use('/pricelist', pricelist);
   app.use('/player', player);
