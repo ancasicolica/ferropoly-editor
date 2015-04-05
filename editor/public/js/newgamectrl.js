@@ -19,6 +19,7 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   $scope.gamedate = new Date().add(1).day().toString('yyyy-MM-dd');
   $scope.dateError = undefined;
   $scope.minDate = Date.today().toString('yyyy-MM-dd');
+  $scope.random = 0;
 
   var authToken = 'none';
 
@@ -59,6 +60,7 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
       gamename: $scope.gamename,
       map: $scope.map,
       gamedate: $scope.gamedate,
+      random: $scope.random,
       authToken: authToken
     }).
       success(function (data, status) {

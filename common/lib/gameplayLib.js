@@ -17,8 +17,8 @@ var _ = require('lodash');
  * @param callback
  */
 function createRandomGameplay(gameId, props, nb, callback) {
-  console.log('CREATING RANDOM GAMEPLAY');
   var gplen = Math.min(nb, props.length);
+  console.log('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   var priceRange = 0;
   var generated = 0;
 
@@ -33,7 +33,7 @@ function createRandomGameplay(gameId, props, nb, callback) {
           console.log('Error in createRandomGameplay:' + err.message);
         }
         generated++;
-        if (generated === nb) {
+        if (generated === gplen) {
           callback(null);
         }
       })
@@ -60,7 +60,7 @@ module.exports = {
     if (!gpOptions.email || !gpOptions.map || !gpOptions.gamename || !gpOptions.gamedate) {
       return callback(new Error('Options are not complete'));
     }
-    
+
     console.log('New game for ' + gpOptions.email);
     gameplays.createGameplay({
       map: gpOptions.map,

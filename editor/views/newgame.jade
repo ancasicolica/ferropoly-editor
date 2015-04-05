@@ -29,6 +29,18 @@ block content
                    input(type='radio' name='map' value='sbb' ng-model='map')
                    | Ganzes Schweizer Bahn- und Busnetz (GA Gültigkeitsbereich)
               span(id='helpmap' class='help-block') Die Spielkarte bestimmt, aus welchen Orten man die Preisliste gestalten kann. Diese Einstellung kann später nicht mehr geändert werden.
+              h4 Zufallspreisliste
+              select(class='form-control' ng-model='random')
+                option(value='0' default) Keine Orte der Preisliste zuweisen
+                option(value='60') 60
+                option(value='80') 80
+                option(value='100') 100
+                option(value='120') 120
+                option(value='150') 150
+                option(value='180') 180
+                option(value='200') 200
+              span(id='helpname' class='help-block') Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
+
          .col-md-6
               h4 Spiel-Datum
               div(pickadate ng-model="gamedate" name='gamedate' id='gamedate' week-starts-on="1" min-date="minDate" ng-change='validateDate()' )

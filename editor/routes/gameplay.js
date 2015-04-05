@@ -59,7 +59,8 @@ router.post('/createnew', function (req, res) {
         email: req.session.passport.user,
         map: req.body.map,
         gamename: req.body.gamename,
-        gamedate: req.body.gamedate
+        gamedate: req.body.gamedate,
+        random: req.body.random
       }, function (err, gp) {
         if (err) {
           return res.send({success: false, message: err.message});
