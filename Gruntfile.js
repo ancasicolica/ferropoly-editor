@@ -45,8 +45,7 @@ module.exports = function (grunt) {
         updateConfigs: [],
         commit: true,
         commitMessage: 'New version added v%VERSION%',
-        commitFiles: ['package.json'],
-        createTag: true,
+        commitFiles: ['-a'],
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
         push: true,
@@ -67,5 +66,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-bump');
   grunt.registerTask('default', ['uglify:js']);
-  grunt.registerTask('minify', ['uglify:js'])
+  grunt.registerTask('minify', ['uglify:js']);
+  grunt.registerTask('v:patch', ['bump-only:patch', 'uglify:js', 'bump-commit']);
+  grunt.registerTask('v:minor', ['bump-only:minor', 'uglify:js', 'bump-commit']);
+  grunt.registerTask('v:major', ['bump-only:major', 'uglify:js', 'bump-commit']);
 };
