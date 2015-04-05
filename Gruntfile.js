@@ -1,12 +1,18 @@
 /**
  * Create a new bugfix version (x.y.++):
- *   grunt bump
+ *   grunt v:patch
+ *   grunt minify
+ *   grunt bump-commit
  *
  * Create a new feature version (x.++.0)
- *   grunt bump:minor
+ *   grunt v:minor
+ *   grunt minify
+ *   grunt bump-commit
  *
  * Create a new major version (++.0.0)
- *   grunt bump:major
+ *   grunt v:major
+ *   grunt minify
+ *   grunt bump-commit
  *
  * @param grunt
  */
@@ -67,7 +73,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-bump');
   grunt.registerTask('default', ['uglify:js']);
   grunt.registerTask('minify', ['uglify:js']);
-  grunt.registerTask('v:patch', ['bump-only:patch', 'uglify:js', 'bump-commit']);
-  grunt.registerTask('v:minor', ['bump-only:minor', 'uglify:js', 'bump-commit']);
-  grunt.registerTask('v:major', ['bump-only:major', 'uglify:js', 'bump-commit']);
+  grunt.registerTask('v:patch', ['bump-only:patch']);
+  grunt.registerTask('v:minor', ['bump-only:minor']);
+  grunt.registerTask('v:major', ['bump-only:major']);
 };
