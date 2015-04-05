@@ -1,3 +1,15 @@
+/**
+ * Create a new bugfix version (x.y.++):
+ *   grunt bump
+ *
+ * Create a new feature version (x.++.0)
+ *   grunt bump:minor
+ *
+ * Create a new major version (++.0.0)
+ *   grunt bump:major
+ *
+ * @param grunt
+ */
 module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -13,8 +25,18 @@ module.exports = function (grunt) {
           './editor/public/js/pricelistctrl.min.js': ['./editor/public/js/pricelistctrl.js'],
           './editor/public/js/property.min.js': ['./editor/public/js/property.js'],
           './editor/public/js/signupctrl.min.js': ['./editor/public/js/signupctrl.js'],
-          './editor/public/js/sortable.min.js': ['./editor/public/js/sortable.js'],
+          './editor/public/js/sortable.min.js': ['./editor/public/js/sortable.js']
         }
+      },
+      options: {
+        unused: false,
+        dead_code: true,
+        properties: false,
+        beautify: false,
+        compress: false,
+        mangle: false, // do not rename variables
+        banner: '/*! <%= pkg.name %> V<%= pkg.version %> <%= grunt.template.today("dd-mm-yyyy") %>, (c) Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch> */\n'
+
       }
     },
     bump: {
@@ -28,7 +50,7 @@ module.exports = function (grunt) {
         tagName: 'v%VERSION%',
         tagMessage: 'Version %VERSION%',
         push: true,
-        pushTo: 'upstream',
+        pushTo: 'ssh://git@bitbucket.org/christian_kuster/ferropoly_editor.git',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
         globalReplace: false,
         prereleaseName: false,

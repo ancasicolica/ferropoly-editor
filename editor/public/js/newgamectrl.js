@@ -4,7 +4,7 @@
  * Created by kc on 29.01.15.
  */
 'use strict';
-var newGameControl = angular.module('newgameApp', ['ui.bootstrap','pickadate']).config(function (pickadateI18nProvider) {
+var newGameControl = angular.module('newgameApp', ['ui.bootstrap', 'pickadate']).config(function (pickadateI18nProvider) {
   pickadateI18nProvider.translations = {
     prev: '<i class="icon-chevron-left"></i> früher',
     next: 'später <i class="icon-chevron-right"></i>'
@@ -22,6 +22,9 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
 
   var authToken = 'none';
 
+  /**
+   * When document ready, get the auth token
+   */
   $(document).ready(function () {
     $http.get('/authtoken').
       success(function (data) {
@@ -36,7 +39,10 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
       });
   });
 
-  $scope.validateDate = function() {
+  /**
+   * Validate the date of the new game, must be in the future
+   */
+  $scope.validateDate = function () {
     if (new Date($scope.gamedate) < new Date()) {
       $scope.dateError = 'Das Datum muss in der Zukunft liegen.';
     }
@@ -45,8 +51,16 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
     }
   };
 
+  /**
+   * Save game
+   */
   $scope.validateAndSave = function () {
-    $http.post('/gameplay/createnew', {gamename: $scope.gamename, map: $scope.map, gamedate: $scope.gamedate, authToken: authToken}).
+    $http.post('/gameplay/createnew', {
+      gamename: $scope.gamename,
+      map: $scope.map,
+      gamedate: $scope.gamedate,
+      authToken: authToken
+    }).
       success(function (data, status) {
         if (data.success) {
           console.log('Game saved');

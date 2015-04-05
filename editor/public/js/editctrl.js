@@ -516,6 +516,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    * @returns {boolean}
    */
   $scope.propertyGroupsValid = function() {
+    if (!$scope.gameplay.gameParams) {
+      return false;
+    }
     return (($scope.getNumberOfProperties() % $scope.gameplay.gameParams.properties.numberOfPropertiesPerGroup) === 0);
   };
 
