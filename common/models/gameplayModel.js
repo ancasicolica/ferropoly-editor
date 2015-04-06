@@ -90,14 +90,26 @@ var createGameplay = function (gpOptions, callback) {
   gp.scheduling.gameStart = gpOptions.gameStart;
   gp.scheduling.gameEnd = gpOptions.gameEnd;
   gp.gamename = gpOptions.name;
-  gp.internal.gameId = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
+  gp.internal.gameId = gpOptions.gameId || Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
 
-  gp.save(function (err, savedGp) {
+  checkIfGameIdExists(gp.internal.gameId, function (err, isExisting) {
     if (err) {
       return callback(err);
     }
-    return callback(null, savedGp);
-  })
+    if (isExisting) {
+      // generate new gameID
+      gpOptions.gameId = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
+      return createGameplay(gpOptions, callback);
+    }
+    else {
+      gp.save(function (err, savedGp) {
+        if (err) {
+          return callback(err);
+        }
+        return callback(null, savedGp);
+      })
+    }
+  });
 };
 /**
  * Get all gameplays associated for a user
@@ -116,6 +128,19 @@ var getGameplaysForUser = function (ownerEmail, callback) {
   });
 };
 
+/**
+ * Checks if a game with a gameId exists.
+ * @param gameId
+ * @param callback
+ */
+var checkIfGameIdExists = function (gameId, callback) {
+  Gameplay.count({'internal.gameId': gameId}, function (err, nb) {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, nb > 0);
+  });
+};
 /**
  * Counts the gameplays for a user
  * @param ownerEmail
@@ -315,5 +340,6 @@ module.exports = {
   saveNewPriceListRevision: saveNewPriceListRevision,
   isFinalized: isFinalized,
   countGameplaysForUser: countGameplaysForUser,
-  countGameplays:countGameplays
+  countGameplays: countGameplays,
+  checkIfGameIdExists: checkIfGameIdExists
 };

@@ -14,7 +14,7 @@ var gplib = require('./../../../common/lib/gameplayLib');
 var gameId = 'gameplay-test-id';
 var gp;
 
-describe('GameplayLib Tests', function () {
+describe.only('GameplayLib Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       done(err);
@@ -59,13 +59,22 @@ describe('GameplayLib Tests', function () {
           done(err);
         })
       })
-    })
+    });
     it('should delete the gameplay as well', function(done) {
       gameplays.getGameplay(gp.internal.gameId, 'anyone@me.com', function(err, foundGp) {
         expect(foundGp).to.be(undefined);
         done(err);
       })
     })
+  });
+
+  describe.only('Create the demo gameplay', function() {
+    this.timeout(5000);
+    it ('should create the demo gameplay', function(done) {
+      gplib.createDemoGameplay(function(err) {
+        done(err);
+      });
+    });
   });
 
 });
