@@ -25,5 +25,9 @@ module.exports = function(settings) {
     mongoDbUrl: 'mongodb://ferropolyMongoUser:DfA--nt846G1I7oDTll5OvzMbuGfoofg@ds029960.mongolab.com:29960/ferropoly'
   };
 
+  settings.cron = {
+
+  };
+
   return settings;
 };

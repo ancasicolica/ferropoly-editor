@@ -18,5 +18,8 @@ module.exports = function(settings) {
     mongoDbUrl: 'mongodb://localhost/ferropoly'
   };
 
+  settings.cron = {
+  };
+
   return settings;
 };

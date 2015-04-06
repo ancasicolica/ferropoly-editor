@@ -33,9 +33,11 @@ var locations = require('../common/models/locationModel');
 var ferropolyDb = require('../common/lib/ferropolyDb');
 var pricelist = require('./routes/pricelist');
 var player = require('./routes/player');
+var cronjobs = require('./lib/cronjobs');
+
 var initServer = function () {
   authStrategy.init(settings, users);
-
+  cronjobs.init();
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
