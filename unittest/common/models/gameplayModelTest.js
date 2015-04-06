@@ -23,7 +23,11 @@ describe('GameplayModel Tests', function () {
 
   describe('Creating a new gameplay', function () {
     it('should work for #1 (user 1)', function (done) {
-      gameplays.createGameplay({name: 'testspiel 1 (UnitTest)', ownerEmail: 'olivia@kunz.ch', map: 'zvv'}, function (err, res) {
+      gameplays.createGameplay({
+        name: 'testspiel 1 (UnitTest)',
+        ownerEmail: 'olivia@kunz.ch',
+        map: 'zvv'
+      }, function (err, res) {
         expect(res._id).to.be.a('object');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('olivia@kunz.ch');
@@ -34,7 +38,11 @@ describe('GameplayModel Tests', function () {
       })
     });
     it('should work for #2 (user 1)', function (done) {
-      gameplays.createGameplay({name: 'testspiel 2 (UnitTest)', ownerEmail: 'olivia@kunz.ch', map: 'sbb'}, function (err, res) {
+      gameplays.createGameplay({
+        name: 'testspiel 2 (UnitTest)',
+        ownerEmail: 'olivia@kunz.ch',
+        map: 'sbb'
+      }, function (err, res) {
         expect(res._id).to.be.a('object');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('olivia@kunz.ch');
@@ -61,21 +69,21 @@ describe('GameplayModel Tests', function () {
     });
   });
 
-  describe('Counting the gameplays', function() {
-    it('should return the correct number for user 1', function(done) {
-      gameplays.countGameplaysForUser('olivia@kunz.ch', function(err, nb) {
+  describe('Counting the gameplays', function () {
+    it('should return the correct number for user 1', function (done) {
+      gameplays.countGameplaysForUser('olivia@kunz.ch', function (err, nb) {
         expect(nb).to.be(2);
         done(err);
       })
     });
-    it('should return the correct number for user 2', function(done) {
-      gameplays.countGameplaysForUser('christine@meyer.com', function(err, nb) {
+    it('should return the correct number for user 2', function (done) {
+      gameplays.countGameplaysForUser('christine@meyer.com', function (err, nb) {
         expect(nb).to.be(1);
         done(err);
       })
     });
-    it('should return the correct number all users', function(done) {
-      gameplays.countGameplays(function(err, nb) {
+    it('should return the correct number all users', function (done) {
+      gameplays.countGameplays(function (err, nb) {
         // the gameplays of the test users are also here
         expect(nb >= 3).to.be(true);
         done(err);
@@ -141,7 +149,34 @@ describe('GameplayModel Tests', function () {
     });
   });
 
-  describe('Deleting all gameplays agin', function () {
+  describe('Finalizing a gameplay', function () {
+    it('should not work without a pricelist', function (done) {
+      gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err) {
+        expect(err).not.to.be(null);
+        done();
+      });
+    });
+    it('should work with a pricelist', function (done) {
+      gameplays.getGameplay(gp3.internal.gameId, 'christine@meyer.com', function (err, gp) {
+        expect(gp).to.be.a('object');
+        expect(gp.internal.gameId).to.be(gp3.internal.gameId);
+        gp.log.priceListVersion = 1;
+        gameplays.updateGameplay(gp, function (err, gpSaved) {
+          expect(gpSaved.log.priceListVersion).to.be(1);
+          gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err) {
+            done(err);
+          });
+        });
+      })
+    });
+    it('should do nothing with an already finalized gameplay', function (done) {
+      gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err) {
+        done(err);
+      });
+    });
+  });
+
+  describe('Deleting all gameplays again', function () {
     it('should work with #1', function (done) {
       gameplays.getGameplay(gp1.internal.gameId, 'olivia@kunz.ch', function (err, gp) {
         gameplays.removeGameplay(gp, function (err) {

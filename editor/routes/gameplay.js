@@ -88,32 +88,15 @@ router.post('/finalize', function (req, res) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
 
-    // Get gameplay first, verify user
-    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
+    gameplayModel.finalize(req.body.gameId, req.session.passport.user, function (err) {
       if (err) {
-        return res.send({status: 'error', message: 'Gameplay load error: ' + err.message});
+        return res.send({status: 'error', message: 'Error while finalizing gameplay: ' + err.message});
       }
-      if (!gp || gp.length === 0) {
-        return res.send({status: 'error', message: 'Gamemplay not found'});
-      }
-      if (gp.log.priceListVersion === 0) {
-        return res.send({status: 'error', message: 'Can only finalize gameplays with pricelist'});
-      }
-      if (gp.internal.finalized) {
-        return res.send({status: 'error', message: 'Gameplay is already finalized'});
-      }
-
-      gp.internal.finalized = true;
-      gameplayModel.updateGameplay(gp, function (err) {
+      propertyModel.finalizeProperties(req.body.gameId, function (err) {
         if (err) {
-          return res.send({status: 'error', message: 'Error while updating gameplay: ' + err.message});
+          return res.send({status: 'error', message: 'Error while cleaning up properties: ' + err.message});
         }
-        propertyModel.finalizeProperties(req.body.gameId, function (err) {
-          if (err) {
-            return res.send({status: 'error', message: 'Error while cleaning up properties: ' + err.message});
-          }
-          return res.send({success: true})
-        })
+        return res.send({success: true})
       })
     });
 

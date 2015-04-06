@@ -8,10 +8,11 @@ var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var locations = require('../../common/models/locationModel');
 var teams = require('../../common/models/teamModel');
-
+var pricelistLib = require('../../editor/lib/pricelist');
 var _ = require('lodash');
 
 var demoGameId = 'play-a-demo-game';
+var demoOrganisatorMail = 'demo@ferropoly.ch';
 /**
  * Creates a random gameplay: assigns nb properties to a price range, very random
  * @param gameId ID of the game
@@ -138,7 +139,12 @@ function deleteGameplay(gpOptions, callback) {
         return callback(err);
       }
       return gameplays.removeGameplay(gp, function (err) {
-        return callback(err);
+        if (err) {
+          return callback(err);
+        }
+        return teams.deleteAllTeams(gpOptions.gameId, function(err) {
+          return callback(err);
+        })
       })
     })
   })
@@ -174,12 +180,14 @@ function createDemoTeamEntry(name, organization, teamleaderName, teamleaderMail,
 function createDemoTeams(gp, callback) {
   var teamsCreated = 0;
   var demoTeamData = [
-      createDemoTeamEntry('Ferropoly Riders', 'Pfadi Züri Oberland', 'Heinz Muster', 'team1@ferropoly.ch', '079 00 00 00'),
-      createDemoTeamEntry('Bahnfreaks', 'Cevi Bern', 'Max Heinzmann', 'team2@ferropoly.ch', '079 00 00 01'),
-      createDemoTeamEntry('Bahnschwellen', 'Sek Hinwil', 'Mike Heller', 'team3@ferropoly.ch', '079 00 00 02'),
-      createDemoTeamEntry('Schmalspurfans', 'Gewerbeschule Chur', 'Gian Derungs', 'team4@ferropoly.ch', '079 00 00 03', 'Siegerteam letztes Jahr'),
-      createDemoTeamEntry('Pufferbillies', 'Oberstufe Kriens', 'Andreas Stauber', 'team5@ferropoly.ch', '079 00 00 04'),
-      createDemoTeamEntry('Mecaronis', 'Mechatronik Team', 'Franco Kölliker', 'team6@ferropoly.ch', '079 00 00 05')
+    createDemoTeamEntry('Ferropoly Riders', 'Pfadi Züri Oberland', 'Heinz Muster', 'team1@ferropoly.ch', '079 000 00 01'),
+    createDemoTeamEntry('Bahnfreaks', 'Cevi Bern', 'Nora Heinzmann', 'team2@ferropoly.ch', '079 000 00 02'),
+    createDemoTeamEntry('Bahnschwellen', 'Sek Hinwil', 'Mike Heller', 'team3@ferropoly.ch', '079 000 00 03'),
+    createDemoTeamEntry('Schmalspurfans', 'Gewerbeschule Chur', 'Annina Cavegn', 'team4@ferropoly.ch', '079 000 00 04', 'Siegerteam letztes Jahr'),
+    createDemoTeamEntry('Pufferbillies', 'Oberstufe Basel', 'Sylvia Meyer', 'team5@ferropoly.ch', '079 000 00 05'),
+    createDemoTeamEntry('Mecaronis', 'Mechatronik Team', 'Marcel Grob', 'team6@ferropoly.ch', '079 000 00 06'),
+    createDemoTeamEntry('Ticketeria', 'Team Kriens', 'Olivia Huber', 'team7@ferropoly.ch', '079 000 00 07'),
+    createDemoTeamEntry('Sackbahnhof', 'Jungwacht St. Gallen', 'Thomas Meier', 'team8@ferropoly.ch', '079 000 00 08')
   ];
   var nb = demoTeamData.length;
   for (var i = 0; i < nb; i++) {
@@ -187,7 +195,6 @@ function createDemoTeams(gp, callback) {
       if (err) {
         console.error(err);
       }
-      console.log(teamsCreated + ' ' + nb);
       teamsCreated++;
       if (teamsCreated === nb) {
         return callback();
@@ -203,8 +210,8 @@ function createDemoTeams(gp, callback) {
 function createDemoGameplay(callback) {
   var options = {
     map: 'sbb',
-    email: 'demo@ferropoly.ch',
-    ownerEmail: 'demo@ferropoly.ch', // for delete options, should be harmonized with email
+    email: demoOrganisatorMail,
+    ownerEmail: demoOrganisatorMail, // for delete options, todo: should be harmonized with email
     organisatorName: 'Max Muster',
     gamedate: new Date(),
     gameStart: '06:00',
@@ -213,6 +220,7 @@ function createDemoGameplay(callback) {
     gameId: demoGameId,
     random: 80
   };
+  var startTs = new Date();
   gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
     if (err) {
       return callback(err);
@@ -232,10 +240,37 @@ function createDemoGameplay(callback) {
       // Create new gameplay now
       createNewGameplay(options, function (err, gp) {
         if (err) {
+          console.log('Failed to create the demo gameplay: ' + err.message);
           return callback(err);
         }
-        createDemoTeams(gp, function(err) {
-          callback(err);
+        createDemoTeams(gp, function (err) {
+          if (err) {
+            console.log('Failed to create the demo teams: ' + err.message);
+            return callback(err);
+          }
+          pricelistLib.create(demoGameId, demoOrganisatorMail, function (err) {
+            if (err) {
+              console.log('Failed to create the demo price list: ' + err.message);
+              return callback(err);
+            }
+            gp.internal.finalized = true;
+            gameplays.finalize(demoGameId, demoOrganisatorMail, function(err) {
+              if (err) {
+                console.log('Failed to save demo gameplay: ' + err.message);
+                return callback(err);
+              }
+              properties.finalizeProperties(demoGameId, function(err) {
+                if (err) {
+                  console.log('Failed to finalize the demo properties: ' + err.message);
+                  return callback(err);
+                }
+                var endTs = new Date();
+                var duration = (endTs.getTime() - startTs.getTime()) / 1000;
+                console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
+                return callback();
+              })
+            });
+          });
         })
 
       })
@@ -255,7 +290,6 @@ module.exports = {
    */
   createNewGameplay: createNewGameplay,
 
-
   /**
    * Delete a COMPLETE gameplay: properties and gameplay (and logs, if there are some one day)
    * @param gpOptions
@@ -263,8 +297,9 @@ module.exports = {
    * @returns {*}
    */
   deleteGameplay: deleteGameplay,
+
   /**
    * Create a demo gameplay (and delete if, it already existing)
    */
-  createDemoGameplay:createDemoGameplay
+  createDemoGameplay: createDemoGameplay
 };

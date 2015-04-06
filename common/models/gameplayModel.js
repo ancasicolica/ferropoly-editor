@@ -204,6 +204,38 @@ var removeGameplay = function (gp, callback) {
 };
 
 /**
+ * Finalizes the gameplay, it can't be edited afterwards
+ * @param gameId
+ * @param ownerEmail
+ * @param callback
+ */
+var finalize = function (gameId, ownerEmail, callback) {
+  getGameplay(gameId, ownerEmail, function (err, gp) {
+    if (err) {
+      callback(err);
+    }
+    if (gp.internal.finalized) {
+      // nothing to do, is already finalized
+      return callback();
+    }
+    if (gp.owner.organisatorEmail !== ownerEmail) {
+      return callback(new Error('Wrong user, not allowed to finalize'));
+    }
+    if (gp.log.priceListVersion === 0) {
+      return  callback(new Error('Can only finalize gameplays with pricelist'));
+    }
+    gp.internal.finalized = true;
+    gp.save(function (err, gpSaved) {
+      if (err) {
+        return callback(err);
+      }
+      console.log('Gameplay finalized: ' + gpSaved.internal.gameId);
+      callback(null);
+    });
+  })
+};
+
+/**
  * Checks if a gameplay is finalized, caches the POSITIVE results
  * @param gameId
  * @param callback
@@ -341,5 +373,6 @@ module.exports = {
   isFinalized: isFinalized,
   countGameplaysForUser: countGameplaysForUser,
   countGameplays: countGameplays,
-  checkIfGameIdExists: checkIfGameIdExists
+  checkIfGameIdExists: checkIfGameIdExists,
+  finalize: finalize
 };

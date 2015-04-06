@@ -193,10 +193,8 @@ var getPropertyByLocationId = function (gameId, locationId, callback) {
       return callback(err);
     }
     if (docs.length === 0) {
-      console.log('Did not find location with id ' + locationId);
       return callback();
     }
-    console.log('Found location with id ' + locationId);
     callback(null, docs[0]);
   });
 };

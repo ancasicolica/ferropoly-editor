@@ -14,7 +14,7 @@ var gplib = require('./../../../common/lib/gameplayLib');
 var gameId = 'gameplay-test-id';
 var gp;
 
-describe.only('GameplayLib Tests', function () {
+describe('GameplayLib Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
       done(err);
@@ -68,7 +68,7 @@ describe.only('GameplayLib Tests', function () {
     })
   });
 
-  describe.only('Create the demo gameplay', function() {
+  describe('Create the demo gameplay', function() {
     this.timeout(5000);
     it ('should create the demo gameplay', function(done) {
       gplib.createDemoGameplay(function(err) {
