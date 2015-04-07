@@ -19,7 +19,13 @@ module.exports = function(settings) {
   };
 
   settings.cron = {
-    createDemoGameplay : '1 1 * * *'
+    // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
+    // The openshift server is in EST (east coast USA)
+    createDemoGameplay : '0 21 * * *'
+  };
+
+  settings.demoGameplay = {
+    addDays : 1
   };
 
   return settings;

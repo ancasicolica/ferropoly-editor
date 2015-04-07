@@ -10,6 +10,9 @@ var locations = require('../../common/models/locationModel');
 var teams = require('../../common/models/teamModel');
 var pricelistLib = require('../../editor/lib/pricelist');
 var _ = require('lodash');
+var settings = require('../../editor/settings');
+
+require('datejs');
 
 var demoGameId = 'play-a-demo-game';
 var demoOrganisatorMail = 'demo@ferropoly.ch';
@@ -220,6 +223,13 @@ function createDemoGameplay(callback) {
     gameId: demoGameId,
     random: 80
   };
+
+  // The openshift server is located on the East Coast of the USA, thats why the cron job
+  // will be executed in the late evening (local time). Therefore the date has to be ajusted
+  if (settings.demoGameplay && settings.demoGameplay.addDays) {
+    options.gamedate.addDays(settings.demoGameplay.addDays);
+    console.log('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
+  }
   var startTs = new Date();
   gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
     if (err) {
