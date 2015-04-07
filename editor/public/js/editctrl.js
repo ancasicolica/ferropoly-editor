@@ -186,6 +186,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    */
   $scope.setCurrentProperty = function (marker) {
     setCurrentProperty(marker);
+    map.setCenter(marker.getPosition());
   };
   /**
    * Called when a marker is new set or a set marker is selected
