@@ -1,6 +1,8 @@
 /**
  * This is the strategy used for the login into ferropoly
  *
+ * THIS FILE IS MAINTAINED IN THE EDITOR PROJECT ONLY!!!!!!
+ *
  * Created by kc on 17.01.15.
  */
 

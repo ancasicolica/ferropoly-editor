@@ -12,7 +12,7 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var uuid = require('node-uuid');
-var pbkdf2 = require('pbkdf2-sha256')
+var pbkdf2 = require('pbkdf2-sha256');
 
 /**
  * The mongoose schema for an user

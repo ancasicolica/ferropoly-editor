@@ -10,7 +10,7 @@ var locations = require('./../../../common/models/locationModel');
 var properties = require('./../../../common/models/propertyModel');
 var gameplays = require('./../../../common/models/gameplayModel');
 var settings = require('./../../../editor/settings');
-var gplib = require('./../../../common/lib/gameplayLib');
+var gplib = require('./../../../editor/lib/gameplayLib');
 var gameId = 'gameplay-test-id';
 var gp;
 

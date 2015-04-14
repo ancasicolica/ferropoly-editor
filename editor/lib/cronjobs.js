@@ -6,7 +6,7 @@
 'use strict';
 
 var cron = require('node-schedule');
-var gpLib = require('../../common/lib/gameplayLib');
+var gpLib = require('./gameplayLib');
 var settings = require('../settings');
 /**
  * Set up the demo gameplay depending on the configuration

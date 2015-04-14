@@ -8,9 +8,9 @@ var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var locations = require('../../common/models/locationModel');
 var teams = require('../../common/models/teamModel');
-var pricelistLib = require('../../editor/lib/pricelist');
+var pricelistLib = require('./pricelist');
 var _ = require('lodash');
-var settings = require('../../editor/settings');
+var settings = require('../settings');
 
 require('datejs');
 
