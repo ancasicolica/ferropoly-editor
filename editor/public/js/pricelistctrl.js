@@ -1,5 +1,5 @@
 /**
- * Priceslist controller
+ * Pricelist controller
  * Created by kc on 21.03.15.
  */
 'use strict';
@@ -13,6 +13,10 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
   $scope.panel = 'list';
   var authToken = 'none';
   $scope.setPanel = function (panel) {
+    if ($scope.panel === 'error') {
+      // once in the error panel, we remain in the error panel!
+      return;
+    }
     $scope.panel = panel;
   };
 
