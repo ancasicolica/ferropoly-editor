@@ -69,6 +69,9 @@ module.exports = {
       if (_.endsWith(uri, 'ico')) {
         return next();
       }
+      if (_.endsWith(uri, 'png')) {
+        return next();
+      }
       if (!req.session.passport.user) {
         // valid user in session
         console.log(uri + " redirected in login.js to login");
