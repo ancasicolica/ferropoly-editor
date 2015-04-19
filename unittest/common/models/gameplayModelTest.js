@@ -128,7 +128,8 @@ describe('GameplayModel Tests', function () {
     it('should return none for an invalid user', function (done) {
       gameplays.getGameplay(gp1.internal.gameId, 'christine@meyer.com', function (err, gp) {
         expect(gp).to.be(undefined);
-        done(err);
+        expect(err).not.to.be(null);
+        done();
       })
     });
   });
@@ -159,18 +160,31 @@ describe('GameplayModel Tests', function () {
     it('should work with a pricelist', function (done) {
       gameplays.getGameplay(gp3.internal.gameId, 'christine@meyer.com', function (err, gp) {
         expect(gp).to.be.a('object');
+        expect(gp.scheduling.gameStartTs).to.be(undefined);
+        expect(gp.scheduling.gameEndTs).to.be(undefined);
         expect(gp.internal.gameId).to.be(gp3.internal.gameId);
+        gp.scheduling.gameStart = '04:30';
+        gp.scheduling.gameEnd = '9:22';
+        gp.scheduling.gameDate = new Date();
         gp.log.priceListVersion = 1;
         gameplays.updateGameplay(gp, function (err, gpSaved) {
           expect(gpSaved.log.priceListVersion).to.be(1);
-          gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err) {
+          gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err, fgp) {
+            console.log(fgp);
+            expect(new Date(fgp.scheduling.gameStartTs).clearTime().compareTo(new Date().clearTime())).to.be(0);
+            expect(new Date(fgp.scheduling.gameEndTs).clearTime().compareTo(new Date().clearTime())).to.be(0);
+            expect(fgp.scheduling.gameStartTs.getMinutes()).to.be(30);
+            expect(fgp.scheduling.gameStartTs.getHours()).to.be(4);
+            expect(fgp.scheduling.gameEndTs.getMinutes()).to.be(22);
+            expect(fgp.scheduling.gameEndTs.getHours()).to.be(9);
             done(err);
           });
         });
       })
     });
     it('should do nothing with an already finalized gameplay', function (done) {
-      gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err) {
+      gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err, fgp) {
+        expect(fgp.internal.finalized).to.be(true);
         done(err);
       });
     });

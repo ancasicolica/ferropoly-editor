@@ -63,7 +63,8 @@ describe('GameplayLib Tests', function () {
     it('should delete the gameplay as well', function(done) {
       gameplays.getGameplay(gp.internal.gameId, 'anyone@me.com', function(err, foundGp) {
         expect(foundGp).to.be(undefined);
-        done(err);
+        expect(err).not.to.be(null);
+        done();
       })
     })
   });
