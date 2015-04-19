@@ -19,6 +19,7 @@ var edit = require('./routes/edit');
 var newgame = require('./routes/newgame');
 var gameplay = require('./routes/gameplay');
 var authtoken = require('./routes/authtoken');
+var issuetracker = require('./routes/issuetracker');
 var configuration = require('./routes/configuration');
 var settings = require('./settings');
 var authStrategy = require('../common/lib/authStrategy');
@@ -69,6 +70,7 @@ var initServer = function () {
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
+  app.use('/issuetracker', issuetracker);
   newgame.init(app);
   edit.init(app, gameplays, users, properties);
   gameplay.init(app);
