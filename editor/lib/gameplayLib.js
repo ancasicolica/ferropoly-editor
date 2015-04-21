@@ -108,8 +108,8 @@ function createNewGameplay(gpOptions, callback) {
     map: gpOptions.map,
     name: gpOptions.gamename,
     ownerEmail: gpOptions.email,
-    gameStart: '05:00',
-    gameEnd: '18:00',
+    gameStart: gpOptions.gameStart || '05:00',
+    gameEnd: gpOptions.gameEnd || '18:00',
     gameDate: gpOptions.gamedate,
     gameId: gpOptions.gameId
   }, function (err, gameplay) {
@@ -145,7 +145,7 @@ function deleteGameplay(gpOptions, callback) {
         if (err) {
           return callback(err);
         }
-        return teams.deleteAllTeams(gpOptions.gameId, function(err) {
+        return teams.deleteAllTeams(gpOptions.gameId, function (err) {
           return callback(err);
         })
       })
@@ -208,17 +208,28 @@ function createDemoTeams(gp, callback) {
 
 /**
  * Creates a demo gameplay
- * @param callback
+ * @param p1 is parameter 1: either settings or callback
+ * @param p2 if settings are used, callback
  */
-function createDemoGameplay(callback) {
+function createDemoGameplay(p1, p2) {
+  var callback = p2;
+  var settings = {};
+
+  if (_.isFunction(p1)) {
+    callback = p1;
+  }
+  else {
+    settings = p1;
+  }
+
   var options = {
     map: 'sbb',
     email: demoOrganisatorMail,
     ownerEmail: demoOrganisatorMail, // for delete options, todo: should be harmonized with email
     organisatorName: 'Max Muster',
     gamedate: new Date(),
-    gameStart: '06:00',
-    gameEnd: '22:00',
+    gameStart: settings.gameStart || '06:00',
+    gameEnd: settings.gameEnd || '21:00',
     gamename: 'Demo Spiel',
     gameId: demoGameId,
     random: 80
@@ -242,7 +253,8 @@ function createDemoGameplay(callback) {
         }
         else {
           // recursive!
-          return createDemoGameplay(callback);
+          return createDemoGameplay(p1, p2)
+
         }
       })
     }
@@ -264,12 +276,12 @@ function createDemoGameplay(callback) {
               return callback(err);
             }
             gp.internal.finalized = true;
-            gameplays.finalize(demoGameId, demoOrganisatorMail, function(err) {
+            gameplays.finalize(demoGameId, demoOrganisatorMail, function (err) {
               if (err) {
                 console.log('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-              properties.finalizeProperties(demoGameId, function(err) {
+              properties.finalizeProperties(demoGameId, function (err) {
                 if (err) {
                   console.log('Failed to finalize the demo properties: ' + err.message);
                   return callback(err);

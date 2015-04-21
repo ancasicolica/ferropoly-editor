@@ -61,6 +61,12 @@ module.exports = function (grunt) {
         prereleaseName: false,
         regExp: false
       }
+    },
+    shell: {
+      options: {},
+      target: {
+        command: './bin/createDemoGame.js'
+      }
     }
 
   });
@@ -70,10 +76,12 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-bump');
   grunt.registerTask('default', ['uglify:js']);
   grunt.registerTask('minify', ['uglify:js']);
   grunt.registerTask('v:patch', ['bump-only:patch']);
   grunt.registerTask('v:minor', ['bump-only:minor']);
   grunt.registerTask('v:major', ['bump-only:major']);
+  grunt.registerTask('demo', ['shell']);
 };
