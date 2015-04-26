@@ -7,9 +7,11 @@
 var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var locations = require('../../common/models/locationModel');
+var teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
 var teams = require('../../common/models/teamModel');
 var pricelistLib = require('./pricelist');
 var _ = require('lodash');
+var async = require('async');
 var settings = require('../settings');
 
 require('datejs');
@@ -146,11 +148,16 @@ function deleteGameplay(gpOptions, callback) {
           return callback(err);
         }
         return teams.deleteAllTeams(gpOptions.gameId, function (err) {
-          return callback(err);
-        })
-      })
-    })
-  })
+          if (err) {
+            return callback(err);
+          }
+          return teamAccountTransaction.dumpAccounts(gpOptions.gameId, function(err) {
+            return callback(err);
+          });
+        });
+      });
+    });
+  });
 }
 
 /**
