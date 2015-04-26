@@ -8,8 +8,8 @@
 var express = require('express');
 var router = express.Router();
 var pricelistLib = require('../lib/pricelist');
+var commonPricelistLib = require('../../common/lib/pricelist');
 var gameplays = require('../../common/models/gameplayModel');
-var properties = require('../../common/models/propertyModel');
 var _ = require('lodash');
 
 var settings = require('../settings');
@@ -60,28 +60,12 @@ router.get('/get', function (req, res) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    properties.getPropertiesForGameplay(req.query.gameId, null, function (err, props) {
+    commonPricelistLib.getPricelist(req.query.gameId, function(err, list) {
       if (err) {
         return res.send({success: false, message: err.message});
       }
-      var pricelist = _.filter(props, function (p) {
-        return p.pricelist.position > -1;
-      });
-
-      // Filter unused data
-      for (var i = 0; i < pricelist.length; i++) {
-        pricelist[i].gamedata = undefined;
-        pricelist[i]._id = undefined;
-        pricelist[i].__v = undefined;
-        pricelist[i].gameId = undefined;
-
-      }
-      var sortedPricelist = _.sortBy(pricelist, function (p) {
-        return p.pricelist.position;
-      });
-
-      return res.send({success: true, gameplay: gp, pricelist: sortedPricelist});
-    })
+      return res.send({success: true, gameplay: gp, pricelist: list});
+    });
   });
 });
 
