@@ -22,8 +22,7 @@ var createPriceList = function (gameId, ownerEmail, callback) {
     if (err) {
       return callback(err);
     }
-
-    properties.getPropertiesForGameplay(gameId, {gameId: gameId}, function (err, props) {
+    properties.getPropertiesForGameplay(gameId, null, function (err, props) {
       if (err) {
         return callback(err);
       }
