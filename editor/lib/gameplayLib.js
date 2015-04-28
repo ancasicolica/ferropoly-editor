@@ -9,6 +9,7 @@ var properties = require('../../common/models/propertyModel');
 var locations = require('../../common/models/locationModel');
 var teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
 var propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
+var chancelleryTransaction = require('../../common/models/accounting/chancelleryTransaction');
 var teams = require('../../common/models/teamModel');
 var pricelistLib = require('./pricelist');
 var _ = require('lodash');
@@ -157,7 +158,12 @@ function deleteGameplay(gpOptions, callback) {
               return callback(err);
             }
             return teamAccountTransaction.dumpAccounts(gpOptions.gameId, function (err) {
-              return callback(err);
+              if (err) {
+                return callback(err);
+              }
+              return chancelleryTransaction.dumpChancelleryData(gpOptions.gameId, function (err) {
+                return callback(err);
+              });
             });
           });
         });

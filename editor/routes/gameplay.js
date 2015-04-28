@@ -134,20 +134,11 @@ router.post('/delete', function (req, res) {
         return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
       }
 
-      gameplayModel.removeGameplay(gp, function (err) {
-        // Remove the gamemplay data first - if we fail with the properties and other data
-        // at least there is no inconsistent state in the UI. If this fails, this is the only
-        // error, all others are not nice, but we can't fix it anyway.
+      gameplayLib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail: req.session.passport.user}, function (err) {
         if (err) {
-          return res.send({status: 'error', message: 'Gameplay delete error: ' + err.message});
+          return res.send({status: 'error', message: 'Error: ' + err.message});
         }
-        // Remove Properties
-        propertyModel.removeAllPropertiesFromGameplay(gp.internal.gameId, function () {
-          // Remove Teams
-          teamModel.deleteAllTeams(gp.internal.gameId, function () {
-            return res.send({success: true, gameId: gp.internal.gameId, name: gp.gamename});
-          });
-        })
+        return res.send({success: true, gameId: gp.internal.gameId, name: gp.gamename});
       });
     });
   }
