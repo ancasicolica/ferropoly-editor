@@ -56,9 +56,9 @@ var gameplaySchema = mongoose.Schema({
     },
     chancellery: {
       minLottery: {type: Number, default: 1000},  // amount to loose or win each call
-      maxLottery: {type: Number, default: 10000},
+      maxLottery: {type: Number, default: 5000},
       minGambling: {type: Number, default: 1000}, // amount to bet in the individual games
-      maxGambling: {type: Number, default: 100000},
+      maxGambling: {type: Number, default: 50000},
       maxJackpotSize: {type: Number, default: 500000} // max jackpot size
     }
   },
