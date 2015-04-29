@@ -30,6 +30,16 @@ var chancelleryAccountTransactionSchema = mongoose.Schema({
  */
 var ChancelleryAccountTransaction = mongoose.model('ChancelleryTransactions', chancelleryAccountTransactionSchema);
 
+/**
+ * Book the transaction
+ * @param transaction
+ * @param callback
+ */
+function book(transaction, callback) {
+  transaction.save(function (err) {
+    callback(err);
+  });
+}
 
 /**
  * Dumps all data for a gameplay (when deleting the game data)
