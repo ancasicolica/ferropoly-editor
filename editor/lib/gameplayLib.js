@@ -15,8 +15,9 @@ var pricelistLib = require('./pricelist');
 var _ = require('lodash');
 var async = require('async');
 var settings = require('../settings');
+var schedulerEvents = require('../../common/lib/schedulerEvents');
 
-require('datejs');
+require('datejs'); // Todo: replace with moment!
 
 var demoGameId = 'play-a-demo-game';
 var demoOrganisatorMail = 'demo@ferropoly.ch';
@@ -295,7 +296,7 @@ function createDemoGameplay(p1, p2) {
               return callback(err);
             }
             gp.internal.finalized = true;
-            gameplays.finalize(demoGameId, demoOrganisatorMail, function (err) {
+            finalizeGameplay(gp, demoOrganisatorMail, function (err) {
               if (err) {
                 console.log('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
@@ -317,9 +318,21 @@ function createDemoGameplay(p1, p2) {
       })
     }
   });
-
 }
 
+
+function finalizeGameplay(gameplay, email, callback) {
+  gameplays.finalize(gameplay.internal.gameId, email, function (err, gpSaved) {
+    if (err) {
+      console.log('Failed to save demo gameplay: ' + err.message);
+      return callback(err);
+    }
+    schedulerEvents.createEvents(gpSaved, function(err) {
+      return callback(err);
+    });
+  });
+
+};
 module.exports = {
   /**
    * Creates a complete new gameplay, including copying the locations to the properties
