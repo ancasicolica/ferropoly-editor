@@ -87,19 +87,20 @@ router.post('/finalize', function (req, res) {
     if (req.body.authToken !== req.session.authToken) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
-
-    gameplayModel.finalize(req.body.gameId, req.session.passport.user, function (err) {
+    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
-        return res.send({status: 'error', message: 'Error while finalizing gameplay: ' + err.message});
+        return res.send({
+          status: 'error',
+          message: 'Gameplay finalization error: ' + err.message + ' GameplayId: : ' + req.body.gameId
+        });
       }
-      propertyModel.finalizeProperties(req.body.gameId, function (err) {
+      gameplayLib.finalizeGameplay(gp, req.session.passport.user, function (err) {
         if (err) {
-          return res.send({status: 'error', message: 'Error while cleaning up properties: ' + err.message});
+          return res.send({status: 'error', message: 'Error while finalizing gameplay: ' + err.message});
         }
         return res.send({success: true})
-      })
+      });
     });
-
   }
   catch (e) {
     console.log('Exception in gameplay.finalize.post');

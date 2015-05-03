@@ -301,16 +301,10 @@ function createDemoGameplay(p1, p2) {
                 console.log('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-              properties.finalizeProperties(demoGameId, function (err) {
-                if (err) {
-                  console.log('Failed to finalize the demo properties: ' + err.message);
-                  return callback(err);
-                }
                 var endTs = new Date();
                 var duration = (endTs.getTime() - startTs.getTime()) / 1000;
                 console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
                 return callback();
-              })
             });
           });
         })
@@ -320,19 +314,30 @@ function createDemoGameplay(p1, p2) {
   });
 }
 
-
+/**
+ * Finalizes a gameplay
+ * @param gameplay
+ * @param email
+ * @param callback
+ */
 function finalizeGameplay(gameplay, email, callback) {
   gameplays.finalize(gameplay.internal.gameId, email, function (err, gpSaved) {
     if (err) {
       console.log('Failed to save demo gameplay: ' + err.message);
       return callback(err);
     }
-    schedulerEvents.createEvents(gpSaved, function(err) {
-      return callback(err);
+    properties.finalizeProperties(demoGameId, function (err) {
+      if (err) {
+        console.log('Failed to finalize the properties: ' + err.message);
+        return callback(err);
+      }
+      schedulerEvents.createEvents(gpSaved, function (err) {
+        return callback(err);
+      });
     });
   });
+}
 
-};
 module.exports = {
   /**
    * Creates a complete new gameplay, including copying the locations to the properties
@@ -355,5 +360,10 @@ module.exports = {
   /**
    * Create a demo gameplay (and delete if, it already existing)
    */
-  createDemoGameplay: createDemoGameplay
+  createDemoGameplay: createDemoGameplay,
+
+  /**
+   * Finalize the gameplay
+   */
+  finalizeGameplay: finalizeGameplay
 };

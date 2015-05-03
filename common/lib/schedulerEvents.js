@@ -21,6 +21,7 @@ function createEvents(gameplay, callback) {
   start.gameId = gameplay.internal.gameId;
   start.timestamp = gameplay.scheduling.gameStartTs;
   start.type = 'start';
+  events.push(start);
 
   // Interests
   var m = moment(gameplay.scheduling.gameStartTs);
@@ -40,7 +41,7 @@ function createEvents(gameplay, callback) {
   end.timestamp = gameplay.scheduling.gameEndTs;
   end.type = 'end';
   events.push(end);
-  
+
   eventModel.saveEvents(events, function(err) {
     callback(err);
   });
