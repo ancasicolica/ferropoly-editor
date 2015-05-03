@@ -1,7 +1,7 @@
 {
   "name": "Ferropoly-Editor",
   "title": "Ferropoly Editor",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Ferropoly Spiel Editor",
   "keywords": [
     "Ferropoly",
@@ -39,6 +39,7 @@
     "jade": "~1.6.0",
     "lodash": "^3.4.0",
     "moment": "^2.10.2",
+    "moment-timezone": "^0.3.1",
     "mongodb": "~2.0",
     "mongoose": "3.8.*",
     "moniker": "^0.1.2",
