@@ -7,6 +7,7 @@
 
 var mongoose = require('mongoose');
 var uuid = require('node-uuid');
+var moment = require('moment');
 /**
  * The mongoose schema for a scheduleEvent
  */
@@ -71,9 +72,27 @@ function dumpEvents(gameId, callback) {
   });
 }
 
+/**
+ * Gets the events of the next few hours
+ * @param callback
+ */
+function getUpcomingEvents(callback) {
+  var untilTime = moment().add(4, 'h');
+
+  scheduleEventModel.find()
+    .where('handled').equals(false)
+    .where('timestamp').lte(untilTime.toDate())
+    .sort('timestamp')
+    .lean()
+    .exec(function (err, data) {
+      callback(err, data);
+    });
+}
+
 
 module.exports = {
   Model: scheduleEventModel,
   saveEvents: saveEvents,
-  dumpEvents: dumpEvents
+  dumpEvents: dumpEvents,
+  getUpcomingEvents: getUpcomingEvents
 };

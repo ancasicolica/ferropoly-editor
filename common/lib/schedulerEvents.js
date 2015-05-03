@@ -25,7 +25,7 @@ function createEvents(gameplay, callback) {
 
   // Interests
   var m = moment(gameplay.scheduling.gameStartTs);
-  while(m < gameplay.scheduling.gameEndTs) {
+  while (m < gameplay.scheduling.gameEndTs) {
     var interest = new eventModel.Model();
     interest.gameId = gameplay.internal.gameId;
     interest.timestamp = new Date(m.toDate());
@@ -42,11 +42,11 @@ function createEvents(gameplay, callback) {
   end.type = 'end';
   events.push(end);
 
-  eventModel.saveEvents(events, function(err) {
+  eventModel.saveEvents(events, function (err) {
     callback(err);
   });
 }
-module.exports = {
 
-  createEvents:createEvents
+module.exports = {
+  createEvents: createEvents
 };

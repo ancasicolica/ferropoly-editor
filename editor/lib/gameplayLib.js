@@ -16,6 +16,7 @@ var _ = require('lodash');
 var async = require('async');
 var settings = require('../settings');
 var schedulerEvents = require('../../common/lib/schedulerEvents');
+var schedulerEventsModel = require('../../common/models/schedulerEventModel');
 
 require('datejs'); // Todo: replace with moment!
 
@@ -163,7 +164,12 @@ function deleteGameplay(gpOptions, callback) {
                 return callback(err);
               }
               return chancelleryTransaction.dumpChancelleryData(gpOptions.gameId, function (err) {
-                return callback(err);
+                if (err) {
+                  return callback(err);
+                }
+                return schedulerEventsModel.dumpEvents(gpOptions.gameId, function (err) {
+                  return callback(err);
+                });
               });
             });
           });
@@ -301,10 +307,10 @@ function createDemoGameplay(p1, p2) {
                 console.log('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-                var endTs = new Date();
-                var duration = (endTs.getTime() - startTs.getTime()) / 1000;
-                console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
-                return callback();
+              var endTs = new Date();
+              var duration = (endTs.getTime() - startTs.getTime()) / 1000;
+              console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
+              return callback();
             });
           });
         })
