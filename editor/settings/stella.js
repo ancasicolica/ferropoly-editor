@@ -13,7 +13,8 @@ module.exports = function(settings) {
 
   settings.server = {
     port: 3002,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    serverId: 'stella-editor'
   };
 
   settings.socketIoServer = {

@@ -6,7 +6,8 @@ module.exports = function(settings) {
 
   settings.server = {
     port: process.env.OPENSHIFT_NODEJS_PORT,
-    host: process.env.OPENSHIFT_NODEJS_IP
+    host: process.env.OPENSHIFT_NODEJS_IP,
+    serverId: 'openshift-editor'
   };
 
   settings.socketIoServer = {
