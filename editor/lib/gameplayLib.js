@@ -211,12 +211,12 @@ function createDemoTeams(gp, callback) {
   var demoTeamData = [
     createDemoTeamEntry('Ferropoly Riders', 'Pfadi Züri Oberland', 'Heinz Muster', 'team1@ferropoly.ch', '079 000 00 01'),
     createDemoTeamEntry('Bahnfreaks', 'Cevi Bern', 'Nora Heinzmann', 'team2@ferropoly.ch', '079 000 00 02'),
-    createDemoTeamEntry('Bahnschwellen', 'Sek Hinwil', 'Mike Heller', 'team3@ferropoly.ch', '079 000 00 03'),
+    createDemoTeamEntry('Bahnschwellen', 'Sek Hinwil', 'Marius Heller', 'team3@ferropoly.ch', '079 000 00 03'),
     createDemoTeamEntry('Schmalspurfans', 'Gewerbeschule Chur', 'Annina Cavegn', 'team4@ferropoly.ch', '079 000 00 04', 'Siegerteam letztes Jahr'),
     createDemoTeamEntry('Pufferbillies', 'Oberstufe Basel', 'Sylvia Meyer', 'team5@ferropoly.ch', '079 000 00 05'),
     createDemoTeamEntry('Mecaronis', 'Mechatronik Team', 'Marcel Grob', 'team6@ferropoly.ch', '079 000 00 06'),
     createDemoTeamEntry('Ticketeria', 'Team Kriens', 'Olivia Huber', 'team7@ferropoly.ch', '079 000 00 07'),
-    createDemoTeamEntry('Sackbahnhof', 'Jungwacht St. Gallen', 'Thomas Meier', 'team8@ferropoly.ch', '079 000 00 08')
+    createDemoTeamEntry('Sackbahnhof', 'Jungwacht St. Gallen', 'Olaf Meier', 'team8@ferropoly.ch', '079 000 00 08')
   ];
   var nb = demoTeamData.length;
   for (var i = 0; i < nb; i++) {
