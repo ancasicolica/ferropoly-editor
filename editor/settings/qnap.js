@@ -14,7 +14,7 @@ module.exports = function(settings) {
   settings.server = {
     port: 3002,
     host: '0.0.0.0',
-    serverId: 'stella-editor'
+    serverId: 'qnap-editor'
   };
 
   settings.socketIoServer = {
@@ -28,7 +28,7 @@ module.exports = function(settings) {
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay : '5 0 * * *'
+    createDemoGameplay : '30 4 * * *'
   };
 
   return settings;
