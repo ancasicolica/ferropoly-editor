@@ -8,7 +8,6 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
@@ -36,17 +35,31 @@ var pricelist = require('./routes/pricelist');
 var player = require('./routes/player');
 var cronjobs = require('./lib/cronjobs');
 var logger = require('../common/lib/logger').getLogger('editor-app');
-
+var expressWinston = require('express-winston');
+var winston = require('winston');
+var moment = require('moment');
 var initServer = function () {
   authStrategy.init(settings, users);
   cronjobs.init();
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
+  // express-winston logger makes sense BEFORE the router.
+  app.use(expressWinston.logger({
+    transports: [
+      new winston.transports.Console({
+        json: false,
+        colorize: true
+      })
+    ],
+    meta: false,
+    msg: 'HTTP {{req.method}} {{req.url}}',
+    expressFormat: false,
+    colorStatus: true
+  }));
 
   // uncomment after placing your favicon in /public
   //app.use(favicon(__dirname + '/public/favicon.ico'));
-  app.use(morgan('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: false}));
   app.use(cookieParser());
