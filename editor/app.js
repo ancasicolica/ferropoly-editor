@@ -8,7 +8,7 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
@@ -35,6 +35,7 @@ var ferropolyDb = require('../common/lib/ferropolyDb');
 var pricelist = require('./routes/pricelist');
 var player = require('./routes/player');
 var cronjobs = require('./lib/cronjobs');
+var logger = require('../common/lib/logger').getLogger('editor-app');
 
 var initServer = function () {
   authStrategy.init(settings, users);
@@ -45,7 +46,7 @@ var initServer = function () {
 
   // uncomment after placing your favicon in /public
   //app.use(favicon(__dirname + '/public/favicon.ico'));
-  app.use(logger('dev'));
+  app.use(morgan('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: false}));
   app.use(cookieParser());
@@ -120,14 +121,13 @@ var initServer = function () {
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
   server.listen(app.get('port'), app.get('ip'), function() {
-    console.log('%s: Node server started on %s:%d ...',
-      Date(Date.now() ), app.get('ip'), app.get('port'));
+    logger.info('Ferropoly Editor, Copyright (C) 2015 Christian Kuster, CH-8342 Wernetshausen');
+    logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
+    logger.info('This is free software, and you are welcome to redistribute it');
+    logger.info('under certain conditions; see www.ferropoly.ch for details.');
+    logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
+
   });
-  console.log('Ferropoly Editor, Copyright (C) 2015 Christian Kuster, CH-8342 Wernetshausen');
-  console.log('This program comes with ABSOLUTELY NO WARRANTY;');
-  console.log('This is free software, and you are welcome to redistribute it');
-  console.log('under certain conditions; see www.ferropoly.ch for details.');
-  console.log('Ferropoly Editor server listening on port ' + app.get('port'));
 };
 
 /**
@@ -135,8 +135,8 @@ var initServer = function () {
  */
 ferropolyDb.init(settings, function(err) {
   if (err) {
-    console.log('Failed to init ferropolyDb');
-    console.error(err);
+    logger.warning('Failed to init ferropolyDb');
+    logger.error(err);
   }
   initServer();
 
