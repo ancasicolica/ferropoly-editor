@@ -6,7 +6,7 @@
 
 var mongoose = require('mongoose');
 var logger = require('../lib/logger').getLogger('travelLogModel');
-
+var moment = require('moment');
 
 /**
  * The mongoose schema for an user
