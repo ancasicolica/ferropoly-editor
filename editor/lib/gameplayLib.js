@@ -19,6 +19,7 @@ var async = require('async');
 var settings = require('../settings');
 var schedulerEvents = require('../../common/lib/schedulerEvents');
 var schedulerEventsModel = require('../../common/models/schedulerEventModel');
+var logger = require('../../common/lib/logger').getLogger('gameplayLib');
 
 require('datejs'); // Todo: replace with moment!
 
@@ -141,6 +142,7 @@ function deleteGameplay(gpOptions, callback) {
   if (!gpOptions.gameId || !gpOptions.ownerEmail) {
     return callback(new Error('Options are not complete'));
   }
+
   return properties.removeAllPropertiesFromGameplay(gpOptions.gameId, function (err) {
     if (err) {
       return callback(err);
@@ -149,43 +151,34 @@ function deleteGameplay(gpOptions, callback) {
       if (err || !gp) {
         return callback(err);
       }
-      return gameplays.removeGameplay(gp, function (err) {
-        if (err) {
-          return callback(err);
+      async.parallel([
+        function (callback) {
+          gameplays.removeGameplay(gp, callback);
+        },
+        function (callback) {
+          teams.deleteAllTeams(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          propertyAccountTransaction.dumpAccounts(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          teamAccountTransaction.dumpAccounts(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          chancelleryTransaction.dumpChancelleryData(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          schedulerEventsModel.dumpEvents(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          logs.deleteAllEntries(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          travelLog.deleteAllEntries(gpOptions.gameId, callback);
         }
-        return teams.deleteAllTeams(gpOptions.gameId, function (err) {
-          if (err) {
-            return callback(err);
-          }
-          return propertyAccountTransaction.dumpAccounts(gpOptions.gameId, function (err) {
-            if (err) {
-              return callback(err);
-            }
-            return teamAccountTransaction.dumpAccounts(gpOptions.gameId, function (err) {
-              if (err) {
-                return callback(err);
-              }
-              return chancelleryTransaction.dumpChancelleryData(gpOptions.gameId, function (err) {
-                if (err) {
-                  return callback(err);
-                }
-                return schedulerEventsModel.dumpEvents(gpOptions.gameId, function (err) {
-                  if (err) {
-                    return callback(err);
-                  }
-                  return logs.deleteAllEntries(gpOptions.gameId, function (err) {
-                    if (err) {
-                      return callback(err);
-                    }
-                    return travelLog.deleteAllEntries(gpOptions.gameId, function (err) {
-                      return callback(err);
-                    });
-                  });
-                });
-              });
-            });
-          });
-        });
+      ], function (err, results) {
+        logger.info('Parallel task finished', results);
+        callback(err);
       });
     });
   });
