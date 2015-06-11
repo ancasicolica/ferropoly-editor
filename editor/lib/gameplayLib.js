@@ -8,6 +8,7 @@ var gameplays = require('../../common/models/gameplayModel');
 var properties = require('../../common/models/propertyModel');
 var locations = require('../../common/models/locationModel');
 var logs = require('../../common/models/logModel');
+var travelLog = require('../../common/models/travelLogModel');
 var teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
 var propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
 var chancelleryTransaction = require('../../common/models/accounting/chancelleryTransaction');
@@ -173,7 +174,12 @@ function deleteGameplay(gpOptions, callback) {
                     return callback(err);
                   }
                   return logs.deleteAllEntries(gpOptions.gameId, function (err) {
-                    return callback(err);
+                    if (err) {
+                      return callback(err);
+                    }
+                    return travelLog.deleteAllEntries(gpOptions.gameId, function (err) {
+                      return callback(err);
+                    });
                   });
                 });
               });
