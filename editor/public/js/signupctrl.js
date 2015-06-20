@@ -66,7 +66,6 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
     else {
       $scope.emailInvalid = false;
     }
-    $scope.$apply();
   };
 
   /**
@@ -74,16 +73,13 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
    */
   $(document).ready(function () {
     setAgbHeight();
-    // Establish socket.io connection to the server
-    socket = io.connect('http://' + ferropolyServer.host + ':' + ferropolyServer.port);
-    // Register all handlers of this module
-    socket.on('emailVerificationResult', onEmailVerificationResult);
-    socket.on('newUserSaved', function(data) {
-      // Todo: verify data
-      console.log(data);
-      $scope.view++;
-      $scope.$apply();
-    })
+    /*
+     socket.on('newUserSaved', function (data) {
+     // Todo: verify data
+     console.log(data);
+     $scope.view++;
+     $scope.$apply();
+     })*/
   });
   /**
    * Sets the heigth of the map as large as possible. Workaround as I haven't found a fitting css rule!
@@ -98,10 +94,17 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
    * Verify Email Address: send request to server to do so, answer is received in 'emailVerificationResult'
    */
   $scope.verifyEmail = function () {
-    if (!$scope.email || $scope.email.length < 6) {
-      return onEmailVerificationResult({valid: false});
-    }
-    socket.emit('signUpEmailVerification', {email: $scope.email});
+    $http.post('/signup/verifyemail', {
+      email: $scope.email
+    }).
+      success(function (data) {
+        onEmailVerificationResult(data);
+      }).
+      error(function (data, status) {
+        console.log(status);
+        onEmailVerificationResult(data);
+      });
+
   };
   /**
    * Verify the forname
@@ -151,14 +154,24 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
   $scope.createUser = function () {
     // Todo: show AGB before creating user
     if ($scope.formDataValid()) {
-      socket.emit('createUser', {
+
+      $http.post('/signup/new',  {
         personalData: {
           forename: $scope.forename,
           surname: $scope.surname,
           email: $scope.email
         },
         password: $scope.password
-      });
+      }).
+        success(function (data) {
+          console.log(data);
+          $scope.view++;
+        }).
+        error(function (data, status) {
+          console.warn(status);
+          console.log(data);
+          $scope.view++;
+        });
     }
   }
 }]);

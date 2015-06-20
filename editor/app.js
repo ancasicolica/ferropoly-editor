@@ -93,7 +93,6 @@ var initServer = function () {
   app.use('/player', player);
 
   var server = require('http').Server(app);
-  var io = require('socket.io')(server);
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
@@ -124,11 +123,6 @@ var initServer = function () {
       message: err.message,
       error: {}
     });
-  });
-
-  io.on('connection', function (socket) {
-    console.log('socket.io connection');
-    signup.onSocketConnection(socket);
   });
 
   app.set('port', settings.server.port);
