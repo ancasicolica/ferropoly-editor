@@ -17,7 +17,7 @@ module.exports = function(settings) {
     serverId: 'qnap-editor'
   };
 
-  settings.socketIoServer = {
+  settings.publicServer = {
     port: 3002,
     host: 'ferropoly.synology.me'
   };

@@ -10,7 +10,7 @@ module.exports = function (settings) {
     serverId: 'localhost-editor'
   };
 
-  settings.socketIoServer = {
+  settings.publicServer = {
     port: 3002,
     host: 'localhost'
   };

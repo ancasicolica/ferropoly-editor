@@ -10,10 +10,11 @@ module.exports = function(settings) {
     serverId: 'openshift-editor'
   };
 
-  settings.socketIoServer = {
+  settings.publicServer = {
     port: 80,
     host: 'editor-ferropoly.rhcloud.com'
   };
+
 
   settings.locationDbSettings = {
     mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
