@@ -31,6 +31,7 @@ module.exports = function (grunt) {
           './editor/public/js/pricelistctrl.min.js': ['./editor/public/js/pricelistctrl.js'],
           './editor/public/js/property.min.js': ['./editor/public/js/property.js'],
           './editor/public/js/signupctrl.min.js': ['./editor/public/js/signupctrl.js'],
+          './editor/public/js/signupverifyctrl.min.js': ['./editor/public/js/signupverifyctrl.js'],
           './editor/public/js/sortable.min.js': ['./editor/public/js/sortable.js']
         }
       },

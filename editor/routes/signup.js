@@ -33,8 +33,9 @@ router.get('/', function (req, res) {
  */
 router.get('/verify/:login/:verificationText', function(req, res) {
   var onVerificationError = function(message) {
-    res.render('signupError', {
-      title: 'Anmeldefehler', hideLogout: true,
+    res.render('signup-error', {
+      title: 'Anmeldefehler',
+      hideLogout: true,
       ngController: 'signupCtrl',
       ngApp: 'signupApp',
       ngFile: ngFile,
@@ -64,6 +65,40 @@ router.get('/verify/:login/:verificationText', function(req, res) {
     else {
       logger.info('invalid verification text: ' + req.params.verificationText);
       return onVerificationError('Verifikation fehlgeschlagen');
+    }
+  });
+});
+
+/**
+ * Verify the infotext from the signup-verify route
+ */
+router.post('/verifyText', function(req, res) {
+  if (!req.body.text) {
+    return res.send({valid: false, message: 'Kein Text eingegeben'});
+  }
+  users.getUserByMailAddress(req.session.passport.user, function(err, user) {
+    if (err) {
+      logger.error('Can not get user', err);
+      return res.send({valid: false, message: err.message});
+    }
+    if (!user) {
+      logger.info('Unknown user:' + req.params.login);
+      return res.send({valid: false, message: 'Unbekannter Benutzer'});
+    }
+    if (user.login.verificationText === req.body.text) {
+      logger.info('Verification text ok');
+      user.login.verifiedEmail = true;
+      users.updateUser(user, undefined, function(err) {
+        if (err) {
+          logger.error('Save failure', err);
+          return res.send({valid: false, message: 'Fehler beim Speichern'});
+        }
+        return res.send({valid: true});
+      });
+    }
+    else {
+      logger.info('invalid verification text: ' + req.body.text);
+      return res.send({valid: false, message: 'Falscher Text'});
     }
   });
 });
@@ -131,12 +166,43 @@ router.post('/new', function (req, res) {
   });
 });
 
+
+router.post('/generateNewText', function(req, res) {
+  users.getUserByMailAddress(req.session.passport.user, function (err, user) {
+    if (err) {
+      return res.send({sent: false, message: 'Datenbankproblem: ' + err.message});
+    }
+
+    var verificationText = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
+    verificationText += '-' + _.random(1000, 9999);
+    user.login.verificationText = verificationText;
+    users.updateUser(user, undefined, function (err, user) {
+      if (err) {
+        logger.error('ERROR: ' + err.message);
+        return res.send({sent: false, message: err.message});
+      }
+
+      sendSignupMail(user, function (err, message) {
+        if (err) {
+          logger.error('sendSignupMail', err);
+          return res.send({sent: false, message: err.message});
+        }
+        var dataToSend = _.omit(user, 'login');
+        res.send({sent: true, user: dataToSend, message: message});
+      });
+    });
+  });
+
+});
+
+
 /**
  * Sends the signup mail
  * @param user
  * @param callback
  */
 function sendSignupMail(user, callback) {
+  logger.info('user data:', user);
   var url = 'http://' + settings.publicServer.host + ':' + settings.publicServer.port + '/signup/verify/' + user.personalData.email + '/' + user.login.verificationText;
   var html = '<h1>Ferropoly Anmeldung</h1>';
   html += '<p>Vielen Dank für das Interesse am Ferropoly. Bitte beim ersten Login folgenden Text eingeben:</p>';
@@ -150,7 +216,7 @@ function sendSignupMail(user, callback) {
   text += 'Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly: www.ferropoly.ch\n';
 
   logger.info('Mailtext created', html);
-  mailer.send({to: user, subject: 'Ferropoly Anmeldung', html: html, text: text}, callback);
+  mailer.send({to: user.personalData.email, subject: 'Ferropoly Anmeldung', html: html, text: text}, callback);
 }
 
 /**

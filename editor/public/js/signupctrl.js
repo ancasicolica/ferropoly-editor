@@ -104,7 +104,6 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
         console.log(status);
         onEmailVerificationResult(data);
       });
-
   };
   /**
    * Verify the forname
