@@ -59,11 +59,12 @@ block content
           input(type='checkbox' ng-model='agbAccepted')
           | Ich habe die AGBs gelesen, verstanden und akzeptiert
         br
-        button(class='btn btn-default' ng-disabled='!agbAccepted' ng-click='createUser()') Registrierung abschliessen
+        button(class='btn btn-default' ng-disabled='finalSendButtonDisabled()' ng-click='createUser()') Registrierung abschliessen
         br
         br
 
   .ls-box-shape(ng-show='view === 2')
-    | Vielen Dank für die Registrierung. Gegenwärtig gibt es noch keine Email-Verifikation, deshalb kann sogleich eingeloggt werden.
+    .alert.alert-success(role='alert' ng-show='emailSentSuccess') Vielen Dank für die Registrierung. Ein Email mit dem Aktivierungscode wurde an {{email}} gesendet.
+    .alert.alert-danger(role='alert' ng-show='emailError') Leider gab es ein Problem beim Senden des Mails, die Registrierung konnte nicht abgeschlossen werden: {{emailError}}
     h2
       a(href='/') Hier geht es zum Login

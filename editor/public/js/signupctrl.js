@@ -24,7 +24,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
   $scope.surenameInvalid = false;
   $scope.forenameInvalid = false;
   $scope.emailInvalidExplanation = '';
-
+  $scope.emailSent = false;
   /**
    * Set the validation classes
    * @param valid
@@ -39,6 +39,13 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
       $(id).removeClass('has-error');
       $(id).addClass('has-success');
     }
+  };
+
+  $scope.finalSendButtonDisabled = function() {
+    if (!$scope.agbAccepted) {
+      return true;
+    }
+    return $scope.emailSent;
   };
   /**
    * Result of the email verification (Socket.io handler for 'emailVerificationResult')
@@ -153,7 +160,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
   $scope.createUser = function () {
     // Todo: show AGB before creating user
     if ($scope.formDataValid()) {
-
+      $scope.emailSent = true;
       $http.post('/signup/new',  {
         personalData: {
           forename: $scope.forename,
@@ -164,9 +171,16 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
       }).
         success(function (data) {
           console.log(data);
+          if (data.saved) {
+            $scope.emailSentSuccess = true;
+          }
+          else {
+            $scope.emailError = data.message;
+          }
           $scope.view++;
         }).
         error(function (data, status) {
+          $scope.emailError = status;
           console.warn(status);
           console.log(data);
           $scope.view++;
