@@ -22,7 +22,8 @@ module.exports = {
    */
   init: function(_options) {
     options = _options;
-    logger.info('options for mailer', options.mailer);
+    //activate for debug only
+    //logger.info('options for mailer', options.mailer);
     transporter = nodemailer.createTransport(smtpTransport(options.mailer));
   },
 
