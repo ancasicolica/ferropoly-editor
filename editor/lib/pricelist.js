@@ -127,22 +127,30 @@ var setPropertyPrices = function (gameplay, pricelist) {
     else {
       // several properties together in one price group
       var priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
-      var nbOfPropertiesInSameGroup = [];
-      nbOfPropertiesInSameGroup[0] = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
-      nbOfPropertiesInSameGroup[1] = Math.ceil(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
-
+      var nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
+      var nbOfPropertiesLeft = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
       var t = 0;
       var n = 0;
       var p = priceMin;
       do {
-        for (var i = 0; i < nbOfPropertiesInSameGroup[n % 2]; i++) {
+        var target = nbOfPropertiesInSameGroup;
+        if (nbOfPropertiesLeft) {
+          nbOfPropertiesLeft--;
+          target++;
+        }
+        for (var i = 0; i < target; i++) {
           if (!pricelist[i + t]) {
             console.log(i + ' / ' + t);
           }
           if ((i + t) < pricelist.length) {
-            pricelist[i + t].pricelist.price = Math.floor(p / 10) * 10;
+            // The last group of prices can be larger (not handled with the nbOfProbertiesInSameGroup, e.g. 150 places
+            // with a numberOfPriceLevels = 8 leads to 148 handled places, leaving two with a wrong price).
+            // ==> if the price is higher han priceMax, set it to priceMax
+            var price = Math.floor(p / 10) * 10;
+            pricelist[i + t].pricelist.price = (price < priceMax) ? price : priceMax;
           }
         }
+
         p += priceDifference;
         t += i;
         n++;
