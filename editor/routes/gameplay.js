@@ -122,6 +122,10 @@ router.post('/delete', function (req, res) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
 
+    if (req.body.gameId === 'play-a-demo-game') {
+      return res.send({status: 'error', message: 'Can not delete the demo game'});
+    }
+
     // Get gameplay first, verify user
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {

@@ -69,8 +69,8 @@ block content
               .col-sm-10
                 textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-change='currentDataChanged=true' ng-model='currentTeam.data.remarks')
 
-            button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid') Gruppe speichern
+            button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern
               span(class='glyphicon glyphicon-save' aria-hidden='true')
             | &nbsp;
-            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal') Gruppe löschen
+            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame()') Gruppe löschen
               span(class='glyphicon glyphicon-trash' aria-hidden='true')

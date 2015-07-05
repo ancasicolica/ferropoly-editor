@@ -25,6 +25,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
   $scope.currentTeam = undefined;
   $scope.currentDataChanged = false;
   $scope.maxGroupNb = 20; // I know it's at the wrong place, but if you abuse it, I'll kick you out of the game ;-)
+
   /**
    * Sort the teams
    */
@@ -36,6 +37,15 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
       return t.data.name.toUpperCase();
     });
   };
+
+  /**
+   * Returns true when this is a demo game (no worries, the server handles this too, it's just for the UI here)
+   * @returns {boolean}
+   */
+  $scope.isDemoGame = function() {
+    return gameId === 'play-a-demo-game';
+  };
+
   /**
    * Set the current team
    * @param team
@@ -118,7 +128,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
    */
   $scope.deleteTeam = function () {
     var i = $scope.teams.indexOf($scope.currentTeam);
-    $http.post('/player/delete', {teamId: $scope.currentTeam.uuid, authToken: authToken}).
+    $http.post('/player/delete', {teamId: $scope.currentTeam.uuid, gameId: gameId, authToken: authToken}).
       success(function (data, status) {
         if (data.success) {
           console.log('team deleted');
