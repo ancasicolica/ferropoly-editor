@@ -20,6 +20,7 @@ var gameplay = require('./routes/gameplay');
 var authtoken = require('./routes/authtoken');
 var issuetracker = require('./routes/issuetracker');
 var configuration = require('./routes/configuration');
+var infoRoute = require('../common/routes/info');
 var settings = require('./settings');
 var authStrategy = require('../common/lib/authStrategy');
 var passport = require('passport');
@@ -81,6 +82,7 @@ var initServer = function () {
   app.use(flash()); // use connect-flash for flash messages stored in session
 
 
+  app.use('/appinfo', infoRoute);
   signup.init(app, users);
   login.init(app, settings);
   authtoken.init(app);
