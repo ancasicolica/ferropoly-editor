@@ -253,6 +253,8 @@ function createDemoGameplay(p1, p2) {
     settings = p1;
   }
 
+  var gameId = settings.gameId || demoGameId;
+
   var options = {
     map: 'sbb',
     email: demoOrganisatorMail,
@@ -262,7 +264,7 @@ function createDemoGameplay(p1, p2) {
     gameStart: settings.gameStart || '06:00',
     gameEnd: settings.gameEnd || '21:00',
     gamename: 'Demo Spiel',
-    gameId: demoGameId,
+    gameId: gameId,
     random: 80
   };
 
@@ -301,7 +303,7 @@ function createDemoGameplay(p1, p2) {
             console.log('Failed to create the demo teams: ' + err.message);
             return callback(err);
           }
-          pricelistLib.create(demoGameId, demoOrganisatorMail, function (err) {
+          pricelistLib.create(gameId, demoOrganisatorMail, function (err) {
             if (err) {
               console.log('Failed to create the demo price list: ' + err.message);
               return callback(err);

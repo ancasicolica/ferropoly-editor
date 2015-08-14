@@ -11,7 +11,7 @@ ferropolyDb.init(settings, function (err) {
     process.exit(code = 0);
     return;
   }
-  gplib.createDemoGameplay({gameStart: '04:00', gameEnd: '23:30'}, function (err) {
+  gplib.createDemoGameplay({gameId: 'local-demo-game', gameStart: '04:00', gameEnd: '23:30'}, function (err) {
     if (err) {
       console.log('Demo gameplay creation error: ' + err);
       process.exit(code = 0);
