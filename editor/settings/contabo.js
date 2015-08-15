@@ -14,7 +14,7 @@ module.exports = function(settings) {
   };
 
   settings.publicServer = {
-    port: 3004,
+    port: 3002,
     host: '5.189.159.156'
   };
 
