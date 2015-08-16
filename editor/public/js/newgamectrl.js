@@ -17,7 +17,6 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   $scope.gamename = 'Ferropoly Spiel';
   $scope.errorMessage = '';
   $scope.gamedate = new Date().add(1).day().toString('yyyy-MM-dd');
-  $scope.dateError = undefined;
   $scope.minDate = Date.today().toString('yyyy-MM-dd');
   $scope.random = 0;
 
@@ -39,18 +38,6 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
         $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht erstellt werden. Status: ' + status;
       });
   });
-
-  /**
-   * Validate the date of the new game, must be in the future
-   */
-  $scope.validateDate = function () {
-    if (new Date($scope.gamedate) < new Date()) {
-      $scope.dateError = 'Das Datum muss in der Zukunft liegen.';
-    }
-    else {
-      $scope.dateError = undefined;
-    }
-  };
 
   /**
    * Save game
