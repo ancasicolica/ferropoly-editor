@@ -11,39 +11,40 @@ module.exports = function (settings) {
     port: process.env.FERROPOLY_EDITOR_PORT,
     host: 'app.ferropoly.ch',
     serverId: 'editor-app.ferropoly.ch-v' + settings.version
-};
+  };
 
-settings.publicServer = {
-  port: process.env.FERROPOLY_EDITOR_PORT,
-  host: 'app.ferropoly.ch'
-};
-
-
-settings.locationDbSettings = {
-  mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
-};
-
-settings.cron = {
-  // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-  createDemoGameplay: '0 1 * * *'
-};
-
-settings.demoGameplay = {
-  addDays: 0
-};
-
-settings.mailer = {
-  senderAddress: process.env.MAILER_SENDER,
-  host: process.env.MAILER_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    pass: process.env.MAILER_PASS,
-    user: process.env.MAILER_USER
-  }
-};
+  settings.publicServer = {
+    port: process.env.FERROPOLY_EDITOR_PORT,
+    host: 'app.ferropoly.ch'
+  };
 
 
-return settings;
+  settings.locationDbSettings = {
+    mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
+  };
+
+  settings.cron = {
+    // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
+    createDemoGameplay: '0 1 * * *'
+  };
+
+  settings.demoGameplay = {
+    addDays: 0
+  };
+
+  settings.mailer = {
+    senderAddress: process.env.MAILER_SENDER,
+    host: process.env.MAILER_HOST,
+    port: 465,
+    secure: true,
+    auth: {
+      pass: process.env.MAILER_PASS,
+      user: process.env.MAILER_USER
+    }
+  };
+
+  settings.mainInstances = ['http://app.ferroply.ch:3004', 'http://app.ferroply.ch:3104'];
+
+  return settings;
 }
 ;

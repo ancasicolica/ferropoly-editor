@@ -76,7 +76,7 @@ var initServer = function () {
   // Session deserialisation of the user
   passport.deserializeUser(authStrategy.deserializeUser);
   // required for passport: configuration
-  app.use(session({secret: 'ferropolyIsAGameWithAVeryLargePlayground'})); // session secret
+  app.use(session({secret: 'ferropolyIsAGameWithAVeryLargePlayground', resave: true, saveUninitialized: false})); // session secret
   app.use(passport.initialize());
   app.use(passport.session()); // persistent login sessions
   app.use(flash()); // use connect-flash for flash messages stored in session
@@ -132,7 +132,7 @@ var initServer = function () {
 
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
-  server.listen(app.get('port'), app.get('ip'), function() {
+  server.listen(app.get('port'), app.get('ip'), function () {
     logger.info('Ferropoly Editor, Copyright (C) 2015 Christian Kuster, CH-8342 Wernetshausen');
     logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
     logger.info('This is free software, and you are welcome to redistribute it');
@@ -145,7 +145,7 @@ var initServer = function () {
 /**
  * Initialize DB connection, has to be only once for all models
  */
-ferropolyDb.init(settings, function(err) {
+ferropolyDb.init(settings, function (err) {
   if (err) {
     logger.warning('Failed to init ferropolyDb');
     logger.error(err);

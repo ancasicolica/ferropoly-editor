@@ -20,11 +20,40 @@ var settings = require('../settings');
 var schedulerEvents = require('../../common/lib/schedulerEvents');
 var schedulerEventsModel = require('../../common/models/schedulerEventModel');
 var logger = require('../../common/lib/logger').getLogger('gameplayLib');
+var restify = require('restify');
 
 require('datejs'); // Todo: replace with moment!
 
 var demoGameId = 'play-a-demo-game';
 var demoOrganisatorMail = 'demo@ferropoly.ch';
+
+/**
+ * Updates the ferropoly main program cache
+ */
+function updateFerropolyMainCache() {
+  if (!settings.mainInstances || settings.mainInstances.length === 0) {
+    logger.info('No main instances to update');
+    return;
+  }
+
+  async.each(settings.mainInstances, function (instance, cb) {
+    var jsonClient = restify.createJsonClient({
+      url: instance,
+      version: '*'
+    });
+
+    // Fire and forget, don't care about the return
+    jsonClient.post('/gamecache/refresh', cb);
+
+  }, function (err) {
+    if (err) {
+      logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
+      return;
+    }
+    logger.info('Ferropoly main instances updated');
+  })
+}
+
 /**
  * Creates a random gameplay: assigns nb properties to a price range, very random
  * @param gameId ID of the game
@@ -127,6 +156,7 @@ function createNewGameplay(gpOptions, callback) {
       return callback(err);
     }
     return copyLocationsToProperties(gpOptions, gameplay, function (err, gp) {
+      updateFerropolyMainCache();
       callback(err, gp);
     });
   });
@@ -178,6 +208,7 @@ function deleteGameplay(gpOptions, callback) {
         }
       ], function (err, results) {
         logger.info('Parallel task finished', results);
+        updateFerropolyMainCache();
         callback(err);
       });
     });
@@ -345,6 +376,7 @@ function finalizeGameplay(gameplay, email, callback) {
         return callback(err);
       }
       schedulerEvents.createEvents(gpSaved, function (err) {
+        updateFerropolyMainCache();
         return callback(err);
       });
     });

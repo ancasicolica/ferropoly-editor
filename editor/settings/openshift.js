@@ -26,6 +26,10 @@ module.exports = function(settings) {
     createDemoGameplay : '0 21 * * *'
   };
 
+  // Ferropoly main instances to update when a gameplay was added / removed
+  settings.mainInstances = ['http://app.ferroply.ch:3004', 'http://app.ferroply.ch:3104'];
+
+
   settings.demoGameplay = {
     addDays : 1
   };

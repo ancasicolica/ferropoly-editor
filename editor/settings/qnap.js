@@ -42,6 +42,8 @@ module.exports = function(settings) {
     }
   };
 
+  // Ferropoly main instances to update when a gameplay was added / removed
+  settings.mainInstances = ['http://app.ferroply.ch:3004', 'http://app.ferroply.ch:3104'];
 
   return settings;
 };
