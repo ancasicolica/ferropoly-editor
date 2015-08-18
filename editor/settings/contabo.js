@@ -18,15 +18,19 @@ module.exports = function (settings) {
     host: 'app.ferropoly.ch'
   };
 
-
   settings.locationDbSettings = {
     mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
   };
 
-  settings.cron = {
-    // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay: '0 1 * * *'
-  };
+  if (process.env.FERROPOLY_PREVIEW) {
+    settings.cron = {};
+  }
+  else {
+    settings.cron = {
+      // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
+      createDemoGameplay: '0 1 * * *'
+    };
+  }
 
   settings.demoGameplay = {
     addDays: 0
