@@ -181,7 +181,7 @@ function deleteGameplay(gpOptions, callback) {
       if (err || !gp) {
         return callback(err);
       }
-      async.parallel([
+      async.series([
         function (callback) {
           gameplays.removeGameplay(gp, callback);
         },
