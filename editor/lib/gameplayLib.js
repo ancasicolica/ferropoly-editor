@@ -30,28 +30,32 @@ var demoOrganisatorMail = 'demo@ferropoly.ch';
 /**
  * Updates the ferropoly main program cache
  */
-function updateFerropolyMainCache() {
-  if (!settings.mainInstances || settings.mainInstances.length === 0) {
-    logger.info('No main instances to update');
-    return;
-  }
-
-  async.each(settings.mainInstances, function (instance, cb) {
-    var jsonClient = restify.createJsonClient({
-      url: instance,
-      version: '*'
-    });
-
-    // Fire and forget, don't care about the return
-    jsonClient.post('/gamecache/refresh', cb);
-
-  }, function (err) {
-    if (err) {
-      logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
-      return;
+function updateFerropolyMainCache(delay, callback) {
+  logger.info('Attempting to update main module caches in a few seconds');
+  _.delay(function() {
+    if (!settings.mainInstances || settings.mainInstances.length === 0) {
+      logger.info('No main instances to update');
+      return callback();
     }
-    logger.info('Ferropoly main instances updated');
-  })
+
+    async.each(settings.mainInstances, function (instance, cb) {
+      var jsonClient = restify.createJsonClient({
+        url: instance,
+        version: '*'
+      });
+
+      // Fire and forget, don't care about the return
+      jsonClient.post('/gamecache/refresh', cb);
+
+    }, function (err) {
+      if (err) {
+        logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
+        return callback(err);
+      }
+      logger.info('Ferropoly main instances updated');
+      callback();
+    });
+  }, delay);
 }
 
 /**
@@ -156,8 +160,9 @@ function createNewGameplay(gpOptions, callback) {
       return callback(err);
     }
     return copyLocationsToProperties(gpOptions, gameplay, function (err, gp) {
-      updateFerropolyMainCache();
-      callback(err, gp);
+      updateFerropolyMainCache(0, function(err) {
+        callback(err, gp);
+      });
     });
   });
 }
@@ -208,8 +213,7 @@ function deleteGameplay(gpOptions, callback) {
         }
       ], function (err, results) {
         logger.info('Parallel task finished', results);
-        updateFerropolyMainCache();
-        callback(err);
+        updateFerropolyMainCache(100, callback);
       });
     });
   });
@@ -376,8 +380,8 @@ function finalizeGameplay(gameplay, email, callback) {
         return callback(err);
       }
       schedulerEvents.createEvents(gpSaved, function (err) {
-        updateFerropolyMainCache();
-        return callback(err);
+        logger.info('Gameplay finalized', gameplay.internal.gameId);
+        updateFerropolyMainCache(4000, callback);
       });
     });
   });

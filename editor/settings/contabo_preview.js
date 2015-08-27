@@ -44,7 +44,7 @@ module.exports = function (settings) {
     }
   };
 
-  settings.mainInstances = ['http://app.ferroply.ch:3004', 'http://app.ferroply.ch:3104'];
+  settings.mainInstances = ['http://spiel-preview.ferroply.ch'];
 
   return settings;
 }
