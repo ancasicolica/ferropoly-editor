@@ -47,7 +47,7 @@ module.exports = function (settings) {
     }
   };
 
-  settings.mainInstances = ['http://spiel.ferroply.ch'];
+  settings.mainInstances = ['http://spiel.ferropoly.ch'];
 
   return settings;
 }
