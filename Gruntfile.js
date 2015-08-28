@@ -63,6 +63,17 @@ module.exports = function (grunt) {
         regExp: false
       }
     },
+    eslint: {
+      src: [
+        'server.js',
+        'editor/app.js',
+        'editor/lib/**/*.js',
+        'editor/routes/**/*.js'
+      ],
+      options: {
+        config: './.eslintrc'
+      }
+    },
     shell: {
       options: {},
       target: {
@@ -77,12 +88,14 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-bump');
-  grunt.registerTask('default', ['uglify:js']);
+  grunt.registerTask('default', ['eslint']);
   grunt.registerTask('minify', ['uglify:js']);
   grunt.registerTask('v:patch', ['bump-only:patch']);
   grunt.registerTask('v:minor', ['bump-only:minor']);
   grunt.registerTask('v:major', ['bump-only:major']);
   grunt.registerTask('demo', ['shell']);
+  grunt.registerTask('lint', ['eslint']);
 };

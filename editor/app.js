@@ -7,7 +7,7 @@
  */
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+//var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
@@ -30,7 +30,6 @@ var app = express();
 var users = require('../common/models/userModel');
 var gameplays = require('../common/models/gameplayModel');
 var properties = require('../common/models/propertyModel');
-var locations = require('../common/models/locationModel');
 var ferropolyDb = require('../common/lib/ferropolyDb');
 var pricelist = require('./routes/pricelist');
 var player = require('./routes/player');
@@ -38,7 +37,6 @@ var cronjobs = require('./lib/cronjobs');
 var logger = require('../common/lib/logger').getLogger('editor-app');
 var expressWinston = require('express-winston');
 var winston = require('winston');
-var moment = require('moment');
 var mailer = require('../common/lib/mailer');
 var initServer = function () {
   authStrategy.init(settings, users);

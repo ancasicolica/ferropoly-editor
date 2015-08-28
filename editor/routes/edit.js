@@ -8,12 +8,11 @@ var express = require('express');
 var router = express.Router();
 var gameplays;
 var settings = require('../settings');
-var users;
 var properties;
 
 var ngFile =  '/js/editctrl.js';
 if (settings.minifedjs) {
-  ngFile = '/js/editctrl.min.js'
+  ngFile = '/js/editctrl.min.js';
 }
 
 /* GET edit page */
@@ -126,7 +125,7 @@ router.post('/dataChanged', function (req, res) {
       console.log('Error while updating gameplay: ' + err.message);
     }
     res.send({success: true, status: 'ok'});
-  })
+  });
 });
 
 /**
@@ -199,7 +198,6 @@ module.exports = {
   init: function (app, _gameplays, _users, _properties) {
     app.use('/edit', router);
     gameplays = _gameplays;
-    users = _users;
     properties = _properties;
   }
 };

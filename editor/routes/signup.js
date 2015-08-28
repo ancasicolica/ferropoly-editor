@@ -15,7 +15,7 @@ var mailer = require('../../common/lib/mailer');
 var settings = require('../settings');
 var ngFile = '/js/signupctrl.js';
 if (settings.minifedjs) {
-  ngFile = '/js/signupctrl.min.js'
+  ngFile = '/js/signupctrl.min.js';
 }
 
 /* GET Sign-up page */

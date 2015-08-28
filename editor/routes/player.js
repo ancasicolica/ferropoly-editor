@@ -8,12 +8,11 @@
 var express = require('express');
 var router = express.Router();
 var teams = require('../../common/models/teamModel');
-var uuid = require('node-uuid');
 
 var settings = require('../settings');
 var ngFile = '/js/playerctrl.js';
 if (settings.minifedjs) {
-  ngFile = '/js/playerctrl.min.js'
+  ngFile = '/js/playerctrl.min.js';
 }
 
 /* GET player page. */
@@ -63,8 +62,7 @@ router.post('/store', function (req, res) {
       return res.send({status: 'error', message: 'error while saving:' + err.message});
     }
     return res.send({success: true});
-  })
-
+  });
 });
 
 
@@ -87,7 +85,7 @@ router.post('/delete', function (req, res) {
       return res.send({status: 'error', message: 'error while deleting:' + err.message});
     }
     return res.send({success: true});
-  })
+  });
 });
 
 
@@ -103,6 +101,6 @@ router.post('/deleteAll', function (req, res) {
       return res.send({status: 'error', message: 'error while deleting:' + err.message});
     }
     return res.send({success: true});
-  })
+  });
 });
 module.exports = router;

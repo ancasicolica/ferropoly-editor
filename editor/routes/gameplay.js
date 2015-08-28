@@ -7,11 +7,8 @@
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
-var date = require('datejs');
 var gameplayLib = require('../lib/gameplayLib');
-var teamModel = require('../../common/models/teamModel');
 var gameplayModel = require('../../common/models/gameplayModel');
-var propertyModel = require('../../common/models/propertyModel');
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -27,7 +24,7 @@ router.get('/mygames', function (req, res) {
           gamename: gameplay.gamename,
           scheduling: gameplay.scheduling,
           log: gameplay.log
-        })
+        });
       });
     }
     return res.send(retVal);
@@ -98,7 +95,7 @@ router.post('/finalize', function (req, res) {
         if (err) {
           return res.send({status: 'error', message: 'Error while finalizing gameplay: ' + err.message});
         }
-        return res.send({success: true})
+        return res.send({success: true});
       });
     });
   }

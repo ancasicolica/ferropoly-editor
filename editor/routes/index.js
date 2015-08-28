@@ -32,7 +32,7 @@ router.get('/', function (req, res) {
           ngController: 'verificationCtrl',
           ngApp: 'verificationApp',
           ngFile: ngVerificationFile
-        })
+        });
       }
       else {
         // default case

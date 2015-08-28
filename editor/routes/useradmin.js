@@ -3,8 +3,7 @@
  */
 var express = require('express');
 var router = express.Router();
-var users;
-var settings;
+
 
 /* GET Sign-up page */
 router.get('/', function (req, res) {
@@ -13,9 +12,7 @@ router.get('/', function (req, res) {
 
 
 module.exports = {
-  init: function (app, _settings, _users) {
+  init: function (app) {
     app.use('/useradmin', router);
-    settings = _settings;
-    users = _users;
   }
 };

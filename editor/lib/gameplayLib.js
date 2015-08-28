@@ -86,7 +86,7 @@ function createRandomGameplay(gameId, props, nb, callback) {
         if (generated === gplen) {
           callback(null);
         }
-      })
+      });
     }
   }
   catch (e) {
@@ -107,6 +107,10 @@ function createRandomGameplay(gameId, props, nb, callback) {
 function copyLocationsToProperties(gpOptions, gameplay, callback) {
   var props = [];
   return locations.getAllLocationsForMap(gpOptions.map, function (err, gameLocations) {
+    if (err) {
+      return callback(err);
+    }
+
     var n = 0;
     for (var i = 0; i < gameLocations.length; i++) {
       (function (location) {
@@ -126,7 +130,7 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
               return callback(null, gameplay);
             }
           }
-        })
+        });
       })(gameLocations[i]);
     }
   });
@@ -210,6 +214,9 @@ function deleteGameplay(gpOptions, callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
         }
       ], function (err, results) {
+        if (err) {
+          logger.error('Error while deleting gameplays', err);
+        }
         logger.info('Parallel task finished', results);
         // update main instances as we removed the game!
         updateFerropolyMainCache(100, callback);
@@ -238,7 +245,7 @@ function createDemoTeamEntry(name, organization, teamleaderName, teamleaderMail,
       teamLeader: {name: teamleaderName, email: teamleaderMail, phone: teamleaderPhone},
       remarks: remarks
     }
-  }
+  };
 }
 /**
  * Creates the teams for the demo
@@ -261,13 +268,13 @@ function createDemoTeams(gp, callback) {
   for (var i = 0; i < nb; i++) {
     teams.createTeam(demoTeamData[i], gp.internal.gameId, function (err) {
       if (err) {
-        console.error(err);
+        logger.error('Error while creating team', err);
       }
       teamsCreated++;
       if (teamsCreated === nb) {
         return callback();
       }
-    })
+    });
   }
 }
 
@@ -320,10 +327,9 @@ function createDemoGameplay(p1, p2) {
         }
         else {
           // recursive!
-          return createDemoGameplay(p1, p2)
-
+          return createDemoGameplay(p1, p2);
         }
-      })
+      });
     }
     else {
       // Create new gameplay now
@@ -354,9 +360,8 @@ function createDemoGameplay(p1, p2) {
               return callback();
             });
           });
-        })
-
-      })
+        });
+      });
     }
   });
 }
@@ -370,15 +375,18 @@ function createDemoGameplay(p1, p2) {
 function finalizeGameplay(gameplay, email, callback) {
   gameplays.finalize(gameplay.internal.gameId, email, function (err, gpSaved) {
     if (err) {
-      console.log('Failed to save demo gameplay: ' + err.message);
+      logger.error('Failed to save demo gameplay: ' + err.message);
       return callback(err);
     }
     properties.finalizeProperties(demoGameId, function (err) {
       if (err) {
-        console.log('Failed to finalize the properties: ' + err.message);
+        logger.error('Failed to finalize the properties: ' + err.message);
         return callback(err);
       }
       schedulerEvents.createEvents(gpSaved, function (err) {
+        if (err) {
+          logger.error('Error while creating events', err);
+        }
         logger.info('Gameplay finalized', gameplay.internal.gameId);
         updateFerropolyMainCache(4000, callback);
       });

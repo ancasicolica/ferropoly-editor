@@ -36,10 +36,10 @@ var createPriceList = function (gameId, ownerEmail, callback) {
           }
           gameplays.saveNewPriceListRevision(gp, function (err) {
             return callback(err);
-          })
-        })
-      })
-    })
+          });
+        });
+      });
+    });
   });
 };
 
@@ -112,12 +112,14 @@ var setPropertyPrices = function (gameplay, pricelist) {
   try {
     var priceMin = gameplay.gameParams.properties.lowestPrice;
     var priceMax = gameplay.gameParams.properties.highestPrice;
-    var steps;
+    var i;
+    var priceDifference = 0;
+    var p = 0;
 
     if (gameplay.gameParams.properties.numberOfPriceLevels === 1) {
       // Special case: every property has its own value
-      var priceDifference = (priceMax - priceMin) / (pricelist.length - 1);
-      for (var i = 0, p = priceMin; i < pricelist.length; i++, p += priceDifference) {
+      priceDifference = (priceMax - priceMin) / (pricelist.length - 1);
+      for (i = 0, p = priceMin; i < pricelist.length; i++, p += priceDifference) {
         pricelist[i].pricelist.price = Math.floor(p / 10) * 10;
       }
       // make sure that the maximum price is the max!
@@ -126,19 +128,19 @@ var setPropertyPrices = function (gameplay, pricelist) {
     }
     else {
       // several properties together in one price group
-      var priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
+      priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
       var nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
       var nbOfPropertiesLeft = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
       var t = 0;
       var n = 0;
-      var p = priceMin;
+      p = priceMin;
       do {
         var target = nbOfPropertiesInSameGroup;
         if (nbOfPropertiesLeft) {
           nbOfPropertiesLeft--;
           target++;
         }
-        for (var i = 0; i < target; i++) {
+        for (i = 0; i < target; i++) {
           if (!pricelist[i + t]) {
             console.log(i + ' / ' + t);
           }
@@ -195,7 +197,7 @@ var setPropertyHousePricing = function (gameplay, pricelist) {
   catch (e) {
     console.log('error in setPropertyHousePricing');
     console.error(e);
-    return null
+    return null;
   }
 
 };
@@ -221,7 +223,7 @@ var setPropertyGroups = function (gameplay, pricelist) {
   catch (e) {
     console.log('error in setPropertyGroups');
     console.error(e);
-    return null
+    return null;
   }
 };
 

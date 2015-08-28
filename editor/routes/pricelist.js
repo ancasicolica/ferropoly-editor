@@ -10,12 +10,11 @@ var router = express.Router();
 var pricelistLib = require('../lib/pricelist');
 var commonPricelistLib = require('../../common/lib/pricelist');
 var gameplays = require('../../common/models/gameplayModel');
-var _ = require('lodash');
 
 var settings = require('../settings');
 var ngFile = '/js/pricelistctrl.js';
 if (settings.minifedjs) {
-  ngFile = '/js/pricelistctrl.min.js'
+  ngFile = '/js/pricelistctrl.min.js';
 }
 
 /* GET priceslist. */

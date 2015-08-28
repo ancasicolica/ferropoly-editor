@@ -23,8 +23,8 @@ function setUpDemoGamemplayCreation() {
         else {
           console.log('CRON: demo set created');
         }
-      })
-    })
+      });
+    });
   }
 
 }
