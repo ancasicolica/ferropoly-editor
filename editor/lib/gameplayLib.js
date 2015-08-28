@@ -50,7 +50,8 @@ function updateFerropolyMainCache(delay, callback) {
     }, function (err) {
       if (err) {
         logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
-        return callback(err);
+        // Do not return an error, proceed!!
+        return callback();
       }
       logger.info('Ferropoly main instances updated');
       callback();
