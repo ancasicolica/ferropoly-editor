@@ -32,7 +32,7 @@ var demoOrganisatorMail = 'demo@ferropoly.ch';
  */
 function updateFerropolyMainCache(delay, callback) {
   logger.info('Attempting to update main module caches in a few seconds');
-  _.delay(function() {
+  _.delay(function () {
     if (!settings.mainInstances || settings.mainInstances.length === 0) {
       logger.info('No main instances to update');
       return callback();
@@ -160,11 +160,8 @@ function createNewGameplay(gpOptions, callback) {
       // Error while creating the gameplay, abort
       return callback(err);
     }
-    return copyLocationsToProperties(gpOptions, gameplay, function (err, gp) {
-      updateFerropolyMainCache(0, function(err) {
-        callback(err, gp);
-      });
-    });
+    // returns the gp as second param in callback
+    return copyLocationsToProperties(gpOptions, gameplay, callback);
   });
 }
 
@@ -214,6 +211,7 @@ function deleteGameplay(gpOptions, callback) {
         }
       ], function (err, results) {
         logger.info('Parallel task finished', results);
+        // update main instances as we removed the game!
         updateFerropolyMainCache(100, callback);
       });
     });
