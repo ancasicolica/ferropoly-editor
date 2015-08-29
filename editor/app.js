@@ -137,6 +137,10 @@ var initServer = function () {
     logger.info('under certain conditions; see www.ferropoly.ch for details.');
     logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
 
+    // temporary, for deployment debugging only
+    var util = require('util');
+    logger.debug('Settings', util.inspect(settings));
+    logger.debug('Environment', util.inspect(process.env));
   });
 };
 
