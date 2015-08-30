@@ -9,18 +9,18 @@ module.exports = function (settings) {
   settings.version += '-RC';
 
   settings.server = {
-    port: process.env.FERROPOLY_EDITOR_PORT,
+    port: 3202,
     host: 'app.ferropoly.ch',
     serverId: 'editor-app.ferropoly.ch-v' + settings.version
   };
 
   settings.publicServer = {
-    port: process.env.FERROPOLY_EDITOR_PORT,
-    host: 'app.ferropoly.ch'
+    port: 80,
+    host: 'spiel-rc.ferropoly.ch'
   };
 
   settings.locationDbSettings = {
-    mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
+    mongoDbUrl: 'mongodb://localhost/ferropoly'
   };
 
   settings.cron = {

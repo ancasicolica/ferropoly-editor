@@ -8,29 +8,26 @@
 module.exports = function (settings) {
 
   settings.server = {
-    port: process.env.FERROPOLY_EDITOR_PORT,
+    port: 3002,
     host: 'app.ferropoly.ch',
     serverId: 'editor-app.ferropoly.ch-v' + settings.version
   };
 
   settings.publicServer = {
-    port: process.env.FERROPOLY_EDITOR_PORT,
-    host: 'app.ferropoly.ch'
+    port: 80,
+    host: 'spiel.ferropoly.ch'
   };
 
   settings.locationDbSettings = {
     mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
   };
 
-  if (process.env.FERROPOLY_PREVIEW) {
-    settings.cron = {};
-  }
-  else {
-    settings.cron = {
-      // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-      createDemoGameplay: '0 1 * * *'
-    };
-  }
+
+  settings.cron = {
+    // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
+    createDemoGameplay: '0 1 * * *'
+  };
+
 
   settings.demoGameplay = {
     addDays: 0
