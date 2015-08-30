@@ -1,25 +1,23 @@
 /**
+ * Settings file
  * Created by kc on 04.01.15
  */
+'use strict';
+
 var pkg = require('./../package.json'),
   fs = require('fs'),
-  _ = require('lodash');
+  _ = require('lodash'),
   path = require('path');
 
 // Set default
 var deployType = process.env.DEPLOY_TYPE || 'local';
-
-var settings = {
-  name: pkg.name,
-  appName: pkg.title,
-  version: pkg.version,
-  debug: (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
-  preview: process.env.FERROPOLY_PREVIEW // is only defined when preview is enabled
-};
+var preview = true;
+var debug = process.env.DEBUG || false;
 
 // Set specific deploy type
 if (process.env.OPENSHIFT_NODEJS_IP) {
   deployType = 'openshift';
+  preview = false;
 }
 else if (process.env.DEPLOY_TYPE === 'contabo') {
   // check which instance
@@ -27,13 +25,25 @@ else if (process.env.DEPLOY_TYPE === 'contabo') {
   console.log('Root path: ' + rootPath);
   if (_.endsWith(rootPath, 'preview')) {
     deployType = 'contabo_preview';
+    debug = true;
   }
   else if (_.endsWith(rootPath, 'rc')) {
     deployType = 'contabo_rc';
   }
+  else {
+    preview = false;
+  }
 }
 
-if (process.env.DEBUG) {
+var settings = {
+  name: pkg.name,
+  appName: pkg.title,
+  version: pkg.version,
+  debug: (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
+  preview: preview
+};
+
+if (debug) {
   console.log('DEBUG Settings used');
   // Use minified javascript files wherever available
   settings.minifedjs = false;
