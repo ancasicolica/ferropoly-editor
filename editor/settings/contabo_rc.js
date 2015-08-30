@@ -1,12 +1,12 @@
 /**
- * Settings for the contabo server. Fix IP is 5.189.159.156
- * Created by kc on 15.08.15.
+ * Release candidate settings
+ * Created by kc on 30.08.15.
  */
 'use strict';
 
 
 module.exports = function (settings) {
-  settings.version += '-PREVIEW';
+  settings.version += '-RC';
 
   settings.server = {
     port: process.env.FERROPOLY_EDITOR_PORT,
@@ -23,12 +23,10 @@ module.exports = function (settings) {
     mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
   };
 
-
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay: '30 1 * * *'
+    createDemoGameplay: '45 1 * * *'
   };
-
 
   settings.demoGameplay = {
     addDays: 0
@@ -45,7 +43,7 @@ module.exports = function (settings) {
     }
   };
 
-  settings.mainInstances = ['http://spiel-preview.ferropoly.ch'];
+  settings.mainInstances = ['http://spiel-rc.ferropoly.ch'];
 
   return settings;
 };
