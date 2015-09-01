@@ -23,11 +23,11 @@ module.exports = function(settings) {
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
     // The openshift server is in EST (east coast USA)
-    createDemoGameplay : '0 21 * * *'
+    // createDemoGameplay : '0 21 * * *'
   };
 
   // Ferropoly main instances to update when a gameplay was added / removed
-  settings.mainInstances = ['http://spiel.ferropoly.ch'];
+  settings.mainInstances = ['http://spiel.ferropoly.ch', 'http://spiel-ferropoly.rhcloud.com'];
 
 
   settings.demoGameplay = {
