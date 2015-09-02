@@ -111,6 +111,7 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
       return callback(err);
     }
 
+    // Todo: use async instead of for loop
     var n = 0;
     for (var i = 0; i < gameLocations.length; i++) {
       (function (location) {
@@ -164,13 +165,19 @@ function createNewGameplay(gpOptions, callback) {
       // Error while creating the gameplay, abort
       return callback(err);
     }
-    // returns the gp as second param in callback
-    return copyLocationsToProperties(gpOptions, gameplay, callback);
+    logs.add('New Gameplay created: ' + gpOptions.gameId, function(err) {
+      if (err) {
+        logger.error('Log error', err);
+      }
+      // returns the gp as second param in callback
+      return copyLocationsToProperties(gpOptions, gameplay, callback);
+    });
+
   });
 }
 
 /**
- * Delete a COMPLETE gameplay: properties and gameplay (and logs, if there are some one day)
+ * Delete a COMPLETE gameplay: properties and gameplay
  * @param gpOptions
  * @param callback
  * @returns {*}
@@ -208,10 +215,10 @@ function deleteGameplay(gpOptions, callback) {
           schedulerEventsModel.dumpEvents(gpOptions.gameId, callback);
         },
         function (callback) {
-          logs.deleteAllEntries(gpOptions.gameId, callback);
-        },
-        function (callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
+        },
+        function(callback) {
+          logs.add('Deleted gameplay: ' + gpOptions.gameId, callback);
         }
       ], function (err, results) {
         if (err) {
@@ -357,7 +364,7 @@ function createDemoGameplay(p1, p2) {
               var endTs = new Date();
               var duration = (endTs.getTime() - startTs.getTime()) / 1000;
               console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
-              return callback();
+              logs.add('Demo Gameplay created', callback);
             });
           });
         });
@@ -406,7 +413,7 @@ module.exports = {
   createNewGameplay: createNewGameplay,
 
   /**
-   * Delete a COMPLETE gameplay: properties and gameplay (and logs, if there are some one day)
+   * Delete a COMPLETE gameplay: properties and gameplay
    * @param gpOptions
    * @param callback
    * @returns {*}

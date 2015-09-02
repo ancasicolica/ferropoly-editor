@@ -38,10 +38,13 @@ var logger = require('../common/lib/logger').getLogger('editor-app');
 var expressWinston = require('express-winston');
 var winston = require('winston');
 var mailer = require('../common/lib/mailer');
+var logs = require('../common/models/logModel');
+
 var initServer = function () {
   authStrategy.init(settings, users);
   cronjobs.init();
   mailer.init(settings);
+  logs.init(settings);
 
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
