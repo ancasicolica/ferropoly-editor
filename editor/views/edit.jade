@@ -33,7 +33,7 @@ block content
     h1 Lade die Daten... einen Moment bitte
     p
     a(href='/') Zurück zur Hauptseite
-  div(ng-show='panel === "error"')
+  div(ng-show='panel === "error"' ng-cloak)
     h1 Houston, we have a problem!
     p
     p Beim Laden des Spiels ist ein Fehler aufgetreten:
@@ -43,17 +43,17 @@ block content
     p
       a(href='/')
         | Zurück zur Hauptseite
-  div(ng-show='panel === "gameplay"')
+  div(ng-show='panel === "gameplay"' ng-cloak)
     include edit-gameplay
-  div(ng-show='panel === "basics"')
+  div(ng-show='panel === "basics"' ng-cloak)
     include edit-basics
-  div(ng-show='panel === "interests"')
+  div(ng-show='panel === "interests"' ng-cloak)
     include edit-interests
-  div(ng-show='panel === "properties"')
+  div(ng-show='panel === "properties"' ng-cloak)
     include edit-properties
-  div(ng-show='panel=== "map"')
+  div(ng-show='panel=== "map"' ng-cloak)
     include edit-map
-  div(ng-show='panel==="pricelist"')
+  div(ng-show='panel==="pricelist"' ng-cloak)
     include edit-pricelist
-  div(ng-show='panel==="finalize"')
+  div(ng-show='panel==="finalize"' ng-cloak)
     include edit-finalize

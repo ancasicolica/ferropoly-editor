@@ -15,10 +15,10 @@ block content
   h1 Ferropoly Spiel-Editor
 
   h2 Meine Spiele
-  div(ng-show='gameplays.length === 0')
+  div(ng-show='gameplays.length === 0' ng-cloak)
     | Du hast noch keine Spiele angelegt.&nbsp;
     a(href='/newgame') Neues Spiel anlegen.
-  div(ng-show='gameplays.length > 0')
+  div(ng-show='gameplays.length > 0' ng-cloak)
     .row
       div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
         .panel.panel-default
