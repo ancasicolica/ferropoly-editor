@@ -28,7 +28,7 @@ describe('GameplayModel Tests', function () {
         ownerEmail: 'olivia@kunz.ch',
         map: 'zvv'
       }, function (err, res) {
-        expect(res._id).to.be.a('object');
+        expect(res._id).to.be.a('string');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('olivia@kunz.ch');
         expect(res.internal.map).to.be('zvv');
@@ -43,7 +43,7 @@ describe('GameplayModel Tests', function () {
         ownerEmail: 'olivia@kunz.ch',
         map: 'sbb'
       }, function (err, res) {
-        expect(res._id).to.be.a('object');
+        expect(res._id).to.be.a('string');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('olivia@kunz.ch');
         expect(res.internal.map).to.be('sbb');
@@ -58,7 +58,7 @@ describe('GameplayModel Tests', function () {
         ownerEmail: 'christine@meyer.com',
         map: 'zvv'
       }, function (err, res) {
-        expect(res._id).to.be.a('object');
+        expect(res._id).to.be.a('string');
         expect(res.internal.gameId.length > 9).to.be(true);
         expect(res.internal.owner).to.be('christine@meyer.com');
         expect(res.internal.map).to.be('zvv');

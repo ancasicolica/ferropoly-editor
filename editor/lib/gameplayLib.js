@@ -111,29 +111,29 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
       return callback(err);
     }
 
-    // Todo: use async instead of for loop
-    var n = 0;
-    for (var i = 0; i < gameLocations.length; i++) {
-      (function (location) {
+    async.each(gameLocations,
+      function (location, cb) {
         properties.createPropertyFromLocation(gameplay.internal.gameId, location, function (err, prop) {
           if (err) {
             console.log('Error while creating property:' + err.message);
           }
-          n++;
           props.push(prop);
-          if (n === gameLocations.length) {
-            if (gpOptions.random) {
-              createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
-                return callback(err, gameplay);
-              });
-            }
-            else {
-              return callback(null, gameplay);
-            }
-          }
+          cb(err);
         });
-      })(gameLocations[i]);
-    }
+      },
+      function (err) {
+        if (err) {
+          return callback(err);
+        }
+        if (gpOptions.random) {
+          createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
+            return callback(err, gameplay);
+          });
+        }
+        else {
+          return callback(null, gameplay);
+        }
+      });
   });
 }
 
@@ -165,7 +165,7 @@ function createNewGameplay(gpOptions, callback) {
       // Error while creating the gameplay, abort
       return callback(err);
     }
-    logs.add('New Gameplay created: ' + gpOptions.gameId, function(err) {
+    logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
       if (err) {
         logger.error('Log error', err);
       }
@@ -217,7 +217,7 @@ function deleteGameplay(gpOptions, callback) {
         function (callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
         },
-        function(callback) {
+        function (callback) {
           logs.add('Deleted gameplay: ' + gpOptions.gameId, callback);
         }
       ], function (err, results) {
@@ -385,7 +385,7 @@ function finalizeGameplay(gameplay, email, callback) {
       logger.error('Failed to save demo gameplay: ' + err.message);
       return callback(err);
     }
-    properties.finalizeProperties(demoGameId, function (err) {
+    properties.finalizeProperties(gameplay.internal.gameId, function (err) {
       if (err) {
         logger.error('Failed to finalize the properties: ' + err.message);
         return callback(err);
