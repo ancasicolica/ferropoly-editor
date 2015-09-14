@@ -10,6 +10,7 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
   $scope.test = gameId;
   $scope.data = undefined;
   $scope.pricelistUrl = 'http://spiel-ferropoly.rhcloud.com/info/' + gameId;
+  $scope.finalizing = false; // disables the button during finalization
 
   $scope.panel = 'list';
   var authToken = 'none';
@@ -22,9 +23,11 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
   };
 
   $scope.finalizeIt = function () {
+    $scope.finalizing = true;
 
     $http.post('/gameplay/finalize', {gameId: $scope.data.gameplay.internal.gameId, authToken: authToken}).
       success(function (data) {
+        $scope.finalizing = false;
         if (data.success) {
           console.log('Gameplay finalized');
           $scope.statusText = data.message;
@@ -37,6 +40,7 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
         }
       }).
       error(function (data, status) {
+        $scope.finalizing = false;
         console.log('ERROR');
         console.log(data);
         console.log(status);
