@@ -54,11 +54,13 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
         if (data.success) {
           console.log('Game saved');
           self.location = '/edit?gameId=' + data.gameId;
+          fa.event('Gameplay', 'created', data.gameId);
         }
         else {
           console.log('Error');
           console.log(data);
           $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
+          fa.exception('Can not create gameplay:' + data.message);;
         }
       }).
       error(function (data, status) {
@@ -66,6 +68,7 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
         console.log(data);
         console.log(status);
         $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+        fa.exception('Can not create gameplay:' + data.message);
       });
   }
 }]);

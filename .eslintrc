@@ -45,13 +45,11 @@ rules:
   curly: [2, "multi-line"]
 
   # WARNINGS
-  semi-spacing: 1
   no-empty: 1
   handle-callback-err: 1
   eqeqeq: 1
   quotes: [1, 'single']
   no-unused-expressions: 1
-  no-throw-literal: 1
   semi: 1
   block-scoped-var: 1
   no-alert: 1

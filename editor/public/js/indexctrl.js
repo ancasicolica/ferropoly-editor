@@ -83,12 +83,14 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
             return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
           });
           $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
+          fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
           $scope.gameplayToDelete = null;
         }
         else {
           console.log('Error');
           console.log(data);
           $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
+          fa.exception('Can not delete gameplay:' + data.message);
           $scope.gameplayToDelete = null;
         }
       }).
@@ -97,6 +99,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
         console.log(data);
         console.log(status);
         $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
+        fa.exception('Can not delete gameplay:' + data.message);
         $scope.gameplayToDelete = null;
       });
   }

@@ -11,7 +11,7 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
   $scope.data = undefined;
   $scope.pricelistUrl = gameUrl + '/info/' + gameId;
   $scope.finalizing = false; // disables the button during finalization
- 
+
   $scope.panel = 'list';
   var authToken = 'none';
   $scope.setPanel = function (panel) {
@@ -32,6 +32,7 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
           console.log('Gameplay finalized');
           $scope.statusText = data.message;
           $scope.data.gameplay.internal.finalized = true;
+          fa.event('Gameplay', 'finalized', $scope.data.gameplay.internal.gameId);
         }
         else {
           console.log('Error');

@@ -105,6 +105,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
         if (data.success) {
           console.log('team updated');
           $scope.statusText = $scope.currentTeam.data.name + ' gespeichert';
+          fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
           return callback(null);
         }
         else {

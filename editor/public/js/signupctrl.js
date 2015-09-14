@@ -178,6 +178,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
             $scope.emailError = data.message;
           }
           $scope.view++;
+          fa.event('Signup', 'new user', $scope.email);
         }).
         error(function (data, status) {
           $scope.emailError = status;
