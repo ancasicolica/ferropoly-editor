@@ -298,6 +298,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
           console.log(data);
           $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
           $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+          fa.exception('Can not save game: ' + data.message);
         }
       }).
       error(function (data, status) {
@@ -306,6 +307,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         console.log(status);
         $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
         $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+        fa.exception('Can not save game: ' + data.message);
       });
 
   };
@@ -551,16 +553,19 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
           console.log('pricelist created');
           $scope.statusText = data.message;
           self.location = '/pricelist?gameId=' + data.gameId;
+          fa.event('Pricelist', 'created', $scope.gameplay.internal.gameId);
         }
         else {
           console.log('Error');
           console.log(data);
+          fa.exception('Can not create pricelist: ' + data.message);
         }
       }).
       error(function (data, status) {
         console.log('ERROR');
         console.log(data);
         console.log(status);
+        a.exception('Can not create pricelist: ' + data.message);
       });
   };
 
