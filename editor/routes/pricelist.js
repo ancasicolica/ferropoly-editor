@@ -22,6 +22,7 @@ router.get('/', function (req, res) {
   res.render('pricelist', {
     title: 'Preisliste',
     gameId: req.query.gameId,
+    gameUrl: settings.mainInstances[0], // main instance with index 0 has highest prio
     ngController: 'pricelistCtrl',
     ngApp: 'pricelistApp',
     ngFile: ngFile

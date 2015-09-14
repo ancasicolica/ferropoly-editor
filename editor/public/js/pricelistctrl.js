@@ -9,9 +9,9 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
 
   $scope.test = gameId;
   $scope.data = undefined;
-  $scope.pricelistUrl = 'http://spiel-ferropoly.rhcloud.com/info/' + gameId;
+  $scope.pricelistUrl = gameUrl + '/info/' + gameId;
   $scope.finalizing = false; // disables the button during finalization
-
+ 
   $scope.panel = 'list';
   var authToken = 'none';
   $scope.setPanel = function (panel) {
