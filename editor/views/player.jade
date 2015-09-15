@@ -6,6 +6,9 @@ block head
   link(rel='stylesheet', href='css/player.css',  type='text/css')
   script
     | var gameId = '#{gameId}';
+    | var gameplay =
+    != gameplay
+    |;
 block navbar
   li
     a(href='#' ng-click='newTeam()' ng-hide='teams.length >= maxGroupNb') Neue&nbsp;Gruppe
@@ -20,7 +23,7 @@ block content
           p Soll die Gruppe wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!
         .modal-footer
           button(type='button' class='btn btn-default' data-dismiss='modal') Nein
-          button(type='button' class='btn btn-primary' ng-click='deleteTeam()' data-dismiss='modal') Ja
+          button(type='button' class='btn btn-primary' ng-disabled='!isDeleteAllowed()' ng-click='deleteTeam()' data-dismiss='modal') Ja
   .row
     .col-md-5
       .panel.panel-default
@@ -72,5 +75,5 @@ block content
             button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern
               span(class='glyphicon glyphicon-save' aria-hidden='true')
             | &nbsp;
-            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame()') Gruppe löschen
+            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame() || !isDeleteAllowed()') Gruppe löschen
               span(class='glyphicon glyphicon-trash' aria-hidden='true')

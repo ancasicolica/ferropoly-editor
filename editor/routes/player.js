@@ -8,22 +8,35 @@
 var express = require('express');
 var router = express.Router();
 var teams = require('../../common/models/teamModel');
-
+var gameplays = require('../../common/models/gameplayModel');
 var settings = require('../settings');
 var ngFile = '/js/playerctrl.js';
+var moment = require('moment');
 if (settings.minifedjs) {
   ngFile = '/js/playerctrl.min.js';
 }
 
 /* GET player page. */
 router.get('/', function (req, res) {
-  res.render('player', {
-    title: 'Spieler',
-    ngController: 'playerCtrl',
-    ngApp: 'playerApp',
-    ngFile: ngFile,
-    gameId: req.query.gameId
+  gameplays.getGameplay(req.query.gameId, req.session.passport.user, function(err, gp){
+    if (err) {
+      res.status(404);
+      res.send('Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung');
+      return;
+    }
+    var gameplay = {
+      scheduling: gp.scheduling
+    };
+    res.render('player', {
+      title: 'Spieler',
+      ngController: 'playerCtrl',
+      ngApp: 'playerApp',
+      ngFile: ngFile,
+      gameId: req.query.gameId,
+      gameplay:  JSON.stringify(gameplay)
+    });
   });
+
 });
 
 /**
@@ -80,12 +93,24 @@ router.post('/delete', function (req, res) {
     return res.send({status: 'error', message: 'Can not delete a demo game team'});
   }
 
-  teams.deleteTeam(req.body.teamId, function (err) {
+  gameplays.getGameplay(req.body.gameId, req.session.passport.user, function(err, gp) {
     if (err) {
-      return res.send({status: 'error', message: 'error while deleting:' + err.message});
+      return res.send({status: 'error', message: 'error while getting gameplay:' + err.message});
     }
-    return res.send({success: true});
+    if (gp.scheduling.gameStartTs) {
+      if (moment().isAfter(gp.scheduling.gameStartTs)) {
+        // Deleting is not allowed after game start
+        return res.send({status: 'error', message: 'Game already started'});
+      }
+    }
+    teams.deleteTeam(req.body.teamId, function (err) {
+      if (err) {
+        return res.send({status: 'error', message: 'error while deleting:' + err.message});
+      }
+      return res.send({success: true});
+    });
   });
+
 });
 
 

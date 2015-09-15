@@ -47,6 +47,17 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
   };
 
   /**
+   * Disabling the button when deleting is not allowed
+   */
+  $scope.isDeleteAllowed = function() {
+    if (!gameplay.scheduling.gameStartTs) {
+      // GPs not finalized are ok
+      return true;
+    }
+    return moment().isBefore(gameplay.scheduling.gameStartTs);
+  };
+
+  /**
    * Set the current team
    * @param team
    */
@@ -128,15 +139,16 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
    * Delete a team
    */
   $scope.deleteTeam = function () {
+    if (!$scope.isDeleteAllowed()) {
+      console.warn('Game is running, do not delete a team!');
+      return;
+    }
     var i = $scope.teams.indexOf($scope.currentTeam);
     $http.post('/player/delete', {teamId: $scope.currentTeam.uuid, gameId: gameId, authToken: authToken}).
       success(function (data, status) {
         if (data.success) {
           console.log('team deleted');
-        }
-        else {
-          console.log('error while deleting: ' + data);
-        }
+
           if (i > -1) {
             $scope.teams.splice(i, 1);
           }
@@ -145,6 +157,10 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
           if ($scope.teams.length > 0) {
             $scope.setCurrentTeam($scope.teams[0]);
           }
+        }
+        else {
+          console.log('error while deleting: ' + data);
+        }
       }).
       error(function (data, status) {
         console.log('ERROR');
