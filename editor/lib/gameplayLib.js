@@ -31,13 +31,13 @@ var demoOrganisatorMail = 'demo@ferropoly.ch';
  * Updates the ferropoly main program cache
  */
 function updateFerropolyMainCache(delay, callback) {
+  if (!settings.mainInstances || settings.mainInstances.length === 0) {
+    logger.info('No main instances to update');
+    return callback();
+  }
+
   logger.info('Attempting to update main module caches in a few seconds');
   _.delay(function () {
-    if (!settings.mainInstances || settings.mainInstances.length === 0) {
-      logger.info('No main instances to update');
-      return callback();
-    }
-
     async.each(settings.mainInstances, function (instance, cb) {
       var jsonClient = restify.createJsonClient({
         url: instance,
@@ -46,7 +46,6 @@ function updateFerropolyMainCache(delay, callback) {
 
       // Fire and forget, don't care about the return
       jsonClient.post('/gamecache/refresh', cb);
-
     }, function (err) {
       if (err) {
         logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
@@ -225,6 +224,9 @@ function deleteGameplay(gpOptions, callback) {
           logger.error('Error while deleting gameplays', err);
         }
         logger.info('Parallel task finished', results);
+        if (gpOptions.doNotNotifyMain) {
+          return callback();
+        }
         // update main instances as we removed the game!
         updateFerropolyMainCache(100, callback);
       });
@@ -313,7 +315,8 @@ function createDemoGameplay(p1, p2) {
     gameEnd: settings.gameEnd || '21:00',
     gamename: 'Demo Spiel',
     gameId: gameId,
-    random: 80
+    random: 80,
+    doNotNotifyMain: settings.doNotNotifyMain
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
@@ -356,6 +359,7 @@ function createDemoGameplay(p1, p2) {
               return callback(err);
             }
             gp.internal.finalized = true;
+            gp.internal.doNotNotifyMain = true;
             finalizeGameplay(gp, demoOrganisatorMail, function (err) {
               if (err) {
                 console.log('Failed to save demo gameplay: ' + err.message);
@@ -395,6 +399,9 @@ function finalizeGameplay(gameplay, email, callback) {
           logger.error('Error while creating events', err);
         }
         logger.info('Gameplay finalized', gameplay.internal.gameId);
+        if (gameplay.internal.doNotNotifyMain) {
+          return callback();
+        }
         updateFerropolyMainCache(4000, callback);
       });
     });
