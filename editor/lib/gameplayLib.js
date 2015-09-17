@@ -236,23 +236,19 @@ function deleteGameplay(gpOptions, callback) {
 
 /**
  * Creates one single demo team entry for the createDemoTeams function
- * @param name
- * @param organization
- * @param teamleaderName
- * @param teamleaderMail
- * @param teamleaderPhone
- * @param remarks
+ * @param gameId
+ * @param entry array with the data
  * @returns {{gameId: string, data: {name: *, organization: *, teamLeader: {name: *, email: *, phone: *}, remarks: *}}}
  */
-function createDemoTeamEntry(name, organization, teamleaderName, teamleaderMail, teamleaderPhone, remarks) {
+function createDemoTeamEntry(gameId, entry) {
 
   return {
-    gameId: demoGameId,
+    gameId: gameId,
     data: {
-      name: name,
-      organization: organization,
-      teamLeader: {name: teamleaderName, email: teamleaderMail, phone: teamleaderPhone},
-      remarks: remarks
+      name: entry[0],
+      organization: entry[1],
+      teamLeader: {name: entry[2], email: entry[3], phone: entry[4]},
+      remarks: entry[5]
     }
   };
 }
@@ -261,30 +257,47 @@ function createDemoTeamEntry(name, organization, teamleaderName, teamleaderMail,
  * @param gp
  * @param callback
  */
-function createDemoTeams(gp, callback) {
-  var teamsCreated = 0;
-  var demoTeamData = [
-    createDemoTeamEntry('Ferropoly Riders', 'Pfadi Züri Oberland', 'Heinz Muster', 'team1@ferropoly.ch', '079 000 00 01'),
-    createDemoTeamEntry('Bahnfreaks', 'Cevi Bern', 'Nora Heinzmann', 'team2@ferropoly.ch', '079 000 00 02'),
-    createDemoTeamEntry('Bahnschwellen', 'Sek Hinwil', 'Marius Heller', 'team3@ferropoly.ch', '079 000 00 03'),
-    createDemoTeamEntry('Schmalspurfans', 'Gewerbeschule Chur', 'Annina Cavegn', 'team4@ferropoly.ch', '079 000 00 04', 'Siegerteam letztes Jahr'),
-    createDemoTeamEntry('Pufferbillies', 'Oberstufe Basel', 'Sylvia Meyer', 'team5@ferropoly.ch', '079 000 00 05'),
-    createDemoTeamEntry('Mecaronis', 'Mechatronik Team', 'Marcel Grob', 'team6@ferropoly.ch', '079 000 00 06'),
-    createDemoTeamEntry('Ticketeria', 'Team Kriens', 'Olivia Huber', 'team7@ferropoly.ch', '079 000 00 07'),
-    createDemoTeamEntry('Sackbahnhof', 'Jungwacht St. Gallen', 'Olaf Meier', 'team8@ferropoly.ch', '079 000 00 08')
-  ];
-  var nb = demoTeamData.length;
-  for (var i = 0; i < nb; i++) {
-    teams.createTeam(demoTeamData[i], gp.internal.gameId, function (err) {
-      if (err) {
-        logger.error('Error while creating team', err);
-      }
-      teamsCreated++;
-      if (teamsCreated === nb) {
-        return callback();
-      }
-    });
+function createDemoTeams(gp, teamNb, callback) {
+  var demoTeamData = [];
+  var i;
+  teamNb = teamNb || 8;
+  if (teamNb > 20) {
+    teamNb = 20;
   }
+
+  var referenceData = [
+    createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', 'Heinz Muster', 'team1@ferropoly.ch', '079 000 00 01']),
+    createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', 'Nora Heinzmann', 'team2@ferropoly.ch', '079 000 00 02']),
+    createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', 'Marius Heller', 'team3@ferropoly.ch', '079 000 00 03']),
+    createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', 'Annina Cavegn', 'team4@ferropoly.ch', '079 000 00 04', 'Siegerteam letztes Jahr']),
+    createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', 'Sylvia Meyer', 'team5@ferropoly.ch', '079 000 00 05']),
+    createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', 'Marcel Grob', 'team6@ferropoly.ch', '079 000 00 06']),
+    createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', 'Olivia Huber', 'team7@ferropoly.ch', '079 000 00 07']),
+    createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', 'Olaf Meier', 'team8@ferropoly.ch', '079 000 00 08']),
+    createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', 'Claudia Mächler', 'team9@ferropoly.ch', '079 000 00 09']),
+    createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern', 'Stefan Holzer', 'team10@ferropoly.ch', '079 000 00 10']),
+    createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', 'Lea Wolfensberger', 'team11@ferropoly.ch', '079 000 00 11']),
+    createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', 'Berni Hirzel', 'team12@ferropoly.ch', '079 000 00 12']),
+    createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', 'Nicole Signer', 'team13@ferropoly.ch', '079 000 00 13']),
+    createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', 'Miriam Toto', 'team14@ferropoly.ch', '079 000 00 14']),
+    createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', 'Meinrad Wenger', 'team15@ferropoly.ch', '079 000 00 15']),
+    createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', 'Hansueli Rüdisühli', 'team16@ferropoly.ch', '079 000 00 16']),
+    createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', 'Christine Müller', 'team17@ferropoly.ch', '079 000 00 17']),
+    createDemoTeamEntry(gp.internal.gameId, ['rien-ne-va-plus', 'Verkehrsverein Interlaken', 'Beatrice Rieder', 'team18@ferropoly.ch', '079 000 00 18']),
+    createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms', 'team19@ferropoly.ch', '079 000 00 19']),
+    createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', 'Mike Hintermüller', 'team20@ferropoly.ch', '079 000 00 20'])
+  ];
+  for (i = 0; i < teamNb; i++) {
+    demoTeamData.push(referenceData[i]);
+  }
+  async.each(demoTeamData,
+    function (t, cb) {
+      teams.createTeam(t, gp.internal.gameId, cb);
+    },
+    function (err) {
+      callback(err);
+    }
+  );
 }
 
 /**
@@ -307,15 +320,16 @@ function createDemoGameplay(p1, p2) {
 
   var options = {
     map: 'sbb',
-    email: demoOrganisatorMail,
-    ownerEmail: demoOrganisatorMail, // for delete options, todo: should be harmonized with email
+    email: settings.email || demoOrganisatorMail,
+    ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
     organisatorName: 'Max Muster',
-    gamedate: new Date(),
+    gamedate: settings.gameDate || new Date(),
     gameStart: settings.gameStart || '06:00',
     gameEnd: settings.gameEnd || '21:00',
-    gamename: 'Demo Spiel',
+    gamename: settings.gamename || 'Demo Spiel',
     gameId: gameId,
-    random: 80,
+    random: settings.random || 80,
+    teamNb: settings.teamNb || 8,
     doNotNotifyMain: settings.doNotNotifyMain
   };
 
@@ -348,7 +362,7 @@ function createDemoGameplay(p1, p2) {
           console.log('Failed to create the demo gameplay: ' + err.message);
           return callback(err);
         }
-        createDemoTeams(gp, function (err) {
+        createDemoTeams(gp, options.teamNb, function (err) {
           if (err) {
             console.log('Failed to create the demo teams: ' + err.message);
             return callback(err);
