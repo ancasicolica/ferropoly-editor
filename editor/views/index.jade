@@ -12,7 +12,11 @@ block navbar
 block content
   include index-modal-delete
 
-  h1 Ferropoly Spiel-Editor
+  h1 Hallo
+    = ' ' + user.personalData.forename + ' ' + user.personalData.surname
+  p Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
+    a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
+    | .
 
   h2 Meine Spiele
   div(ng-show='gameplays.length === 0' ng-cloak)

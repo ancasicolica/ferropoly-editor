@@ -22,7 +22,14 @@ router.get('/', function (req, res) {
     if (err) {
       // log only, ignore
       logger.error('getUserByMailAddress Error', err);
-      res.render('index', {title: 'Ferropoly', ngController: 'indexCtrl', ngApp: 'indexApp', ngFile: ngIndexFile});
+      user = {};
+      res.render('index', {
+        title: 'Ferropoly',
+        ngController: 'indexCtrl',
+        ngApp: 'indexApp',
+        ngFile: ngIndexFile,
+        user: user
+      });
     }
     else {
       if (user && !user.login.verifiedEmail) {
@@ -36,7 +43,13 @@ router.get('/', function (req, res) {
       }
       else {
         // default case
-        res.render('index', {title: 'Ferropoly', ngController: 'indexCtrl', ngApp: 'indexApp', ngFile: ngIndexFile});
+        res.render('index', {
+          title: 'Ferropoly',
+          ngController: 'indexCtrl',
+          ngApp: 'indexApp',
+          ngFile: ngIndexFile,
+          user: user
+        });
       }
     }
   });
