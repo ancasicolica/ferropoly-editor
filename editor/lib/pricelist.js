@@ -67,6 +67,7 @@ var createPriceListInternal = function (gp, props, callback) {
  * @param props  Properties
  * @returns {Array}
  */
+/*eslint-disable no-loop-func*/
 var extractRanges = function (props) {
   var ranges = [];
   for (var i = 0; i < 6; i++) {
@@ -78,6 +79,7 @@ var extractRanges = function (props) {
   }
   return ranges;
 };
+/*eslint-enable no-loop-func*/
 
 /**
  * Creates the price list array: concatenates all ranges to one list and sets the absoulte position inside the list

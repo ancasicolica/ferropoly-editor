@@ -163,30 +163,31 @@ router.post('/savePositionInPricelist', function (req, res) {
     var updated = 0;
     var headersSent = false;
 
+    var updateHandler = function(err) {
+      if (err) {
+        if (!headersSent) {
+          res.send({status: 'error', message: err.message});
+          headersSent = true;
+        }
+        return;
+      }
+      updated++;
+      if (updated === props.length) {
+        if (!headersSent) {
+          res.send({
+            success: true,
+            status: 'ok',
+            message: props.length + ' Orte gespeichert',
+            nbSaved: props.length
+          });
+          headersSent = true;
+        }
+      }
+    };
+
     // Iterate through positions, abort if failing
     for (var i = 0; i < props.length; i++) {
-      properties.updatePositionInPriceList(req.body.gameId, props[i].uuid, props[i].positionInPriceRange, function (err) {
-        if (err) {
-          if (!headersSent) {
-            res.send({status: 'error', message: err.message});
-            headersSent = true;
-          }
-          return;
-        }
-        updated++;
-        if (updated === props.length) {
-          if (!headersSent) {
-            res.send({
-              success: true,
-              status: 'ok',
-              message: props.length + ' Orte gespeichert',
-              nbSaved: props.length
-            });
-            headersSent = true;
-          }
-          return;
-        }
-      });
+      properties.updatePositionInPriceList(req.body.gameId, props[i].uuid, props[i].positionInPriceRange, updateHandler);
     }
 
   });
