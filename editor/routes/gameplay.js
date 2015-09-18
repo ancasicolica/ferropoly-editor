@@ -9,6 +9,8 @@ var router = express.Router();
 var multer = require('multer');
 var gameplayLib = require('../lib/gameplayLib');
 var gameplayModel = require('../../common/models/gameplayModel');
+var moment = require('moment');
+var logger = require('../../common/lib/logger').getLogger('routes:gameplay');
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -84,6 +86,7 @@ router.post('/finalize', function (req, res) {
     if (req.body.authToken !== req.session.authToken) {
       return res.send({status: 'error', message: 'Permission denied (2)'});
     }
+    logger.info('finalizing gameplay');
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({
@@ -136,6 +139,12 @@ router.post('/delete', function (req, res) {
         return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
       }
 
+      if (moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {
+        logger.info('Attempted to delete a game of today');
+        return res.send({status: 'error', message: 'Deleting todays games is not allowed'});
+      }
+
+      logger.info('Deleting a gameplay: ' + gp.internal.gameId);
       gameplayLib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail: req.session.passport.user}, function (err) {
         if (err) {
           return res.send({status: 'error', message: 'Error: ' + err.message});

@@ -63,6 +63,17 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
   $scope.prepareToDelete = function(obj) {
     $scope.gameplayToDelete = obj.gameplay;
   };
+
+  /**
+   * Returns true if we are not allowed delete the gameplay. This is  the case if the game date is today
+   * @param gameplay
+   */
+  $scope.notAllowedToDeleteGameplay = function(gameplay) {
+    console.log(gameplay);
+    return (moment(gameplay.scheduling.gameDate).startOf('day').isSame(moment().startOf('day')) ||
+      gameplay.internal.gameId === 'play-a-demo-game');
+  };
+  
   /**
    * Delete a gameplay permanently
    * @param obj "this" object
