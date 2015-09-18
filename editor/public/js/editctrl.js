@@ -291,6 +291,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
           $scope.statusText = 'Spiel gespeichert';
           if (nextPanel) {
             $scope.panel = nextPanel;
+            if (nextPanel === 'map') {
+              $scope.showMapTab();
+            }
           }
         }
         else {
