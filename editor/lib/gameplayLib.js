@@ -21,6 +21,7 @@ var schedulerEvents = require('../../common/lib/schedulerEvents');
 var schedulerEventsModel = require('../../common/models/schedulerEventModel');
 var logger = require('../../common/lib/logger').getLogger('gameplayLib');
 var restify = require('restify');
+var moment = require('moment');
 
 require('datejs'); // Todo: replace with moment!
 
@@ -158,6 +159,7 @@ function createNewGameplay(gpOptions, callback) {
     gameStart: gpOptions.gameStart || '05:00',
     gameEnd: gpOptions.gameEnd || '18:00',
     gameDate: gpOptions.gamedate,
+    interestInterval: gpOptions.interestInterval,
     gameId: gpOptions.gameId
   }, function (err, gameplay) {
     if (err) {
@@ -316,6 +318,10 @@ function createDemoGameplay(p1, p2) {
     settings = p1;
   }
 
+  if (settings.tomorrow) {
+    settings.gameDate = moment().add(1, 'days').toDate();
+  }
+
   var gameId = settings.gameId || demoGameId;
 
   var options = {
@@ -330,7 +336,8 @@ function createDemoGameplay(p1, p2) {
     gameId: gameId,
     random: settings.random || 80,
     teamNb: settings.teamNb || 8,
-    doNotNotifyMain: settings.doNotNotifyMain
+    doNotNotifyMain: settings.doNotNotifyMain,
+    interestInterval: settings.interestInterval
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job

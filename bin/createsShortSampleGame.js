@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- Creates a sample game which is running tomorrow
+ Creates a sample game which is running tomorrow in the early morning, short version
  */
 var settings = require('../editor/settings');
 var ferropolyDb = require('../common/lib/ferropolyDb');
@@ -12,13 +12,13 @@ ferropolyDb.init(settings, function (err) {
     return;
   }
   gplib.createDemoGameplay({
-    gameId: 'sample-game-1',
-    gamename: 'Volles Spiel',
-    interestInterval: 60,
-    gameStart: '05:00',
-    gameEnd: '18:00',
-    random: 200,
-    teamNb: 20,
+    gameId: 'sample-game-sprint',
+    gamename: 'Sprint Spiel',
+    interestInterval: 15,
+    gameStart: '04:00',
+    gameEnd: '07:00',
+    random: 100,
+    teamNb: 4,
     tomorrow: true,
     doNotNotifyMain: false
   }, function (err) {
