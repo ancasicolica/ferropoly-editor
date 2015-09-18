@@ -70,11 +70,22 @@ router.post('/store', function (req, res) {
     return res.send({status: 'error', message: 'Can not update a demo game team'});
   }
 
-  teams.updateTeam(team, function (err) {
+  gameplays.getGameplay(team.gameId, req.session.passport.user, function(err, gp) {
     if (err) {
-      return res.send({status: 'error', message: 'error while saving:' + err.message});
+      return res.send({status: 'error', message: 'error while getting gameplay:' + err.message});
     }
-    return res.send({success: true});
+    if (gp.scheduling.gameStartTs) {
+      if (moment().isAfter(gp.scheduling.gameStartTs)) {
+        // Changing teams is not allowed after game start
+        return res.send({status: 'error', message: 'Game already started'});
+      }
+    }
+    teams.updateTeam(team, function (err) {
+      if (err) {
+        return res.send({status: 'error', message: 'error while saving:' + err.message});
+      }
+      return res.send({success: true});
+    });
   });
 });
 

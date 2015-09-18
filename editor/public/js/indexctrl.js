@@ -73,7 +73,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
     return (moment(gameplay.scheduling.gameDate).startOf('day').isSame(moment().startOf('day')) ||
       gameplay.internal.gameId === 'play-a-demo-game');
   };
-  
+
   /**
    * Delete a gameplay permanently
    * @param obj "this" object

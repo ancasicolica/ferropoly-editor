@@ -11,7 +11,7 @@ block head
     |;
 block navbar
   li
-    a(href='#' ng-click='newTeam()' ng-hide='teams.length >= maxGroupNb') Neue&nbsp;Gruppe
+    a(href='#' ng-click='newTeam()' ng-show='isAddingNewTeamsAllowed()') Neue&nbsp;Gruppe
 
 block content
   .modal.fade(id='saveModal')
@@ -65,7 +65,7 @@ block content
             .form-group
               label.col-sm-2.control-label(for='email') E-Mail
               .col-sm-10
-                input(class='form-control' type='email' id='email' name='email' ng-blur='validateForm()' ng-change='validateForm();currentDataChanged=true'  placeholder='spieler@ferropoly.ch' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
+                input(class='form-control' type='email' id='email' name='email' placeholder='spieler@ferropoly.ch'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
 
             .form-group
               label.col-sm-2.control-label(for='remarks') Bemerkungen

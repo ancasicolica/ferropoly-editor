@@ -42,19 +42,23 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
    * Returns true when this is a demo game (no worries, the server handles this too, it's just for the UI here)
    * @returns {boolean}
    */
-  $scope.isDemoGame = function() {
+  $scope.isDemoGame = function () {
     return gameId === 'play-a-demo-game';
   };
 
   /**
    * Disabling the button when deleting is not allowed
    */
-  $scope.isDeleteAllowed = function() {
+  $scope.isDeleteAllowed = function () {
     if (!gameplay.scheduling.gameStartTs) {
       // GPs not finalized are ok
       return true;
     }
     return moment().isBefore(gameplay.scheduling.gameStartTs);
+  };
+
+  $scope.isAddingNewTeamsAllowed = function() {
+    return (moment().isBefore(gameplay.scheduling.gameStartTs) && ($scope.teams.length < $scope.maxGroupNb) && !$scope.isDemoGame());
   };
 
   /**
@@ -69,7 +73,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
     }
 
     if ($scope.currentDataChanged) {
-      $scope.saveTeam(function(err) {
+      $scope.saveTeam(function (err) {
         if (err) {
           console.error(err);
         }
@@ -84,6 +88,15 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
     _.delay($scope.validateForm, 500);
   };
 
+  function createNewTeam() {
+    var index = $scope.teams.length + 1;
+    var newGroup = {data: {name: 'Neue Gruppe ' + index}, gameId: gameId, uuid: generateUUID()};
+    $scope.teams.push(newGroup);
+    $scope.sortTeams();
+    $scope.currentTeam = newGroup;
+    _.delay($scope.validateForm, 500);
+  }
+
   /**
    * Create a team
    */
@@ -91,14 +104,19 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
     if ($scope.currentTeam && !$scope.playerForm.$valid) {
       console.log('invalid data, can not add a team');
       $scope.statusText = 'Zuerst aktuelles Team fertig bearbeiten';
-      return;
     }
-
-    var newGroup = {data: {name: 'Neue Gruppe' + $scope.teams.length}, gameId: gameId, uuid: generateUUID()};
-    $scope.teams.push(newGroup);
-    $scope.sortTeams();
-    $scope.currentTeam = newGroup;
-    _.delay($scope.validateForm, 500);
+    else if ($scope.currentTeam) {
+      $scope.saveTeam(function (err) {
+        if (err) {
+          $scope.statusText = 'Fehler beim Speichern: ' + err.message;
+          return;
+        }
+        createNewTeam();
+      });
+    }
+    else {
+      createNewTeam();
+    }
   };
 
   /**
