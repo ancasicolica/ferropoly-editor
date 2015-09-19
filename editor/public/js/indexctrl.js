@@ -60,7 +60,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
    * Prepares a gameplay for deletion
    * @param obj
    */
-  $scope.prepareToDelete = function(obj) {
+  $scope.prepareToDelete = function (obj) {
     $scope.gameplayToDelete = obj.gameplay;
   };
 
@@ -68,10 +68,10 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
    * Returns true if we are not allowed delete the gameplay. This is  the case if the game date is today
    * @param gameplay
    */
-  $scope.notAllowedToDeleteGameplay = function(gameplay) {
+  $scope.notAllowedToDeleteGameplay = function (gameplay) {
     console.log(gameplay);
-    return (moment(gameplay.scheduling.gameDate).startOf('day').isSame(moment().startOf('day')) ||
-      gameplay.internal.gameId === 'play-a-demo-game');
+    return ((gameplay.internal.finalized && moment(gameplay.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) ||
+    gameplay.internal.gameId === 'play-a-demo-game');
   };
 
   /**
@@ -90,7 +90,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
           console.log('gameplay deleted');
           console.log(data);
           // Remove from UI
-          _.remove($scope.gameplays, function(gp) {
+          _.remove($scope.gameplays, function (gp) {
             return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
           });
           $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;

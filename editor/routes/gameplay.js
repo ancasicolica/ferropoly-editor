@@ -139,8 +139,8 @@ router.post('/delete', function (req, res) {
         return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
       }
 
-      if (moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {
-        logger.info('Attempted to delete a game of today');
+      if (gp.internal.finalized && moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {
+        logger.info('Attempted to delete a finalized game of today');
         return res.send({status: 'error', message: 'Deleting todays games is not allowed'});
       }
 

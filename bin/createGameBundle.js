@@ -10,10 +10,10 @@ var gplib = require('../editor/lib/gameplayLib');
 function createGame1(callback) {
   gplib.createDemoGameplay({
     gameId: 'bundle-game-1',
-    gamename: 'Bundle Spiel 1',
+    gamename: 'Bundle Spiel 1 (shorty)',
     interestInterval: 20,
     gameStart: '05:00',
-    gameEnd: '17:00',
+    gameEnd: '7:00',
     random: 100,
     teamNb: 4,
     tomorrow: true,
@@ -39,11 +39,11 @@ function createGame2(callback) {
 function createGame3(callback) {
   gplib.createDemoGameplay({
     gameId: 'bundle-game-3',
-    gamename: 'Bundle Spiel 3',
+    gamename: 'Bundle Spiel 3 (full)',
     interestInterval: 60,
     gameStart: '05:00',
     gameEnd: '19:00',
-    random: 80,
+    random: 200,
     teamNb: 20,
     tomorrow: true,
     doNotNotifyMain: false
