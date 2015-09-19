@@ -228,7 +228,7 @@ function deleteGameplay(gpOptions, callback) {
         if (err) {
           logger.error('Error while deleting gameplays', err);
         }
-        logger.info('Parallel task finished', results);
+        logger.info('Parallel task finished');
         if (gpOptions.doNotNotifyMain) {
           return callback();
         }
