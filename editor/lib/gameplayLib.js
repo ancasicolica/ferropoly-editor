@@ -163,7 +163,8 @@ function createNewGameplay(gpOptions, callback) {
     gameEnd: gpOptions.gameEnd || '18:00',
     gameDate: gpOptions.gamedate,
     interestInterval: gpOptions.interestInterval,
-    gameId: gpOptions.gameId
+    gameId: gpOptions.gameId,
+    instance: settings.server.serverId
   }, function (err, gameplay) {
     if (err) {
       // Error while creating the gameplay, abort
