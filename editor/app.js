@@ -97,6 +97,7 @@ var initServer = function () {
   configuration.init(app, settings);
   app.use('/pricelist', pricelist);
   app.use('/player', player);
+  app.use('/admins', require('./routes/admins'));
 
   var server = require('http').Server(app);
 

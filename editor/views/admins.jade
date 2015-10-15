@@ -1,0 +1,59 @@
+//
+   Created by kc on 15.10.15.
+
+extends layout
+block head
+  link(rel='stylesheet', href='/css/admins.css',  type='text/css')
+  script
+    | var gameId = '#{gameId}';
+    | var gameplay =
+    != gameplay
+    | ;
+    | var adminInfo =
+    != adminInfo
+    | ;
+
+block content
+  h1 Spielleiter
+  .row
+    .col-md-6
+      .panel.panel-default
+        .panel-body
+          form.form-horizontal
+            .form-group
+              label.col-sm-2.control-label(for='admin1') Spielleiter 1
+              .col-sm-9
+                input.form-control(id='admin1' type='email' placeholder='admin@ferropoly.ch' ng-model='logins[0]')
+              .col-sm-1
+                | {{isExistingUser(0)}}
+
+            .form-group
+              label.col-sm-2.control-label(for='admin2') Spielleiter 2
+              .col-sm-9
+                input.form-control(id='admin2' type='email' placeholder='admin@ferropoly.ch' ng-model='logins[1]')
+              .col-sm-1
+                |  {{isExistingUser(1)}}
+
+
+            .form-group
+              label.col-sm-2.control-label(for='admin3') Spielleiter 3
+              .col-sm-9
+                input.form-control(id='admin3' type='email' placeholder='admin@ferropoly.ch' ng-model='logins[2]')
+              .col-sm-1
+                | {{isExistingUser(2)}}
+
+
+            .form-group
+              .col-sm-offset-2.col-sm-10
+                button.btn-default.btn(ng-click='save()') Speichern
+
+    .col-md-6
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title Info
+        .panel-body
+          p Mit zusätzlichen Spielleitern kannst Du dir die Arbeit in der Zentrale auf verschiedene Personen aufteilen: jeder Spielleiter hat während des Spiels vollen Zugriff auf das Spielgeschehen und kann so für die Teams Orte kaufen und Häuser bauen.
+          p Die hier definierten Spielleiter können jedoch die Preisliste nicht modifizieren und auch keine Teams hinzufügen, das ist Dir als Organisator vorbehalten.
+          p
+          p Es sind maximal drei weitere Spielleiter möglich. Gib deren Email-Adresse in die Textfelder ein und speichere diese. Für den Zugriff auf das Spiel müssen die Spielleiter sich im Ferropoly mit derselben Email-Adresse registriert haben.
+

@@ -46,6 +46,9 @@ block content
               a(class='btn btn-default btn-xs btn-gameplay' href='/player?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler
                 span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
 
+              a(class='btn btn-default btn-xs btn-gameplay' href='/admins/edit/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spielleiter
+                span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
+
               a(class='btn btn-default btn-xs btn-gameplay' href='#' data-toggle="modal" data-target="#deleteModal" ng-click="prepareToDelete(this)" ng-disabled="notAllowedToDeleteGameplay(gameplay)") Löschen
                   span(class='glyphicon glyphicon-trash' aria-hidden='true')
 
