@@ -1,8 +1,6 @@
 /**
  * Angular Controller for the administrator view
  *
- * Todo: handle error cases when saving
- * Todo: display result after saving
  * Todo: use icon for existing / not existing users
  * Todo: add info bar when there are users not existing (invite them)
  *
@@ -15,12 +13,17 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
 
   $scope.adminInfo = adminInfo; // contains info about the users already available
   $scope.logins = gameplay.admins.logins;
+  $scope.saved = false;
+  $scope.saveError = '';
 
   /**
    * Checks if a user is existing (known) by the ferropoly
    * @param index
    */
   $scope.isExistingUser = function(index) {
+    if (_.isString($scope.logins[index]) && $scope.logins[index].length === 0) {
+      return 'empty';
+    }
     return _.isObject($scope.adminInfo[$scope.logins[index]]);
   };
   /**
@@ -40,19 +43,30 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
           // Google Analytics
           fa.event('Admins', 'store', {gameId: gameId});
           $scope.adminInfo = data.result;
+          $scope.saved = true;
+          $scope.saveError = '';
         }
         else {
           console.log('Error');
           console.log(data);
+          $scope.saved = false;
+          $scope.saveError = data.message;
         }
       }).
       error(function (data, status) {
-        console.log('ERROR');
+        console.log('ERROR: ' + status);
         console.log(data);
-        console.log(status);
+        $scope.saved = false;
+        $scope.saveError = ' der Server meldet Status ' + status + ' (' + data + ')';
       });
   };
 
+  /**
+   * Any data changed
+   */
+  $scope.dataChanged = function() {
+    $scope.saved = false;
+  };
 
   /**
    * Load authToken when document ready

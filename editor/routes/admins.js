@@ -96,7 +96,7 @@ router.get('/edit/:gameId', function (req, res) {
  */
 router.post('/save', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'permission denied'});
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
 
   gameplays.setAdmins(req.body.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {

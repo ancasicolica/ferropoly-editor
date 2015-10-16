@@ -23,14 +23,14 @@ block content
             .form-group
               label.col-sm-2.control-label(for='admin1') Spielleiter 1
               .col-sm-9
-                input.form-control(id='admin1' type='email' placeholder='admin@ferropoly.ch' ng-model='logins[0]')
+                input.form-control(id='admin1' type='email' placeholder='admin@ferropoly.ch' ng-change='dataChanged()' ng-model='logins[0]')
               .col-sm-1
                 | {{isExistingUser(0)}}
 
             .form-group
               label.col-sm-2.control-label(for='admin2') Spielleiter 2
               .col-sm-9
-                input.form-control(id='admin2' type='email' placeholder='admin@ferropoly.ch' ng-model='logins[1]')
+                input.form-control(id='admin2' type='email' placeholder='admin@ferropoly.ch' ng-change='dataChanged()' ng-model='logins[1]')
               .col-sm-1
                 |  {{isExistingUser(1)}}
 
@@ -38,7 +38,7 @@ block content
             .form-group
               label.col-sm-2.control-label(for='admin3') Spielleiter 3
               .col-sm-9
-                input.form-control(id='admin3' type='email' placeholder='admin@ferropoly.ch' ng-model='logins[2]')
+                input.form-control(id='admin3' type='email' placeholder='admin@ferropoly.ch' ng-change='dataChanged()' ng-model='logins[2]')
               .col-sm-1
                 | {{isExistingUser(2)}}
 
@@ -46,6 +46,15 @@ block content
             .form-group
               .col-sm-offset-2.col-sm-10
                 button.btn-default.btn(ng-click='save()') Speichern
+
+            .form-group
+              .col-sm-12(ng-show='saved')
+                .well.well-sm.well-ok
+                  | Die Daten wurden gespeichert.
+
+              .col-sm-12(ng-show='saveError')
+                .well.well-sm.well-error
+                  | Fehler beim Speichern der Daten: {{saveError}}
 
     .col-md-6
       .panel.panel-default
