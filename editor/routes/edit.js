@@ -8,9 +8,11 @@ var express = require('express');
 var router = express.Router();
 var gameplays;
 var settings = require('../settings');
+var logger = require('../../common/lib/logger').getLogger('routes:edit');
+
 var properties;
 
-var ngFile =  '/js/editctrl.js';
+var ngFile = '/js/editctrl.js';
 if (settings.minifedjs) {
   ngFile = '/js/editctrl.min.js';
 }
@@ -61,13 +63,12 @@ router.get('/load-game', function (req, res) {
 
 /* Save a game */
 router.post('/save', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
-  }
-  console.log('Save game ' + req.body.gameplay.internal.gameId);
+
+  logger.info('Save game ' + req.body.gameplay.internal.gameId);
   gameplays.updateGameplay(req.body.gameplay, function (err, gameplay) {
     if (err) {
       return res.send({success: false, message: err.message});
@@ -78,12 +79,11 @@ router.post('/save', function (req, res) {
 
 /* Save Property */
 router.post('/saveProperty', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
-  }
+
   if (!req.body.property || !req.body.property.location) {
     return res.send({status: 'error', message: 'Invalid parameters'});
   }
@@ -98,7 +98,7 @@ router.post('/saveProperty', function (req, res) {
       return res.send({status: 'error', message: 'Already finalized'});
     }
 
-    console.log('Save property ' + prop.location.name);
+    logger.info('Save property ' + prop.location.name);
     properties.updateProperty(prop.gameId, prop, function (err, updatedProp) {
       if (err) {
         return res.send({status: 'error', message: err.message});
@@ -114,15 +114,14 @@ router.post('/saveProperty', function (req, res) {
  * changing the price ranges
  */
 router.post('/dataChanged', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
-  }
+
   gameplays.updateGameplayLastChangedField(req.session.passport.user, req.body.gameId, function (err) {
     if (err) {
-      console.log('Error while updating gameplay: ' + err.message);
+      logger.info('Error while updating gameplay: ' + err.message);
     }
     res.send({success: true, status: 'ok'});
   });
@@ -132,12 +131,11 @@ router.post('/dataChanged', function (req, res) {
  * Saves _ONLY_ the position in the pricelist
  */
 router.post('/savePositionInPricelist', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
-  }
+
   if (!req.body.properties) {
     return res.send({status: 'error', message: 'Invalid parameters'});
   }
@@ -163,7 +161,7 @@ router.post('/savePositionInPricelist', function (req, res) {
     var updated = 0;
     var headersSent = false;
 
-    var updateHandler = function(err) {
+    var updateHandler = function (err) {
       if (err) {
         if (!headersSent) {
           res.send({status: 'error', message: err.message});

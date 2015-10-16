@@ -10,6 +10,7 @@ var router = express.Router();
 var pricelistLib = require('../lib/pricelist');
 var commonPricelistLib = require('../../common/lib/pricelist');
 var gameplays = require('../../common/models/gameplayModel');
+var logger = require('../../common/lib/logger').getLogger('routes:pricelist');
 
 var settings = require('../settings');
 var ngFile = '/js/pricelistctrl.js';
@@ -34,11 +35,9 @@ router.get('/', function (req, res) {
  * Create a pricelist
  */
 router.post('/create', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
-  }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
   pricelistLib.create(req.body.gameId, req.session.passport.user, function (err) {
     if (err) {
@@ -60,7 +59,7 @@ router.get('/get', function (req, res) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    commonPricelistLib.getPricelist(req.query.gameId, function(err, list) {
+    commonPricelistLib.getPricelist(req.query.gameId, function (err, list) {
       if (err) {
         return res.send({success: false, message: err.message});
       }

@@ -85,9 +85,7 @@ router.get('/edit/:gameId', function (req, res) {
         adminInfo: JSON.stringify(adminInfo)
       });
     });
-
   });
-
 });
 
 
@@ -96,6 +94,7 @@ router.get('/edit/:gameId', function (req, res) {
  */
 router.post('/save', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
     return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
 

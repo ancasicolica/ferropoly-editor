@@ -11,6 +11,8 @@ var teams = require('../../common/models/teamModel');
 var gameplays = require('../../common/models/gameplayModel');
 var settings = require('../settings');
 var ngFile = '/js/playerctrl.js';
+var logger = require('../../common/lib/logger').getLogger('routes:player');
+
 var moment = require('moment');
 if (settings.minifedjs) {
   ngFile = '/js/playerctrl.min.js';
@@ -59,8 +61,10 @@ router.get('/get', function (req, res) {
  */
 router.post('/store', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'permission denied'});
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
+
   var team = req.body.team;
   if (!team) {
     return res.send({status: 'error', message: 'no team supplied'});
@@ -95,7 +99,8 @@ router.post('/store', function (req, res) {
  */
 router.post('/delete', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'permission denied'});
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
   if (!req.body.gameId) {
     return res.send({status: 'error', message: 'No gameId supplied'});
@@ -130,7 +135,8 @@ router.post('/delete', function (req, res) {
  */
 router.post('/deleteAll', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'permission denied'});
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
   teams.deleteAllTeams(req.body.gameId, function (err) {
     if (err) {

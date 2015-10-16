@@ -36,11 +36,9 @@ router.get('/mygames', function (req, res) {
 /* Post params of a new game */
 router.post('/createnew', function (req, res) {
   try {
-    if (!req.body.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (1)'});
-    }
-    if (req.body.authToken !== req.session.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (2)'});
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
     }
 
     gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
@@ -69,8 +67,7 @@ router.post('/createnew', function (req, res) {
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.createnew.post');
-    console.error(e);
+    logger.error('Exception in gameplay.createnew.post', e);
     return res.send({success: false, message: e.message});
   }
 });
@@ -80,11 +77,9 @@ router.post('/createnew', function (req, res) {
  */
 router.post('/finalize', function (req, res) {
   try {
-    if (!req.body.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (1)'});
-    }
-    if (req.body.authToken !== req.session.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (2)'});
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
     }
     logger.info('finalizing gameplay');
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
@@ -103,8 +98,7 @@ router.post('/finalize', function (req, res) {
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.finalize.post');
-    console.error(e);
+    logger.error('Exception in gameplay.finalize.post', e);
     return res.send({status: 'error', message: e.message});
   }
 });
@@ -115,11 +109,9 @@ router.post('/finalize', function (req, res) {
  */
 router.post('/delete', function (req, res) {
   try {
-    if (!req.body.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (1)'});
-    }
-    if (req.body.authToken !== req.session.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (2)'});
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
     }
 
     if (req.body.gameId === 'play-a-demo-game') {
@@ -154,8 +146,7 @@ router.post('/delete', function (req, res) {
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.finalize.post');
-    console.error(e);
+    logger.error('Exception in gameplay.finalize.post', e);
     return res.send({status: 'error', message: e.message});
   }
 });
