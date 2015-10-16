@@ -60,7 +60,20 @@ a {
     overflow:hidden;
 }
 
-
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
     display: none !important;
+}
+
+/* General wells for status information, to be used everywhere in the editor */
+.well-ok {
+    background-color: #adeaa9;
+    background-image: none;
+}
+.well-error {
+    background-color: #ffa4a5;
+    background-image: none;
+}
+.well-info {
+    background-color: #c3d4e2;
+    background-image: none;
 }

@@ -20,7 +20,7 @@ if (settings.minifedjs) {
 
 /* GET priceslist. */
 router.get('/', function (req, res) {
-  res.render('pricelist', {
+  res.render('pricelist/pricelist', {
     title: 'Preisliste',
     gameId: req.query.gameId,
     gameUrl: settings.mainInstances[0], // main instance with index 0 has highest prio

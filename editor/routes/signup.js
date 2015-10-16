@@ -20,7 +20,7 @@ if (settings.minifedjs) {
 
 /* GET Sign-up page */
 router.get('/', function (req, res) {
-  res.render('signup', {
+  res.render('signup/signup', {
     title: 'Anmelden', hideLogout: true,
     ngController: 'signupCtrl',
     ngApp: 'signupApp',

@@ -33,4 +33,7 @@ node_modules
 
 # Generated HTML
 editor/views/*.html
+editor/views/edit/*.html
+editor/views/pricelist/*.html
+editor/views/signup/*.html
 

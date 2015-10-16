@@ -1,4 +1,4 @@
-extends layout
+extends ../layout
 
 block head
   link(rel='stylesheet', href='/css/signin.css')
@@ -19,8 +19,7 @@ block content
   div(ng-show='view === 0')
     .signup-box.ls-box-shape
       h1 Ferropoly Anmeldung
-      | Willkommen beim Ferropoly Editor. Diese Applikation ist gegenwärtig in Entwicklung, eine Registrierung ist zwar möglich,
-      | doch die Logins werden periodisch gelöscht!
+      | Willkommen beim Ferropoly Editor. Hier kannst Du dich für die Benutzung der Ferropoly App registrieren. Das Login ist sowohl für den Editor wie auch die Spielauswertung gültig.
 
       form(class='form-signin')
         .form-group(id='email-group')

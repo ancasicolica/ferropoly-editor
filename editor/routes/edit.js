@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
   if (!req.query.gameId) {
     req.query.gameId = 'this-aint-a-useful-id';
   }
-  res.render('edit', {
+  res.render('edit/edit', {
     title: 'Spiel bearbeiten',
     hideLogout: false,
     gameId: req.query.gameId,
