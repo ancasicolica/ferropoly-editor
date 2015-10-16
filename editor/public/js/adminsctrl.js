@@ -1,9 +1,6 @@
 /**
  * Angular Controller for the administrator view
  *
- * Todo: use icon for existing / not existing users
- * Todo: add info bar when there are users not existing (invite them)
- *
  * Created by kc on 15.10.15.
  */
 'use strict';
@@ -15,6 +12,7 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
   $scope.logins = gameplay.admins.logins;
   $scope.saved = false;
   $scope.saveError = '';
+  $scope.changed = false;
 
   /**
    * Checks if a user is existing (known) by the ferropoly
@@ -26,6 +24,48 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
     }
     return _.isObject($scope.adminInfo[$scope.logins[index]]);
   };
+
+  /**
+   * Checks if there is a user without a login
+   */
+  $scope.hasUserWithoutLogin = function() {
+    if($scope.changed) {
+      return false;
+    }
+
+    for (var i = 0; i < 3; i++) {
+      if (!$scope.isExistingUser(i)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /**
+   * Checks if all users (if there are any) have a login
+   */
+  $scope.allDefinedUsersHaveLogin = function() {
+    if(!$scope.changed) {
+      return false;
+    }
+
+    var retVal = false;
+    for (var i = 0; i < 3; i++) {
+      switch ($scope.isExistingUser(i)) {
+        case true:
+          retVal = true;
+          break;
+
+        case false:
+          return false;
+
+        case 'empty':
+          break;
+      }
+    }
+    return retVal;
+  };
+
   /**
    * Saves all admins
    */
@@ -66,6 +106,7 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
    */
   $scope.dataChanged = function() {
     $scope.saved = false;
+    $scope.changed = true;
   };
 
   /**

@@ -74,6 +74,10 @@ a {
     background-image: none;
 }
 .well-info {
-    background-color: #c3d4e2;
+    background-color: #a4d3fd;
+    background-image: none;
+}
+.well-attention {
+    background-color: #dbad3e;
     background-image: none;
 }

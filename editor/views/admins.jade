@@ -1,4 +1,4 @@
-//
+// Administrators of a gameplay
    Created by kc on 15.10.15.
 
 extends layout
@@ -25,23 +25,24 @@ block content
               .col-sm-9
                 input.form-control(id='admin1' type='email' placeholder='admin@ferropoly.ch' ng-change='dataChanged()' ng-model='logins[0]')
               .col-sm-1
-                | {{isExistingUser(0)}}
+                span.glyphicon.glyphicon-ok.user-existing(ng-show='isExistingUser(0) === true')
+                span.glyphicon.glyphicon-exclamation-sign.user-new(ng-show='isExistingUser(0) === false')
 
             .form-group
               label.col-sm-2.control-label(for='admin2') Spielleiter 2
               .col-sm-9
                 input.form-control(id='admin2' type='email' placeholder='admin@ferropoly.ch' ng-change='dataChanged()' ng-model='logins[1]')
               .col-sm-1
-                |  {{isExistingUser(1)}}
-
+                span.glyphicon.glyphicon-ok.user-existing(ng-show='isExistingUser(1) === true')
+                span.glyphicon.glyphicon-exclamation-sign.user-new(ng-show='isExistingUser(1) === false')
 
             .form-group
               label.col-sm-2.control-label(for='admin3') Spielleiter 3
               .col-sm-9
                 input.form-control(id='admin3' type='email' placeholder='admin@ferropoly.ch' ng-change='dataChanged()' ng-model='logins[2]')
               .col-sm-1
-                | {{isExistingUser(2)}}
-
+                span.glyphicon.glyphicon-ok.user-existing(ng-show='isExistingUser(2) === true')
+                span.glyphicon.glyphicon-exclamation-sign.user-new(ng-show='isExistingUser(2) === false')
 
             .form-group
               .col-sm-offset-2.col-sm-10
@@ -55,6 +56,14 @@ block content
               .col-sm-12(ng-show='saveError')
                 .well.well-sm.well-error
                   | Fehler beim Speichern der Daten: {{saveError}}
+
+              .col-sm-12
+                .well.well-sm.well-info(ng-show='allDefinedUsersHaveLogin()')
+                  | Sehr gut: alle Spielleiter haben bereits ein Ferropoly-Login. Ihr könnt loslegen.
+
+              .col-sm-12
+                .well.well-sm.well-attention(ng-show='hasUserWithoutLogin()')
+                  | Noch nicht alle Spielleiter haben ein Ferropoly-Login. Damit sie am Spieltag mithelfen können, müssen sie sich zuerst noch anmelden. Bitte informiere die entsprechende(n) Person(en) entsprechend.
 
     .col-md-6
       .panel.panel-default
