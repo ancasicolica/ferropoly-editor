@@ -23,8 +23,6 @@ var logger = require('../../common/lib/logger').getLogger('gameplayLib');
 var restify = require('restify');
 var moment = require('moment');
 
-require('datejs'); // Todo: replace with moment!
-
 var demoGameId = 'play-a-demo-game';
 var demoOrganisatorMail = 'demo@ferropoly.ch';
 
