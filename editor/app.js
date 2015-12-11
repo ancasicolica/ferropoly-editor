@@ -35,10 +35,11 @@ var pricelist = require('./routes/pricelist');
 var player = require('./routes/player');
 var cronjobs = require('./lib/cronjobs');
 var logger = require('../common/lib/logger').getLogger('editor-app');
-var expressWinston = require('express-winston');
 var winston = require('winston');
 var mailer = require('../common/lib/mailer');
 var logs = require('../common/models/logModel');
+var morgan = require('morgan');
+var moment = require('moment');
 
 var initServer = function () {
   authStrategy.init(settings, users);
@@ -49,19 +50,11 @@ var initServer = function () {
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
-  // express-winston logger makes sense BEFORE the router.
-  app.use(expressWinston.logger({
-    transports: [
-      new winston.transports.Console({
-        json: false,
-        colorize: true
-      })
-    ],
-    meta: false,
-    msg: 'HTTP {{req.method}} {{req.url}}',
-    expressFormat: false,
-    colorStatus: true
-  }));
+
+  morgan.token('prefix', function getId(req) {
+    return 'http: ' + moment().format();
+  });
+  app.use(morgan(':prefix :method :status :remote-addr :url'));
 
   // uncomment after placing your favicon in /public
   //app.use(favicon(__dirname + '/public/favicon.ico'));
