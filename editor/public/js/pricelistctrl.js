@@ -53,7 +53,7 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
    * After loading the document, we load the gameplay and pricelist
    */
   $(document).ready(function () {
-    $http.get('/pricelist/get?gameId=' + gameId).
+    $http.get('/pricelist/get/' + gameId).
       success(function (data) {
         console.log(data);
         if (!data.success) {

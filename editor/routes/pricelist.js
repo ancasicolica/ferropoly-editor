@@ -11,7 +11,7 @@ var pricelistLib = require('../lib/pricelist');
 var commonPricelistLib = require('../../common/lib/pricelist');
 var gameplays = require('../../common/models/gameplayModel');
 var logger = require('../../common/lib/logger').getLogger('routes:pricelist');
-
+var downloadPricelist = require('../../common/routes/downloadPricelist');
 var settings = require('../settings');
 var ngFile = '/js/pricelistctrl.js';
 if (settings.minifedjs) {
@@ -19,10 +19,10 @@ if (settings.minifedjs) {
 }
 
 /* GET priceslist. */
-router.get('/', function (req, res) {
+router.get('/view/:gameId', function (req, res) {
   res.render('pricelist/pricelist', {
     title: 'Preisliste',
-    gameId: req.query.gameId,
+    gameId: req.params.gameId,
     gameUrl: settings.mainInstances[0], // main instance with index 0 has highest prio
     ngController: 'pricelistCtrl',
     ngApp: 'pricelistApp',
@@ -30,6 +30,7 @@ router.get('/', function (req, res) {
   });
 });
 
+router.get('/download/:gameId', downloadPricelist.handler);
 
 /**
  * Create a pricelist
@@ -50,16 +51,16 @@ router.post('/create', function (req, res) {
 /**
  * Get a pricelist
  */
-router.get('/get', function (req, res) {
-  if (!req.query || !req.query.gameId) {
+router.get('/get/:gameId', function (req, res) {
+  if (!req.params || !req.params.gameId) {
     return res.send({success: false, message: 'Parameter error'});
   }
 
-  gameplays.getGameplay(req.query.gameId, req.session.passport.user, function (err, gp) {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    commonPricelistLib.getPricelist(req.query.gameId, function (err, list) {
+    commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
       if (err) {
         return res.send({success: false, message: err.message});
       }

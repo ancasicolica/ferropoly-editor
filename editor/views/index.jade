@@ -40,7 +40,7 @@ block content
               a(class='btn btn-default btn-xs btn-gameplay' ng-hide='gameplay.internal.finalized' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Bearbeiten
                 span(class='glyphicon glyphicon-pencil' aria-hidden='true')
 
-              a(class='btn btn-default btn-xs btn-gameplay' href='/pricelist?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste
+              a(class='btn btn-default btn-xs btn-gameplay' href='/pricelist/view/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste
                 span(class='glyphicon glyphicon-blackboard' aria-hidden='true')
 
               a(class='btn btn-default btn-xs btn-gameplay' href='/player?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler

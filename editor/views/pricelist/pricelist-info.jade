@@ -27,6 +27,11 @@ h1 {{data.gameplay.gamename}}
       tr
         td Spielende
         td {{data.gameplay.scheduling.gameEnd}}
+    p
+      p
+        a.btn.btn-default(href='/pricelist/download/{{data.gameplay.internal.gameId}}' target='blank') Preisliste als Excel-Datei laden&nbsp;
+          i.fa.fa-download
+
   .col-md-4
     table(class='table')
       tr
