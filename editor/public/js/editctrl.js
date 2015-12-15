@@ -555,7 +555,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         if (data.success) {
           console.log('pricelist created');
           $scope.statusText = data.message;
-          self.location = '/pricelist?gameId=' + data.gameId;
+          self.location = '/pricelist/' + data.gameId;
           fa.event('Pricelist', 'created', $scope.gameplay.internal.gameId);
         }
         else {
