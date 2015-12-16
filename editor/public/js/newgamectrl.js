@@ -19,6 +19,7 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   $scope.gamedate = new Date().add(1).day().toString('yyyy-MM-dd');
   $scope.minDate = Date.today().toString('yyyy-MM-dd');
   $scope.random = 0;
+  $scope.maps = ferropolyMaps.maps; // loaded over ferropoly api
 
   var authToken = 'none';
 

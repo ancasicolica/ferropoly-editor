@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "maps": [
+    {
+      "map" :"sbb",
+      "name":"Ganze Schweiz",
+      "description": "Die grösste Karte des Ferropoly: das ganze Schweizer ÖV-Netz",
+      "enabled": true
+    },
+    {
+      "map" :"zvv",
+      "name":"Zürcher Verkehrsverbund",
+      "description": "Für ein kürzeres Spiel im preiswerten Zürcher Verkehrsverbund",
+      "enabled": true
+    },
+    {
+      "map" :"ostwind",
+      "name":"Ostwind",
+      "description": "Ein Ferropoly in der Ostschweiz",
+      "enabled": false
+    }
+  ]
+}

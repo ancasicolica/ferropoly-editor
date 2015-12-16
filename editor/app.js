@@ -91,6 +91,7 @@ var initServer = function () {
   app.use('/pricelist', pricelist);
   app.use('/player', player);
   app.use('/admins', require('./routes/admins'));
+  app.use('/maps', require('../common/lib/maps').routeHandler);
 
   var server = require('http').Server(app);
 

@@ -5,6 +5,7 @@ extends layout
 block head
    link(rel='stylesheet', href='/css/newgame.css')
    link(rel='stylesheet', href='/pickadate/angular-pickadate.css')
+   script(src="/maps")
    script(src="i18n/angular-locale_de-ch.js")
    script(src='/pickadate/angular-pickadate.min.js')
 block content
@@ -20,14 +21,12 @@ block content
 
 
               h4 Spielkarte
-              .radio
-                 label
-                   input( type='radio' name='map' value='zvv' ng-model='map')
-                   | Zürcher Verkehrsverbund ZVV
-              .radio
-                 label
-                   input(type='radio' name='map' value='sbb' ng-model='map')
-                   | Ganzes Schweizer Bahn- und Busnetz (GA Gültigkeitsbereich)
+              .radio(ng-repeat='m in maps' ng-show='m.enabled')
+                label
+                  input( type='radio' name='map' value='{{m.map}}' ng-model='map')
+                  strong {{m.name}}:&nbsp;
+                  | {{m.description}}
+
               span(id='helpmap' class='help-block') Die Spielkarte bestimmt, aus welchen Orten man die Preisliste gestalten kann. Diese Einstellung kann später nicht mehr geändert werden.
               h4 Zufallspreisliste
               select(class='form-control' ng-model='random')
