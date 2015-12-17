@@ -16,8 +16,8 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   $scope.map = 'zvv';
   $scope.gamename = 'Ferropoly Spiel';
   $scope.errorMessage = '';
-  $scope.gamedate = new Date().add(1).day().toString('yyyy-MM-dd');
-  $scope.minDate = Date.today().toString('yyyy-MM-dd');
+  $scope.gamedate =  moment().add(1, 'd').format('YYYY-MM-DD');
+  $scope.minDate = moment().format('YYYY-MM-DD');
   $scope.random = 0;
   $scope.maps = ferropolyMaps.maps; // loaded over ferropoly api
 

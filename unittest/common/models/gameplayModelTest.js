@@ -8,7 +8,7 @@ var expect = require('expect.js');
 var db = require('./../../../common/lib/ferropolyDb');
 var gameplays = require('./../../../common/models/gameplayModel');
 var settings = require('./../../../editor/settings');
-
+var moment = require('moment');
 describe('GameplayModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
@@ -171,8 +171,8 @@ describe('GameplayModel Tests', function () {
           expect(gpSaved.log.priceListVersion).to.be(1);
           gameplays.finalize(gp3.internal.gameId, 'christine@meyer.com', function (err, fgp) {
             console.log(fgp);
-            expect(new Date(fgp.scheduling.gameStartTs).clearTime().compareTo(new Date().clearTime())).to.be(0);
-            expect(new Date(fgp.scheduling.gameEndTs).clearTime().compareTo(new Date().clearTime())).to.be(0);
+            expect(moment(fgp.scheduling.gameStartTs).dayOfYear()).to.be(moment().dayOfYear());
+            expect(moment(fgp.scheduling.gameEndTs).dayOfYear()).to.be(moment().dayOfYear());
             expect(fgp.scheduling.gameStartTs.getMinutes()).to.be(30);
             expect(fgp.scheduling.gameStartTs.getHours()).to.be(4);
             expect(fgp.scheduling.gameEndTs.getMinutes()).to.be(22);
