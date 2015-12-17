@@ -23,7 +23,8 @@ var locationSchema = mongoose.Schema({
   maps: {
     zvv: Boolean,
     sbb: Boolean,
-    ostwind: {type: Boolean, default: false}
+    ostwind: {type: Boolean, default: false},
+    libero: {type: Boolean, default: false}
   }
 }, {autoIndex: false});
 locationSchema.index({uuid: 1, type: -1}); // schema level

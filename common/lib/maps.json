@@ -18,6 +18,12 @@
       "name":"Ostwind",
       "description": "Ein Ferropoly in der Ostschweiz",
       "enabled": false
+    },
+    {
+      "map" :"libero",
+      "name":"Libero",
+      "description": "Ferropoly Karte für die Region Bern - Solothurn - Biel",
+      "enabled": false
     }
   ]
 }
