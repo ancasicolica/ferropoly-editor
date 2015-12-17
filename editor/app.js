@@ -40,6 +40,7 @@ var mailer = require('../common/lib/mailer');
 var logs = require('../common/models/logModel');
 var morgan = require('morgan');
 var moment = require('moment');
+var compression = require('compression');
 
 var initServer = function () {
   authStrategy.init(settings, users);
@@ -61,7 +62,12 @@ var initServer = function () {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: false}));
   app.use(cookieParser());
+
+  // Using compression speeds up the connection (and uses much less data for mobile)
+  app.use(compression());
+
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use('/maps', require('../common/lib/maps').routeHandler); // No user authentication needed here, so place it before passport
 
   // Define Strategy, login
   passport.use(authStrategy.strategy);
@@ -91,7 +97,7 @@ var initServer = function () {
   app.use('/pricelist', pricelist);
   app.use('/player', player);
   app.use('/admins', require('./routes/admins'));
-  app.use('/maps', require('../common/lib/maps').routeHandler);
+
 
   var server = require('http').Server(app);
 
