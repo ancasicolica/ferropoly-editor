@@ -24,7 +24,10 @@ var locationSchema = mongoose.Schema({
     zvv: Boolean,
     sbb: Boolean,
     ostwind: {type: Boolean, default: false},
-    libero: {type: Boolean, default: false}
+    libero: {type: Boolean, default: false},
+    tva: {type: Boolean, default: false},
+    tvlu: {type: Boolean, default: false},
+    tnw: {type: Boolean, default: false}
   }
 }, {autoIndex: false});
 locationSchema.index({uuid: 1, type: -1}); // schema level

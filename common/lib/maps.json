@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "maps": [
     {
       "map" :"sbb",
@@ -23,6 +23,24 @@
       "map" :"libero",
       "name":"Libero",
       "description": "Ferropoly Karte für die Region Bern - Solothurn - Biel",
+      "enabled": false
+    },
+    {
+      "map" :"tva",
+      "name":"A-Welle",
+      "description": "Tarifverbund des Kantons Aargau",
+      "enabled": false
+    },
+    {
+      "map" :"tvlu",
+      "name":"Passepartout",
+      "description": "Tarifverbund der Kantone Luzern, Obwalden und Nidwalden",
+      "enabled": false
+    },
+    {
+      "map" :"tnw",
+      "name":"Tarifverbund Nordostschwez",
+      "description": "Rund um Basel",
       "enabled": false
     }
   ]
