@@ -1,0 +1,35 @@
+{
+  "name": "Ferropoly-Editor",
+  "description": "Erstellen und bearbeiten von Ferropolys",
+  "main": "server.js",
+  "authors": [
+    "Christian Kuster"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "Ferropoly"
+  ],
+  "homepage": "https://github.com/ancasicolica/ferropoly-editor",
+  "moduleType": [
+    "node"
+  ],
+  "dependencies": {
+    "angular": "1.4.8",
+    "jquery": "2.1.4",
+    "lodash": "3.10.1",
+    "components-font-awesome": "4.5.0",
+    "bootstrap": "3.3.6",
+    "moment": "2.10.6",
+    "angular-pickadate": "~1.1.0",
+    "angular-i18n": "~1.4.8"
+  },
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "./main/public/modules",
+    "test",
+    "tests"
+  ]
+}

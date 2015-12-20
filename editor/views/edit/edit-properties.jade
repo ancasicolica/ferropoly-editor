@@ -3,56 +3,28 @@ form(name='propertiesForm')
   .row
     .col-md-4
       label(for='noHouse') Unbebaut
-      select(class='form-control' type='noHouse' id='noHouse' ng-model='gameplay.gameParams.rentFactors.noHouse')
-        option 0.05
-        option 0.1
-        option 0.125
-        option 0.25
-      span(class='help-block') Mit den Faktoren in diesem Abschnitt wird der Ertrag pro Stunde (bzw. die Miete wenn eine andere Gruppe das Ort besucht) bestimmt. Im Normalfall sind keine Anpassungen nötig, die Standardwerte haben sich bewährt.
+      select.form-control(id='noHouse' ng-model='noHouse' ng-options="noHouse.id as noHouse.name for noHouse in noHouseOptions")
+      span.help-block Mit den Faktoren in diesem Abschnitt wird der Ertrag pro Stunde (bzw. die Miete wenn eine andere Gruppe das Ort besucht) bestimmt. Im Normalfall sind keine Anpassungen nötig, die Standardwerte haben sich bewährt.
 
       label(for='oneHouse') Ein Haus
-      select(class='form-control' type='noHouse' id='oneHouse' ng-model='gameplay.gameParams.rentFactors.oneHouse')
-        option 0.25
-        option 0.4
-        option 0.5
-        option 0.75
-        option 1
+      select.form-control(id='oneHouse' ng-model='oneHouse' ng-options="oneHouse.id as oneHouse.name for oneHouse in oneHouseOptions")
 
       label(for='twoHouses') Zwei Häuser
-      select(class='form-control' type='noHouse' id='twoHouses' ng-model='gameplay.gameParams.rentFactors.twoHouses')
-        option 1
-        option 1.5
-        option 2
-        option 2.5
+      select.form-control(id='twoHouses' ng-model='twoHouses' ng-options="twoHouses.id as twoHouses.name for twoHouses in twoHousesOptions")
 
       label(for='threeHouses') Drei Häuser
-      select(class='form-control' type='noHouse' id='threeHouses' ng-model='gameplay.gameParams.rentFactors.threeHouses')
-        option 2.5
-        option 3
-        option 3.5
+      select.form-control(id='threeHouses' ng-model='threeHouses' ng-options="threeHouses.id as threeHouses.name for threeHouses in threeHousesOptions")
 
       label(for='fourHouses') Vier Häuser
-      select(class='form-control' type='noHouse' id='fourHouses' ng-model='gameplay.gameParams.rentFactors.fourHouses')
-        option 3.5
-        option 4
-        option 4.5
+      select.form-control(id='fourHouses' ng-model='fourHouses' ng-options="fourHouses.id as fourHouses.name for fourHouses in fourHousesOptions")
 
       label(for='hotel') Hotel
-      select(class='form-control' type='noHouse' id='hotel' ng-model='gameplay.gameParams.rentFactors.hotel')
-        option 4.5
-        option 5
-        option 5.5
-        option 6
-      p
+      select.form-control(id='hotel' ng-model='hotel' ng-options="hotel.id as hotel.name for hotel in hotelOptions")
 
     .col-md-4
-        label(for='housePrices') Kosten für ein Haus / Hotel
-        select(class='form-control' type='housePrices' id='housePrices' ng-model='gameplay.gameParams.housePrices')
-          option 0.25
-          option 0.5
-          option 0.75
-          option 1
-        span(class='help-block') Dieser Faktor bestimmt, wie teuer ein Haus (bzw. Hotel) im Vergleich mit dem Kaufpreis ist
+      label(for='housePrices') Kosten für ein Haus / Hotel
+      select.form-control(id='housePrices' ng-model='housePrices' ng-options="housePrices.id as housePrices.name for housePrices in housePricesOptions")
+      span.help-block Dieser Faktor bestimmt, wie teuer ein Haus (bzw. Hotel) im Vergleich mit dem Kaufpreis ist
 
       .col-md-4
         button(class='btn btn-default' type='submit'  ng-click="save('map')") Speichern und weiter

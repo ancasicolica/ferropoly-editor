@@ -21,6 +21,107 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   $scope.propertiesPredicate = 'data.location.name';
   $scope.reverse = false;
 
+  $scope.nbPropertiesPerGroupOptions = [
+    {name: '1', id: 1},
+    {name: '2', id: 2},
+    {name: '3', id: 3},
+    {name: '4', id: 4}
+  ];
+
+  $scope.numberOfPriceLevelsOptions = [
+    {name: '1', id: 1},
+    {name: '2', id: 2},
+    {name: '3', id: 3},
+    {name: '4', id: 4},
+    {name: '5', id: 5},
+    {name: '6', id: 6},
+    {name: '7', id: 7},
+    {name: '8', id: 8},
+    {name: '9', id: 9},
+    {name: '10', id: 10},
+    {name: '11', id: 11},
+    {name: '12', id: 12},
+    {name: '14', id: 14},
+    {name: '15', id: 15},
+    {name: '16', id: 16},
+    {name: '20', id: 20},
+    {name: '24', id: 24},
+    {name: '25', id: 25},
+    {name: '30', id: 30},
+    {name: '32', id: 32}
+  ];
+
+  $scope.interestIntervalOptions = [
+    {name: '15', id: 15},
+    {name: '20', id: 20},
+    {name: '30', id: 30},
+    {name: '60', id: 60},
+    {name: '90', id: 90}
+  ];
+
+  $scope.interestCyclesAtEndOfGameOptions = [
+    {name: '0', id: 0},
+    {name: '1', id: 1},
+    {name: '2', id: 2},
+    {name: '3', id: 3},
+    {name: '4', id: 4}
+  ];
+
+  $scope.debtInterestOptions = [
+    {name: '0', id: 0},
+    {name: '5', id: 5},
+    {name: '10', id: 10},
+    {name: '15', id: 15},
+    {name: '20', id: 20}
+  ];
+
+  $scope.noHouseOptions = [
+    {name: '0.05', id: 0.05},
+    {name: '0.1', id: 0.1},
+    {name: '0.125', id: 0.125},
+    {name: '0.25', id: 0.25}
+  ];
+
+  $scope.oneHouseOptions = [
+    {name: '0.25', id: 0.25},
+    {name: '0.4', id: 0.4},
+    {name: '0.5', id: 0.5},
+    {name: '0.75', id: 0.75},
+    {name: '1', id: 1}
+  ];
+
+  $scope.twoHousesOptions = [
+    {name: '1', id: 1},
+    {name: '1.5', id: 1.5},
+    {name: '2', id: 2},
+    {name: '2.5', id: 2.5}
+  ];
+
+  $scope.threeHousesOptions = [
+    {name: '2.5', id: 2.5},
+    {name: '3', id: 3},
+    {name: '3.5', id: 3.5}
+  ];
+
+  $scope.fourHousesOptions = [
+    {name: '3.5', id: 3.5},
+    {name: '4', id: 4},
+    {name: '4.5', id: 4.5}
+  ];
+
+  $scope.hotelOptions = [
+    {name: '4.5', id: 4.5},
+    {name: '5', id: 5},
+    {name: '5.5', id: 5.5},
+    {name: '6', id: 6}
+  ];
+
+  $scope.housePricesOptions = [
+    {name: '0.25', id: 0.25},
+    {name: '0.5', id: 0.5},
+    {name: '0.75', id: 0.75},
+    {name: '1', id: 1}
+  ];
 
   var map = null; // the google map handle
   var authToken = 'none';
@@ -89,24 +190,24 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         authToken: authToken,
         properties: pu
       }).
-        success(function (data) {
-          if (data.success) {
-            console.log('Game saved');
-            $scope.statusText = data.message;
-            updateEditDate();
-          }
-          else {
-            console.log('Error');
-            console.log(data);
-            $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-          }
-        }).
-        error(function (data, status) {
-          console.log('ERROR');
+      success(function (data) {
+        if (data.success) {
+          console.log('Game saved');
+          $scope.statusText = data.message;
+          updateEditDate();
+        }
+        else {
+          console.log('Error');
           console.log(data);
-          console.log(status);
           $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-        });
+        }
+      }).
+      error(function (data, status) {
+        console.log('ERROR');
+        console.log(data);
+        console.log(status);
+        $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+      });
     }
   };
 
@@ -284,34 +385,53 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    * @param nextPanel
    */
   $scope.save = function (nextPanel) {
-    $http.post('/edit/save', {gameplay: $scope.gameplay, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('Game saved');
-          $scope.statusText = 'Spiel gespeichert';
-          if (nextPanel) {
-            $scope.panel = nextPanel;
-            if (nextPanel === 'map') {
-              $scope.showMapTab();
-            }
+    // Convert times back to HH:MM (as defined by the schema), maintain compatibility
+    var gpToSave = _.cloneDeep($scope.gameplay);
+    gpToSave.scheduling.gameStart = moment($scope.gameplay.scheduling.gameStart).format('HH:mm');
+    gpToSave.scheduling.gameEnd = moment($scope.gameplay.scheduling.gameEnd).format('HH:mm');
+    // Convert angular select values back
+    gpToSave.gameParams.properties.numberOfPriceLevels = $scope.numberOfPriceLevels;
+    gpToSave.gameParams.properties.numberOfPropertiesPerGroup = $scope.numberOfPropertiesPerGroup;
+    gpToSave.gameParams.interestInterval = $scope.interestInterval;
+    gpToSave.gameParams.interestCyclesAtEndOfGame = $scope.interestCyclesAtEndOfGame;
+    gpToSave.gameParams.debtInterest = $scope.debtInterest;
+    gpToSave.gameParams.rentFactors.noHouse = $scope.noHouse;
+    gpToSave.gameParams.rentFactors.oneHouse = $scope.oneHouse;
+    gpToSave.gameParams.rentFactors.twoHouses = $scope.twoHouses;
+    gpToSave.gameParams.rentFactors.threeHouses = $scope.threeHouses;
+    gpToSave.gameParams.rentFactors.fourHouses = $scope.fourHouses;
+    gpToSave.gameParams.rentFactors.hotel = $scope.hotel;
+    gpToSave.gameParams.housePrices = $scope.housePrices;
+
+
+    $http.post('/edit/save', {gameplay: gpToSave, authToken: authToken}).
+    success(function (data, status) {
+      if (data.success) {
+        console.log('Game saved');
+        $scope.statusText = 'Spiel gespeichert';
+        if (nextPanel) {
+          $scope.panel = nextPanel;
+          if (nextPanel === 'map') {
+            $scope.showMapTab();
           }
         }
-        else {
-          console.log('Error');
-          console.log(data);
-          $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
-          $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-          fa.exception('Can not save game: ' + data.message);
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+      }
+      else {
+        console.log('Error');
         console.log(data);
-        console.log(status);
-        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
         $scope.statusText = 'Fehler beim Speichern: ' + data.message;
         fa.exception('Can not save game: ' + data.message);
-      });
+      }
+    }).
+    error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+      $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+      $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+      fa.exception('Can not save game: ' + data.message);
+    });
 
   };
 
@@ -326,20 +446,20 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     }
 
     $http.post('/edit/dataChanged', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('Game edit updated');
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+    success(function (data, status) {
+      if (data.success) {
+        console.log('Game edit updated');
+      }
+      else {
+        console.log('Error');
         console.log(data);
-        console.log(status);
-      });
+      }
+    }).
+    error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+    });
 
   };
   /**
@@ -385,51 +505,68 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     initializeMap();
     initSortableOptions();
     $http.get('/authtoken').
+    success(function (data) {
+      authToken = data.authToken;
+      console.log('Auth ok');
+      $http.get('/edit/load-game?gameId=' + gameId).
       success(function (data) {
-        authToken = data.authToken;
-        console.log('Auth ok');
-        $http.get('/edit/load-game?gameId=' + gameId).
-          success(function (data) {
-            console.log(data);
-            if (!data.success) {
-              $scope.panel = 'error';
-              $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
-              return;
-            }
-            if (data.gameplay.internal.finalized) {
-              // finalized data, we can't edit
-              $scope.panel = 'error';
-              $scope.errorMessage = 'Das Spiel wurde schon finalisiert, Du solltest eigentlich gar nicht hier sein.';
-              return;
-            }
-            $scope.gameplay = data.gameplay;
-            $scope.allProperties = data.properties;
-            $scope.gameplayReadOnly.created = new Date($scope.gameplay.log.created).toString("d.M.yy HH:mm");
-            $scope.gameplayReadOnly.lastEdited = new Date($scope.gameplay.log.lastEdited).toString("d.M.yy HH:mm");
-            $scope.gameplayReadOnly.map = $scope.gameplay.internal.map.toUpperCase();
-            $scope.gameplayReadOnly.gameId = $scope.gameplay.internal.gameId;
-            $scope.gameplayReadOnly.gamedate = new Date($scope.gameplay.scheduling.gameStart).toString("d.M.yy");
-            $scope.panel = 'gameplay';
-            $scope.statusText = 'Spiel geladen';
+        console.log(data);
+        if (!data.success) {
+          $scope.panel = 'error';
+          $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
+          return;
+        }
+        if (data.gameplay.internal.finalized) {
+          // finalized data, we can't edit
+          $scope.panel = 'error';
+          $scope.errorMessage = 'Das Spiel wurde schon finalisiert, Du solltest eigentlich gar nicht hier sein.';
+          return;
+        }
+        $scope.gameplay = data.gameplay;
+        $scope.allProperties = data.properties;
+        $scope.gameplayReadOnly.created = moment($scope.gameplay.log.created).format("D.M.YY HH:mm");
+        $scope.gameplayReadOnly.lastEdited = moment($scope.gameplay.log.lastEdited).format("D.M.YY HH:mm");
+        $scope.gameplayReadOnly.map = $scope.gameplay.internal.map.toUpperCase();
+        $scope.gameplayReadOnly.gameId = $scope.gameplay.internal.gameId;
+        $scope.gameplayReadOnly.gamedate = moment($scope.gameplay.scheduling.gameDate).format("D.M.YY");
+        // Conversion needed since using moment instead of DateJs
+        $scope.gameplay.scheduling.gameStart = moment($scope.gameplay.scheduling.gameStart, 'H:mm').toDate();
+        $scope.gameplay.scheduling.gameEnd = moment($scope.gameplay.scheduling.gameEnd, 'H:mm').toDate();
+        // Conversions needed as after an AngularJs upgrade the select labels didn't work as expected
+        $scope.numberOfPriceLevels = $scope.gameplay.gameParams.properties.numberOfPriceLevels;
+        $scope.numberOfPropertiesPerGroup = $scope.gameplay.gameParams.properties.numberOfPropertiesPerGroup;
+        $scope.interestInterval = $scope.gameplay.gameParams.interestInterval;
+        $scope.interestCyclesAtEndOfGame = $scope.gameplay.gameParams.interestCyclesAtEndOfGame;
+        $scope.debtInterest = $scope.gameplay.gameParams.debtInterest;
+        $scope.noHouse = $scope.gameplay.gameParams.rentFactors.noHouse;
+        $scope.oneHouse = $scope.gameplay.gameParams.rentFactors.oneHouse;
+        $scope.twoHouses = $scope.gameplay.gameParams.rentFactors.twoHouses;
+        $scope.threeHouses = $scope.gameplay.gameParams.rentFactors.threeHouses;
+        $scope.fourHouses = $scope.gameplay.gameParams.rentFactors.fourHouses;
+        $scope.hotel = $scope.gameplay.gameParams.rentFactors.hotel;
+        $scope.housePrices = $scope.gameplay.gameParams.housePrices;
 
-            initPropertyMarkers(map, $scope.allProperties);
-          }).
-          error(function (data, status) {
-            console.log('load-game-error');
-            console.log(data);
-            console.log(status);
-            $scope.panel = 'error';
-            $scope.errorMessage = 'Ladefehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
-          });
+        $scope.panel = 'gameplay';
+        $scope.statusText = 'Spiel geladen';
 
+        initPropertyMarkers(map, $scope.allProperties);
       }).
       error(function (data, status) {
-        console.log('error:');
+        console.log('load-game-error');
         console.log(data);
         console.log(status);
         $scope.panel = 'error';
-        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
+        $scope.errorMessage = 'Ladefehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
       });
+
+    }).
+    error(function (data, status) {
+      console.log('error:');
+      console.log(data);
+      console.log(status);
+      $scope.panel = 'error';
+      $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
+    });
 
   });
   /**
@@ -461,27 +598,27 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     $scope.currentMarker.property.setPositionInPriceRange(-1);
 
     $http.post('/edit/saveProperty', {property: $scope.currentMarker.property.data, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('Game saved');
-          $scope.statusText = data.message;
-          $scope.setVisibleMarkers();
-          updateEditDate();
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-          $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
-          $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+    success(function (data, status) {
+      if (data.success) {
+        console.log('Game saved');
+        $scope.statusText = data.message;
+        $scope.setVisibleMarkers();
+        updateEditDate();
+      }
+      else {
+        console.log('Error');
         console.log(data);
-        console.log(status);
-        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
         $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-      });
+      }
+    }).
+    error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+      $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
+      $scope.statusText = 'Fehler beim Speichern: ' + data.message;
+    });
   };
 
   /**
@@ -502,9 +639,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    */
   $scope.getGameDuration = function () {
     if ($scope.gameplay && $scope.gameplay.scheduling) {
-      var start = Date.parse($scope.gameplay.scheduling.gameStart).getTime();
-      var end = Date.parse($scope.gameplay.scheduling.gameEnd).getTime();
-      return ((end - start) / 60 / 1000);
+      return moment($scope.gameplay.scheduling.gameEnd).diff(moment($scope.gameplay.scheduling.gameStart), 'minutes');
     }
     return 0;
   };
@@ -521,7 +656,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
    * Property groups fit number of properties
    * @returns {boolean}
    */
-  $scope.propertyGroupsValid = function() {
+  $scope.propertyGroupsValid = function () {
     if (!$scope.gameplay.gameParams) {
       return false;
     }
@@ -549,28 +684,28 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   /**
    * Finalize the pricelist
    */
-  $scope.generatePricelist = function() {
+  $scope.generatePricelist = function () {
     $http.post('/pricelist/create', {gameId: $scope.gameplay.internal.gameId, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('pricelist created');
-          $scope.statusText = data.message;
-          self.location = '/pricelist/' + data.gameId;
-          fa.event('Pricelist', 'created', $scope.gameplay.internal.gameId);
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-          fa.exception('Can not create pricelist: ' + data.message);
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+    success(function (data, status) {
+      if (data.success) {
+        console.log('pricelist created');
+        $scope.statusText = data.message;
+        self.location = '/pricelist/view/' + data.gameId;
+        fa.event('Pricelist', 'created', $scope.gameplay.internal.gameId);
+      }
+      else {
+        console.log('Error');
         console.log(data);
-        console.log(status);
-        a.exception('Can not create pricelist: ' + data.message);
-      });
+        fa.exception('Can not create pricelist: ' + data.message);
+      }
+    }).
+    error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+      a.exception('Can not create pricelist: ' + data.message);
+    });
   };
 
 
- }]);
+}]);
