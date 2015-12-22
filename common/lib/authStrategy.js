@@ -54,7 +54,7 @@ var strategy = new LocalStrategy(
  * @param done
  */
 var serializeUser = function (user, done) {
-  logger.info("serializeUser:" + user);
+  logger.debug("serializeUser:" + user);
   done(null, user.personalData.email);
 };
 
@@ -65,7 +65,7 @@ var serializeUser = function (user, done) {
  * @returns {*}
  */
 var deserializeUser = function (user, done) {
-  logger.info("deserializeUser:" + user);
+  logger.debug("deserializeUser:" + user);
   return users.getUserByMailAddress(user, function (err, foundUser) {
     if (err || !foundUser) {
       return done("not logged in", null);
