@@ -1,51 +1,62 @@
-
 h1 Spieldaten
 form(name='gameplayForm')
-   .row
-      .col-md-4
-         label(for='gamename') Spielname
-         input(class='form-control' type='text' name='gamename' id='gamename' ng-required ng-minlength='3' ng-maxlength='60' ng-model='gameplay.gamename')
-         p(class='bg-danger' ng-show='gameplayForm.gamename.$error.minlength') Der Name muss mindestens 3 Zeichen lang sein.
+  .row
+    .col-md-4
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title Kontaktinformationen
+        .panel-body
 
-         label(for='organisatorName') Name des Organisators
-         input(class='form-control' type='text' name='organisatorName' id='organisatorName' ng-required ng-minlength='5' ng-maxlength='60' ng-model='gameplay.owner.organisatorName')
-         span(class='help-block') Der Name des Organisators erscheint auf der Preisliste
-         p(class='bg-danger' ng-show='gameplayForm.organisatorName.$error.minlength') Der Name muss mindestens 5 Zeichen lang sein
+          label(for='gamename') Spielname
+          input(class='form-control' type='text' name='gamename' id='gamename' ng-required ng-minlength='3' ng-maxlength='60' ng-model='gameplay.gamename')
+          p(class='bg-danger' ng-show='gameplayForm.gamename.$error.minlength') Der Name muss mindestens 3 Zeichen lang sein.
 
-         label(for='organisation') Organisation
-         input(class='form-control' type='text' name='organisation' id='organisation' ng-model='gameplay.owner.organisation')
-         span(class='help-block') Der Name der Organisation erscheint auf der Preisliste und ist optional.
+          label(for='organisatorName') Name des Organisators
+          input(class='form-control' type='text' name='organisatorName' id='organisatorName' ng-required ng-minlength='5' ng-maxlength='60' ng-model='gameplay.owner.organisatorName')
+          span(class='help-block') Der Name des Organisators erscheint auf der Preisliste
+          p(class='bg-danger' ng-show='gameplayForm.organisatorName.$error.minlength') Der Name muss mindestens 5 Zeichen lang sein
 
-         label(for='organisatorEmail') Email-Adresse des Organisators
-         input(class='form-control' type='email' name='organisatorEmail' id='organisatorEmail' ng-required ng-minlength='3' ng-maxlength='60' ng-model='gameplay.owner.organisatorEmail')
-         p(class='bg-danger' ng-hide='gameplayForm.organisatorEmail.$valid') Die Email-Adresse ist nicht gültig.
+          label(for='organisation') Organisation
+          input(class='form-control' type='text' name='organisation' id='organisation' ng-model='gameplay.owner.organisation')
+          span(class='help-block') Der Name der Organisation erscheint auf der Preisliste und ist optional.
 
-         label(for='organisatorPhone') Telefonnummer während dem Spiel
-         input(class='form-control' type='text' name='organisatorPhone' id='organisatorPhone' ng-required ng-minlength='7' ng-maxlength='60' ng-model='gameplay.owner.organisatorPhone')
-         p(class='bg-danger' ng-hide='gameplayForm.organisatorPhone.$valid') Die Telefonnummer muss angegeben werden.
-         p
+          label(for='organisatorEmail') Email-Adresse des Organisators
+          input(class='form-control' type='email' name='organisatorEmail' id='organisatorEmail' ng-required ng-minlength='3' ng-maxlength='60' ng-model='gameplay.owner.organisatorEmail')
+          p(class='bg-danger' ng-hide='gameplayForm.organisatorEmail.$valid') Die Email-Adresse ist nicht gültig.
 
-      .col-md-4
-         p Das Spiel ist für den {{gameplay.scheduling.gameDate | date:'d. M. yyyy'}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden.
-         label(for='gameStart') Spielstart
-         input(class='form-control' type='time' name='gameStart' id='gameStart' required ng-model='gameplay.scheduling.gameStart')
-         p(class='bg-danger' ng-show='gameplayForm.gameStart.$error.required') Der Spielstart muss gesetzt werden
+          label(for='organisatorPhone') Telefonnummer während dem Spiel
+          input(class='form-control' type='text' name='organisatorPhone' id='organisatorPhone' ng-required ng-minlength='7' ng-maxlength='60' ng-model='gameplay.owner.organisatorPhone')
+          p(class='bg-danger' ng-hide='gameplayForm.organisatorPhone.$valid') Die Telefonnummer muss angegeben werden.
 
-         label(for='gameEnd') Spielende
-         input(class='form-control' type='time' name='gameEnd' id='gameEnd' required ng-model='gameplay.scheduling.gameEnd')
-         p(class='bg-danger' ng-show='gameplayForm.gameEnd.$error.required') Das Spielende muss gesetzt werden
+    .col-md-4
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title Spielzeit
+        .panel-body
+          p Das Spiel ist für den {{gameplay.scheduling.gameDate | date:'d. M. yyyy'}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden.
+          label(for='gameStart') Spielstart
+          input(class='form-control' type='time' name='gameStart' id='gameStart' required ng-model='gameplay.scheduling.gameStart')
+          p(class='bg-danger' ng-show='gameplayForm.gameStart.$error.required') Der Spielstart muss gesetzt werden
 
-      .col-md-4
-         label(for='created') Erstellungsdatum
-         input(class='form-control' type='text' id='created' readonly='true' ng-model='gameplayReadOnly.created')
+          label(for='gameEnd') Spielende
+          input(class='form-control' type='time' name='gameEnd' id='gameEnd' required ng-model='gameplay.scheduling.gameEnd')
+          p(class='bg-danger' ng-show='gameplayForm.gameEnd.$error.required') Das Spielende muss gesetzt werden
 
-         label(for='lastEdited') Letzte Änderung
-         input(class='form-control' type='text' id='lastEdited' readonly='true' ng-model='gameplayReadOnly.lastEdited')
-         label(for='map') Karte
-         input(class='form-control' type='text' id='map' readonly='true' ng-model='gameplayReadOnly.map')
-         label(for='gameId') Spiel ID
-         input(class='form-control' type='text' id='gameId' readonly='true' ng-model='gameplayReadOnly.gameId')
-         span(class='help-block') Die Spiel ID wurde beim Anlegen des Spieles zufällig gewürfelt und wird intern für dieses Spiel verwendet. Bei Support-Anfragen bitte immer diese ID angeben.
-         p
-         button(class='btn btn-default' type='submit' ng-disabled='!gameplayForm.$valid' ng-click="save('basics')") Speichern und weiter
-         p
+    .col-md-4
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title Spielinformationen
+        .panel-body
+            label(for='created') Erstellungsdatum
+            input(class='form-control' type='text' id='created' readonly='true' ng-model='gameplayReadOnly.created')
+
+            label(for='lastEdited') Letzte Änderung
+            input(class='form-control' type='text' id='lastEdited' readonly='true' ng-model='gameplayReadOnly.lastEdited')
+            label(for='map') Karte
+            input(class='form-control' type='text' id='map' readonly='true' ng-model='gameplayReadOnly.map')
+            label(for='gameId') Spiel ID
+            input(class='form-control' type='text' id='gameId' readonly='true' ng-model='gameplayReadOnly.gameId')
+            span(class='help-block') Die Spiel ID wurde beim Anlegen des Spieles zufällig gewürfelt und wird intern für dieses Spiel verwendet. Bei Support-Anfragen bitte immer diese ID angeben.
+            p
+            button(class='btn btn-default' type='submit' ng-disabled='!gameplayForm.$valid' ng-click="save('basics')") Speichern und weiter
+
