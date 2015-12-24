@@ -2,26 +2,28 @@ h1 Startgeld & Zins
 form(name='interestForm')
   .row
     .col-md-4
-      label(for='startCapital') Guthaben zu Beginn des Spieles
-      input(class='form-control' type='number' name='startCapital' id='startCapital' min='0' max='50000' step='1000' ng-model='gameplay.gameParams.startCapital')
-      span(class='help-block') Empfohlen: 4000, gültiger Bereich zwischen 0 und 50000.
-      p(class='bg-danger' ng-hide='interestForm.startCapital.$valid') Ungültige Eingabe.
+      .panel.panel-default
+        .panel-body
+          label(for='startCapital') Guthaben zu Beginn des Spieles
+          input.form-control(type='number' name='startCapital' id='startCapital' min='0' max='50000' step='1000' ng-model='gameplay.gameParams.startCapital')
+          span.help-block Empfohlen: 4000, gültiger Bereich zwischen 0 und 50000.
+          p.bg-danger(ng-hide='interestForm.startCapital.$valid') Ungültige Eingabe.
 
-      label(for='interest') Startgeld pro Spielrunde
-      input(class='form-control' type='number' name='interest' id='interest' min='1000' max='10000' step='1000' ng-model='gameplay.gameParams.interest')
-      span(class='help-block') Empfohlen: 4000, gültiger Bereich zwischen 1000 und 10000.
-      p(class='bg-danger' ng-hide='interestForm.interest.$valid') Ungültige Eingabe.
+          label(for='interest') Startgeld pro Spielrunde
+          input(class='form-control' type='number' name='interest' id='interest' min='1000' max='10000' step='1000' ng-model='gameplay.gameParams.interest')
+          span.help-block Empfohlen: 4000, gültiger Bereich zwischen 1000 und 10000.
+          p.bg-danger(ng-hide='interestForm.interest.$valid') Ungültige Eingabe.
 
-      label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
-      select(class='form-control' id='interestInterval' ng-model='interestInterval' ng-options="interestInterval.id as interestInterval.name for interestInterval in interestIntervalOptions")
-      span(class='help-block') Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten.
+          label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
+          select.form-control( id='interestInterval' ng-model='interestInterval' ng-options="interestInterval.id as interestInterval.name for interestInterval in interestIntervalOptions")
+          span.help-block Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten.
 
-      label(for='interestCyclesAtEndOfGame') Anzahl Zinsrunden am Spielende
-      select(class='form-control' id='interestCyclesAtEndOfGame' ng-model='interestCyclesAtEndOfGame' ng-options="interestCyclesAtEndOfGame.id as interestCyclesAtEndOfGame.name for interestCyclesAtEndOfGame in interestCyclesAtEndOfGameOptions")
-      span(class='help-block') Wenn am Ende des Spieles nochmals Zins ausbezahlt wird, dann lohnt es sich für die Teams länger zu kaufen und bauen. Empfohlen: 2.
+          label(for='interestCyclesAtEndOfGame') Anzahl Zinsrunden am Spielende
+          select.form-control( id='interestCyclesAtEndOfGame' ng-model='interestCyclesAtEndOfGame' ng-options="interestCyclesAtEndOfGame.id as interestCyclesAtEndOfGame.name for interestCyclesAtEndOfGame in interestCyclesAtEndOfGameOptions")
+          span.help-block Wenn am Ende des Spieles nochmals Zins ausbezahlt wird, dann lohnt es sich für die Teams länger zu kaufen und bauen. Empfohlen: 2.
 
-      label(for='debtInterest') Strafzinssatz
-      select(class='form-control' id='debtInterest' ng-model='debtInterest' ng-options="debtInterest.id as debtInterest.name for debtInterest in debtInterestOptions")
-      span(class='help-block') Zinsatz in Prozent, welcher auf ein negatives Vermögen am Ende einer Spielrunde zu Gunsten des Parkplatzes erhoben wird.
+          label(for='debtInterest') Strafzinssatz
+          select.form-control( id='debtInterest' ng-model='debtInterest' ng-options="debtInterest.id as debtInterest.name for debtInterest in debtInterestOptions")
+          span.help-block Zinsatz in Prozent, welcher auf ein negatives Vermögen am Ende einer Spielrunde zu Gunsten des Parkplatzes erhoben wird.
     .col-md-4
-      button(class='btn btn-default' type='submit' ng-disabled='!interestForm.$valid' ng-click="save('properties')") Speichern und weiter
+      button.btn.btn-primary(type='submit' ng-disabled='!interestForm.$valid' ng-click="save('properties')") Speichern und weiter
