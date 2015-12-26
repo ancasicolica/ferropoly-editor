@@ -9,8 +9,8 @@ module.exports = function (settings) {
   settings.version += '-PREVIEW';
 
   settings.server = {
-    port: 3102,
-    host: 'app.ferropoly.ch',
+    port    : 3102,
+    host    : 'app.ferropoly.ch',
     serverId: 'editor-app.ferropoly.ch-v' + settings.version
   };
 
@@ -36,16 +36,19 @@ module.exports = function (settings) {
 
   settings.mailer = {
     senderAddress: process.env.MAILER_SENDER,
-    host: process.env.MAILER_HOST,
-    port: 465,
-    secure: true,
-    auth: {
+    host         : process.env.MAILER_HOST,
+    port         : 465,
+    secure       : true,
+    auth         : {
       pass: process.env.MAILER_PASS,
       user: process.env.MAILER_USER
     }
   };
 
-  settings.mainInstances = ['http://spiel-preview.ferropoly.ch'];
+  // Facebook settings
+  settings.oAuth.facebook.callbackURL = 'https://editor-preview.ferropoly.ch/auth/facebook/callback';
+
+  settings.mainInstances = ['https://spiel-preview.ferropoly.ch'];
 
   return settings;
 };

@@ -5,8 +5,8 @@
 module.exports = function (settings) {
 
   settings.server = {
-    port: 3002,
-    host: 'localhost',
+    port    : 3002,
+    host    : 'localhost',
     serverId: 'localhost-editor'
   };
 
@@ -23,15 +23,16 @@ module.exports = function (settings) {
 
   settings.mailer = {
     senderAddress: process.env.MAILER_SENDER,
-    host: process.env.MAILER_HOST,
-    port: 465,
-    secure: true,
-    auth: {
+    host         : process.env.MAILER_HOST,
+    port         : 465,
+    secure       : true,
+    auth         : {
       pass: process.env.MAILER_PASS,
       user: process.env.MAILER_USER
     }
   };
 
+  // Facebook settings
   settings.oAuth.facebook.callbackURL = 'http://localhost:3002/auth/facebook/callback';
 
   // Ferropoly main instances to update when a gameplay was added / removed
