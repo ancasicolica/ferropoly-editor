@@ -40,8 +40,17 @@ var settings = {
   appName: pkg.title,
   version: pkg.version,
   debug: (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
-  preview: preview
+  preview: preview,
+
+  oAuth: {
+    facebook: {
+      appId: process.env.FACEBOOK_APP_ID || 'no_idea',
+      secret: process.env.FACEBOOK_APP_SECRET || 'no_secret',
+      callbackURL: 'none' // is set in settings file for environment
+    }
+  }
 };
+
 
 if (debug) {
   console.log('DEBUG Settings used');

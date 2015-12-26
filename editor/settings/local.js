@@ -32,6 +32,8 @@ module.exports = function (settings) {
     }
   };
 
+  settings.oAuth.facebook.callbackURL = 'http://localhost:3002/auth/facebook/callback';
+
   // Ferropoly main instances to update when a gameplay was added / removed
   settings.mainInstances = ['http://localhost:3004'];
 

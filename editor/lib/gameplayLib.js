@@ -4,26 +4,27 @@
  * Created by kc on 14.02.15.
  */
 'use strict';
-var gameplays = require('../../common/models/gameplayModel');
-var properties = require('../../common/models/propertyModel');
-var locations = require('../../common/models/locationModel');
-var logs = require('../../common/models/logModel');
-var travelLog = require('../../common/models/travelLogModel');
-var teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
+var gameplays                  = require('../../common/models/gameplayModel');
+var properties                 = require('../../common/models/propertyModel');
+var locations                  = require('../../common/models/locationModel');
+var logs                       = require('../../common/models/logModel');
+var travelLog                  = require('../../common/models/travelLogModel');
+var teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
 var propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
-var chancelleryTransaction = require('../../common/models/accounting/chancelleryTransaction');
-var teams = require('../../common/models/teamModel');
-var pricelistLib = require('./pricelist');
-var _ = require('lodash');
-var async = require('async');
-var settings = require('../settings');
-var schedulerEvents = require('../../common/lib/schedulerEvents');
-var schedulerEventsModel = require('../../common/models/schedulerEventModel');
-var logger = require('../../common/lib/logger').getLogger('gameplayLib');
-var restify = require('restify');
-var moment = require('moment');
+var chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
+var teams                      = require('../../common/models/teamModel');
+var schedulerEvents            = require('../../common/lib/schedulerEvents');
+var schedulerEventsModel       = require('../../common/models/schedulerEventModel');
+var userModel                  = require('../../common/models/userModel');
+var logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
+var pricelistLib               = require('./pricelist');
+var settings                   = require('../settings');
+var restify                    = require('restify');
+var moment                     = require('moment');
+var _                          = require('lodash');
+var async                      = require('async');
 
-var demoGameId = 'play-a-demo-game';
+var demoGameId          = 'play-a-demo-game';
 var demoOrganisatorMail = 'demo@ferropoly.ch';
 
 /**
@@ -39,7 +40,7 @@ function updateFerropolyMainCache(delay, callback) {
   _.delay(function () {
     async.each(settings.mainInstances, function (instance, cb) {
       var jsonClient = restify.createJsonClient({
-        url: instance,
+        url    : instance,
         version: '*'
       });
 
@@ -68,11 +69,11 @@ function createRandomGameplay(gameId, props, nb, callback) {
   var gplen = Math.min(nb, props.length);
   console.log('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   var priceRange = 0;
-  var generated = 0;
+  var generated  = 0;
 
   try {
     // Handler for the loop
-    var updatePropertyHandler = function(err)  {
+    var updatePropertyHandler = function (err) {
       if (err) {
         console.log('Error in createRandomGameplay:' + err.message);
       }
@@ -83,8 +84,8 @@ function createRandomGameplay(gameId, props, nb, callback) {
     };
 
     for (var i = 0; i < gplen; i++) {
-      var index = _.random(0, props.length - 1);
-      var p = _.pullAt(props, [index]);
+      var index                 = _.random(0, props.length - 1);
+      var p                     = _.pullAt(props, [index]);
       p[0].pricelist.priceRange = priceRange % 6;
       priceRange++;
       properties.updateProperty(gameId, p[0], updatePropertyHandler);
@@ -153,30 +154,40 @@ function createNewGameplay(gpOptions, callback) {
   }
 
   console.log('New game for ' + gpOptions.email);
-  gameplays.createGameplay({
-    map: gpOptions.map,
-    name: gpOptions.gamename,
-    ownerEmail: gpOptions.email,
-    gameStart: gpOptions.gameStart || '05:00',
-    gameEnd: gpOptions.gameEnd || '18:00',
-    gameDate: gpOptions.gamedate,
-    interestInterval: gpOptions.interestInterval,
-    gameId: gpOptions.gameId,
-    instance: settings.server.serverId
-  }, function (err, gameplay) {
+  userModel.getUserByMailAddress(gpOptions.email, function (err, user) {
     if (err) {
-      // Error while creating the gameplay, abort
       return callback(err);
     }
-    logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
-      if (err) {
-        logger.error('Log error', err);
-      }
-      // returns the gp as second param in callback
-      return copyLocationsToProperties(gpOptions, gameplay, callback);
-    });
+    // as default we use the email address as user id
+    user = user || {id: gpOptions.email};
 
+    gameplays.createGameplay({
+      map             : gpOptions.map,
+      name            : gpOptions.gamename,
+      ownerEmail      : gpOptions.email,
+      ownerId         : user.id,
+      gameStart       : gpOptions.gameStart || '05:00',
+      gameEnd         : gpOptions.gameEnd || '18:00',
+      gameDate        : gpOptions.gamedate,
+      interestInterval: gpOptions.interestInterval,
+      gameId          : gpOptions.gameId,
+      instance        : settings.server.serverId
+    }, function (err, gameplay) {
+      if (err) {
+        // Error while creating the gameplay, abort
+        return callback(err);
+      }
+      logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
+        if (err) {
+          logger.error('Log error', err);
+        }
+        // returns the gp as second param in callback
+        return copyLocationsToProperties(gpOptions, gameplay, callback);
+      });
+
+    });
   });
+
 }
 
 /**
@@ -248,11 +259,11 @@ function createDemoTeamEntry(gameId, entry) {
 
   return {
     gameId: gameId,
-    data: {
-      name: entry[0],
+    data  : {
+      name        : entry[0],
       organization: entry[1],
-      teamLeader: {name: entry[2], email: entry[3], phone: entry[4]},
-      remarks: entry[5]
+      teamLeader  : {name: entry[2], email: entry[3], phone: entry[4]},
+      remarks     : entry[5]
     }
   };
 }
@@ -264,7 +275,7 @@ function createDemoTeamEntry(gameId, entry) {
 function createDemoTeams(gp, teamNb, callback) {
   var demoTeamData = [];
   var i;
-  teamNb = teamNb || 8;
+  teamNb           = teamNb || 8;
   if (teamNb > 20) {
     teamNb = 20;
   }
@@ -327,18 +338,18 @@ function createDemoGameplay(p1, p2) {
   var gameId = settings.gameId || demoGameId;
 
   var options = {
-    map: 'sbb',
-    email: settings.email || demoOrganisatorMail,
-    ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
-    organisatorName: 'Max Muster',
-    gamedate: settings.gameDate || new Date(),
-    gameStart: settings.gameStart || '06:00',
-    gameEnd: settings.gameEnd || '21:00',
-    gamename: settings.gamename || 'Demo Spiel',
-    gameId: gameId,
-    random: settings.random || 80,
-    teamNb: settings.teamNb || 8,
-    doNotNotifyMain: settings.doNotNotifyMain,
+    map             : 'sbb',
+    email           : settings.email || demoOrganisatorMail,
+    ownerEmail      : settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
+    organisatorName : 'Max Muster',
+    gamedate        : settings.gameDate || new Date(),
+    gameStart       : settings.gameStart || '06:00',
+    gameEnd         : settings.gameEnd || '21:00',
+    gamename        : settings.gamename || 'Demo Spiel',
+    gameId          : gameId,
+    random          : settings.random || 80,
+    teamNb          : settings.teamNb || 8,
+    doNotNotifyMain : settings.doNotNotifyMain,
     interestInterval: settings.interestInterval
   };
 
@@ -381,14 +392,14 @@ function createDemoGameplay(p1, p2) {
               console.log('Failed to create the demo price list: ' + err.message);
               return callback(err);
             }
-            gp.internal.finalized = true;
+            gp.internal.finalized       = true;
             gp.internal.doNotNotifyMain = true;
             finalizeGameplay(gp, demoOrganisatorMail, function (err) {
               if (err) {
                 console.log('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-              var endTs = new Date();
+              var endTs    = new Date();
               var duration = (endTs.getTime() - startTs.getTime()) / 1000;
               console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
               logs.add('Demo Gameplay created', callback);

@@ -9,6 +9,7 @@ var router = express.Router();
 var multer = require('multer');
 var gameplayLib = require('../lib/gameplayLib');
 var gameplayModel = require('../../common/models/gameplayModel');
+var userModel = require('../../common/models/userModel');
 var moment = require('moment');
 var logger = require('../../common/lib/logger').getLogger('routes:gameplay');
 
@@ -51,19 +52,29 @@ router.post('/createnew', function (req, res) {
         return res.send({status: 'error', message: 'Max game number reached: ' + nb});
       }
 
-      // Use the unit-test tested gameplay lib for this
-      gameplayLib.createNewGameplay({
-        email: req.session.passport.user,
-        map: req.body.map,
-        gamename: req.body.gamename,
-        gamedate: req.body.gamedate,
-        random: req.body.random
-      }, function (err, gp) {
+      userModel.getUser(req.session.passport.user, function(err, user) {
         if (err) {
-          return res.send({success: false, message: err.message});
+          return callback(err);
         }
-        return res.send({success: true, gameId: gp.internal.gameId});
+        if (!user) {
+          return callback(new Error('invalid user'));
+        }
+
+        // Use the unit-test tested gameplay lib for this
+        gameplayLib.createNewGameplay({
+          email: user.personalData.email,
+          map: req.body.map,
+          gamename: req.body.gamename,
+          gamedate: req.body.gamedate,
+          random: req.body.random
+        }, function (err, gp) {
+          if (err) {
+            return res.send({success: false, message: err.message});
+          }
+          return res.send({success: true, gameId: gp.internal.gameId});
+        });
       });
+
     });
   }
   catch (e) {

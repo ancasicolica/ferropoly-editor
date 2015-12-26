@@ -34,7 +34,7 @@ router.get('/', function (req, res) {
     else {
       if (user && !user.login.verifiedEmail) {
         // Verification needed
-        res.render('signup-verify', {
+        res.render('signup/signup-verify', {
           title: 'Ferropoly Anmeldung',
           ngController: 'verificationCtrl',
           ngApp: 'verificationApp',
