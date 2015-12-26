@@ -44,8 +44,8 @@ var settings = {
 
   oAuth: {
     facebook: {
-      appId: process.env.FACEBOOK_APP_ID || 'no_idea',
-      secret: process.env.FACEBOOK_APP_SECRET || 'no_secret',
+      appId: process.env.FERROPOLY_FACEBOOK_APP_ID || 'no_idea',
+      secret: process.env.FERROPOLY_FACEBOOK_APP_SECRET || 'no_secret',
       callbackURL: 'none' // is set in settings file for environment
     }
   }
