@@ -70,6 +70,7 @@ var initServer    = function () {
 
   // Define Strategy, login
   passport.use(authStrategy.facebookStrategy);
+  passport.use(authStrategy.googleStrategy);
   passport.use(authStrategy.localStrategy);
   // Session serializing of the user
   passport.serializeUser(authStrategy.serializeUser);
