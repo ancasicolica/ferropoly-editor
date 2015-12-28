@@ -47,6 +47,8 @@ module.exports = function (settings) {
 
   // Facebook settings
   settings.oAuth.facebook.callbackURL = 'https://editor-preview.ferropoly.ch/auth/facebook/callback';
+  // Google Settings
+  settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
 
   settings.mainInstances = ['https://spiel-preview.ferropoly.ch'];
 
