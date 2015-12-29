@@ -101,6 +101,7 @@ var initServer    = function () {
   app.use('/pricelist', pricelist);
   app.use('/player', player);
   app.use('/admins', require('./routes/admins'));
+  app.use('/userinfo', require('./routes/userInfo'));
 
 
   var server = require('http').Server(app);
@@ -135,7 +136,6 @@ var initServer    = function () {
       error  : {}
     });
   });
-
 
 
   app.set('port', settings.server.port);
