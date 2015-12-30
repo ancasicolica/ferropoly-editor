@@ -1,5 +1,7 @@
 /**
  * Angular App for the account information
+ *
+ * Maintain it in the EDITOR PROJECT (not shared source)
  * Created by kc on 29.12.15.
  */
 
@@ -10,8 +12,6 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
   // Load the user data of the user the session belongs to
   $http.get('/userinfo').success(function (data) {
     $scope.data = data.info;
-    console.log(data.info);
-
   }).error(function (data, status) {
     console.log('error:');
     console.log(data);
@@ -48,7 +48,7 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
         return $scope.data.info.facebook.photos[0].value;
       case 2:
         if (!$scope.data.info.google || !$scope.data.info.google.photos) {
-          return  $scope.data.info.generatedAvatar;
+          return $scope.data.info.generatedAvatar;
         }
         return $scope.data.info.google.photos[0].value;
     }
