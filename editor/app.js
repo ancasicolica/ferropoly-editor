@@ -102,6 +102,7 @@ var initServer    = function () {
   app.use('/player', player);
   app.use('/admins', require('./routes/admins'));
   app.use('/userinfo', require('./routes/userInfo'));
+  app.use('/account', require('./routes/account'));
 
 
   var server = require('http').Server(app);
