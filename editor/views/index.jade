@@ -39,13 +39,13 @@ block content
               div(ng-show='gameplay.internal.finalized') Preisliste ist finalisiert
             p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
             p
-              a(class='btn btn-default btn-xs btn-gameplay' ng-hide='gameplay.internal.finalized' href='/edit?gameId={{gameplay.internal.gameId}}' ng-click="") Bearbeiten&nbsp;
+              a(class='btn btn-default btn-xs btn-gameplay' ng-hide='gameplay.internal.finalized' href='/gameplay/edit/{{gameplay.internal.gameId}}' ng-click="") Bearbeiten&nbsp;
                 i.fa.fa-pencil
 
               a(class='btn btn-default btn-xs btn-gameplay' href='/pricelist/view/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste&nbsp;
                 i.fa.fa-eye
 
-              a(class='btn btn-default btn-xs btn-gameplay' href='/player?gameId={{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler&nbsp;
+              a(class='btn btn-default btn-xs btn-gameplay' href='/player/edit/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler&nbsp;
                 i.fa.fa-users
 
               a(class='btn btn-default btn-xs btn-gameplay' href='/admins/edit/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spielleiter&nbsp;

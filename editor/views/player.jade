@@ -3,7 +3,7 @@
 
 extends layout
 block head
-  link(rel='stylesheet', href='css/player.css',  type='text/css')
+  link(rel='stylesheet', href='/css/player.css',  type='text/css')
   script
     | var gameId = '#{gameId}';
     | var gameplay =
@@ -53,7 +53,7 @@ block content
                 input(class='form-control' type='text' id='contactName' name='contactName' ng-blur='validateForm()' ng-change='validateForm();currentDataChanged=true' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.name')
 
             .form-group
-              label.col-sm-2.control-label(for='organisation') Organisation
+              label.col-sm-2.control-label(for='organization') Organisation
               .col-sm-10
                 input(class='form-control' type='text' id='organization' placeholder='' ng-change='currentDataChanged=true' ng-model='currentTeam.data.organization')
 

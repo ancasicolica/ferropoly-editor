@@ -4,12 +4,11 @@
  */
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var gameplays;
+var express  = require('express');
 var settings = require('../settings');
-var logger = require('../../common/lib/logger').getLogger('routes:edit');
-
+var logger   = require('../../common/lib/logger').getLogger('routes:edit');
+var router   = express.Router();
+var gameplays;
 var properties;
 
 var ngFile = '/js/editctrl.js';
@@ -18,29 +17,21 @@ if (settings.minifedjs) {
 }
 
 /* GET edit page */
-router.get('/', function (req, res) {
-  if (!req.query) {
-    req.query = {};
-  }
-  if (!req.query.gameId) {
-    req.query.gameId = 'this-aint-a-useful-id';
-  }
+router.get('/edit/:gameId', function (req, res) {
   res.render('edit/edit', {
-    title: 'Spiel bearbeiten',
-    hideLogout: false,
-    gameId: req.query.gameId,
+    title       : 'Spiel bearbeiten',
+    hideLogout  : false,
+    gameId      : req.params.gameId,
     ngController: 'editCtrl',
-    ngApp: 'editApp',
-    ngFile: ngFile
+    ngApp       : 'editApp',
+    ngFile      : ngFile
   });
 });
 
 /* Load a game */
-router.get('/load-game', function (req, res) {
-  if (!req.query || !req.query.gameId) {
-    return res.send({success: false, message: 'Parameter error'});
-  }
-  return gameplays.getGameplay(req.query.gameId, req.session.passport.user, function (err, gameplayData) {
+router.get('/load/:gameId', function (req, res) {
+
+  return gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplayData) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
@@ -48,7 +39,7 @@ router.get('/load-game', function (req, res) {
       return res.send({success: false, message: 'Spiel nicht gefunden'});
     }
     // Now get all properties of this gameplay
-    return properties.getPropertiesForGameplay(req.query.gameId, null, function (err, propertyData) {
+    return properties.getPropertiesForGameplay(req.params.gameId, null, function (err, propertyData) {
       if (err) {
         return res.send({success: false, message: err.message});
       }
@@ -62,13 +53,18 @@ router.get('/load-game', function (req, res) {
 });
 
 /* Save a game */
-router.post('/save', function (req, res) {
+router.post('/save/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
 
-  logger.info('Save game ' + req.body.gameplay.internal.gameId);
+  if (req.params.gameId !== req.body.gameplay.internal.gameId) {
+    res.status(400).send('GameID mismatch');
+    return;
+  }
+
+  logger.info('Save game ' + req.params.gameId);
   gameplays.updateGameplay(req.body.gameplay, function (err, gameplay) {
     if (err) {
       return res.send({success: false, message: err.message});
@@ -78,7 +74,7 @@ router.post('/save', function (req, res) {
 });
 
 /* Save Property */
-router.post('/saveProperty', function (req, res) {
+router.post('/saveProperty/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
@@ -89,8 +85,13 @@ router.post('/saveProperty', function (req, res) {
   }
   var prop = req.body.property;
 
+  if (req.params.gameId !== prop.gameId) {
+    res.status(400).send('GameID mismatch');
+    return;
+  }
+
   // load gameplay, check if finalized
-  gameplays.isFinalized(prop.gameId, function (err, finalized) {
+  gameplays.isFinalized(req.params.gameId, function (err, finalized) {
     if (err) {
       return res.send({status: 'error', message: err.message});
     }
@@ -99,7 +100,7 @@ router.post('/saveProperty', function (req, res) {
     }
 
     logger.info('Save property ' + prop.location.name);
-    properties.updateProperty(prop.gameId, prop, function (err, updatedProp) {
+    properties.updateProperty(req.params.gameId, prop, function (err, updatedProp) {
       if (err) {
         return res.send({status: 'error', message: err.message});
       }
@@ -113,13 +114,13 @@ router.post('/saveProperty', function (req, res) {
  * Just updates the "gameplay changed" field. This is done once (in the angular app) when adding a location or
  * changing the price ranges
  */
-router.post('/dataChanged', function (req, res) {
+router.post('/dataChanged/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
 
-  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.body.gameId, function (err) {
+  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId, function (err) {
     if (err) {
       logger.info('Error while updating gameplay: ' + err.message);
     }
@@ -130,7 +131,7 @@ router.post('/dataChanged', function (req, res) {
 /**
  * Saves _ONLY_ the position in the pricelist
  */
-router.post('/savePositionInPricelist', function (req, res) {
+router.post('/savePositionInPricelist/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
@@ -143,14 +144,14 @@ router.post('/savePositionInPricelist', function (req, res) {
   if (props.length === 0) {
     return res.send({
       success: true,
-      status: 'ok',
+      status : 'ok',
       message: 'Orte sind aktuell',
       nbSaved: 0
     });
   }
 
   // Load gameplay, check if finalized
-  gameplays.isFinalized(req.body.gameId, function (err, finalized) {
+  gameplays.isFinalized(req.params.gameId, function (err, finalized) {
     if (err) {
       return res.send({status: 'error', message: err.message});
     }
@@ -158,7 +159,7 @@ router.post('/savePositionInPricelist', function (req, res) {
       return res.send({status: 'error', message: 'Already finalized'});
     }
 
-    var updated = 0;
+    var updated     = 0;
     var headersSent = false;
 
     var updateHandler = function (err) {
@@ -174,7 +175,7 @@ router.post('/savePositionInPricelist', function (req, res) {
         if (!headersSent) {
           res.send({
             success: true,
-            status: 'ok',
+            status : 'ok',
             message: props.length + ' Orte gespeichert',
             nbSaved: props.length
           });
@@ -185,7 +186,7 @@ router.post('/savePositionInPricelist', function (req, res) {
 
     // Iterate through positions, abort if failing
     for (var i = 0; i < props.length; i++) {
-      properties.updatePositionInPriceList(req.body.gameId, props[i].uuid, props[i].positionInPriceRange, updateHandler);
+      properties.updatePositionInPriceList(req.params.gameId, props[i].uuid, props[i].positionInPriceRange, updateHandler);
     }
 
   });
@@ -195,8 +196,8 @@ router.post('/savePositionInPricelist', function (req, res) {
 
 module.exports = {
   init: function (app, _gameplays, _users, _properties) {
-    app.use('/edit', router);
-    gameplays = _gameplays;
+    app.use('/gameplay', router);
+    gameplays  = _gameplays;
     properties = _properties;
   }
 };

@@ -31,7 +31,6 @@ var gameplays     = require('../common/models/gameplayModel');
 var properties    = require('../common/models/propertyModel');
 var ferropolyDb   = require('../common/lib/ferropolyDb');
 var pricelist     = require('./routes/pricelist');
-var player        = require('./routes/player');
 var cronjobs      = require('./lib/cronjobs');
 var logger        = require('../common/lib/logger').getLogger('editor-app');
 var winston       = require('winston');
@@ -99,7 +98,7 @@ var initServer    = function () {
   gameplay.init(app);
   configuration.init(app, settings);
   app.use('/pricelist', pricelist);
-  app.use('/player', player);
+  app.use('/player', require('./routes/player'));
   app.use('/admins', require('./routes/admins'));
   app.use('/userinfo', require('./routes/userInfo'));
   app.use('/account', require('./routes/account'));
