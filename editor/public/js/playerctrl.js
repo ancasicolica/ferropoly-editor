@@ -4,27 +4,22 @@
  */
 'use strict';
 
+// Prerequisites: calculate the start of the game with an offset of 10 minutes
+var gameStart   = moment(gameplay.scheduling.gameDate);
+var startHour   = parseInt(gameplay.scheduling.gameStart.split(':')[0]);
+var startMinute = parseInt(gameplay.scheduling.gameStart.split(':')[1]);
+gameStart.set({'hour': startHour, 'minute': startMinute});
+console.log('Game starts: ', gameStart.toDate());
 
-/**
- * Generate a UUID
- * @returns {string} UUID
- */
-var generateUUID = function () {
-  var d = new Date().getTime();
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (d + Math.random() * 16) % 16 | 0;
-    d = Math.floor(d / 16);
-    return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
-  });
-};
 
+// The angular app for this view
 angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', function ($scope, $http) {
   var authToken = '';
 
-  $scope.teams = [];
-  $scope.currentTeam = undefined;
+  $scope.teams              = [];
+  $scope.currentTeam        = undefined;
   $scope.currentDataChanged = false;
-  $scope.maxGroupNb = 20; // I know it's at the wrong place, but if you abuse it, I'll kick you out of the game ;-)
+  $scope.maxGroupNb         = 20; // That's checked on server side too, don't try to fake it :-)
 
   /**
    * Sort the teams
@@ -57,8 +52,8 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
     return moment().isBefore(gameplay.scheduling.gameStartTs);
   };
 
-  $scope.isAddingNewTeamsAllowed = function() {
-    return (moment().isBefore(gameplay.scheduling.gameStartTs) && ($scope.teams.length < $scope.maxGroupNb) && !$scope.isDemoGame());
+  $scope.isAddingNewTeamsAllowed = function () {
+    return (moment().isBefore(gameplay.scheduling.gameDate) && ($scope.teams.length < $scope.maxGroupNb) && !$scope.isDemoGame());
   };
 
   /**
@@ -77,24 +72,38 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
         if (err) {
           console.error(err);
         }
-        $scope.currentTeam = team;
+        $scope.currentTeam        = team;
         $scope.currentDataChanged = false;
       })
     }
     else {
-      $scope.currentTeam = team;
+      $scope.currentTeam        = team;
       $scope.currentDataChanged = false;
     }
     _.delay($scope.validateForm, 500);
   };
 
-  function createNewTeam() {
-    var index = $scope.teams.length + 1;
-    var newGroup = {data: {name: 'Neue Gruppe ' + index}, gameId: gameId, uuid: generateUUID()};
-    $scope.teams.push(newGroup);
-    $scope.sortTeams();
-    $scope.currentTeam = newGroup;
-    _.delay($scope.validateForm, 500);
+  function createNewTeam(callback) {
+    $http.post('/player/create', {gameId: gameId, authToken: authToken}).success(function (data, status) {
+      console.log('team created', data);
+      $scope.statusText = 'Neues Team angelegt';
+      fa.event('Teams', 'new', {gameId: gameId});
+      $scope.teams.push(data.team);
+      $scope.sortTeams();
+      $scope.currentTeam = data.team;
+      _.delay($scope.validateForm, 500);
+      if (callback) {
+        return callback(null);
+      }
+    }).error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+      $scope.statusText = 'Fehler beim anlegen';
+      if (callback) {
+        return callback(new Error(data.message));
+      }
+    });
   }
 
   /**
@@ -129,28 +138,26 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
         console.log(err)
       };
     }
-    $http.post('/player/store', {team: $scope.currentTeam, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('team updated');
-          $scope.statusText = $scope.currentTeam.data.name + ' gespeichert';
-          fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
-          return callback(null);
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-          $scope.statusText = 'Fehler beim speichern';
-          return callback(new Error(data.message));
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+    $http.post('/player/store', {team: $scope.currentTeam, authToken: authToken}).success(function (data, status) {
+      if (data.success) {
+        console.log('team updated');
+        $scope.statusText = $scope.currentTeam.data.name + ' gespeichert';
+        fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
+        return callback(null);
+      }
+      else {
+        console.log('Error');
         console.log(data);
-        console.log(status);
         $scope.statusText = 'Fehler beim speichern';
         return callback(new Error(data.message));
-      });
+      }
+    }).error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+      $scope.statusText = 'Fehler beim speichern';
+      return callback(new Error(data.message));
+    });
   };
 
   /**
@@ -162,29 +169,31 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
       return;
     }
     var i = $scope.teams.indexOf($scope.currentTeam);
-    $http.post('/player/delete', {teamId: $scope.currentTeam.uuid, gameId: gameId, authToken: authToken}).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('team deleted');
+    $http.post('/player/delete', {
+      teamId   : $scope.currentTeam.uuid,
+      gameId   : gameId,
+      authToken: authToken
+    }).success(function (data, status) {
+      if (data.success) {
+        console.log('team deleted');
 
-          if (i > -1) {
-            $scope.teams.splice(i, 1);
-          }
-          $scope.sortTeams();
-          $scope.currentTeam = undefined;
-          if ($scope.teams.length > 0) {
-            $scope.setCurrentTeam($scope.teams[0]);
-          }
+        if (i > -1) {
+          $scope.teams.splice(i, 1);
         }
-        else {
-          console.log('error while deleting: ' + data);
+        $scope.sortTeams();
+        $scope.currentTeam = undefined;
+        if ($scope.teams.length > 0) {
+          $scope.setCurrentTeam($scope.teams[0]);
         }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
-        console.log(data);
-        console.log(status);
-      });
+      }
+      else {
+        console.log('error while deleting: ' + data);
+      }
+    }).error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+    });
   };
 
   /**
@@ -215,35 +224,31 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
    * Load teams when document ready
    */
   $(document).ready(function () {
-    $http.get('/authtoken').
-      success(function (data) {
-        authToken = data.authToken;
-        console.log('Auth ok');
-        $http.get('/player/get?gameId=' + gameId).
-          success(function (data) {
-            console.log(data);
-            $scope.teams = data.teams;
-            $scope.sortTeams();
-            if ($scope.teams.length > 0) {
-              $scope.setCurrentTeam($scope.teams[0]);
-            }
-            else {
-              $scope.currentTeam = undefined;
-            }
-            $scope.statusText = 'Daten geladen';
-          }).
-          error(function (data, status) {
-            $scope.statusText = 'Fehler beim Laden der Teams';
-            console.log('load-game-error');
-            console.log(data);
-            console.log(status);
-          });
-      }).
-      error(function (data, status) {
-        console.log('error:');
+    $http.get('/authtoken').success(function (data) {
+      authToken = data.authToken;
+      console.log('Auth ok');
+      $http.get('/player/get/' + gameId).success(function (data) {
+        console.log(data);
+        $scope.teams = data.teams;
+        $scope.sortTeams();
+        if ($scope.teams.length > 0) {
+          $scope.setCurrentTeam($scope.teams[0]);
+        }
+        else {
+          $scope.currentTeam = undefined;
+        }
+        $scope.statusText = 'Daten geladen';
+      }).error(function (data, status) {
+        $scope.statusText = 'Fehler beim Laden der Teams';
+        console.log('load-game-error');
         console.log(data);
         console.log(status);
-        $scope.statusText = 'Authentisierungsfehler';
       });
+    }).error(function (data, status) {
+      console.log('error:');
+      console.log(data);
+      console.log(status);
+      $scope.statusText = 'Authentisierungsfehler';
+    });
   });
 }]);

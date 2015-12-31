@@ -2,13 +2,16 @@
    Created by kc on 24.03.15.
 
 extends layout
-block head
-  link(rel='stylesheet', href='/css/player.css',  type='text/css')
+block head-start
   script
     | var gameId = '#{gameId}';
     | var gameplay =
     != gameplay
-    |;
+    | ;
+
+block head
+  link(rel='stylesheet', href='/css/player.css',  type='text/css')
+
 block navbar
   li
     a(href='#' ng-click='newTeam()' ng-show='isAddingNewTeamsAllowed()') Neue&nbsp;Gruppe

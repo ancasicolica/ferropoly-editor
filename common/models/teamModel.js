@@ -6,25 +6,25 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var uuid = require('node-uuid');
-var logger = require('../lib/logger').getLogger('teamModel');
+var uuid     = require('node-uuid');
+var logger   = require('../lib/logger').getLogger('teamModel');
 
 /**
  * The mongoose schema for a property
  */
 var teamSchema = mongoose.Schema({
-  _id: String,
+  _id   : String,
   gameId: String, // Gameplay this team plays with
-  uuid: {type: String, index: {unique: true}},     // UUID of this team (index)
-  data: {
-    name: String, // Name of the team
+  uuid  : {type: String, index: {unique: true}},     // UUID of this team (index)
+  data  : {
+    name        : String, // Name of the team
     organization: String, // Organization the team belongs to
-    teamLeader: {
-      name: String,
+    teamLeader  : {
+      name : String,
       email: String,
       phone: String
     },
-    remarks: String
+    remarks     : String
   }
 }, {_id: false});
 
@@ -40,11 +40,11 @@ var Team = mongoose.model('Team', teamSchema);
  * @param callback
  */
 var createTeam = function (newTeam, gameId, callback) {
-  var team = new Team();
-  team.uuid = uuid.v4();
+  var team    = new Team();
+  team.uuid   = uuid.v4();
   team.gameId = gameId;
-  team.data = newTeam.data;
-  team._id = gameId + '-' + team.uuid;
+  team.data   = newTeam.data;
+  team._id    = gameId + '-' + team.uuid;
   team.save(function (err, savedTeam) {
     callback(err, savedTeam);
   })
@@ -130,6 +130,19 @@ var getTeams = function (gameId, callback) {
 };
 
 /**
+ * Count the teams of a given game
+ * @param gameId
+ * @param callback
+ * @returns {*}
+ */
+function countTeams(gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  Team.count({gameId: gameId}, callback);
+};
+
+/**
  * Returns the teams as object, each team accessible using team[teamId]
  * @param gameId
  * @param callback
@@ -149,11 +162,12 @@ var getTeamsAsObject = function (gameId, callback) {
 };
 
 module.exports = {
-  Model: Team,
-  createTeam: createTeam,
-  updateTeam: updateTeam,
-  deleteTeam: deleteTeam,
-  deleteAllTeams: deleteAllTeams,
-  getTeams: getTeams,
-  getTeamsAsObject: getTeamsAsObject
+  Model           : Team,
+  createTeam      : createTeam,
+  updateTeam      : updateTeam,
+  deleteTeam      : deleteTeam,
+  deleteAllTeams  : deleteAllTeams,
+  getTeams        : getTeams,
+  getTeamsAsObject: getTeamsAsObject,
+  countTeams      : countTeams
 };

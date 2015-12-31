@@ -12,8 +12,12 @@ var gameplays = require('../../common/models/gameplayModel');
 var settings  = require('../settings');
 var ngFile    = '/js/playerctrl.js';
 var logger    = require('../../common/lib/logger').getLogger('routes:player');
+var _         = require('lodash');
+var moniker   = require('moniker');
+var moment    = require('moment');
 
-var moment = require('moment');
+const MAX_NB_TEAMS = 20;
+
 if (settings.minifedjs) {
   ngFile = '/js/playerctrl.min.js';
 }
@@ -43,7 +47,7 @@ router.get('/edit/:gameId', function (req, res) {
 /**
  * Creates an empty new team and returns its id
  */
-router.post('/create/:gameId', function (req, res) {
+router.post('/create', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     res.status(404).send('Kein Zugriff möglich, bitte einloggen');
@@ -51,11 +55,16 @@ router.post('/create/:gameId', function (req, res) {
   }
 
   if (req.params.gameId === 'play-a-demo-game') {
-    return res.send({status: 'error', message: 'Can not create a demo game team'});
+    return res.status(403).send('Demo Game Teams können nicht erstellt werden');
+  }
+
+  var gameId = req.body.gameId;
+  if (!gameId) {
+    return res.status(400).send('GameId fehlt');
   }
 
   // Load the gameplay, this prooves that the user is the owner of the game
-  gameplays.getGameplay(team.gameId, req.session.passport.user, function (err, gp) {
+  gameplays.getGameplay(gameId, req.session.passport.user, function (err, gp) {
     if (err) {
       res.status(500).send('Fehler bei Gameplay laden: ' + err.message);
       return;
@@ -67,15 +76,32 @@ router.post('/create/:gameId', function (req, res) {
         return;
       }
     }
-    var team = new teams.Model();
-    teams.createTeam(team, function (err, newTeam) {
+
+    teams.countTeams(gameId, function (err, c) {
       if (err) {
-        logger.error('updateTeam Error', err);
-        res.status(500).send('Fehler beim erstellen des Teams: ' + err.message);
+        res.status(500).send('Fehler beim Zählen der Teams: ' + err.message);
         return;
       }
-      return res.send({success: true, team: newTeam});
+
+      if (c >= MAX_NB_TEAMS) {
+        // Maximal number of teams reached
+        res.status(403).send('Maximale Anzahl Teams erreicht');
+        return;
+      }
+
+      var team = new teams.Model();
+      c++; // Do not start counting with 0, they're not engineers :-)
+      team.data.name = 'Team ' + c;
+      teams.createTeam(team, gameId, function (err, newTeam) {
+        if (err) {
+          logger.error('updateTeam Error', err);
+          res.status(500).send('Fehler beim Erstellen des Teams: ' + err.message);
+          return;
+        }
+        return res.send({success: true, team: newTeam});
+      });
     });
+
   });
 });
 
@@ -84,17 +110,17 @@ router.post('/create/:gameId', function (req, res) {
  *
  * Return teams and authToken
  */
-router.get('/get', function (req, res) {
-  teams.getTeams(req.query.gameId, function (err, gameTeams) {
+router.get('/get/:gameId', function (req, res) {
+  teams.getTeams(req.params.gameId, function (err, gameTeams) {
     if (err) {
       logger.error('/get Error', err);
       res.status(500).send('Fehler bei Abfrage: ' + err.message);
       return;
     }
-    req.session.currentGameId = req.query.gameId;
     return res.send({success: true, teams: gameTeams});
   });
 });
+
 
 /**
  * Store a team
@@ -108,11 +134,11 @@ router.post('/store', function (req, res) {
 
   var team = req.body.team;
   if (!team) {
-    return res.send({status: 'error', message: 'no team supplied'});
+    return res.status(400).send('Team fehlt');
   }
 
   if (team.gameId === 'play-a-demo-game') {
-    return res.send({status: 'error', message: 'Can not update a demo game team'});
+    return res.status(403).send('Demo Game Teams können nicht bearbeitet werden');
   }
 
   gameplays.getGameplay(team.gameId, req.session.passport.user, function (err, gp) {
