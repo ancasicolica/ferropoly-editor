@@ -189,16 +189,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         authToken : authToken,
         properties: pu
       }).success(function (data) {
-        if (data.success) {
-          console.log('Game saved');
-          $scope.statusText = data.message;
-          updateEditDate();
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-          $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-        }
+        console.log('Game saved');
+        $scope.statusText = data.message;
+        updateEditDate();
       }).error(function (data, status) {
         console.log('ERROR');
         console.log(data);
@@ -401,23 +394,17 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     gpToSave.gameParams.housePrices                           = $scope.housePrices;
 
 
-    $http.post('/gameplay/save/' + $scope.gameplay.internal.gameId, {gameplay: gpToSave, authToken: authToken}).success(function (data, status) {
-      if (data.success) {
-        console.log('Game saved');
-        $scope.statusText = 'Spiel gespeichert';
-        if (nextPanel) {
-          $scope.panel = nextPanel;
-          if (nextPanel === 'map') {
-            $scope.showMapTab();
-          }
+    $http.post('/gameplay/save/' + $scope.gameplay.internal.gameId, {
+      gameplay : gpToSave,
+      authToken: authToken
+    }).success(function (data) {
+      console.log('Game saved');
+      $scope.statusText = 'Spiel gespeichert';
+      if (nextPanel) {
+        $scope.panel = nextPanel;
+        if (nextPanel === 'map') {
+          $scope.showMapTab();
         }
-      }
-      else {
-        console.log('Error');
-        console.log(data);
-        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
-        $scope.statusText   = 'Fehler beim Speichern: ' + data.message;
-        fa.exception('Can not save game: ' + data.message);
       }
     }).error(function (data, status) {
       console.log('ERROR');
@@ -443,13 +430,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     $http.post('/gameplay/dataChanged/' + $scope.gameplay.internal.gameId, {
       authToken: authToken
     }).success(function (data, status) {
-      if (data.success) {
-        console.log('Game edit updated');
-      }
-      else {
-        console.log('Error');
-        console.log(data);
-      }
+      console.log('Game edit updated');
     }).error(function (data, status) {
       console.log('ERROR');
       console.log(data);
@@ -504,11 +485,6 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       console.log('Auth ok');
       $http.get('/gameplay/load/' + gameId).success(function (data) {
         console.log(data);
-        if (!data.success) {
-          $scope.panel        = 'error';
-          $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
-          return;
-        }
         if (data.gameplay.internal.finalized) {
           // finalized data, we can't edit
           $scope.panel        = 'error';
@@ -591,19 +567,11 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     $http.post('/gameplay/saveProperty/' + $scope.gameplay.internal.gameId, {
       property : $scope.currentMarker.property.data,
       authToken: authToken
-    }).success(function (data, status) {
-      if (data.success) {
-        console.log('Game saved');
-        $scope.statusText = data.message;
-        $scope.setVisibleMarkers();
-        updateEditDate();
-      }
-      else {
-        console.log('Error');
-        console.log(data);
-        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
-        $scope.statusText   = 'Fehler beim Speichern: ' + data.message;
-      }
+    }).success(function (data) {
+      console.log('Game saved');
+      $scope.statusText = data.message;
+      $scope.setVisibleMarkers();
+      updateEditDate();
     }).error(function (data, status) {
       console.log('ERROR');
       console.log(data);
@@ -681,21 +649,15 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       gameId   : $scope.gameplay.internal.gameId,
       authToken: authToken
     }).success(function (data, status) {
-      if (data.success) {
-        console.log('pricelist created');
-        $scope.statusText = data.message;
-        self.location     = '/pricelist/view/' + data.gameId;
-        fa.event('Pricelist', 'created', $scope.gameplay.internal.gameId);
-      }
-      else {
-        console.log('Error');
-        console.log(data);
-        fa.exception('Can not create pricelist: ' + data.message);
-      }
+      console.log('pricelist created');
+      $scope.statusText = data.message;
+      self.location     = '/pricelist/view/' + data.gameId;
+      fa.event('Pricelist', 'created', $scope.gameplay.internal.gameId);
     }).error(function (data, status) {
       console.log('ERROR');
       console.log(data);
       console.log(status);
+      $scope.statusText = data.message;
       a.exception('Can not create pricelist: ' + data.message);
     });
   };
