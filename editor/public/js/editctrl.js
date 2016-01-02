@@ -6,6 +6,19 @@
 
 /**********************************************************************************************************************/
 var editControl = angular.module('editApp', ['ui.bootstrap', 'ui.sortable']);
+editControl.directive('convertToNumber', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function(val) {
+        return parseInt(val, 10);
+      });
+      ngModel.$formatters.push(function(val) {
+        return '' + val;
+      });
+    }
+  };
+});
 editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
 
   $scope.panel               = 'init';
@@ -292,6 +305,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     }
     marker.property.setMarkerIcon(true);
     $scope.currentMarker = marker;
+    console.log(marker);
   };
 
   /**
