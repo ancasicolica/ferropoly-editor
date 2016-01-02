@@ -14,13 +14,15 @@ block navbar
     a(data-toggle='dropdown' class='dropdown-toggle' href='#') Spielparameter
     ul(role='menu' class='dropdown-menu')
       li
-        a(href='' ng-click="panel='gameplay'") Spieldaten
+        a(href='#' ng-click="panel='gameplay'") Spieldaten
       li
-        a(href='' ng-click="panel='basics'") Preisliste
+        a(href='#' ng-click="panel='mobile'") Zentrale & Mobile
       li
-        a(href='' ng-click="panel='interests'") Stargeld & Zins
+        a(href='#' ng-click="panel='basics'") Preisliste
       li
-        a(href='' ng-click="panel='properties'") Häuser & Hotel
+        a(href='#' ng-click="panel='interests'") Stargeld & Zins
+      li
+        a(href='#' ng-click="panel='properties'") Häuser & Hotel
   li
     a(href='' ng-click="showMapTab()") Ortauswahl
   li
@@ -47,6 +49,8 @@ block content
     include edit-gameplay
   div(ng-show='panel === "basics"' ng-cloak)
     include edit-basics
+  div(ng-show='panel === "mobile"' ng-cloak)
+    include edit-mobile
   div(ng-show='panel === "interests"' ng-cloak)
     include edit-interests
   div(ng-show='panel === "properties"' ng-cloak)
