@@ -36,7 +36,9 @@ block content
           .alert.alert-info(ng-hide='teams.length > 0') Es sind noch keine Gruppen vorhanden. Mit 'Neue Gruppe" können Gruppen hinzugefügt werden.
           .list-group
             a(class='list-group-item' href='#' ng-disabled='!playerForm.$valid' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
-              h4(class='list-group-item-heading') {{p.data.name}}
+              h4(class='list-group-item-heading') {{p.data.name}}&nbsp;
+                span.missing-login(ng-show='gameplay.mobile.level > 0 && !p.login.personalData')
+                  i.fa.fa-exclamation-triangle
               | {{p.data.organization}}
 
     .col-md-7
@@ -74,6 +76,19 @@ block content
               label.col-sm-2.control-label(for='remarks') Bemerkungen
               .col-sm-10
                 textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-change='currentDataChanged=true' ng-model='currentTeam.data.remarks')
+
+            div(ng-show='gameplay.mobile.level > 0')
+              div(ng-show='currentTeam.login.personalData')
+                .well.well-ok
+                  | &nbsp;Dieser Benutzer hat ein Login und kann damit auf die ihm freigegebenen Spieldaten zugreifen.
+              div(ng-show='!currentTeam.login.personalData && currentTeam.data.teamLeader.email')
+                .well.well-attention
+                  i.fa.fa-exclamation-triangle
+                  | &nbsp;Dieser Benutzer hat noch kein Login, bzw. seine Email-Adresse konnte noch nicht überprüft werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
+              div(ng-show='!currentTeam.login.personalData && !currentTeam.data.teamLeader.email')
+                .well.well-error
+                  i.fa.fa-exclamation-triangle
+                  | &nbsp;Für die gewählte Spielform ist muss eine Email-Adresse für das Team angegeben werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
 
             button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern
               span(class='glyphicon glyphicon-save' aria-hidden='true')

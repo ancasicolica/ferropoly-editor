@@ -5,17 +5,19 @@
 'use strict';
 
 
-var express   = require('express');
-var router    = express.Router();
-var teams     = require('../../common/models/teamModel');
-var gameplays = require('../../common/models/gameplayModel');
-var settings  = require('../settings');
-var ngFile    = '/js/playerctrl.js';
-var logger    = require('../../common/lib/logger').getLogger('routes:player');
-var _         = require('lodash');
-var moniker   = require('moniker');
-var moment    = require('moment');
-
+var express        = require('express');
+var router         = express.Router();
+var teams          = require('../../common/models/teamModel');
+var gameplays      = require('../../common/models/gameplayModel');
+var users          = require('../../common/models/userModel');
+var settings       = require('../settings');
+var ngFile         = '/js/playerctrl.js';
+var logger         = require('../../common/lib/logger').getLogger('routes:player');
+var _              = require('lodash');
+var moniker        = require('moniker');
+var moment         = require('moment');
+var async          = require('async');
+var gravatar       = require('../../common/lib/gravatar');
 const MAX_NB_TEAMS = 20;
 
 if (settings.minifedjs) {
@@ -30,7 +32,8 @@ router.get('/edit/:gameId', function (req, res) {
       return;
     }
     var gameplay = {
-      scheduling: gp.scheduling
+      scheduling: gp.scheduling,
+      mobile    : gp.mobile
     };
     res.render('player', {
       title       : 'Spieler',
@@ -117,7 +120,44 @@ router.get('/get/:gameId', function (req, res) {
       res.status(500).send('Fehler bei Abfrage: ' + err.message);
       return;
     }
-    return res.send({success: true, teams: gameTeams});
+
+    async.each(gameTeams,
+      function (team, cb) {
+        if (!team || !team.data || !team.data.teamLeader || !team.data.teamLeader.email) {
+          team.login = {};
+          return cb();
+        }
+        users.getUserByMailAddress(team.data.teamLeader.email, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          if (!user) {
+            return cb();
+          }
+          user = user.toObject();
+
+          if (user.info && !user.personalData.avatar) {
+            // Use default avatar
+            user.personalData.avatar = gravatar.getUrl(user.personalData.email)
+          }
+          team.login = {
+            personalData: user.personalData,
+            info        : user.info
+          };
+          return cb();
+        });
+      },
+      function (err) {
+        if (err) {
+          logger.error('/get Error 2:', err);
+          res.status(500).send('Fehler bei Abfrage: ' + err.message);
+          return;
+        }
+
+        return res.send({success: true, teams: gameTeams});
+      }
+    );
+
   });
 });
 
@@ -153,13 +193,31 @@ router.post('/store', function (req, res) {
         return;
       }
     }
-    teams.updateTeam(team, function (err) {
+    teams.updateTeam(team, function (err, storedTeam) {
       if (err) {
         logger.error('updateTeam Error', err);
         res.status(500).send('Fehler beim speichern: ' + err.message);
         return;
       }
-      return res.send({success: true});
+
+      // Check if a login is available
+      users.getUserByMailAddress(storedTeam.data.teamLeader.email, function (err, user) {
+        if (err || !user) {
+          return res.send({success: true, team: storedTeam});
+        }
+        storedTeam = storedTeam.toObject();
+        user       = user.toObject();
+
+        if (user.info && !user.personalData.avatar) {
+          // Use default avatar
+          user.personalData.avatar = gravatar.getUrl(user.personalData.email)
+        }
+        storedTeam.login = {
+          personalData: user.personalData,
+          info        : user.info
+        };
+        return res.send({success: true, team: storedTeam});
+      });
     });
   });
 });

@@ -20,7 +20,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
   $scope.currentTeam        = undefined;
   $scope.currentDataChanged = false;
   $scope.maxGroupNb         = 20; // That's checked on server side too, don't try to fake it :-)
-
+  $scope.gameplay = gameplay;
   /**
    * Sort the teams
    */
@@ -140,8 +140,19 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
     }
     $http.post('/player/store', {team: $scope.currentTeam, authToken: authToken}).success(function (data, status) {
       if (data.success) {
-        console.log('team updated');
-        $scope.statusText = $scope.currentTeam.data.name + ' gespeichert';
+        console.log('team updated', data.team);
+        $scope.statusText  = $scope.currentTeam.data.name + ' gespeichert';
+        $scope.currentTeam = data.team;
+        // replace also in list
+        var t = _.find($scope.teams, {'uuid': data.team.uuid});
+        if (t) {
+          _.remove($scope.teams, {'uuid': data.team.uuid});
+          $scope.teams.push(data.team);
+        }
+        else {
+          console.warn('Was not able to update the team');
+        }
+        $scope.sortTeams();
         fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
         return callback(null);
       }
