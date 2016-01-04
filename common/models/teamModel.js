@@ -161,6 +161,27 @@ var getTeamsAsObject = function (gameId, callback) {
   });
 };
 
+/**
+ * Returns all teams where I am assigned as team leader
+ * @param email
+ * @param callback
+ */
+function getMyTeams(email, callback) {
+  Team.find({
+      'data.teamLeader.email': email
+    },
+    function (err, docs) {
+      if (err) {
+        return callback(err);
+      }
+      if (docs.length === 0) {
+        return callback(null, null);
+      }
+      callback(null, docs);
+    }
+  );
+}
+
 module.exports = {
   Model           : Team,
   createTeam      : createTeam,
@@ -169,5 +190,6 @@ module.exports = {
   deleteAllTeams  : deleteAllTeams,
   getTeams        : getTeams,
   getTeamsAsObject: getTeamsAsObject,
-  countTeams      : countTeams
+  countTeams      : countTeams,
+  getMyTeams      : getMyTeams
 };
