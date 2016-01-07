@@ -132,7 +132,7 @@ var updateUser = function (user, password, callback) {
           return callback(err);
         }
         if (foundUser) {
-          return callback(new Error('User with this email-address already exists, retrieve first!'));
+          return callback(new Error('User with this email-address already exists, remove first!'));
         }
         logger.info('New user:' + user.personalData.email);
         if (!password) {

@@ -40,6 +40,7 @@ var morgan        = require('morgan');
 var moment        = require('moment');
 var compression   = require('compression');
 var authStrategy  = require('../common/lib/authStrategy')(settings, users);
+var demoUsers     = require('./lib/demoUsers');
 var initServer    = function () {
   cronjobs.init();
   mailer.init(settings);
@@ -140,18 +141,21 @@ var initServer    = function () {
 
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
-  server.listen(app.get('port'), app.get('ip'), function () {
-    logger.info('Ferropoly Editor, Copyright (C) 2015 Christian Kuster, CH-8342 Wernetshausen');
-    logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
-    logger.info('This is free software, and you are welcome to redistribute it');
-    logger.info('under certain conditions; see www.ferropoly.ch for details.');
-    logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
 
-    // temporary, for deployment debugging only
-    var util = require('util');
-    logger.debug(util.inspect(settings));
-
+  demoUsers.updateLogins(function(err) {
+    if (err) {
+      logger.error(err);
+      process.exit(-1);
+    }
+    server.listen(app.get('port'), app.get('ip'), function () {
+      logger.info('Ferropoly Editor, Copyright (C) 2015 Christian Kuster, CH-8342 Wernetshausen');
+      logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
+      logger.info('This is free software, and you are welcome to redistribute it');
+      logger.info('under certain conditions; see www.ferropoly.ch for details.');
+      logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
+    });
   });
+
 };
 
 /**
