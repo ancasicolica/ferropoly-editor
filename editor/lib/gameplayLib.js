@@ -42,7 +42,9 @@ function updateFerropolyMainCache(delay, callback) {
     async.each(settings.mainInstances, function (instance, cb) {
       var jsonClient = restify.createJsonClient({
         url    : instance,
-        version: '*'
+        version: '*',
+        connectTimeout: 1000,
+        requestTimeout: 1500
       });
 
       // Fire and forget, don't care about the return
