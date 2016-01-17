@@ -41,8 +41,8 @@ function updateFerropolyMainCache(delay, callback) {
   _.delay(function () {
     async.each(settings.mainInstances, function (instance, cb) {
       var jsonClient = restify.createJsonClient({
-        url    : instance,
-        version: '*',
+        url           : instance,
+        version       : '*',
         connectTimeout: 1000,
         requestTimeout: 1500
       });
@@ -174,7 +174,8 @@ function createNewGameplay(gpOptions, callback) {
       gameDate        : gpOptions.gamedate,
       interestInterval: gpOptions.interestInterval,
       gameId          : gpOptions.gameId,
-      instance        : settings.server.serverId
+      instance        : settings.server.serverId,
+      mobile          : gpOptions.mobile || {}
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
@@ -353,7 +354,8 @@ function createDemoGameplay(p1, p2) {
     random          : settings.random || 80,
     teamNb          : settings.teamNb || 8,
     doNotNotifyMain : settings.doNotNotifyMain,
-    interestInterval: settings.interestInterval
+    interestInterval: settings.interestInterval,
+    mobile          : settings.mobile
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
