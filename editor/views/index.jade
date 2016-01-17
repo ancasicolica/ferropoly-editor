@@ -11,11 +11,13 @@ block navbar
   li
     a(href='/account') Mein Account
 
+block content-fix
+  #info-header
+    #info-welcome
+      h1.info-header {{intro}}
+        = ' ' + user.personalData.forename
 block content
   include index-modal-delete
-
-  h1 Hallo
-    = ' ' + user.personalData.forename + ' ' + user.personalData.surname
   p Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
     a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
     | .

@@ -11,6 +11,17 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
   var authToken;
   $scope.gameplayToDelete;
 
+  // Be kind and say hello
+  if (moment().hour() < 4) {
+    $scope.intro = 'Hallo';
+  } else if (moment().hour() < 10) {
+    $scope.intro = 'Guten Morgen';
+  } else if (moment().hour() < 17) {
+    $scope.intro = 'Hallo';
+  } else {
+    $scope.intro = 'Guten Abend';
+  }
+
   /**
    * Get the auttoken (async!)
    */
@@ -31,6 +42,9 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
 
   // When document ready, load gameplays
   $(document).ready(function () {
+    var index = moment().hours() % 6;
+    $('#info-header').css('background-image', 'url("/images/ferropoly_header_0' + index + '.jpg")');
+
     $http.get('/gameplay/mygames').
       success(function (data) {
         if (data.success) {
