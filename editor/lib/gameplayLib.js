@@ -70,7 +70,7 @@ function updateFerropolyMainCache(delay, callback) {
  */
 function createRandomGameplay(gameId, props, nb, callback) {
   var gplen = Math.min(nb, props.length);
-  console.log('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
+  logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   var priceRange = 0;
   var generated  = 0;
 
@@ -78,7 +78,7 @@ function createRandomGameplay(gameId, props, nb, callback) {
     // Handler for the loop
     var updatePropertyHandler = function (err) {
       if (err) {
-        console.log('Error in createRandomGameplay:' + err.message);
+        logger.info('Error in createRandomGameplay:' + err.message);
       }
       generated++;
       if (generated === gplen) {
@@ -115,12 +115,13 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
     if (err) {
       return callback(err);
     }
+    logger.info('Read ' + gameLocations.length + ' locations for this map');
 
     async.each(gameLocations,
       function (location, cb) {
         properties.createPropertyFromLocation(gameplay.internal.gameId, location, function (err, prop) {
           if (err) {
-            console.log('Error while creating property:' + err.message);
+            logger.info('Error while creating property:' + err.message);
           }
           props.push(prop);
           cb(err);
@@ -130,8 +131,10 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
         if (err) {
           return callback(err);
         }
+        logger.info('Created properties for the game');
         if (gpOptions.random) {
           createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
+            logger.info('Created random pricelist');
             return callback(err, gameplay);
           });
         }
@@ -156,7 +159,7 @@ function createNewGameplay(gpOptions, callback) {
     return callback(new Error('Options are not complete'));
   }
 
-  console.log('New game for ' + gpOptions.email);
+  logger.info('New game for ' + gpOptions.email);
   userModel.getUserByMailAddress(gpOptions.email, function (err, user) {
     if (err) {
       return callback(err);
@@ -181,6 +184,7 @@ function createNewGameplay(gpOptions, callback) {
         // Error while creating the gameplay, abort
         return callback(err);
       }
+      logger.info('New gameplay created: ', gameplay._id);
       logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
         if (err) {
           logger.error('Log error', err);
@@ -362,7 +366,7 @@ function createDemoGameplay(p1, p2) {
   // will be executed in the late evening (local time). Therefore the date has to be ajusted
   if (settings.demoGameplay && settings.demoGameplay.addDays) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
-    console.log('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
+    logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
   }
   var startTs = new Date();
   gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
@@ -384,29 +388,29 @@ function createDemoGameplay(p1, p2) {
       // Create new gameplay now
       createNewGameplay(options, function (err, gp) {
         if (err) {
-          console.log('Failed to create the demo gameplay: ' + err.message);
+          logger.info('Failed to create the demo gameplay: ' + err.message);
           return callback(err);
         }
         createDemoTeams(gp, options.teamNb, function (err) {
           if (err) {
-            console.log('Failed to create the demo teams: ' + err.message);
+            logger.info('Failed to create the demo teams: ' + err.message);
             return callback(err);
           }
           pricelistLib.create(gameId, demoOrganisatorMail, function (err) {
             if (err) {
-              console.log('Failed to create the demo price list: ' + err.message);
+              logger.info('Failed to create the demo price list: ' + err.message);
               return callback(err);
             }
             gp.internal.finalized       = true;
             gp.internal.doNotNotifyMain = true;
             finalizeGameplay(gp, demoOrganisatorMail, function (err) {
               if (err) {
-                console.log('Failed to save demo gameplay: ' + err.message);
+                logger.info('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
               var endTs    = new Date();
               var duration = (endTs.getTime() - startTs.getTime()) / 1000;
-              console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
+              logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
               logs.add('Demo Gameplay created', callback);
             });
           });
