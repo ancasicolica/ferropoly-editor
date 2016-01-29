@@ -4,14 +4,14 @@
  */
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var multer = require('multer');
-var gameplayLib = require('../lib/gameplayLib');
+var express       = require('express');
+var router        = express.Router();
+var multer        = require('multer');
+var gameplayLib   = require('../lib/gameplayLib');
 var gameplayModel = require('../../common/models/gameplayModel');
-var userModel = require('../../common/models/userModel');
-var moment = require('moment');
-var logger = require('../../common/lib/logger').getLogger('routes:gameplay');
+var userModel     = require('../../common/models/userModel');
+var moment        = require('moment');
+var logger        = require('../../common/lib/logger').getLogger('routes:gameplay');
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -23,10 +23,10 @@ router.get('/mygames', function (req, res) {
     if (gameplays) {
       gameplays.forEach(function (gameplay) {
         retVal.gameplays.push({
-          internal: gameplay.internal,
-          gamename: gameplay.gamename,
+          internal  : gameplay.internal,
+          gamename  : gameplay.gamename,
           scheduling: gameplay.scheduling,
-          log: gameplay.log
+          log       : gameplay.log
         });
       });
     }
@@ -44,7 +44,7 @@ router.post('/createnew', function (req, res) {
 
     gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
       if (err) {
-        return res.send({status: 'error', message: 'DB read error: ' + err.message});
+        return res.status(500).send({status: 'error', message: 'DB read error: ' + err.message});
       }
       if (nb > 3) {
         // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
@@ -52,24 +52,25 @@ router.post('/createnew', function (req, res) {
         return res.send({status: 'error', message: 'Max game number reached: ' + nb});
       }
 
-      userModel.getUser(req.session.passport.user, function(err, user) {
+      userModel.getUser(req.session.passport.user, function (err, user) {
         if (err) {
-          return callback(err);
+          return res.status(500).send({status: 'error', message: 'DB read error: ' + err.message});
         }
         if (!user) {
-          return callback(new Error('invalid user'));
+          return res.status(404).send('Ungültiger Benutzer, bitte einloggen');
         }
+
 
         // Use the unit-test tested gameplay lib for this
         gameplayLib.createNewGameplay({
-          email: user.personalData.email,
-          map: req.body.map,
+          email   : user.personalData.email,
+          map     : req.body.map,
           gamename: req.body.gamename,
           gamedate: req.body.gamedate,
-          random: req.body.random
+          random  : req.body.random
         }, function (err, gp) {
           if (err) {
-            return res.send({success: false, message: err.message});
+            return res.status(500).send({success: false, message: err.message});
           }
           return res.send({success: true, gameId: gp.internal.gameId});
         });
@@ -96,7 +97,7 @@ router.post('/finalize', function (req, res) {
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({
-          status: 'error',
+          status : 'error',
           message: 'Gameplay finalization error: ' + err.message + ' GameplayId: : ' + req.body.gameId
         });
       }
@@ -133,7 +134,7 @@ router.post('/delete', function (req, res) {
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({
-          status: 'error',
+          status : 'error',
           message: 'Gameplay load error: ' + err.message + ' GameplayId: : ' + req.body.gameId
         });
       }
