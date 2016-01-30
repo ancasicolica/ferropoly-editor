@@ -355,11 +355,11 @@ function createDemoGameplay(p1, p2) {
     gameEnd         : settings.gameEnd || '21:00',
     gamename        : settings.gamename || 'Demo Spiel',
     gameId          : gameId,
-    random          : settings.random || 80,
+    random          : settings.random || 120,
     teamNb          : settings.teamNb || 8,
     doNotNotifyMain : settings.doNotNotifyMain,
     interestInterval: settings.interestInterval,
-    mobile          : settings.mobile
+    mobile          : settings.mobile || { level: 5 }
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
