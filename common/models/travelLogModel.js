@@ -4,18 +4,22 @@
  */
 'use strict';
 
-var mongoose = require('mongoose');
-var logger = require('../lib/logger').getLogger('travelLogModel');
-var moment = require('moment');
-var _ = require('lodash');
+var mongoose        = require('mongoose');
+var logger          = require('../lib/logger').getLogger('travelLogModel');
+var moment          = require('moment');
+var _               = require('lodash');
 /**
  * The mongoose schema for an user
  */
 var travelLogSchema = mongoose.Schema({
-  _id: String,
-  gameId: String,
-  teamId: String,
-  propertyId: String,
+  _id       : String,
+  gameId    : String,
+  teamId    : String,
+  propertyId: String, // EITHER propertyId
+  location  : {       // OR location coordinates must be supplied
+    lat: Number,
+    lng: Number
+  },
   timestamp: {type: Date, default: Date.now}
 });
 
@@ -40,11 +44,11 @@ var addEntry = function (gameId, teamId, propertyId, callback) {
   if (!_.isString(gameId) || !_.isString(teamId) || !_.isString(propertyId)) {
     return callback(new Error('all params in createEntry must be strings'));
   }
-  var logEntry = new TravelLog();
-  logEntry.gameId = gameId;
-  logEntry.teamId = teamId;
+  var logEntry        = new TravelLog();
+  logEntry.gameId     = gameId;
+  logEntry.teamId     = teamId;
   logEntry.propertyId = propertyId;
-  logEntry._id = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS')  + '-' + _.random(100000, 999999);
+  logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
   logEntry.save(callback);
 };
 
@@ -103,9 +107,9 @@ var getAllLogEntries = function (gameId, teamId, callback) {
 };
 
 module.exports = {
-  Model: TravelLog,
-  addEntry: addEntry,
+  Model           : TravelLog,
+  addEntry        : addEntry,
   deleteAllEntries: deleteAllEntries,
-  getLogEntries: getLogEntries,
+  getLogEntries   : getLogEntries,
   getAllLogEntries: getAllLogEntries
 };
