@@ -45,7 +45,7 @@
     "moniker": "0.1.2",
     "morgan": "1.6.1",
     "multer": "0.1.6",
-    "node-schedule": "node-schedule/node-schedule#v1.0-pre",
+    "node-schedule": "1.0.0",
     "node-uuid": "1.4.2",
     "node-xlsx": "0.6.0",
     "nodemailer": "1.3.4",
