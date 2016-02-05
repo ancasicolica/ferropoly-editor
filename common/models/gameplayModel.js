@@ -25,7 +25,7 @@ const MOBILE_FULL  = 10;
  * The mongoose schema for an user
  */
 var gameplaySchema = mongoose.Schema({
-  _id       : String,
+  _id       : {type: String, index: true},
   gamename  : String, // name of the game
   owner     : {
     organisatorName : String,

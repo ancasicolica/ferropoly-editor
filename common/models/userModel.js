@@ -19,7 +19,7 @@ var _          = require('lodash');
  * The mongoose schema for an user
  */
 var userSchema = mongoose.Schema({
-  _id         : String,
+  _id         : {type: String, index: true},
   id          : String,
   personalData: {
     forename: String,
@@ -46,7 +46,7 @@ var userSchema = mongoose.Schema({
     facebook        : Object,
     google          : Object
   }
-}, {autoIndex: false});
+}, {autoIndex: true});
 
 
 /**
