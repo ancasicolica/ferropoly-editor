@@ -209,7 +209,7 @@ var getUserByMailAddress = function (emailAddress, callback) {
  * @param callback, providing the complete user information when found
  */
 var getUser = function (id, callback) {
-  User.find({'id': id}, function (err, docs) {
+  User.find({'_id': id}, function (err, docs) {
     if (err) {
       return callback(err);
     }

@@ -171,6 +171,7 @@ function createNewGameplay(gpOptions, callback) {
       map             : gpOptions.map,
       name            : gpOptions.gamename,
       ownerEmail      : gpOptions.email,
+      organisatorName : gpOptions.organisatorName,
       ownerId         : user.id,
       gameStart       : gpOptions.gameStart || '05:00',
       gameEnd         : gpOptions.gameEnd || '18:00',
@@ -178,7 +179,7 @@ function createNewGameplay(gpOptions, callback) {
       interestInterval: gpOptions.interestInterval,
       gameId          : gpOptions.gameId,
       instance        : settings.server.serverId,
-      mobile          : gpOptions.mobile || {}
+      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC}
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
@@ -359,7 +360,7 @@ function createDemoGameplay(p1, p2) {
     teamNb          : settings.teamNb || 8,
     doNotNotifyMain : settings.doNotNotifyMain,
     interestInterval: settings.interestInterval,
-    mobile          : settings.mobile || { level: 5 }
+    mobile          : settings.mobile || {level: 5}
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job

@@ -11,15 +11,30 @@ var newGameControl = angular.module('newgameApp', ['ui.bootstrap', 'pickadate'])
   }
 });
 
+newGameControl.directive('convertToNumber', function () {
+  return {
+    require: 'ngModel',
+    link   : function (scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function (val) {
+        return parseInt(val, 10);
+      });
+      ngModel.$formatters.push(function (val) {
+        return '' + val;
+      });
+    }
+  };
+});
+
 newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
 
-  $scope.map = 'zvv';
-  $scope.gamename = 'Ferropoly Spiel';
+  $scope.map          = 'zvv';
+  $scope.gamename     = 'Ferropoly Spiel';
   $scope.errorMessage = '';
-  $scope.gamedate =  moment().add(1, 'd').format('YYYY-MM-DD');
-  $scope.minDate = moment().format('YYYY-MM-DD');
-  $scope.random = 0;
-  $scope.maps = ferropolyMaps.maps; // loaded over ferropoly api
+  $scope.gamedate     = moment().add(1, 'd').format('YYYY-MM-DD');
+  $scope.minDate      = moment().format('YYYY-MM-DD');
+  $scope.random       = 0;
+  $scope.maps         = ferropolyMaps.maps; // loaded over ferropoly api
+  $scope.createEnabled = true;
 
   var authToken = 'none';
 
@@ -27,49 +42,50 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
    * When document ready, get the auth token
    */
   $(document).ready(function () {
-    $http.get('/authtoken').
-      success(function (data) {
-        authToken = data.authToken;
+    $http({method: 'GET', url: '/authtoken'}).then(
+      function (resp) {
+        // Success promise
+        authToken = resp.data.authToken;
         console.log('Auth ok');
-      }).
-      error(function (data, status) {
+      },
+      function (resp) {
+        // Error promise
         console.log('error:');
-        console.log(data);
-        console.log(status);
-        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht erstellt werden. Status: ' + status;
+        console.log(resp);
+        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht erstellt werden. Status: ' + resp.status;
       });
   });
 
   /**
-   * Save game
+   * Create game
    */
   $scope.validateAndSave = function () {
-    $http.post('/gameplay/createnew', {
-      gamename: $scope.gamename,
-      map: $scope.map,
-      gamedate: $scope.gamedate,
-      random: $scope.random,
-      authToken: authToken
-    }).
-      success(function (data, status) {
-        if (data.success) {
-          console.log('Game saved');
-          self.location = '/edit?gameId=' + data.gameId;
-          fa.event('Gameplay', 'created', data.gameId);
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-          $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + data.message;
-          fa.exception('Can not create gameplay:' + data.message);;
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+    $scope.createEnabled = false;
+    $http({
+      method: 'POST',
+      url   : '/gameplay/createnew',
+      data  : {
+        gamename : $scope.gamename,
+        map      : $scope.map,
+        gamedate : $scope.gamedate,
+        random   : $scope.random,
+        authToken: authToken
+      }
+    }).then(
+      function (resp) {
+        // Success
+        console.log('Game created');
+        self.location = '/gameplay/edit/' + resp.data.gameId;
+        fa.event('Gameplay', 'created', resp.data.gameId);
+      },
+      function (resp) {
+        // Error
+        console.log('Error');
         console.log(data);
-        console.log(status);
-        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + data.message;
-        fa.exception('Can not create gameplay:' + data.message);
-      });
-  }
+        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + resp.data.message;
+        fa.exception('Can not create gameplay:' + resp.data.message);
+        $scope.createEnabled = true;
+      }
+    );
+  };
 }]);

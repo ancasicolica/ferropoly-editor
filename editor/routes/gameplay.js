@@ -39,7 +39,7 @@ router.post('/createnew', function (req, res) {
   try {
     if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
       logger.info('Auth token missing, access denied');
-      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
+      return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
 
     gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
@@ -57,23 +57,27 @@ router.post('/createnew', function (req, res) {
           return res.status(500).send({status: 'error', message: 'DB read error: ' + err.message});
         }
         if (!user) {
-          return res.status(404).send('Ungültiger Benutzer, bitte einloggen');
+          return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
         }
 
 
         // Use the unit-test tested gameplay lib for this
         gameplayLib.createNewGameplay({
-          email   : user.personalData.email,
-          map     : req.body.map,
-          gamename: req.body.gamename,
-          gamedate: req.body.gamedate,
-          random  : req.body.random
-        }, function (err, gp) {
-          if (err) {
-            return res.status(500).send({success: false, message: err.message});
+            email          : user.personalData.email,
+            organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
+            map            : req.body.map,
+            gamename       : req.body.gamename,
+            gamedate       : req.body.gamedate,
+            random         : req.body.random
+          },
+          function (err, gp) {
+            if (err) {
+              return res.status(500).send({success: false, message: err.message});
+            }
+            return res.send({success: true, gameId: gp.internal.gameId});
           }
-          return res.send({success: true, gameId: gp.internal.gameId});
-        });
+        )
+        ;
       });
 
     });

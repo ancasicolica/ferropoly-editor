@@ -29,7 +29,7 @@ block content
 
               span(id='helpmap' class='help-block') Die Spielkarte bestimmt, aus welchen Orten man die Preisliste gestalten kann. Diese Einstellung kann später nicht mehr geändert werden.
               h4 Zufallspreisliste
-              select(class='form-control' ng-model='random')
+              select(class='form-control' ng-model='random' convert-to-number)
                 option(value='0' default) Keine Orte der Preisliste zuweisen
                 option(value='60') 60
                 option(value='80') 80
@@ -45,7 +45,7 @@ block content
               div(pickadate ng-model="gamedate" name='gamedate' id='gamedate' week-starts-on="1" min-date="minDate")
               span(class='help-block') Gegenwärtig werden nur eintägige Spiele unterstützt. Die Start- und Endzeit kann in den Spieleinstellungen später angepasst werden.
 
-              button(type='submit' class='btn btn-default' ng-click='validateAndSave()' ng-disabled='(!newForm.$valid)') Spiel anlegen
+              button(type='submit' class='btn btn-default' ng-click='validateAndSave()' ng-disabled='!createEnabled || (!newForm.$valid)') Spiel anlegen
 
               p(id='error-message')
                 |{{errorMessage}}
