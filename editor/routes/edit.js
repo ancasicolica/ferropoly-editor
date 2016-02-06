@@ -23,6 +23,7 @@ router.get('/edit/:gameId', function (req, res) {
     title       : 'Spiel bearbeiten',
     hideLogout  : false,
     gameId      : req.params.gameId,
+    gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
     ngController: 'editCtrl',
     ngApp       : 'editApp',
     ngFile      : ngFile

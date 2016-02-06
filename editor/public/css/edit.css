@@ -1,12 +1,12 @@
 #map_canvas {
-    width: 100%;
+    width  : 100%;
     height : 600px;
 }
 
 #property-list {
-    overflow : auto;
-    height   : 200px;
-    font-size: 12px;
+    overflow  : auto;
+    height    : 200px;
+    font-size : 12px;
 }
 
 #places-list {
@@ -31,23 +31,28 @@
 }
 
 .list {
-    list-style: none outside none;
-    margin: 10px 0 30px;
+    list-style : none outside none;
+    margin     : 10px 0 30px;
 }
 
 .item {
-    width: 200px;
-    height: 40px;
-    padding: 5px 10px;
-    margin: 8px 0;
-    margin-right: 5px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background-color: #adeaa9;
-    vertical-align: middle;
+    width            : 200px;
+    height           : 40px;
+    padding          : 5px 10px;
+    margin           : 8px 0;
+    margin-right     : 5px;
+    border           : 1px solid #444;
+    border-radius    : 5px;
+    background-color : #adeaa9;
+    vertical-align   : middle;
 
-    font-size: 1.1em;
-    font-weight: normal;
-    text-align: center;
-    cursor: move;
+    font-size        : 1.1em;
+    font-weight      : normal;
+    text-align       : center;
+    cursor           : move;
+}
+
+#infotextPreview {
+    background-color : lightyellow;
+    padding          : 5px;
 }

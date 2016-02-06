@@ -8,7 +8,7 @@ block head
   script(src='/js/property.js')
   script
     | var gameId = '#{gameId}';
-
+    | var gameUrl = '#{gameUrl}';
 block navbar
   li(class='dropdown')
     a(data-toggle='dropdown' class='dropdown-toggle' href='#') Spielparameter
@@ -16,7 +16,7 @@ block navbar
       li
         a(href='#' ng-click="panel='gameplay'") Spieldaten
       li
-        a(href='#' ng-click="panel='mobile'") Zentrale & Mobile
+        a(href='#' ng-click="panel='mobile'") Spielerzugang
       li
         a(href='#' ng-click="panel='basics'") Preisliste
       li

@@ -5,15 +5,15 @@
 'use strict';
 
 /**********************************************************************************************************************/
-var editControl = angular.module('editApp', ['ui.bootstrap', 'ui.sortable']);
-editControl.directive('convertToNumber', function() {
+var editControl = angular.module('editApp', ['ui.bootstrap', 'ui.sortable', 'ngSanitize']);
+editControl.directive('convertToNumber', function () {
   return {
     require: 'ngModel',
-    link: function(scope, element, attrs, ngModel) {
-      ngModel.$parsers.push(function(val) {
+    link   : function (scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function (val) {
         return parseInt(val, 10);
       });
-      ngModel.$formatters.push(function(val) {
+      ngModel.$formatters.push(function (val) {
         return '' + val;
       });
     }
@@ -140,7 +140,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
   var authToken                      = 'none';
   var mapCenter                      = new google.maps.LatLng(0, 0);
   var gameplayEditDateUpdatedCounter = -1;
-
+  $scope.joinUrl = gameUrl + '/anmelden/' + gameId;
   $scope.priceRangeLists               = [];
   $scope.sortableOptions               = [];
   /**
@@ -406,6 +406,7 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     gpToSave.gameParams.rentFactors.fourHouses                = $scope.fourHouses;
     gpToSave.gameParams.rentFactors.hotel                     = $scope.hotel;
     gpToSave.gameParams.housePrices                           = $scope.housePrices;
+    gpToSave.joining.possibleUntil                            = $scope.joiningPossibleUntil;
 
 
     $http.post('/gameplay/save/' + $scope.gameplay.internal.gameId, {
@@ -528,9 +529,11 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
         $scope.fourHouses                 = $scope.gameplay.gameParams.rentFactors.fourHouses;
         $scope.hotel                      = $scope.gameplay.gameParams.rentFactors.hotel;
         $scope.housePrices                = $scope.gameplay.gameParams.housePrices;
+        $scope.joiningPossibleUntil       = new Date($scope.gameplay.joining.possibleUntil);
 
         $scope.panel      = 'gameplay';
         $scope.statusText = 'Spiel geladen';
+        console.log($scope.gameplay);
 
         initPropertyMarkers(map, $scope.allProperties);
       }).error(function (data, status) {

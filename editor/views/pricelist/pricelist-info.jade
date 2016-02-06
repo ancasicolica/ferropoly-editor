@@ -50,9 +50,13 @@ h1 {{data.gameplay.gamename}}
         td Strafzins bei negativem Vermögen
         td {{data.gameplay.gameParams.debtInterest}} %
       tr
-        td Link mit Preisliste für Teams
+        td Link zur Preisliste für Teams
         td
-          a(href='{{pricelistUrl}}' target='_blank') {{pricelistUrl}}
+          a(ng-href='{{pricelistUrl}}' target='_blank') {{pricelistUrl}}
+      tr
+        td Link zur Online-Anmeldung
+        td
+          a(ng-href='{{joinUrl}}' target='_blank') {{joinUrl}}
 
   .col-md-4
     .panel.panel-default(ng-show='!data.gameplay.internal.finalized')

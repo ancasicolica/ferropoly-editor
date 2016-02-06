@@ -10,6 +10,7 @@ pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$
   $scope.test = gameId;
   $scope.data = undefined;
   $scope.pricelistUrl = gameUrl + '/info/' + gameId;
+  $scope.joinUrl = gameUrl + '/anmelden/' + gameId;
   $scope.finalizing = false; // disables the button during finalization
 
   $scope.panel = 'list';
