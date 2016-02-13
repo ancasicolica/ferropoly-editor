@@ -47,4 +47,7 @@ h1.info-header {
     color         : white;
 }
 
-
+p.intro {
+    padding-top: 5px;
+    font-size: large;
+}
