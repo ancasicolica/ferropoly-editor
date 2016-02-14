@@ -17,18 +17,19 @@ var teamSchema = mongoose.Schema({
   gameId: String, // Gameplay this team plays with
   uuid  : {type: String, index: {unique: true}},     // UUID of this team (index)
   data  : {
-    name            : String, // Name of the team
-    organization    : String, // Organization the team belongs to
-    teamLeader      : {
+    name              : String, // Name of the team
+    organization      : String, // Organization the team belongs to
+    teamLeader        : {
       name : String,
       email: String,
       phone: String
     },
-    remarks         : String,
-    confirmed       : {type: Boolean, default: true},
-    registrationDate: {type: Date, default: Date.now},
-    changedDate     : {type: Date, default: Date.now},
-    confirmationDate: {type: Date}
+    remarks           : String,
+    confirmed         : {type: Boolean, default: true},
+    onlineRegistration: {type: Boolean},
+    registrationDate  : {type: Date, default: Date.now},
+    changedDate       : {type: Date, default: Date.now},
+    confirmationDate  : {type: Date}
   }
 }, {autoIndex: true});
 
@@ -134,6 +135,30 @@ var getTeams = function (gameId, callback) {
 };
 
 /**
+ * Get a specific team
+ * @param gameId
+ * @param teamId
+ * @param callback
+ * @returns {*}
+ */
+var getTeam = function (gameId, teamId, callback) {
+  Team.find({
+      'uuid'  : teamId,
+      'gameId': gameId
+    },
+    function (err, docs) {
+      if (err) {
+        return callback(err);
+      }
+      if (docs.length === 0) {
+        return callback(null, null);
+      }
+      callback(null, docs[0]);
+    }
+  );
+};
+
+/**
  * Count the teams of a given game
  * @param gameId
  * @param callback
@@ -218,5 +243,6 @@ module.exports = {
   getTeamsAsObject: getTeamsAsObject,
   countTeams      : countTeams,
   getMyTeams      : getMyTeams,
-  getMyTeam       : getMyTeam
+  getMyTeam       : getMyTeam,
+  getTeam         : getTeam
 };

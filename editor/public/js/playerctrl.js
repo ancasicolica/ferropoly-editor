@@ -172,6 +172,24 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
   };
 
   /**
+   * Confirm a team with online registratio
+   */
+  $scope.confirmTeam = function (team) {
+    $http({
+      method: 'POST',
+      url   : '/player/confirm',
+      data  : {authToken: authToken, gameId: team.gameId, teamId: team.uuid}
+    }).then(
+      function (resp) {
+        // Success
+        team.data.confirmed = true;
+      },
+      function (resp) {
+        // Error
+      }
+    )
+  };
+  /**
    * Delete a team
    */
   $scope.deleteTeam = function () {

@@ -18,6 +18,7 @@ var moniker        = require('moniker');
 var moment         = require('moment');
 var async          = require('async');
 var gravatar       = require('../../common/lib/gravatar');
+var mailer         = require('../../common/lib/mailer');
 const MAX_NB_TEAMS = 20;
 
 if (settings.minifedjs) {
@@ -224,6 +225,64 @@ router.post('/store', function (req, res) {
 
 
 /**
+ * Confirm a team
+ */
+router.post('/confirm', function (req, res) {
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    res.status(404).send('Kein Zugriff möglich, bitte einloggen');
+    return;
+  }
+
+  var teamId = req.body.teamId;
+  var gameId = req.body.gameId;
+  if (!teamId || !gameId) {
+    logger.info('no teamId supplied')
+    return res.status(400).send('Team oder GameId fehlt');
+  }
+
+  if (gameId === 'play-a-demo-game') {
+    return res.status(403).send('Demo Game Teams können nicht bestätigt werden');
+  }
+
+  teams.getTeam(gameId, teamId, (err, team) => {
+    if (err) {
+      logger.error('getTeam Error', err);
+      res.status(500).send('Fehler beim laden des Teams: ' + err.message);
+      return;
+    }
+
+    gameplays.getGameplay(team.gameId, req.session.passport.user, function (err, gp) {
+      if (err) {
+        res.status(500).send('Fehler bei Gameplay laden: ' + err.message);
+        return;
+      }
+
+      team.data.confirmed        = true;
+      team.data.confirmationDate = new Date();
+
+      teams.updateTeam(team, function (err) {
+        if (err) {
+          logger.error('updateTeam Error', err);
+          res.status(500).send('Fehler beim speichern: ' + err.message);
+          return;
+        }
+        logger.info(`Confirmed team ${team.data.name} for ${team.data.gameId}`);
+        sendConfirmationMail(gp, team, err => {
+          var mailSent = true;
+          if (err) {
+            logger.error('Email send error', err);
+            mailSent = false;
+          }
+          return res.send({success: true, mailSent: mailSent});
+        });
+      });
+    });
+  });
+});
+
+
+/**
  * Delete a team
  */
 router.post('/delete', function (req, res) {
@@ -281,4 +340,39 @@ router.post('/deleteAll', function (req, res) {
     return res.send({success: true});
   });
 });
+
+
+/**
+ * Sends the signup mail
+ * @param user
+ * @param callback
+ */
+function sendConfirmationMail(gameplay, team, callback) {
+
+  var html    = '';
+  var text    = '';
+  var subject = 'Bestätigung Ferropoly Anmeldung';
+
+  html += '<h1>Bestätigung Ferropoly Anmeldung</h1>';
+  html += `<p>Hallo ${team.data.teamLeader.name}</p><p>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.</p>`;
+  html += `<p>Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!</p>`;
+
+  text += 'Bestätigung Ferropoly Anmeldung\n';
+  text += `Hallo ${team.data.teamLeader.name}\n>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.\n`;
+  text += `Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!\n`;
+
+  html += '<p></p>';
+  html += '<p>Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly:<a href="http://www.ferropoly.ch">www.ferropoly.ch</a></p>';
+  text += 'Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly: www.ferropoly.ch\n';
+
+  logger.info('Mailtext created', text);
+  mailer.send({
+    to     : team.data.teamLeader.email,
+    cc     : gameplay.owner.organisatorEmail,
+    subject: subject,
+    html   : html,
+    text   : text
+  }, callback);
+}
+
 module.exports = router;

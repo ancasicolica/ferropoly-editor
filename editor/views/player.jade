@@ -36,7 +36,9 @@ block content
           .alert.alert-info(ng-hide='teams.length > 0') Es sind noch keine Gruppen vorhanden. Mit 'Neue Gruppe" können Gruppen hinzugefügt werden.
           .list-group
             a(class='list-group-item' href='#' ng-disabled='!playerForm.$valid' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
-              h4(class='list-group-item-heading') {{p.data.name}}&nbsp;
+              h4(class='list-group-item-heading')
+                i.fa.fa-user-plus(ng-hide='p.data.confirmed') &nbsp;
+                | {{p.data.name}}&nbsp;
                 span.missing-login(ng-show='gameplay.mobile.level > 0 && !p.login.personalData')
                   i.fa.fa-exclamation-triangle
               | {{p.data.organization}}
@@ -70,7 +72,7 @@ block content
             .form-group
               label.col-sm-2.control-label(for='email') E-Mail
               .col-sm-10
-                input(class='form-control' type='email' id='email' name='email' placeholder='spieler@ferropoly.ch'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
+                input(class='form-control' ng-disabled='currentTeam.data.onlineRegistration' type='email' id='email' name='email' placeholder='spieler@ferropoly.ch'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
 
             .form-group
               label.col-sm-2.control-label(for='remarks') Bemerkungen
@@ -78,7 +80,13 @@ block content
                 textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-change='currentDataChanged=true' ng-model='currentTeam.data.remarks')
 
             div(ng-show='gameplay.mobile.level > 0')
-              div(ng-show='currentTeam.login.personalData')
+              div(ng-show='currentTeam.data.onlineRegistration && currentTeam.data.confirmed')
+                .well.well-ok
+                  | &nbsp;Dieses Team hat sich online angemeldet und wurde bestätigt. Alles Bestens!
+              div(ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed')
+                .well.well-info
+                  | &nbsp;Dieses Team hat sich online angemeldet. Bestätige die Teilnahme oder lösche das Team. Wenn Du das Team bestätigst, wird der Kontaktperson ein Email mit der Bestätigung gesendet.
+              div(ng-show='currentTeam.login.personalData && !currentTeam.data.onlineRegistration')
                 .well.well-ok
                   | &nbsp;Dieser Benutzer hat ein Login und kann damit auf die ihm freigegebenen Spieldaten zugreifen.
               div(ng-show='!currentTeam.login.personalData && currentTeam.data.teamLeader.email')
@@ -90,8 +98,11 @@ block content
                   i.fa.fa-exclamation-triangle
                   | &nbsp;Für die gewählte Spielform ist muss eine Email-Adresse für das Team angegeben werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
 
-            button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern
+            button(class='btn btn-default btn-sm' type='submit'  ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed' ng-click='confirmTeam(currentTeam)' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe bestätigen&nbsp;
+              span(class='glyphicon glyphicon-check' aria-hidden='true')
+            | &nbsp;
+            button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern&nbsp;
               span(class='glyphicon glyphicon-save' aria-hidden='true')
             | &nbsp;
-            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame() || !isDeleteAllowed()') Gruppe löschen
+            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame() || !isDeleteAllowed()') Gruppe löschen&nbsp;
               span(class='glyphicon glyphicon-trash' aria-hidden='true')
