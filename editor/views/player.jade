@@ -98,7 +98,7 @@ block content
                   i.fa.fa-exclamation-triangle
                   | &nbsp;Für die gewählte Spielform ist muss eine Email-Adresse für das Team angegeben werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
 
-            button(class='btn btn-default btn-sm' type='submit'  ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed' ng-click='confirmTeam(currentTeam)' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe bestätigen&nbsp;
+            button(class='btn btn-default btn-sm' type='submit'  ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed'  ng-click='confirmTeam(currentTeam)' ng-disabled='!playerForm.$valid || isDemoGame() || currentTeam.confirmationActive') Gruppe bestätigen&nbsp;
               span(class='glyphicon glyphicon-check' aria-hidden='true')
             | &nbsp;
             button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern&nbsp;

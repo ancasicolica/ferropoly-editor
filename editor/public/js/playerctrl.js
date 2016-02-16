@@ -175,6 +175,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
    * Confirm a team with online registratio
    */
   $scope.confirmTeam = function (team) {
+    team.confirmationActive = true;
     $http({
       method: 'POST',
       url   : '/player/confirm',
@@ -186,6 +187,8 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
       },
       function (resp) {
         // Error
+        team.confirmationActive = false;
+        console.error(resp);
       }
     )
   };
