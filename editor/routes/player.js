@@ -11,7 +11,6 @@ var teams          = require('../../common/models/teamModel');
 var gameplays      = require('../../common/models/gameplayModel');
 var users          = require('../../common/models/userModel');
 var settings       = require('../settings');
-var ngFile         = '/js/playerctrl.js';
 var logger         = require('../../common/lib/logger').getLogger('routes:player');
 var _              = require('lodash');
 var moniker        = require('moniker');
@@ -21,9 +20,9 @@ var gravatar       = require('../../common/lib/gravatar');
 var mailer         = require('../../common/lib/mailer');
 const MAX_NB_TEAMS = 20;
 
-if (settings.minifedjs) {
-  ngFile = '/js/playerctrl.min.js';
-}
+var ngFile = 'playerctrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+
 
 /* GET player page. */
 router.get('/edit/:gameId', function (req, res) {

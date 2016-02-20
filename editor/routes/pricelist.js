@@ -5,28 +5,28 @@
  */
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var pricelistLib = require('../lib/pricelist');
+var express            = require('express');
+var router             = express.Router();
+var pricelistLib       = require('../lib/pricelist');
 var commonPricelistLib = require('../../common/lib/pricelist');
-var gameplays = require('../../common/models/gameplayModel');
-var logger = require('../../common/lib/logger').getLogger('routes:pricelist');
-var downloadPricelist = require('../../common/routes/downloadPricelist');
-var settings = require('../settings');
-var ngFile = '/js/pricelistctrl.js';
-if (settings.minifedjs) {
-  ngFile = '/js/pricelistctrl.min.js';
-}
+var gameplays          = require('../../common/models/gameplayModel');
+var logger             = require('../../common/lib/logger').getLogger('routes:pricelist');
+var downloadPricelist  = require('../../common/routes/downloadPricelist');
+var settings           = require('../settings');
+
+var ngFile = 'pricelistctrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+
 
 /* GET priceslist. */
 router.get('/view/:gameId', function (req, res) {
   res.render('pricelist/pricelist', {
-    title: 'Preisliste',
-    gameId: req.params.gameId,
-    gameUrl: settings.mainInstances[0], // main instance with index 0 has highest prio
+    title       : 'Preisliste',
+    gameId      : req.params.gameId,
+    gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
     ngController: 'pricelistCtrl',
-    ngApp: 'pricelistApp',
-    ngFile: ngFile
+    ngApp       : 'pricelistApp',
+    ngFile      : ngFile
   });
 });
 

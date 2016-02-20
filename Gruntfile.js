@@ -23,17 +23,18 @@ module.exports = function (grunt) {
     uglify: {
       js     : {
         files: {
-          './editor/public/js/adminsctrl.min.js'      : ['./editor/public/js/adminsctrl.js'],
-          './editor/public/js/editctrl.min.js'        : ['./editor/public/js/editctrl.js'],
-          './editor/public/js/indexctrl.min.js'       : ['./editor/public/js/indexctrl.js'],
-          './editor/public/js/newgamectrl.min.js'     : ['./editor/public/js/newgamectrl.js'],
-          './editor/public/js/playerctrl.min.js'      : ['./editor/public/js/playerctrl.js'],
-          './editor/public/js/pricelistctrl.min.js'   : ['./editor/public/js/pricelistctrl.js'],
-          './editor/public/js/property.min.js'        : ['./editor/public/js/property.js'],
-          './editor/public/js/signupctrl.min.js'      : ['./editor/public/js/signupctrl.js'],
-          './editor/public/js/signupverifyctrl.min.js': ['./editor/public/js/signupverifyctrl.js'],
-          './editor/public/js/analytics.min.js'       : ['./editor/public/js/analytics.js'],
-          './editor/public/js/loginctrl.min.js'       : ['./editor/public/js/loginctrl.js']
+          './editor/public/js/min/accountctrl.min.js'      : ['./editor/public/js/src/accountctrl.js'],
+          './editor/public/js/min/adminsctrl.min.js'      : ['./editor/public/js/src/adminsctrl.js'],
+          './editor/public/js/min/editctrl.min.js'        : ['./editor/public/js/src/editctrl.js'],
+          './editor/public/js/min/indexctrl.min.js'       : ['./editor/public/js/src/indexctrl.js'],
+          './editor/public/js/min/newgamectrl.min.js'     : ['./editor/public/js/src/newgamectrl.js'],
+          './editor/public/js/min/playerctrl.min.js'      : ['./editor/public/js/src/playerctrl.js'],
+          './editor/public/js/min/pricelistctrl.min.js'   : ['./editor/public/js/src/pricelistctrl.js'],
+          './editor/public/js/min/property.min.js'        : ['./editor/public/js/src/property.js'],
+          './editor/public/js/min/signupctrl.min.js'      : ['./editor/public/js/src/signupctrl.js'],
+          './editor/public/js/min/signupverifyctrl.min.js': ['./editor/public/js/src/signupverifyctrl.js'],
+          './editor/public/js/min/analytics.min.js'       : ['./editor/public/js/src/analytics.js'],
+          './editor/public/js/min/loginctrl.min.js'       : ['./editor/public/js/src/loginctrl.js']
         }
       },
       options: {

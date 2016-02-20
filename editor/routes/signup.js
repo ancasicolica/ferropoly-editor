@@ -4,45 +4,45 @@
  * Created by kc on 17.01.15.
  */
 
-var express = require('express');
+var express   = require('express');
 var validator = require('validator');
-var router = express.Router();
+var router    = express.Router();
 var users;
-var logger = require('../../common/lib/logger').getLogger('routes:signup');
-var Moniker = require('moniker');
-var _ = require('lodash');
-var mailer = require('../../common/lib/mailer');
-var settings = require('../settings');
-var ngFile = '/js/signupctrl.js';
-if (settings.minifedjs) {
-  ngFile = '/js/signupctrl.min.js';
-}
+var logger    = require('../../common/lib/logger').getLogger('routes:signup');
+var Moniker   = require('moniker');
+var _         = require('lodash');
+var mailer    = require('../../common/lib/mailer');
+var settings  = require('../settings');
+
+var ngFile = 'signupctrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+
 
 /* GET Sign-up page */
 router.get('/', function (req, res) {
   res.render('signup/signup', {
-    title: 'Anmelden', hideLogout: true,
+    title       : 'Anmelden', hideLogout: true,
     ngController: 'signupCtrl',
-    ngApp: 'signupApp',
-    ngFile: ngFile
+    ngApp       : 'signupApp',
+    ngFile      : ngFile
   });
 });
 
 /**
  * Verify the address
  */
-router.get('/verify/:login/:verificationText', function(req, res) {
-  var onVerificationError = function(message) {
+router.get('/verify/:login/:verificationText', function (req, res) {
+  var onVerificationError = function (message) {
     res.render('signup-error', {
-      title: 'Anmeldefehler',
-      hideLogout: true,
+      title       : 'Anmeldefehler',
+      hideLogout  : true,
       ngController: 'signupCtrl',
-      ngApp: 'signupApp',
-      ngFile: ngFile,
-      message: message
+      ngApp       : 'signupApp',
+      ngFile      : ngFile,
+      message     : message
     });
   };
-  users.getUserByMailAddress(req.params.login, function(err, user) {
+  users.getUserByMailAddress(req.params.login, function (err, user) {
     if (err) {
       logger.error('Can not get user', err);
       return onVerificationError('Zugriffsprobleme auf Datenbank, bitte später versuchen');
@@ -54,7 +54,7 @@ router.get('/verify/:login/:verificationText', function(req, res) {
     if (user.login.verificationText === req.params.verificationText) {
       logger.info('Verification text ok');
       user.login.verifiedEmail = true;
-      users.updateUser(user, undefined, function(err) {
+      users.updateUser(user, undefined, function (err) {
         if (err) {
           logger.error('Save failure', err);
           return onVerificationError('Fehler beim Speichern, bitte später nochmals versuchen');
@@ -72,11 +72,11 @@ router.get('/verify/:login/:verificationText', function(req, res) {
 /**
  * Verify the infotext from the signup-verify route
  */
-router.post('/verifyText', function(req, res) {
+router.post('/verifyText', function (req, res) {
   if (!req.body.text) {
     return res.send({valid: false, message: 'Kein Text eingegeben'});
   }
-  users.getUserByMailAddress(req.session.passport.user, function(err, user) {
+  users.getUserByMailAddress(req.session.passport.user, function (err, user) {
     if (err) {
       logger.error('Can not get user', err);
       return res.send({valid: false, message: err.message});
@@ -88,7 +88,7 @@ router.post('/verifyText', function(req, res) {
     if (user.login.verificationText === req.body.text) {
       logger.info('Verification text ok');
       user.login.verifiedEmail = true;
-      users.updateUser(user, undefined, function(err) {
+      users.updateUser(user, undefined, function (err) {
         if (err) {
           logger.error('Save failure', err);
           return res.send({valid: false, message: 'Fehler beim Speichern'});
@@ -135,17 +135,17 @@ router.post('/new', function (req, res) {
 
   var newUser = new users.Model({
     personalData: {
-      surname: req.body.personalData.surname,
+      surname : req.body.personalData.surname,
       forename: req.body.personalData.forename,
-      email: req.body.personalData.email
+      email   : req.body.personalData.email
     },
-    info: {
+    info        : {
       registrationDate: new Date()
     },
-    roles: {
+    roles       : {
       editor: true
     },
-    login: {
+    login       : {
       verificationText: verificationText
     }
   });
@@ -167,13 +167,13 @@ router.post('/new', function (req, res) {
 });
 
 
-router.post('/generateNewText', function(req, res) {
+router.post('/generateNewText', function (req, res) {
   users.getUserByMailAddress(req.session.passport.user, function (err, user) {
     if (err) {
       return res.send({sent: false, message: 'Datenbankproblem: ' + err.message});
     }
 
-    var verificationText = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
+    var verificationText        = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
     verificationText += '-' + _.random(1000, 9999);
     user.login.verificationText = verificationText;
     users.updateUser(user, undefined, function (err, user) {
@@ -203,7 +203,7 @@ router.post('/generateNewText', function(req, res) {
  */
 function sendSignupMail(user, callback) {
   logger.info('user data:', user);
-  var url = 'http://' + settings.publicServer.host + ':' + settings.publicServer.port + '/signup/verify/' + user.personalData.email + '/' + user.login.verificationText;
+  var url  = 'http://' + settings.publicServer.host + ':' + settings.publicServer.port + '/signup/verify/' + user.personalData.email + '/' + user.login.verificationText;
   var html = '<h1>Ferropoly Anmeldung</h1>';
   html += '<p>Vielen Dank für das Interesse am Ferropoly. Bitte beim ersten Login folgenden Text eingeben:</p>';
   html += '<h3>' + user.login.verificationText + '</h3>';

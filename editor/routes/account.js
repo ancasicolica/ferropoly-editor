@@ -3,10 +3,12 @@
  * Created by kc on 29.12.15.
  */
 
-var express = require('express');
-var router  = express.Router();
+var express  = require('express');
+var router   = express.Router();
+var settings = require('../settings');
 
-var ngFile = '/js/accountCtrl.js';
+var ngFile = 'accountctrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 router.get('/', function (req, res) {
   res.render('account', {

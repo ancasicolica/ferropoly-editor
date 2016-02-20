@@ -5,7 +5,7 @@ extends ../layout
 block head
   link(rel='stylesheet', href='/css/edit.css')
   script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyClFIdi03YvYPvLikNwLSZ748yw1tfDVXU&libraries=places')
-  script(src='/js/property.js')
+  script(src = propertyFile)
   script
     | var gameId = '#{gameId}';
     | var gameUrl = '#{gameUrl}';

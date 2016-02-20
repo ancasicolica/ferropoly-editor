@@ -5,19 +5,17 @@
 'use strict';
 
 
-var express = require('express');
-var router = express.Router();
+var express   = require('express');
+var router    = express.Router();
 var gameplays = require('../../common/models/gameplayModel');
-var settings = require('../settings');
-var ngFile = '/js/adminsctrl.js';
-var _ = require('lodash');
-var async = require('async');
-var logger = require('../../common/lib/logger').getLogger('routes:admins');
-var users = require('../../common/models/userModel');
+var settings  = require('../settings');
+var _         = require('lodash');
+var async     = require('async');
+var logger    = require('../../common/lib/logger').getLogger('routes:admins');
+var users     = require('../../common/models/userModel');
 
-if (settings.minifedjs) {
-  ngFile = '/js/adminsctrl.min.js';
-}
+var ngFile = 'adminsctrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 /**
  * Checks all logins whether they exist in the user database or not
@@ -37,10 +35,10 @@ function checkAdminUsers(logins, callback) {
           return cb;
         }
         if (user) {
-          result[login] = user;
+          result[login]       = user;
           result[login].login = undefined;
           result[login].roles = undefined;
-          result[login].info = undefined;
+          result[login].info  = undefined;
         }
         cb(null, user);
       });
@@ -60,7 +58,7 @@ router.get('/edit/:gameId', function (req, res) {
     }
 
     // Default is an array with 3 empty entries. Create it here if needed.
-    var admins = gp.admins || {};
+    var admins    = gp.admins || {};
     admins.logins = gp.admins.logins || [];
     for (var i = 0; i < 3; i++) {
       admins.logins.push('');
@@ -76,13 +74,13 @@ router.get('/edit/:gameId', function (req, res) {
         logger.error('Error while checking admin users', err);
       }
       res.render('admins', {
-        title: 'Spiel-Administratoren',
+        title       : 'Spiel-Administratoren',
         ngController: 'adminsCtrl',
-        ngApp: 'adminsApp',
-        ngFile: ngFile,
-        gameId: req.params.gameId,
-        gameplay: JSON.stringify(gameplay),
-        adminInfo: JSON.stringify(adminInfo)
+        ngApp       : 'adminsApp',
+        ngFile      : ngFile,
+        gameId      : req.params.gameId,
+        gameplay    : JSON.stringify(gameplay),
+        adminInfo   : JSON.stringify(adminInfo)
       });
     });
   });

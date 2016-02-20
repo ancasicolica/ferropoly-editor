@@ -12,10 +12,12 @@ var router   = express.Router();
 var gameplays;
 var properties;
 
-var ngFile = '/js/editctrl.js';
-if (settings.minifedjs) {
-  ngFile = '/js/editctrl.min.js';
-}
+var ngFile = 'editctrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+
+var propertyFile = 'property';
+propertyFile           = settings.minifedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
+
 
 /* GET edit page */
 router.get('/edit/:gameId', function (req, res) {
@@ -26,7 +28,8 @@ router.get('/edit/:gameId', function (req, res) {
     gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
     ngController: 'editCtrl',
     ngApp       : 'editApp',
-    ngFile      : ngFile
+    ngFile      : ngFile,
+    propertyFile: propertyFile
   });
 });
 

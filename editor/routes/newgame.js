@@ -4,14 +4,14 @@
  */
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var multer = require('multer');
+var express  = require('express');
+var router   = express.Router();
+var multer   = require('multer');
 var settings = require('../settings');
-var ngFile = '/js/newgamectrl.js';
-if (settings.minifedjs) {
-  ngFile = '/js/newgamectrl.min.js';
-}
+
+var ngFile = 'newgamectrl';
+ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+
 /* GET page for new gameplay */
 router.get('/', function (req, res) {
   res.render('newgame', {title: 'Neues Spiel', ngController: 'newgameCtrl', ngApp: 'newgameApp', ngFile: ngFile});
