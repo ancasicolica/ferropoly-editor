@@ -15,7 +15,7 @@ var downloadPricelist  = require('../../common/routes/downloadPricelist');
 var settings           = require('../settings');
 
 var ngFile = 'pricelistctrl';
-ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 
 /* GET priceslist. */

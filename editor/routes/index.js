@@ -9,9 +9,9 @@ var settings = require('../settings');
 var logger   = require('../../common/lib/logger').getLogger('routes:index');
 
 var ngIndexFile        = 'indexctrl';
-ngIndexFile            = settings.minifedjs ? '/js/min/' + ngIndexFile + '.min.js' : '/js/src/' + ngIndexFile + '.js';
+ngIndexFile            = settings.minifiedjs ? '/js/min/' + ngIndexFile + '.min.js' : '/js/src/' + ngIndexFile + '.js';
 var ngVerificationFile = 'signupverifyctrl';
-ngVerificationFile     = settings.minifedjs ? '/js/min/' + ngVerificationFile + '.min.js' : '/js/src/' + ngVerificationFile + '.js';
+ngVerificationFile     = settings.minifiedjs ? '/js/min/' + ngVerificationFile + '.min.js' : '/js/src/' + ngVerificationFile + '.js';
 
 
 /* GET home page. */

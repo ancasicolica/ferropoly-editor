@@ -8,7 +8,7 @@ var router   = express.Router();
 var settings = require('../settings');
 
 var ngFile = 'accountctrl';
-ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 router.get('/', function (req, res) {
   res.render('account', {

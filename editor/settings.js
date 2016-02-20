@@ -61,12 +61,12 @@ var settings = {
 if (debug) {
   console.log('DEBUG Settings used');
   // Use minified javascript files wherever available
-  settings.minifedjs = false;
+  settings.minifiedjs = false;
 }
 else {
   console.log('DIST Settings with minified js files used');
   // Use minified javascript files wherever available
-  settings.minifedjs = true;
+  settings.minifiedjs = true;
 }
 
 console.log('DEPLOY_TYPE: ' + deployType);

@@ -10,7 +10,7 @@ var multer   = require('multer');
 var settings = require('../settings');
 
 var ngFile = 'newgamectrl';
-ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 /* GET page for new gameplay */
 router.get('/', function (req, res) {

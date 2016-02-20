@@ -15,7 +15,7 @@ var logger    = require('../../common/lib/logger').getLogger('routes:admins');
 var users     = require('../../common/models/userModel');
 
 var ngFile = 'adminsctrl';
-ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 /**
  * Checks all logins whether they exist in the user database or not

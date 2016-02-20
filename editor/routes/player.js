@@ -21,7 +21,7 @@ var mailer         = require('../../common/lib/mailer');
 const MAX_NB_TEAMS = 20;
 
 var ngFile = 'playerctrl';
-ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 
 /* GET player page. */

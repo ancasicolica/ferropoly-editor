@@ -13,10 +13,10 @@ var gameplays;
 var properties;
 
 var ngFile = 'editctrl';
-ngFile     = settings.minifedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 var propertyFile = 'property';
-propertyFile           = settings.minifedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
+propertyFile           = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
 
 
 /* GET edit page */
