@@ -5,5 +5,6 @@
 
 'use strict';
 angular.module('loginApp', []).controller('loginCtrl', ['$scope', '$http', function ($scope, $http) {
+  $.material.init();
   $scope.passwordLogin = false;
 }]);

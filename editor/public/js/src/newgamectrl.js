@@ -4,6 +4,8 @@
  * Created by kc on 29.01.15.
  */
 'use strict';
+$.material.init();
+
 var newGameControl = angular.module('newgameApp', ['ui.bootstrap', 'pickadate']).config(function (pickadateI18nProvider) {
   pickadateI18nProvider.translations = {
     prev: '<i class="icon-chevron-left"></i> früher',

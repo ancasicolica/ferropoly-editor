@@ -3,6 +3,7 @@
  * Created by kc on 01.02.15.
  */
 'use strict';
+$.material.init();
 
 var indexControl = angular.module('indexApp', ['ui.bootstrap']);
 indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http) {
