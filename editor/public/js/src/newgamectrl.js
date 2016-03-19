@@ -5,6 +5,7 @@
  */
 'use strict';
 $.material.init();
+$.material.radio();
 
 var newGameControl = angular.module('newgameApp', ['ui.bootstrap', 'pickadate']).config(function (pickadateI18nProvider) {
   pickadateI18nProvider.translations = {

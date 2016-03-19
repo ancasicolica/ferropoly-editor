@@ -19,11 +19,23 @@ block content
               span(id='helpname' class='help-block') Gib Deinem Spiel einen passenden Namen, diesen sehen später auch die Teilnehmer. Der Name kann jederzeit geändert werden.
               p(class='bg-danger' ng-hide='newForm.gamename1.$valid') Ungültige Eingabe: Der Name muss zwischen 3 und 60 Zeichen lang sein
 
+              .form-group
+                label.col-lg-2.control-label Radios
+                .col-lg-10
+                  .radio.radio-primary
+                    label
+                      input(type='radio' name='optionsRadios' checked)
+                      |         Option one
+                  .radio.radio-primary
+                    label
+                      input(type='radio' name='optionsRadios')
+                      |         Option two
+
 
               h4 Spielkarte
               .radio.radio-primary(ng-repeat='m in maps' ng-show='m.enabled')
                 label
-                  input( type='radio' name='map' value='{{m.map}}' ng-model='map')
+                  input( type='radio' name='map' value='{{m.map}}' ng-model='map' checked='')
                   strong {{m.name}}:&nbsp;
                   | {{m.description}}
 
