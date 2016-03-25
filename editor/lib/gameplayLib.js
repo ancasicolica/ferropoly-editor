@@ -3,7 +3,7 @@
  *
  * Created by kc on 14.02.15.
  */
-'use strict';
+
 var gameplays                  = require('../../common/models/gameplayModel');
 var properties                 = require('../../common/models/propertyModel');
 var locations                  = require('../../common/models/locationModel');

@@ -3,7 +3,7 @@
  *
  * Created by kc on 06.04.15.
  */
-'use strict';
+
 
 var cron = require('node-schedule');
 var gpLib = require('./gameplayLib');
