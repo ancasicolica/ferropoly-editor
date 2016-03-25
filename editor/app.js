@@ -5,43 +5,43 @@
  *
  * @type {*|exports}
  */
-var express = require('express');
-var path    = require('path');
-//var favicon = require('serve-favicon');
-var cookieParser  = require('cookie-parser');
-var bodyParser    = require('body-parser');
-var routes        = require('./routes/index');
-var login         = require('./routes/login');
-var signup        = require('./routes/signup');
-var useradmin     = require('./routes/useradmin');
-var edit          = require('./routes/edit');
-var newgame       = require('./routes/newgame');
-var gameplay      = require('./routes/gameplay');
-var authtoken     = require('./routes/authtoken');
-var issuetracker  = require('./routes/issuetracker');
-var configuration = require('./routes/configuration');
-var infoRoute     = require('../common/routes/info');
-var settings      = require('./settings');
-var passport      = require('passport');
-var session       = require('express-session');
-var flash         = require('connect-flash');
-var app           = express();
-var users         = require('../common/models/userModel');
-var gameplays     = require('../common/models/gameplayModel');
-var properties    = require('../common/models/propertyModel');
-var ferropolyDb   = require('../common/lib/ferropolyDb');
-var pricelist     = require('./routes/pricelist');
-var cronjobs      = require('./lib/cronjobs');
-var logger        = require('../common/lib/logger').getLogger('editor-app');
-var winston       = require('winston');
-var mailer        = require('../common/lib/mailer');
-var logs          = require('../common/models/logModel');
-var morgan        = require('morgan');
-var moment        = require('moment');
-var compression   = require('compression');
-var authStrategy  = require('../common/lib/authStrategy')(settings, users);
-var demoUsers     = require('./lib/demoUsers');
-var initServer    = function () {
+const express       = require('express');
+const path          = require('path');
+const cookieParser  = require('cookie-parser');
+const bodyParser      = require('body-parser');
+const routes        = require('./routes/index');
+const login         = require('./routes/login');
+const signup        = require('./routes/signup');
+const useradmin     = require('./routes/useradmin');
+const edit          = require('./routes/edit');
+const newgame       = require('./routes/newgame');
+const gameplay      = require('./routes/gameplay');
+const authtoken     = require('./routes/authtoken');
+const issuetracker  = require('./routes/issuetracker');
+const configuration = require('./routes/configuration');
+const infoRoute     = require('../common/routes/info');
+const settings      = require('./settings');
+const passport      = require('passport');
+const session       = require('express-session');
+const flash         = require('connect-flash');
+const app           = express();
+const users         = require('../common/models/userModel');
+const gameplays     = require('../common/models/gameplayModel');
+const properties    = require('../common/models/propertyModel');
+const ferropolyDb   = require('../common/lib/ferropolyDb');
+const pricelist     = require('./routes/pricelist');
+const cronjobs      = require('./lib/cronjobs');
+const logger        = require('../common/lib/logger').getLogger('editor-app');
+const winston       = require('winston');
+const mailer        = require('../common/lib/mailer');
+const logs          = require('../common/models/logModel');
+const morgan        = require('morgan');
+const moment        = require('moment');
+const compression   = require('compression');
+const authStrategy  = require('../common/lib/authStrategy')(settings, users);
+const demoUsers     = require('./lib/demoUsers');
+
+var initServer      = function () {
   cronjobs.init();
   mailer.init(settings);
   logs.init(settings);
@@ -55,8 +55,6 @@ var initServer    = function () {
   });
   app.use(morgan(':prefix :method :status :remote-addr :url'));
 
-  // uncomment after placing your favicon in /public
-  //app.use(favicon(__dirname + '/public/favicon.ico'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: false}));
   app.use(cookieParser());
@@ -137,12 +135,11 @@ var initServer    = function () {
       error  : {}
     });
   });
-
-
+  
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
 
-  demoUsers.updateLogins(function(err) {
+  demoUsers.updateLogins(function (err) {
     if (err) {
       logger.error(err);
       process.exit(-1);
@@ -169,6 +166,5 @@ ferropolyDb.init(settings, function (err) {
   initServer();
 
 });
-
 
 module.exports = app;
