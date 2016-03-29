@@ -75,24 +75,22 @@ function createRandomGameplay(gameId, props, nb, callback) {
   var generated  = 0;
 
   try {
-    // Handler for the loop
-    var updatePropertyHandler = function (err) {
-      if (err) {
-        logger.info('Error in createRandomGameplay:' + err.message);
+    async.whilst(
+      function () {
+        return generated < gplen;
+      },
+      function(cb) {
+        var index                 = _.random(0, props.length - 1);
+        var p                     = _.pullAt(props, [index]);
+        p[0].pricelist.priceRange = priceRange % 6;
+        priceRange++;
+        generated++;
+        properties.updateProperty(gameId, p[0], cb);
+      },
+      function(err) {
+        return callback(err);
       }
-      generated++;
-      if (generated === gplen) {
-        callback(null);
-      }
-    };
-
-    for (var i = 0; i < gplen; i++) {
-      var index                 = _.random(0, props.length - 1);
-      var p                     = _.pullAt(props, [index]);
-      p[0].pricelist.priceRange = priceRange % 6;
-      priceRange++;
-      properties.updateProperty(gameId, p[0], updatePropertyHandler);
-    }
+    )
   }
   catch (e) {
     console.error(e);
