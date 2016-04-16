@@ -26,7 +26,8 @@ module.exports = function (settings) {
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay: '30 1 * * *'
+    createDemoGameplay: '30 1 * * *',
+    deleteOldGameplays: '30 2 * * *'
   };
 
 

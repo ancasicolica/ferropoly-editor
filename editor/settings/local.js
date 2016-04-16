@@ -19,7 +19,10 @@ module.exports = function (settings) {
     mongoDbUrl: 'mongodb://localhost/ferropoly'
   };
 
-  settings.cron = {};
+  settings.cron = {
+    // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
+    deleteOldGameplays: '30 * * * *'
+  };
 
   settings.mailer = {
     senderAddress: process.env.MAILER_SENDER,

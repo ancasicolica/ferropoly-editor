@@ -56,3 +56,8 @@
     background-color : lightyellow;
     padding          : 5px;
 }
+
+#delete-gameplay-info {
+    margin-top : 10px;
+    font-weight: bold;
+}

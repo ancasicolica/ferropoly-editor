@@ -5,28 +5,45 @@
  */
 
 
-var cron = require('node-schedule');
-var gpLib = require('./gameplayLib');
-var settings = require('../settings');
+const cron     = require('node-schedule');
+const gpLib    = require('./gameplayLib');
+const settings = require('../settings');
+const logger   = require('../../common/lib/logger').getLogger('cronjobs');
+
 /**
  * Set up the demo gameplay depending on the configuration
  */
 function setUpDemoGamemplayCreation() {
   if (settings.cron.createDemoGameplay) {
-    console.log('CRON: setting up the demo gameplay job: ' + settings.cron.createDemoGameplay);
+    logger.info('CRON: setting up the demo gameplay job', settings.cron.createDemoGameplay);
     cron.scheduleJob(settings.cron.createDemoGameplay, function () {
-      console.log('CRON: starting demo gameplay creation: ' + new Date());
+      logger.info('CRON: starting demo gameplay creation: ', new Date());
       gpLib.createDemoGameplay(function (err) {
         if (err) {
-          console.log('CRON: error while creating demo gameplay: ' + err.message);
+          logger.error('CRON: error while creating demo gameplay', err);
         }
         else {
-          console.log('CRON: demo set created');
+          logger.info('CRON: demo set created');
         }
       });
     });
   }
+}
 
+function setupDeletingOldGameplays() {
+  if (settings.cron.deleteOldGameplays) {
+    logger.info('CRON: setting up the delete-old-games job', settings.cron.createDemoGameplay);
+    cron.scheduleJob(settings.cron.deleteOldGameplays, function() {
+      gpLib.deleteOldGameplays(function(err) {
+        if (err) {
+          logger.error('CRON: error while deleting old gameplays', err);
+        }
+        else {
+          logger.info('CRON: old gameplays deleted');
+        }
+      });
+    });
+  }
 }
 
 /**
@@ -36,5 +53,6 @@ function setUpDemoGamemplayCreation() {
 module.exports = {
   init: function () {
     setUpDemoGamemplayCreation();
+    setupDeletingOldGameplays();
   }
 };
