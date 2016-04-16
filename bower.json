@@ -22,7 +22,8 @@
     "bootstrap": "3.3.6",
     "moment": "2.10.6",
     "angular-pickadate": "~1.1.0",
-    "angular-i18n": "~1.4.8"
+    "angular-i18n": "~1.5.3",
+    "bootstrap-material-design": "0.5.9"
   },
   "private": true,
   "ignore": [
