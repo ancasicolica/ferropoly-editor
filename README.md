@@ -8,6 +8,8 @@ This software project is generously supported by BrowserStack, [www.browserstack
 The documentation of the project is  in English while the user interface is in German (there are no plans for the support of other
 languages).
 
+##Design
+Using Bootstrap and great free designs from [Bootswatch](https://bootswatch.com/cosmo/)
 
 ##Licence
 GPL V3
