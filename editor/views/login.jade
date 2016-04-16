@@ -22,15 +22,15 @@ block content
         label(for='inputPassword' class='sr-only') Passwort
         input(type='password' name='password' id='inputPassword' class='form-control' placeholder='Passwort' required)
         br
-        button#button-login.btn.btn-lg.btn-primary.btn-block(type='submit') Login
-        a#button-signup.btn.btn-success.btn-block(href='/signup') Login erstellen
+        button#button-login.btn.btn-lg.btn-primary.btn-block.btn-raised(type='submit') Login
+        a#button-signup.btn.btn-success.btn-block.btn-raised(href='/signup') Login erstellen
       br
-      button.btn.btn-xs.btn-default.btn-block(ng-click='passwordLogin = false') Login mit Social Networks
+      button.btn.btn-xs.btn-default.btn-block.btn-raised(ng-click='passwordLogin = false') Login mit Social Networks
     #login-with-social-networks(ng-hide='passwordLogin')
-      a#button-facebook.btn.btn-lg.btn-primary.btn-block(href='/auth/facebook')
+      a#button-facebook.btn.btn-lg.btn-primary.btn-block.btn-raised(href='/auth/facebook')
         i.fa.fa-facebook-official
         | &nbsp;Login mit Facebook
-      a#button-google.btn.btn-lg.btn-danger.btn-block(href='/auth/google')
+      a#button-google.btn.btn-lg.btn-danger.btn-block.btn-raised(href='/auth/google')
         i.fa.fa-google-plus
         | &nbsp;Login mit Google
       button.btn.btn-sm.btn-default.btn-block(ng-click='passwordLogin = true')
