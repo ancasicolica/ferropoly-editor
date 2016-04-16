@@ -2,7 +2,7 @@
  * Route for administrators of a gameplay (adding, removing)
  * Created by kc on 15.10.15.
  */
-'use strict';
+
 
 
 var express   = require('express');

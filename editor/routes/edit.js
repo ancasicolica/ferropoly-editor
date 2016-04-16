@@ -2,7 +2,7 @@
  * Edit a gameplay
  * Created by kc on 31.01.15.
  */
-'use strict';
+
 
 var express  = require('express');
 var settings = require('../settings');

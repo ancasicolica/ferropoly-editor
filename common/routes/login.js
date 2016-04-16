@@ -3,7 +3,7 @@
  *
  * Created by kc on 16.04.15.
  */
-'use strict';
+
 
 var express  = require('express');
 var passport = require('passport');

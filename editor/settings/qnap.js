@@ -7,7 +7,7 @@
  *
  * Created by kc on 03.04.15.
  */
-'use strict';
+
 
 module.exports = function(settings) {
 

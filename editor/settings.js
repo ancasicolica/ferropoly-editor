@@ -2,7 +2,6 @@
  * Settings file
  * Created by kc on 04.01.15
  */
-'use strict';
 
 var pkg = require('./../package.json'),
   fs = require('fs'),

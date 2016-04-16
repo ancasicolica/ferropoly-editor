@@ -2,7 +2,7 @@
  * The tracker page
  * Created by kc on 19.04.15.
  */
-'use strict';
+
 
 var express = require('express');
 var router = express.Router();

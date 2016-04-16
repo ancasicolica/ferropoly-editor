@@ -42,6 +42,9 @@ form(name='gameplayForm')
           input(class='form-control' type='time' name='gameEnd' id='gameEnd' required ng-model='gameplay.scheduling.gameEnd')
           p(class='bg-danger' ng-show='gameplayForm.gameEnd.$error.required') Das Spielende muss gesetzt werden
 
+          #delete-gameplay-info Sämtliche Spieldaten werden automatisch am {{gameplay.scheduling.deleteTs | date:'d. M. yyyy'}} automatisch gelöscht.
+          p Stelle deshalb sicher, dass Du bis dann bei Bedarf die gewünschten Daten (Preisliste, Rangliste, ...) bei Dir lokal gespeichert hast. Danach ist kein Zugriff auf diese Daten mehr möglich.
+
     .col-md-4
       .panel.panel-default
         .panel-heading

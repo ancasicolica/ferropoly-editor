@@ -3,7 +3,7 @@
  *
  * Created by kc on 22.03.15.
  */
-'use strict';
+
 
 var mongoose = require('mongoose');
 var uuid     = require('node-uuid');
@@ -29,7 +29,8 @@ var teamSchema = mongoose.Schema({
     onlineRegistration: {type: Boolean},
     registrationDate  : {type: Date, default: Date.now},
     changedDate       : {type: Date, default: Date.now},
-    confirmationDate  : {type: Date}
+    confirmationDate  : {type: Date},
+    members           : {type: Array, default: []} // Array with strings (email) of all team members
   }
 }, {autoIndex: true});
 
@@ -191,13 +192,16 @@ var getTeamsAsObject = function (gameId, callback) {
 };
 
 /**
- * Returns all teams where I am assigned as team leader
+ * Returns all teams where I am assigned as team leader or member
  * @param email
  * @param callback
  */
 function getMyTeams(email, callback) {
   Team.find({
-      'data.teamLeader.email': email
+      $or: [
+        {'data.teamLeader.email': email},
+        {'data.members': email}
+      ]
     },
     function (err, docs) {
       if (err) {
@@ -234,15 +238,15 @@ function getMyTeam(gameId, email, callback) {
 }
 
 module.exports = {
-  Model           : Team,
-  createTeam      : createTeam,
-  updateTeam      : updateTeam,
-  deleteTeam      : deleteTeam,
-  deleteAllTeams  : deleteAllTeams,
-  getTeams        : getTeams,
-  getTeamsAsObject: getTeamsAsObject,
-  countTeams      : countTeams,
-  getMyTeams      : getMyTeams,
-  getMyTeam       : getMyTeam,
-  getTeam         : getTeam
+  Model             : Team,
+  createTeam        : createTeam,
+  updateTeam        : updateTeam,
+  deleteTeam        : deleteTeam,
+  deleteAllTeams    : deleteAllTeams,
+  getTeams          : getTeams,
+  getTeamsAsObject  : getTeamsAsObject,
+  countTeams        : countTeams,
+  getMyTeams        : getMyTeams,
+  getMyTeam         : getMyTeam,
+  getTeam           : getTeam
 };

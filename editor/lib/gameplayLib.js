@@ -3,30 +3,30 @@
  *
  * Created by kc on 14.02.15.
  */
-'use strict';
-var gameplays                  = require('../../common/models/gameplayModel');
-var properties                 = require('../../common/models/propertyModel');
-var locations                  = require('../../common/models/locationModel');
-var logs                       = require('../../common/models/logModel');
-var travelLog                  = require('../../common/models/travelLogModel');
-var teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
-var propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
-var chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
-var teams                      = require('../../common/models/teamModel');
-var schedulerEvents            = require('../../common/lib/schedulerEvents');
-var schedulerEventsModel       = require('../../common/models/schedulerEventModel');
-var userModel                  = require('../../common/models/userModel');
-var logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
-var demoUsers                  = require('./demoUsers');
-var pricelistLib               = require('./pricelist');
-var settings                   = require('../settings');
-var restify                    = require('restify');
-var moment                     = require('moment');
-var _                          = require('lodash');
-var async                      = require('async');
 
-var demoGameId          = 'play-a-demo-game';
-var demoOrganisatorMail = 'demo@ferropoly.ch';
+const gameplays                  = require('../../common/models/gameplayModel');
+const properties                 = require('../../common/models/propertyModel');
+const locations                  = require('../../common/models/locationModel');
+const logs                       = require('../../common/models/logModel');
+const travelLog                  = require('../../common/models/travelLogModel');
+const teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
+const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
+const chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
+const teams                      = require('../../common/models/teamModel');
+const schedulerEvents            = require('../../common/lib/schedulerEvents');
+const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
+const userModel                  = require('../../common/models/userModel');
+const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
+const demoUsers                  = require('./demoUsers');
+const pricelistLib               = require('./pricelist');
+const settings                   = require('../settings');
+const restify                    = require('restify');
+const moment                     = require('moment');
+const _                          = require('lodash');
+const async                      = require('async');
+
+const demoGameId          = 'play-a-demo-game';
+const demoOrganisatorMail = 'demo@ferropoly.ch';
 
 /**
  * Updates the ferropoly main program cache
@@ -75,24 +75,22 @@ function createRandomGameplay(gameId, props, nb, callback) {
   var generated  = 0;
 
   try {
-    // Handler for the loop
-    var updatePropertyHandler = function (err) {
-      if (err) {
-        logger.info('Error in createRandomGameplay:' + err.message);
+    async.whilst(
+      function () {
+        return generated < gplen;
+      },
+      function (cb) {
+        var index                 = _.random(0, props.length - 1);
+        var p                     = _.pullAt(props, [index]);
+        p[0].pricelist.priceRange = priceRange % 6;
+        priceRange++;
+        generated++;
+        properties.updateProperty(gameId, p[0], cb);
+      },
+      function (err) {
+        return callback(err);
       }
-      generated++;
-      if (generated === gplen) {
-        callback(null);
-      }
-    };
-
-    for (var i = 0; i < gplen; i++) {
-      var index                 = _.random(0, props.length - 1);
-      var p                     = _.pullAt(props, [index]);
-      p[0].pricelist.priceRange = priceRange % 6;
-      priceRange++;
-      properties.updateProperty(gameId, p[0], updatePropertyHandler);
-    }
+    )
   }
   catch (e) {
     console.error(e);
@@ -452,6 +450,45 @@ function finalizeGameplay(gameplay, email, callback) {
   });
 }
 
+/**
+ * Deletes all expired gameplays
+ * @param callback
+ */
+function deleteOldGameplays(callback) {
+  gameplays.getAllGameplays((err, gps) => {
+    if (err) {
+      return callback(err);
+    }
+
+    async.each(gps,
+      function (gp, cb) {
+        var timeout;
+        if (!gp.scheduling.deleteTs) {
+          // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
+          // the game took place. This code can be removed in the next ferropoly release
+          timeout = moment(gp.scheduling.gameDate).add(1, 'M');
+        }
+        else {
+          // This is the code which should run for current (V2) ferropolys
+          timeout = moment(gp.scheduling.deleteTs)
+        }
+        logger.info('Timeout for ' + gp._id, timeout.toDate());
+        if (!timeout) {
+          // Still no timeout, cancel this one, but still handle others
+          logger.error(new Error('No timeout found for ' + gp._id));
+          return cb();
+        }
+
+        if (moment().isAfter(timeout)) {
+          deleteGameplay({gameId: gp._id, ownerEmail: gp.owner.organisatorEmail, doNotNotifyMain: true}, cb);
+        }
+      },
+      callback
+    );
+  });
+}
+
+
 module.exports = {
   /**
    * Creates a complete new gameplay, including copying the locations to the properties
@@ -479,5 +516,10 @@ module.exports = {
   /**
    * Finalize the gameplay
    */
-  finalizeGameplay: finalizeGameplay
+  finalizeGameplay: finalizeGameplay,
+
+  /**
+   * Deletes all expired gameplays
+   */
+  deleteOldGameplays: deleteOldGameplays
 };

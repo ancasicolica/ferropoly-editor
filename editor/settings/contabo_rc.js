@@ -2,7 +2,7 @@
  * Release candidate settings
  * Created by kc on 30.08.15.
  */
-'use strict';
+
 
 
 module.exports = function (settings) {
@@ -25,7 +25,8 @@ module.exports = function (settings) {
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay: '45 1 * * *'
+    createDemoGameplay: '45 1 * * *',
+    deleteOldGameplays: '45 2 * * *'
   };
 
   settings.demoGameplay = {

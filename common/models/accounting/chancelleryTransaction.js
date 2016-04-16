@@ -3,12 +3,12 @@
  *
  * Created by kc on 20.04.15.
  */
-'use strict';
+
 
 var mongoose                            = require('mongoose');
 var moment                              = require('moment');
 var logger                              = require('../../lib/logger').getLogger('chancelleryTransaction');
-var isArray                             = require('lodash/lang/isArray');
+var isArray                             = require('lodash/isArray');
 /**
  * The mongoose schema for a team account
  */

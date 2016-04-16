@@ -2,7 +2,7 @@
  * Route for adding, editing and removing players
  * Created by kc on 24.03.15.
  */
-'use strict';
+
 
 
 var express        = require('express');
