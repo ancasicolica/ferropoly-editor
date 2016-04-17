@@ -39,6 +39,7 @@ block content
             p Letzte Bearbeitung: {{gameplay.log.lastEdited | date:'d.M.yyyy H:mm'}}
             p(ng-show='gameplay.log.priceListVersion > 0') Preisliste: {{gameplay.log.priceListCreated | date:'d.M.yyyy H:mm'}}
               div(ng-show='gameplay.internal.finalized') Preisliste ist finalisiert
+            p Das Spiel wird am {{gameplay.scheduling.deleteTs | date:'d.M.yyyy'}} automatisch gelöscht.
             p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
             p
               a(class='btn btn-default btn-xs btn-gameplay' ng-hide='gameplay.internal.finalized' href='/gameplay/edit/{{gameplay.internal.gameId}}' ng-click="") Bearbeiten&nbsp;
