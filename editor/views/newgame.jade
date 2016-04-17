@@ -45,7 +45,7 @@ block content
               div(pickadate ng-model="gamedate" name='gamedate' id='gamedate' week-starts-on="1" min-date="minDate")
               span(class='help-block') Gegenwärtig werden nur eintägige Spiele unterstützt. Die Start- und Endzeit kann in den Spieleinstellungen später angepasst werden.
 
-              button(type='submit' class='btn btn-default' ng-click='validateAndSave()' ng-disabled='!createEnabled || (!newForm.$valid)') Spiel anlegen
+              button.btn.btn-primary(ng-click='validateAndSave()' ng-disabled='!createEnabled || (!newForm.$valid)') Spiel anlegen
 
               p(id='error-message')
                 |{{errorMessage}}
