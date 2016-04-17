@@ -37,12 +37,16 @@ block content
           .alert.alert-info(ng-hide='teams.length > 0') Es sind noch keine Gruppen vorhanden. Mit 'Neue Gruppe" können Gruppen hinzugefügt werden.
           .list-group
             a(class='list-group-item' href='#' ng-disabled='!playerForm.$valid' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
-              h4(class='list-group-item-heading')
-                i.fa.fa-user-plus(ng-hide='p.data.confirmed') &nbsp;
-                | {{p.data.name}}&nbsp;
-                span.missing-login(ng-show='gameplay.mobile.level > 0 && !p.login.personalData')
-                  i.fa.fa-exclamation-triangle
-              | {{p.data.organization}}
+              .row
+                .col-xs-7.col-sm-8.col-md-8
+                  h4(class='list-group-item-heading')
+                    i.fa.fa-user-plus(ng-hide='p.data.confirmed') &nbsp;
+                    | {{p.data.name}}&nbsp;
+                    span.missing-login(ng-show='gameplay.mobile.level > 0 && !p.login.personalData')
+                      i.fa.fa-exclamation-triangle
+                  | {{p.data.organization}}
+                .col-xs-5.col-xs-4.col-md-4
+                  img(ng-src='{{p.login.personalData.avatar}}')
 
     .col-md-7
       .panel.panel-default(ng-hide='currentTeam === undefined')
@@ -99,11 +103,11 @@ block content
                   i.fa.fa-exclamation-triangle
                   | &nbsp;Für die gewählte Spielform ist muss eine Email-Adresse für das Team angegeben werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
 
-            button(class='btn btn-default btn-sm' type='submit'  ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed'  ng-click='confirmTeam(currentTeam)' ng-disabled='!playerForm.$valid || isDemoGame() || currentTeam.confirmationActive') Gruppe bestätigen&nbsp;
+            button.btn.btn-primary.btn-sm(ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed'  ng-click='confirmTeam(currentTeam)' ng-disabled='!playerForm.$valid || isDemoGame() || currentTeam.confirmationActive') Gruppe bestätigen&nbsp;
               span(class='glyphicon glyphicon-check' aria-hidden='true')
             | &nbsp;
-            button(class='btn btn-default btn-sm' type='submit'  ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern&nbsp;
+            button.btn.btn-primary.btn-sm(ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern&nbsp;
               span(class='glyphicon glyphicon-save' aria-hidden='true')
             | &nbsp;
-            button(class='btn btn-default btn-sm' type='submit'  data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame() || !isDeleteAllowed()') Gruppe löschen&nbsp;
+            button.btn.btn-default.btn-sm(data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame() || !isDeleteAllowed()') Gruppe löschen&nbsp;
               span(class='glyphicon glyphicon-trash' aria-hidden='true')

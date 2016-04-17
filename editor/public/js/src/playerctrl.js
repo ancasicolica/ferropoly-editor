@@ -269,6 +269,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
         else {
           $scope.currentTeam = undefined;
         }
+        console.log('Teams geladen', $scope.teams);
         $scope.statusText = 'Daten geladen';
       }).error(function (data, status) {
         $scope.statusText = 'Fehler beim Laden der Teams';
