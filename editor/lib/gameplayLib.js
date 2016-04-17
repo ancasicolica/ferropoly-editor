@@ -90,7 +90,7 @@ function createRandomGameplay(gameId, props, nb, callback) {
       function (err) {
         return callback(err);
       }
-    )
+    );
   }
   catch (e) {
     console.error(e);
@@ -470,7 +470,7 @@ function deleteOldGameplays(callback) {
         }
         else {
           // This is the code which should run for current (V2) ferropolys
-          timeout = moment(gp.scheduling.deleteTs)
+          timeout = moment(gp.scheduling.deleteTs);
         }
         logger.info('Timeout for ' + gp._id, timeout.toDate());
         if (!timeout) {

@@ -12,8 +12,6 @@ var gameplays      = require('../../common/models/gameplayModel');
 var users          = require('../../common/models/userModel');
 var settings       = require('../settings');
 var logger         = require('../../common/lib/logger').getLogger('routes:player');
-var _              = require('lodash');
-var moniker        = require('moniker');
 var moment         = require('moment');
 var async          = require('async');
 var gravatar       = require('../../common/lib/gravatar');
@@ -138,7 +136,7 @@ router.get('/get/:gameId', function (req, res) {
 
           if (user.info && !user.personalData.avatar) {
             // Use default avatar
-            user.personalData.avatar = gravatar.getUrl(user.personalData.email)
+            user.personalData.avatar = gravatar.getUrl(user.personalData.email);
           }
           team.login = {
             personalData: user.personalData,
@@ -210,7 +208,7 @@ router.post('/store', function (req, res) {
 
         if (user.info && !user.personalData.avatar) {
           // Use default avatar
-          user.personalData.avatar = gravatar.getUrl(user.personalData.email)
+          user.personalData.avatar = gravatar.getUrl(user.personalData.email);
         }
         storedTeam.login = {
           personalData: user.personalData,
@@ -236,7 +234,7 @@ router.post('/confirm', function (req, res) {
   var teamId = req.body.teamId;
   var gameId = req.body.gameId;
   if (!teamId || !gameId) {
-    logger.info('no teamId supplied')
+    logger.info('no teamId supplied');
     return res.status(400).send('Team oder GameId fehlt');
   }
 
@@ -354,7 +352,7 @@ function sendConfirmationMail(gameplay, team, callback) {
 
   html += '<h1>Bestätigung Ferropoly Anmeldung</h1>';
   html += `<p>Hallo ${team.data.teamLeader.name}</p><p>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.</p>`;
-  html += `<p>Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!</p>`;
+  html += '<p>Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!</p>';
 
   text += 'Bestätigung Ferropoly Anmeldung\n';
   text += `Hallo ${team.data.teamLeader.name}\n>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.\n`;

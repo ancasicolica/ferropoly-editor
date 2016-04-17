@@ -32,7 +32,6 @@ const ferropolyDb   = require('../common/lib/ferropolyDb');
 const pricelist     = require('./routes/pricelist');
 const cronjobs      = require('./lib/cronjobs');
 const logger        = require('../common/lib/logger').getLogger('editor-app');
-const winston       = require('winston');
 const mailer        = require('../common/lib/mailer');
 const logs          = require('../common/models/logModel');
 const morgan        = require('morgan');
