@@ -15,15 +15,15 @@ block content
             form(name='newForm')
 
               h4 Spielname
-              input(type='text' id='gamename1' name='gamename1' class='form-control' required ng-minlength='3' ng-maxlength='60' ng-model='gamename')
+              input.form-control(type='text' id='gamename1' name='gamename1' required ng-minlength='3' ng-maxlength='60' ng-model='gamename')
               span(id='helpname' class='help-block') Gib Deinem Spiel einen passenden Namen, diesen sehen später auch die Teilnehmer. Der Name kann jederzeit geändert werden.
               p(class='bg-danger' ng-hide='newForm.gamename1.$valid') Ungültige Eingabe: Der Name muss zwischen 3 und 60 Zeichen lang sein
 
 
               h4 Spielkarte
-              .radio(ng-repeat='m in maps' ng-show='m.enabled')
-                label
-                  input( type='radio' name='map' value='{{m.map}}' ng-model='map')
+              .radio
+                label(ng-repeat='m in maps' ng-show='m.enabled')
+                  input(type='radio' name='map' value='{{m.map}}' ng-model='map' ng-click='setMap(m)')
                   strong {{m.name}}:&nbsp;
                   | {{m.description}}
 

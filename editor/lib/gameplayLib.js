@@ -157,7 +157,7 @@ function createNewGameplay(gpOptions, callback) {
     return callback(new Error('Options are not complete'));
   }
 
-  logger.info('New game for ' + gpOptions.email);
+  logger.info('New game for ' + gpOptions.email + ' using map ' + gpOptions.map);
   userModel.getUserByMailAddress(gpOptions.email, function (err, user) {
     if (err) {
       return callback(err);
@@ -183,7 +183,7 @@ function createNewGameplay(gpOptions, callback) {
         // Error while creating the gameplay, abort
         return callback(err);
       }
-      logger.info('New gameplay created: ', gameplay._id);
+      logger.info('New gameplay created: ' + gameplay._id);
       logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
         if (err) {
           logger.error('Log error', err);

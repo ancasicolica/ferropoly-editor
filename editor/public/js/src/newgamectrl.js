@@ -57,6 +57,15 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   });
 
   /**
+   * Some kind of a workaround as the value did not change of the ng-model attached to the radio button???
+   * @param t
+   */
+  $scope.setMap = function(t) {
+    console.log(t);
+    $scope.map = t.map;
+  };
+
+  /**
    * Create game
    */
   $scope.validateAndSave = function () {
