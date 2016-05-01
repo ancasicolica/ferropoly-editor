@@ -29,6 +29,11 @@ module.exports = function (settings) {
     deleteOldGameplays: '12 2 * * *'
   };
 
+  // Facebook settings
+  settings.oAuth.facebook.callbackURL = 'https://editor-preview.ferropoly.ch/auth/facebook/callback';
+  // Google Settings
+  settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
+
 
   settings.demoGameplay = {
     addDays: 0
