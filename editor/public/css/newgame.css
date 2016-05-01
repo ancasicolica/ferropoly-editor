@@ -2,3 +2,7 @@
     font-size : larger;
     color     : red;
 }
+
+.map-item {
+    display: block;
+}

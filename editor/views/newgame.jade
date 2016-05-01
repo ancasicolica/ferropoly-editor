@@ -22,7 +22,7 @@ block content
 
               h4 Spielkarte
               .radio
-                label(ng-repeat='m in maps' ng-show='m.enabled')
+                label.map-item(ng-repeat='m in maps' ng-show='m.enabled')
                   input(type='radio' name='map' value='{{m.map}}' ng-model='map' ng-click='setMap(m)')
                   strong {{m.name}}:&nbsp;
                   | {{m.description}}
