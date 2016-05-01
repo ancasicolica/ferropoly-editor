@@ -23,7 +23,7 @@ module.exports = function (grunt) {
     uglify: {
       js     : {
         files: {
-          './editor/public/js/min/accountctrl.min.js'      : ['./editor/public/js/src/accountctrl.js'],
+          './editor/public/js/min/accountctrl.min.js'     : ['./editor/public/js/src/accountctrl.js'],
           './editor/public/js/min/adminsctrl.min.js'      : ['./editor/public/js/src/adminsctrl.js'],
           './editor/public/js/min/editctrl.min.js'        : ['./editor/public/js/src/editctrl.js'],
           './editor/public/js/min/indexctrl.min.js'       : ['./editor/public/js/src/indexctrl.js'],
