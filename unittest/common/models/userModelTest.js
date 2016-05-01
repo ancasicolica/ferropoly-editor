@@ -56,7 +56,7 @@ describe('UserModel Tests', function () {
   });
 
   describe('Updating / creating', function () {
-    var user1 = new users.Model({personalData: {surname: 'Kunz', forename: 'Olivia', email: 'olivia@kunz.ch'}});
+    var user1 = new users.Model({personalData: {surname: 'Kunz', forename: 'Olivia', email: 'olivia@gm-x.ch'}});
     user1.roles.editor = true;
     var password1 = 'erstfeld';
 
@@ -80,7 +80,7 @@ describe('UserModel Tests', function () {
           expect(savedUser.personalData.forename).to.be(user1.personalData.forename);
           expect(savedUser.personalData.email).to.be(user1.personalData.email);
           expect(savedUser.roles.editor).to.be(true);
-          expect(savedUser.roles.admin).to.be(undefined);
+          expect(savedUser.roles.admin).to.be(false);
           expect(savedUser.login.passwordHash.length > 60).to.be(true);
           expect(savedUser.login.passwordSalt.length).to.be(64);
           expect(users.verifyPassword(savedUser, password1)).to.be(true);
@@ -91,7 +91,7 @@ describe('UserModel Tests', function () {
     });
 
     it('Changing a users parameter should work', function (done) {
-      users.getUserByMailAddress('olivia@kunz.ch', function (err, foundUser) {
+      users.getUserByMailAddress('olivia@gm-x.ch', function (err, foundUser) {
         if (err) {
           done(err);
         }
@@ -109,11 +109,11 @@ describe('UserModel Tests', function () {
     });
 
     it('Checking if the user exists should work', function (done) {
-      users.getUserByMailAddress('olivia@kunz.ch', function (err, user) {
+      users.getUserByMailAddress('olivia@gm-x.ch', function (err, user) {
         if (err) {
           done(err);
         }
-        expect(user.personalData.email).to.be('olivia@kunz.ch');
+        expect(user.personalData.email).to.be('olivia@gm-x.ch');
         done(err);
       })
     });

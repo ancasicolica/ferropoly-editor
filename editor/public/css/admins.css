@@ -1,0 +1,11 @@
+.user-new {
+    font-size: 24px;
+    margin-top: 5px;
+    color:red;
+}
+
+.user-existing {
+    font-size: 24px;
+    margin-top: 5px;
+    color:green;
+}

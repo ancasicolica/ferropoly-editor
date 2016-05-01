@@ -2,15 +2,17 @@
  * New Game
  * Created by kc on 29.01.15.
  */
-'use strict';
 
-var express = require('express');
-var router = express.Router();
-var multer = require('multer');
-var gameplayLib = require('../lib/gameplayLib');
-var gameplayModel = require('../../common/models/gameplayModel');
-var moment = require('moment');
-var logger = require('../../common/lib/logger').getLogger('routes:gameplay');
+
+const express       = require('express');
+const router        = express.Router();
+const multer        = require('multer');
+const gameplayLib   = require('../lib/gameplayLib');
+const gameplayModel = require('../../common/models/gameplayModel');
+const userModel     = require('../../common/models/userModel');
+const moment        = require('moment');
+const logger        = require('../../common/lib/logger').getLogger('routes:gameplay');
+const _             = require('lodash');
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -22,10 +24,11 @@ router.get('/mygames', function (req, res) {
     if (gameplays) {
       gameplays.forEach(function (gameplay) {
         retVal.gameplays.push({
-          internal: gameplay.internal,
-          gamename: gameplay.gamename,
+          internal  : gameplay.internal,
+          gamename  : gameplay.gamename,
           scheduling: gameplay.scheduling,
-          log: gameplay.log
+          log       : gameplay.log,
+          isOwner   : _.get(gameplay, 'owner.organisatorEmail') === req.session.passport.user
         });
       });
     }
@@ -36,16 +39,14 @@ router.get('/mygames', function (req, res) {
 /* Post params of a new game */
 router.post('/createnew', function (req, res) {
   try {
-    if (!req.body.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (1)'});
-    }
-    if (req.body.authToken !== req.session.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (2)'});
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
 
     gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
       if (err) {
-        return res.send({status: 'error', message: 'DB read error: ' + err.message});
+        return res.status(500).send({status: 'error', message: 'DB read error: ' + err.message});
       }
       if (nb > 3) {
         // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
@@ -53,24 +54,38 @@ router.post('/createnew', function (req, res) {
         return res.send({status: 'error', message: 'Max game number reached: ' + nb});
       }
 
-      // Use the unit-test tested gameplay lib for this
-      gameplayLib.createNewGameplay({
-        email: req.session.passport.user,
-        map: req.body.map,
-        gamename: req.body.gamename,
-        gamedate: req.body.gamedate,
-        random: req.body.random
-      }, function (err, gp) {
+      userModel.getUser(req.session.passport.user, function (err, user) {
         if (err) {
-          return res.send({success: false, message: err.message});
+          return res.status(500).send({status: 'error', message: 'DB read error: ' + err.message});
         }
-        return res.send({success: true, gameId: gp.internal.gameId});
+        if (!user) {
+          return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
+        }
+
+
+        // Use the unit-test tested gameplay lib for this
+        gameplayLib.createNewGameplay({
+            email          : user.personalData.email,
+            organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
+            map            : req.body.map,
+            gamename       : req.body.gamename,
+            gamedate       : req.body.gamedate,
+            random         : req.body.random
+          },
+          function (err, gp) {
+            if (err) {
+              return res.status(500).send({success: false, message: err.message});
+            }
+            return res.send({success: true, gameId: gp.internal.gameId});
+          }
+        )
+        ;
       });
+
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.createnew.post');
-    console.error(e);
+    logger.error('Exception in gameplay.createnew.post', e);
     return res.send({success: false, message: e.message});
   }
 });
@@ -80,20 +95,24 @@ router.post('/createnew', function (req, res) {
  */
 router.post('/finalize', function (req, res) {
   try {
-    if (!req.body.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (1)'});
-    }
-    if (req.body.authToken !== req.session.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (2)'});
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
     }
     logger.info('finalizing gameplay');
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({
-          status: 'error',
+          status : 'error',
           message: 'Gameplay finalization error: ' + err.message + ' GameplayId: : ' + req.body.gameId
         });
       }
+
+      // Only the owner is allowed to finalize the game, not admins!
+      if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
+        return res.status(403).send('Not allowed');
+      }
+
       gameplayLib.finalizeGameplay(gp, req.session.passport.user, function (err) {
         if (err) {
           return res.send({status: 'error', message: 'Error while finalizing gameplay: ' + err.message});
@@ -103,8 +122,7 @@ router.post('/finalize', function (req, res) {
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.finalize.post');
-    console.error(e);
+    logger.error('Exception in gameplay.finalize.post', e);
     return res.send({status: 'error', message: e.message});
   }
 });
@@ -115,11 +133,9 @@ router.post('/finalize', function (req, res) {
  */
 router.post('/delete', function (req, res) {
   try {
-    if (!req.body.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (1)'});
-    }
-    if (req.body.authToken !== req.session.authToken) {
-      return res.send({status: 'error', message: 'Permission denied (2)'});
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
     }
 
     if (req.body.gameId === 'play-a-demo-game') {
@@ -130,13 +146,17 @@ router.post('/delete', function (req, res) {
     gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({
-          status: 'error',
+          status : 'error',
           message: 'Gameplay load error: ' + err.message + ' GameplayId: : ' + req.body.gameId
         });
       }
       // Gameplay not found (or wrong user for it)
       if (!gp || gp.length === 0) {
         return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
+      }
+      // Only the owner is allowed to delete the game, not admins!
+      if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
+        return res.status(403).send('Not allowed');
       }
 
       if (gp.internal.finalized && moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {
@@ -154,8 +174,7 @@ router.post('/delete', function (req, res) {
     });
   }
   catch (e) {
-    console.log('Exception in gameplay.finalize.post');
-    console.error(e);
+    logger.error('Exception in gameplay.finalize.post', e);
     return res.send({status: 'error', message: e.message});
   }
 });

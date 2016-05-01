@@ -5,3 +5,7 @@
 .invalid-data {
     border-color: red;
 }
+
+.missing-login {
+    color: orange;
+}

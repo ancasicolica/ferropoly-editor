@@ -1,0 +1,49 @@
+//
+   Created by kc on 02.01.16.
+h1 Ferropoly-Spielerzugang
+.row
+  .col-md-7
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Online Anmeldung
+      .panel-body
+        p Spieler mit einem Login auf die Ferropoly-App können sich online für das Spiel anmelden (
+          a(ng-href='{{joinUrl}}' target='_blank') Link&nbsp;
+            i.fa.fa-external-link
+          |). Du bekommst bei jeder neuen Anmeldung ein Mail zugeschickt. Diese Anmeldung muss unter "Spieler" dann noch bestätigt werden. Lege hier den Anmeldeschluss und den auf der Anmeldeseite angezeigten Text fest.
+        .form-group
+          label(for='possibleUntil') Anmeldeschluss
+          input.form-control#possibleUntil(type='datetime-local' ng-model='joiningPossibleUntil')
+        .form-group
+          label(for='joiningInfotext') Info-Text (HTML zur Formatierung erlaubt)
+          textarea.form-control#joiningInfotext(rows='6' ng-model='gameplay.joining.infotext')
+        .form-group
+          label(for='infotextPreview') Vorschau Info-Text
+          #infotextPreview(ng-bind-html='gameplay.joining.infotext')
+
+
+  .col-md-5
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title Spielform
+      .panel-body
+        .radio
+          label
+            input(type='radio' ng-model='gameplay.mobile.level' ng-value=0)
+            strong Zentrale ohne Mobile-Unterstützung:
+            | &nbsp;Die Spieler können die Preisliste ohne Login einsehen, während dem Spiel bleibt das Smartphone aber ausgeschaltet. Für alle Aktionen muss die Zentrale angerufen werden.
+        .radio
+          label
+            input(type='radio' ng-model='gameplay.mobile.level' ng-value=5)
+            strong Zentrale, Zugriff auf eigene Daten zulassen:
+            | &nbsp;Die Teams haben per Smartphone Zugriff auf ihre eigenen Informationen, können aber so weder Orte noch Häuser kaufen. Dies erfolgt telefonisch über die Zentrale.
+        .radio(ng-hide='true')
+          label
+            input(type='radio' ng-model='gameplay.mobile.level' ng-value=10 disabled=true)
+            strong Mobiles Spiel:
+            | &nbsp;Die Teams können ihre Orte und Häuser selbst mit ihrem Smartphone kaufen. Die Zentrale ist nur noch für Notfälle und als Kontrollinstanz im Einsatz.
+
+
+    p
+      button.btn.btn-primary(type='submit' ng-disabled='!gameplayForm.$valid' ng-click="save('basics')") Speichern und weiter
+

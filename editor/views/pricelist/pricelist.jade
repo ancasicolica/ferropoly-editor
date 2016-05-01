@@ -1,0 +1,27 @@
+//
+   Created by kc on 21.03.15.
+
+extends ../layout
+block head
+  link(rel='stylesheet', href='/css/pricelist.css')
+  script
+    | var gameId = '#{gameId}';
+    | var gameUrl = '#{gameUrl}';
+
+block navbar
+  li
+    a(href='#' ng-click='setPanel("list")') Preisliste
+  li(ng-show='panel === "list"')
+    a(href='#' onclick="javascript:window.print()") Drucken
+  li
+    a(href='#' ng-click='setPanel("info")') Spielinfo
+block content
+  include pricelist-modal-finalize
+
+  div(ng-show='panel === "list"' ng-cloak)
+    include pricelist-list
+  div(ng-show='panel === "info"' ng-cloak)
+    include pricelist-info
+  div(ng-show='panel === "error"' ng-cloak)
+    h1 Hoppla, da gibt es ein Problem
+    | Das Spiel wurde entweder nicht gefunden oder Du hast keine Zugriffsrechte dafür.

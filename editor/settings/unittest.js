@@ -2,7 +2,7 @@
  * Unit-Test settings
  * Created by kc on 06.09.15.
  */
-'use strict';
+
 
 module.exports = function (settings) {
 

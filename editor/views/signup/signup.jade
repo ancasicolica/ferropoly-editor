@@ -1,0 +1,57 @@
+extends ../layout
+
+block head
+  link(rel='stylesheet', href='/css/signin.css')
+  script.
+    $(document).ready(function () {
+      var i = (new Date().getSeconds() % 5) + 1;
+      $('body').addClass('bg' + i);
+    });
+
+block navbar-right
+  ul(class='nav navbar-nav navbar-right')
+    li
+      a(href='/login') Login &nbsp;
+
+
+block content
+
+  div(ng-show='view === 0')
+    .signup-box.ls-box-shape
+      h1 Ferropoly Anmeldung
+      | Willkommen beim Ferropoly Editor. Hier kannst Du dich für die Benutzung der Ferropoly App registrieren. Das Login ist sowohl für den Editor wie auch die Spielauswertung gültig.
+
+      form(class='form-signin')
+        .form-group(id='email-group')
+          label(for='email') Email-Adresse (entspricht Login-Name)
+          input(type='email' class='form-control' id='email' placeholder='max.muster@ferropoly.ch' ng-model='email' ng-blur='verifyEmail()')
+          span#email-info.help-block(ng-hide='!emailInvalid') {{emailInvalidExplanation}}
+
+        .form-group(id='forename-group')
+          label(for='forename') Vorname
+          input#forename.form-control(type='text' placeholder='Max' ng-model='forename' ng-blur='verifyForename()')
+          span#forename-info.help-block(ng-hide='!forenameInvalid') Bitte einen Vornamen eingeben
+
+        .form-group(id='surname-group')
+          label(for='surname') Nachname
+          input#surname.form-control(type='text'  placeholder='Muster' ng-model='surname' ng-blur='verifySurname()')
+          span#surname-info.help-block(ng-hide='!surnameInvalid') Bitte einen Nachnamen eingeben
+
+        .form-group(id='password-group')
+          label(for='password') Passwort
+          input#password.form-control(type='password' ng-model='password' ng-blur='verifyPassword()')
+          span#password-info.help-block(ng-hide='!passwordInvalid') Bitte ein Passwort mit mindestens 8 Zeichen eingeben
+
+        .form-group(id='password-repeat-group')
+          label(for='passwort-repeat') Passwort wiederholen
+          input#passwort-repeat.form-control(type='password'  ng-model='passwordVerify' ng-blur='verifyRepeatPassword()')
+          span#password-repeat-info.help-block(ng-hide='!passwordRepeatInvalid') Das Passwort stimmt nicht überein
+
+        button(type='submit' class='btn btn-default' ng-disabled='!formDataValid()' ng-click='createUser()') Registrieren
+
+
+  .ls-box-shape(ng-show='view === 1')
+    .alert.alert-success(role='alert' ng-show='emailSentSuccess') Vielen Dank für die Registrierung. Ein Email mit dem Aktivierungscode wurde an {{email}} gesendet.
+    .alert.alert-danger(role='alert' ng-show='emailError') Leider gab es ein Problem beim Senden des Mails, die Registrierung konnte nicht abgeschlossen werden: {{emailError}}
+    h2
+      a(href='/') Hier geht es zum Login
