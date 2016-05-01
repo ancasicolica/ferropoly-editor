@@ -100,6 +100,7 @@ var initServer      = function () {
   app.use('/admins', require('./routes/admins'));
   app.use('/userinfo', require('./routes/userInfo'));
   app.use('/account', require('./routes/account'));
+  app.use('/agb', require('../common/routes/agb'));
 
 
   var server = require('http').Server(app);
@@ -134,7 +135,7 @@ var initServer      = function () {
       error  : {}
     });
   });
-  
+
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
 

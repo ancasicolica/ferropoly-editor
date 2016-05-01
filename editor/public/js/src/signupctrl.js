@@ -8,29 +8,27 @@ var signupControl = angular.module('signupApp', ['ui.bootstrap']);
  * This is the control for the sign-up process for ferropoly
  */
 signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
-  var socket = null; // Socket.io socket, connection to the server
-
   $scope.view = 0;
 
-  $scope.email = undefined;
-  $scope.forename = undefined;
-  $scope.surname = undefined;
-  $scope.password = undefined;
-  $scope.passwordVerify = undefined;
-  $scope.agbAccepted = false;
-  $scope.emailInvalid = false;
-  $scope.passwordInvalid = false;
-  $scope.passwordRepeatInvalid = false;
-  $scope.surenameInvalid = false;
-  $scope.forenameInvalid = false;
+  $scope.email                   = undefined;
+  $scope.forename                = undefined;
+  $scope.surname                 = undefined;
+  $scope.password                = undefined;
+  $scope.passwordVerify          = undefined;
+  $scope.agbAccepted             = false;
+  $scope.emailInvalid            = false;
+  $scope.passwordInvalid         = false;
+  $scope.passwordRepeatInvalid   = false;
+  $scope.surenameInvalid         = false;
+  $scope.forenameInvalid         = false;
   $scope.emailInvalidExplanation = '';
-  $scope.emailSent = false;
+  $scope.emailSent               = false;
   /**
    * Set the validation classes
    * @param valid
    * @param id of the form element
    */
-  var setValidationClasses = function (valid, id) {
+  var setValidationClasses       = function (valid, id) {
     if (valid) {
       $(id).removeClass('has-success');
       $(id).addClass('has-error');
@@ -41,7 +39,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
     }
   };
 
-  $scope.finalSendButtonDisabled = function() {
+  $scope.finalSendButtonDisabled = function () {
     if (!$scope.agbAccepted) {
       return true;
     }
@@ -51,7 +49,7 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
    * Result of the email verification (Socket.io handler for 'emailVerificationResult')
    * @param data
    */
-  var onEmailVerificationResult = function (data) {
+  var onEmailVerificationResult  = function (data) {
     console.log(data);
     setValidationClasses(!data.valid, '#email-group');
 
@@ -92,9 +90,9 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
    * Sets the heigth of the map as large as possible. Workaround as I haven't found a fitting css rule!
    */
   var setAgbHeight = function () {
-    var dh = $(window).height();
-    var mc = document.querySelector('#agb-box');
-    var h = dh - 195;
+    var dh          = $(window).height();
+    var mc          = document.querySelector('#agb-box');
+    var h           = dh - 195;
     mc.style.height = h.toString() + 'px';
   };
   /**
@@ -103,14 +101,12 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
   $scope.verifyEmail = function () {
     $http.post('/signup/verifyemail', {
       email: $scope.email
-    }).
-      success(function (data) {
-        onEmailVerificationResult(data);
-      }).
-      error(function (data, status) {
-        console.log(status);
-        onEmailVerificationResult(data);
-      });
+    }).success(function (data) {
+      onEmailVerificationResult(data);
+    }).error(function (data, status) {
+      console.log(status);
+      onEmailVerificationResult(data);
+    });
   };
   /**
    * Verify the forname
@@ -158,34 +154,31 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
    * Finally creates the user
    */
   $scope.createUser = function () {
-    // Todo: show AGB before creating user
     if ($scope.formDataValid()) {
       $scope.emailSent = true;
-      $http.post('/signup/new',  {
+      $http.post('/signup/new', {
         personalData: {
           forename: $scope.forename,
-          surname: $scope.surname,
-          email: $scope.email
+          surname : $scope.surname,
+          email   : $scope.email
         },
-        password: $scope.password
-      }).
-        success(function (data) {
-          console.log(data);
-          if (data.saved) {
-            $scope.emailSentSuccess = true;
-          }
-          else {
-            $scope.emailError = data.message;
-          }
-          $scope.view++;
-          fa.event('Signup', 'new user', $scope.email);
-        }).
-        error(function (data, status) {
-          $scope.emailError = status;
-          console.warn(status);
-          console.log(data);
-          $scope.view++;
-        });
+        password    : $scope.password
+      }).success(function (data) {
+        console.log(data);
+        if (data.saved) {
+          $scope.emailSentSuccess = true;
+        }
+        else {
+          $scope.emailError = data.message;
+        }
+        $scope.view++;
+        fa.event('Signup', 'new user', $scope.email);
+      }).error(function (data, status) {
+        $scope.emailError = status;
+        console.warn(status);
+        console.log(data);
+        $scope.view++;
+      });
     }
   }
 }]);

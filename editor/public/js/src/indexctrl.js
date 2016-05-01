@@ -26,34 +26,68 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
    * Get the auttoken (async!)
    */
   var getAuthToken = function () {
-    $http.get('/authtoken').
-      success(function (data) {
-        authToken = data.authToken;
-        console.log('Auth ok');
-      }).
-      error(function (data, status) {
-        console.log('error:');
-        console.log(data);
-        console.log(status);
-        $scope.panel = 'error';
-        $scope.errorMessage = 'Authentisierungsfehler. Status: ' + status;
-      });
+    $http.get('/authtoken').success(function (data) {
+      authToken = data.authToken;
+      console.log('Auth ok');
+    }).error(function (data, status) {
+      console.log('error:');
+      console.log(data);
+      console.log(status);
+      $scope.panel        = 'error';
+      $scope.errorMessage = 'Authentisierungsfehler. Status: ' + status;
+    });
   };
 
-  // When document ready, load gameplays
+  // Accept AGB
+  $scope.acceptAgb = function () {
+    $http({method: 'POST', url: '/agb/accept'}).then(
+      function () {
+        $scope.agb.accepted = true;
+      },
+      function (resp) {
+        console.error(resp);
+      }
+    );
+  };
+  // Decline AGB
+  $scope.declineAgb = function () {
+    $http({method: 'POST', url: '/logout'}).then(
+      function () {
+        console.log('logged out');
+        window.location.replace("/");
+      },
+      function (resp) {
+        console.error(resp);
+      }
+    );
+  };
+  // When document ready, load gameplays and AGB info
   $(document).ready(function () {
     var index = moment().hours() % 6;
     $('#info-header').css('background-image', 'url("/images/ferropoly_header_0' + index + '.jpg")');
 
-    $http.get('/gameplay/mygames').
-      success(function (data) {
-        if (data.success) {
-          $scope.gameplays = data.gameplays;
+    $http({method: 'GET', url: '/agb'}).then(
+      function (resp) {
+        console.log(resp);
+        $scope.agb = resp.data.info;
+        if ($scope.agb.actionRequired) {
+          $('#agb-trigger').click();
+        }
+      },
+      function (resp) {
+        console.error(resp);
+      }
+    );
+
+    $http({method: 'GET', url: '/gameplay/mygames'}).then(
+      function (resp) {
+        console.log(resp);
+        if (resp.data.success) {
+          $scope.gameplays = resp.data.gameplays;
         }
         else {
           $scope.gameplays = [];
         }
-        console.log(data);
         console.log('Gameplays loaded, nb:' + $scope.gameplays.length);
 
         $scope.gameplays.forEach(function (gp) {
@@ -62,11 +96,9 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
           console.log(gp.log.lastEdited);
         });
         getAuthToken();
-      }).
-      error(function (data, status) {
-        console.log('error:');
-        console.log(data);
-        console.log(status);
+      },
+      function (resp) {
+        console.error(resp);
         $scope.gameplays = [];
       });
   });
@@ -85,8 +117,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
    */
   $scope.notAllowedToDeleteGameplay = function (gameplay) {
     return ((gameplay.internal.finalized && moment(gameplay.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) ||
-    gameplay.internal.gameId === 'play-a-demo-game' ||
-    !gameplay.isOwner);
+    gameplay.internal.gameId === 'play-a-demo-game' || !gameplay.isOwner);
   };
 
   /**
@@ -99,35 +130,36 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
       return;
     }
 
-    $http.post('/gameplay/delete', {gameId: $scope.gameplayToDelete.internal.gameId, authToken: authToken}).
-      success(function (data) {
-        if (data.success) {
-          console.log('gameplay deleted');
-          console.log(data);
-          // Remove from UI
-          _.remove($scope.gameplays, function (gp) {
-            return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
-          });
-          $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
-          fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
-          $scope.gameplayToDelete = null;
-        }
-        else {
-          console.log('Error');
-          console.log(data);
-          $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
-          fa.exception('Can not delete gameplay:' + data.message);
-          $scope.gameplayToDelete = null;
-        }
-      }).
-      error(function (data, status) {
-        console.log('ERROR');
+    $http.post('/gameplay/delete', {
+      gameId   : $scope.gameplayToDelete.internal.gameId,
+      authToken: authToken
+    }).success(function (data) {
+      if (data.success) {
+        console.log('gameplay deleted');
         console.log(data);
-        console.log(status);
+        // Remove from UI
+        _.remove($scope.gameplays, function (gp) {
+          return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
+        });
+        $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
+        fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
+        $scope.gameplayToDelete = null;
+      }
+      else {
+        console.log('Error');
+        console.log(data);
         $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
         fa.exception('Can not delete gameplay:' + data.message);
         $scope.gameplayToDelete = null;
-      });
+      }
+    }).error(function (data, status) {
+      console.log('ERROR');
+      console.log(data);
+      console.log(status);
+      $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
+      fa.exception('Can not delete gameplay:' + data.message);
+      $scope.gameplayToDelete = null;
+    });
   }
 
 }]);

@@ -1,3 +1,6 @@
+#agb-trigger {
+    display : none;
+}
 
 #gameplay-list {
     overflow : scroll;
@@ -29,7 +32,7 @@
 }
 
 #ferropoly-navbar {
-    
+
 }
 
 #info-welcome {
@@ -48,6 +51,6 @@ h1.info-header {
 }
 
 p.intro {
-    padding-top: 5px;
-    font-size: large;
+    padding-top : 5px;
+    font-size   : large;
 }
