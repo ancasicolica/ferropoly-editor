@@ -4,8 +4,21 @@
  */
 'use strict';
 
-var pricelistControl = angular.module('pricelistApp', ['ui.bootstrap', 'ui.sortable']);
-pricelistControl.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
+var app = angular.module('pricelistApp', ['ui.bootstrap', 'ui.sortable']);
+
+/**
+ * This is the amount filter returning nicer values
+ */
+app.filter('amount', function () {
+  return function (val) {
+    if (_.isNumber(val)) {
+      return val.toLocaleString('de-CH');
+    }
+    return val;
+  }
+});
+
+app.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
 
   $scope.test = gameId;
   $scope.data = undefined;

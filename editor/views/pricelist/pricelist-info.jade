@@ -36,10 +36,10 @@ h1 {{data.gameplay.gamename}}
     table(class='table')
       tr
         td Guthaben zu Beginn des Spieles
-        td {{data.gameplay.gameParams.startCapital}}
+        td {{data.gameplay.gameParams.startCapital | amount}}
       tr
         td Startgeld pro Spielrunde
-        td {{data.gameplay.gameParams.interest}}
+        td {{data.gameplay.gameParams.interest | amount}}
       tr
         td Dauer einer Spielrunde
         td {{data.gameplay.gameParams.interestInterval}} min
