@@ -5,14 +5,15 @@
  */
 
 
-var express            = require('express');
-var router             = express.Router();
-var pricelistLib       = require('../lib/pricelist');
-var commonPricelistLib = require('../../common/lib/pricelist');
-var gameplays          = require('../../common/models/gameplayModel');
-var logger             = require('../../common/lib/logger').getLogger('routes:pricelist');
-var downloadPricelist  = require('../../common/routes/downloadPricelist');
-var settings           = require('../settings');
+const express            = require('express');
+const router             = express.Router();
+const pricelistLib       = require('../lib/pricelist');
+const commonPricelistLib = require('../../common/lib/pricelist');
+const gameplays          = require('../../common/models/gameplayModel');
+const logger             = require('../../common/lib/logger').getLogger('routes:pricelist');
+const downloadPricelist  = require('../../common/routes/downloadPricelist');
+const settings           = require('../settings');
+const _                  = require('lodash');
 
 var ngFile = 'pricelistctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
@@ -60,6 +61,9 @@ router.get('/get/:gameId', function (req, res) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
+    // Only owners may finalize it
+    gp = gp.toObject();
+    gp.isOwner = _.get(gp, 'owner.organisatorEmail') === req.session.passport.user;
     commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
       if (err) {
         return res.send({success: false, message: err.message});

@@ -4,14 +4,15 @@
  */
 
 
-var express       = require('express');
-var router        = express.Router();
-var multer        = require('multer');
-var gameplayLib   = require('../lib/gameplayLib');
-var gameplayModel = require('../../common/models/gameplayModel');
-var userModel     = require('../../common/models/userModel');
-var moment        = require('moment');
-var logger        = require('../../common/lib/logger').getLogger('routes:gameplay');
+const express       = require('express');
+const router        = express.Router();
+const multer        = require('multer');
+const gameplayLib   = require('../lib/gameplayLib');
+const gameplayModel = require('../../common/models/gameplayModel');
+const userModel     = require('../../common/models/userModel');
+const moment        = require('moment');
+const logger        = require('../../common/lib/logger').getLogger('routes:gameplay');
+const _             = require('lodash');
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
@@ -26,7 +27,8 @@ router.get('/mygames', function (req, res) {
           internal  : gameplay.internal,
           gamename  : gameplay.gamename,
           scheduling: gameplay.scheduling,
-          log       : gameplay.log
+          log       : gameplay.log,
+          isOwner   : _.get(gameplay, 'owner.organisatorEmail') === req.session.passport.user
         });
       });
     }
@@ -105,6 +107,12 @@ router.post('/finalize', function (req, res) {
           message: 'Gameplay finalization error: ' + err.message + ' GameplayId: : ' + req.body.gameId
         });
       }
+
+      // Only the owner is allowed to finalize the game, not admins!
+      if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
+        return res.status(403).send('Not allowed');
+      }
+
       gameplayLib.finalizeGameplay(gp, req.session.passport.user, function (err) {
         if (err) {
           return res.send({status: 'error', message: 'Error while finalizing gameplay: ' + err.message});
@@ -145,6 +153,10 @@ router.post('/delete', function (req, res) {
       // Gameplay not found (or wrong user for it)
       if (!gp || gp.length === 0) {
         return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
+      }
+      // Only the owner is allowed to delete the game, not admins!
+      if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
+        return res.status(403).send('Not allowed');
       }
 
       if (gp.internal.finalized && moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {

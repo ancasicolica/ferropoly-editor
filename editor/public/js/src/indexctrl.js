@@ -79,13 +79,14 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
   };
 
   /**
-   * Returns true if we are not allowed delete the gameplay. This is  the case if the game date is today
+   * Returns true if we are not allowed delete the gameplay. This is  the case if the game date is today OR the logged
+   * in user is not the owner of the gameplay
    * @param gameplay
    */
   $scope.notAllowedToDeleteGameplay = function (gameplay) {
-    console.log(gameplay);
     return ((gameplay.internal.finalized && moment(gameplay.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) ||
-    gameplay.internal.gameId === 'play-a-demo-game');
+    gameplay.internal.gameId === 'play-a-demo-game' ||
+    !gameplay.isOwner);
   };
 
   /**

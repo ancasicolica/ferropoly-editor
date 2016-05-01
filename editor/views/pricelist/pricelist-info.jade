@@ -59,7 +59,7 @@ h1 {{data.gameplay.gamename}}
           a(ng-href='{{joinUrl}}' target='_blank') {{joinUrl}}
 
   .col-md-4
-    .panel.panel-default(ng-show='!data.gameplay.internal.finalized')
+    .panel.panel-default(ng-hide='data.gameplay.internal.finalized || !data.gameplay.isOwner')
       .panel-heading
         h3.panel-title Sind alle Daten richtig?
       .panel-body
