@@ -1,0 +1,40 @@
+//
+   Created by kc on 16.05.16.
+.jumbotron(ng-hide='data.gameplay.internal.finalized')
+  h1 Spielregeln
+  p Sobald die Spielparameter fix sind ("Spiel finalisieren"), kannst Du hier die Spielregeln bearbeiten.
+div(ng-show='data.gameplay.internal.finalized')
+  h1 Spielregeln
+  p Hier kannst Du die Spielregeln nach Deinen Bedürfnissen anpassen. Das geht auch dann noch, wenn das Spiel bereits läuft, so kannst Du bei Unklarheiten die Spielregeln laufend präzisieren.
+    strong &nbsp;Vergiss jedoch nie, die Teams immer sofort über Anpassungen der Spielregeln zu informieren!
+  .row
+    .col-md-6
+      h2 Markdown
+      wiz-markdown-editor#rules-editor(content='data.gameplay.rules.text')
+        wiz-toolbar-button(command='bold')
+          i.fa.fa-bold(aria-hidden='true')
+        wiz-toolbar-button(command='italic')
+          i.fa.fa-italic(aria-hidden='true')
+        wiz-toolbar-button(command='heading')
+          i.fa.fa-header(aria-hidden='true')
+        wiz-toolbar-button(command='ullist')
+          i.fa.fa-list-ul(aria-hidden='true')
+        wiz-toolbar-button(command='ollist')
+          i.fa.fa-list-ol(aria-hidden='true')
+        wiz-toolbar-button(command='indent')
+          i.fa.fa-indent(aria-hidden='true')
+        wiz-toolbar-button(command='outdent')
+          i.fa.fa-dedent(aria-hidden='true')
+        wiz-toolbar-button(command='link')
+          i.fa.fa-link(aria-hidden='true')
+        wiz-toolbar-button(command='img')
+          i.fa.fa-picture-o(aria-hidden='true')
+        wiz-toolbar-button(command='hr') ---
+        wiz-toolbar-button(command='undo')
+          i.fa.fa-undo(aria-hidden='true')
+        wiz-toolbar-button(command='redo')
+          i.fa.fa-repeat(aria-hidden='true')
+
+    .col-md-6
+      h2 Vorschau
+      wiz-markdown(content='data.gameplay.rules.text')

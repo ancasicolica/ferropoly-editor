@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var app = angular.module('pricelistApp', ['ui.bootstrap', 'ui.sortable']);
+var app = angular.module('pricelistApp', ['ui.bootstrap', 'ui.sortable', 'wiz.markdown']);
 
 /**
  * This is the amount filter returning nicer values
