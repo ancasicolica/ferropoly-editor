@@ -20,39 +20,45 @@ th.pricelist {
     padding-right : 1px;
 }
 
+#markdown-col {
+    height : 800px;
+}
+
 #rules-editor {
-    width : 100%;
-    height: 300px;
+    width         : 100%;
+    height        : 600px;
+    margin-bottom : 40px;
 }
 
 textarea.markdown-input.ng-empty {
-    width: 100%;
-    height: 100%;
+    width  : 100%;
+    height : 100%;
 }
 
 .markdown-input {
-    width: 100%;
-    height: 100%;
-    padding: 15px;
-    box-sizing: border-box;
-    border: 1px solid #141ddd;
-    color: #333;
-    border-radius: 6px;
-    resize: vertical;
+    width         : 100%;
+    height        : 100%;
+    padding       : 15px;
+    box-sizing    : border-box;
+    border        : 1px solid #141ddd;
+    color         : #333;
+    border-radius : 6px;
+    resize        : vertical;
 }
 
 .markdown-toolbar button {
-    text-align: center;
-    text-decoration: none;
-    background-color: transparent;
-    color: #141ddd;
-    outline: 0;
-    border: 1px solid #141ddd;
-    border-radius: 2px;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    text-align       : center;
+    text-decoration  : none;
+    background-color : transparent;
+    color            : #141ddd;
+    outline          : 0;
+    border           : 1px solid #141ddd;
+    border-radius    : 2px;
+    margin-right     : 5px;
+    margin-bottom    : 5px;
 }
+
 .markdown-toolbar button:hover, .markdown-toolbar button:active {
-    background-color: #141ddd;
-    color: #fff;
+    background-color : #141ddd;
+    color            : #fff;
 }
