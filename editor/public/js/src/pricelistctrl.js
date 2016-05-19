@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var app = angular.module('pricelistApp', ['ui.bootstrap', 'ui.sortable', 'wiz.markdown']);
+var app = angular.module('pricelistApp', ['ui.bootstrap', 'ui.sortable']);
 
 /**
  * This is the amount filter returning nicer values
@@ -18,7 +18,7 @@ app.filter('amount', function () {
   }
 });
 
-app.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
+app.controller('pricelistCtrl', ['$scope', '$http', function ($scope, $http) {
 
   $scope.test         = gameId;
   $scope.data         = undefined;
@@ -76,7 +76,6 @@ app.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$timeout', fun
         return;
       }
       $scope.data  = data;
-      $scope.rules = data.gameplay.rules.text;
 
       $http.get('/authtoken').success(function (data) {
         authToken = data.authToken;
@@ -96,16 +95,5 @@ app.controller('pricelistCtrl', ['$scope', '$http', '$interval', '$timeout', fun
       $scope.errorMessage = 'Ladefehler, das Spiel kann nicht angesehen werden. Status: ' + status;
     });
   });
-
-  $scope.saveRules = function () {
-    $http({method: 'POST', url: '/gameplay/rules/' + gameId, data: {authToken: authToken, changes: 'Experiment', text: $scope.rules}}).then(
-      function(resp) {
-        console.log('Saved rules', resp);
-      },
-      function(resp) {
-        console.error('Error while saving rules', resp);
-      }
-    );
-  }
 
 }]);

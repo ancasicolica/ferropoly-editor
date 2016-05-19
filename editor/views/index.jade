@@ -49,6 +49,9 @@ block content
               a(class='btn btn-default btn-xs btn-gameplay' href='/pricelist/view/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste&nbsp;
                 i.fa.fa-eye
 
+              a(class='btn btn-default btn-xs btn-gameplay' href='/rules/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.internal.finalized') Spielregeln&nbsp;
+                i.fa.fa-book
+
               a(class='btn btn-default btn-xs btn-gameplay' href='/player/edit/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Spieler&nbsp;
                 i.fa.fa-users
 

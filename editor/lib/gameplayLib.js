@@ -20,6 +20,7 @@ const logger                     = require('../../common/lib/logger').getLogger(
 const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
 const settings                   = require('../settings');
+const rulesGenerator             = require('./rulesGenerator');
 const restify                    = require('restify');
 const moment                     = require('moment');
 const _                          = require('lodash');
@@ -428,23 +429,30 @@ function createDemoGameplay(p1, p2) {
 function finalizeGameplay(gameplay, email, callback) {
   gameplays.finalize(gameplay.internal.gameId, email, function (err, gpSaved) {
     if (err) {
-      logger.error('Failed to save demo gameplay: ' + err.message);
+      logger.error('Failed to finalize gameplay: ' + err.message);
       return callback(err);
     }
-    properties.finalizeProperties(gameplay.internal.gameId, function (err) {
+    var rules = rulesGenerator(gpSaved);
+    gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules}, err => {
       if (err) {
-        logger.error('Failed to finalize the properties: ' + err.message);
-        return callback(err);
+        logger.error('Error while saving rules', err.message);
+        // But continue...
       }
-      schedulerEvents.createEvents(gpSaved, function (err) {
+      properties.finalizeProperties(gameplay.internal.gameId, function (err) {
         if (err) {
-          logger.error('Error while creating events', err);
+          logger.error('Failed to finalize the properties: ' + err.message);
+          return callback(err);
         }
-        logger.info('Gameplay finalized', gameplay.internal.gameId);
-        if (gameplay.internal.doNotNotifyMain) {
-          return callback();
-        }
-        updateFerropolyMainCache(4000, callback);
+        schedulerEvents.createEvents(gpSaved, function (err) {
+          if (err) {
+            logger.error('Error while creating events', err);
+          }
+          logger.info('Gameplay finalized', gameplay.internal.gameId);
+          if (gameplay.internal.doNotNotifyMain) {
+            return callback();
+          }
+          updateFerropolyMainCache(4000, callback);
+        });
       });
     });
   });

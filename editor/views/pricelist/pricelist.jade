@@ -3,7 +3,6 @@
 
 extends ../layout
 block head
-  script(src='/modules/wiz-markdown/wizMarkdown/wizMarkdown.min.js')
   link(rel='stylesheet', href='/css/pricelist.css')
   script
     | var gameId = '#{gameId}';
@@ -15,8 +14,6 @@ block navbar
   li(ng-show='panel === "list"')
     a(href='#' onclick="javascript:window.print()") Drucken
   li
-    a(href='#' ng-click='setPanel("rules")') Spielregeln
-  li
     a(href='#' ng-click='setPanel("info")') Spielinfo
 block content
   include pricelist-modal-finalize
@@ -25,8 +22,6 @@ block content
     include pricelist-list
   div(ng-show='panel === "info"' ng-cloak)
     include pricelist-info
-  div(ng-show='panel === "rules"' ng-cloak)
-    include pricelist-rules
   div(ng-show='panel === "error"' ng-cloak)
     h1 Hoppla, da gibt es ein Problem
     | Das Spiel wurde entweder nicht gefunden oder Du hast keine Zugriffsrechte dafür.

@@ -1,0 +1,18 @@
+// Modal for saving rules
+   Created by kc on 19.05.16.
+
+#modal-save.modal.fade(tabindex='-1', role='dialog', aria-labelledby='modal-save-label')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+        h4#modal-save-label.modal-title Spielregeln speichern
+      .modal-body
+        | Gib mit einen möglichst aussagekräftigen Satz ein, was Du an den Regeln geändert hast. Das hilft den Spieler, Änderungen an den Regeln möglichst gut zu verfolgen.
+        p
+          input.form-control(type='text' placeholder='Info über die Anpassung' ng-model='currentRuleChanges')
+
+      .modal-footer
+        button.btn.btn-default(type='button', data-dismiss='modal') Abbrechen
+        button.btn.btn-primary(type='button' ng-click='saveRules()', data-dismiss='modal') Speichern

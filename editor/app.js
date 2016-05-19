@@ -8,7 +8,7 @@
 const express       = require('express');
 const path          = require('path');
 const cookieParser  = require('cookie-parser');
-const bodyParser      = require('body-parser');
+const bodyParser    = require('body-parser');
 const routes        = require('./routes/index');
 const login         = require('./routes/login');
 const signup        = require('./routes/signup');
@@ -40,7 +40,7 @@ const compression   = require('compression');
 const authStrategy  = require('../common/lib/authStrategy')(settings, users);
 const demoUsers     = require('./lib/demoUsers');
 
-var initServer      = function () {
+var initServer = function () {
   cronjobs.init();
   mailer.init(settings);
   logs.init(settings);
@@ -101,6 +101,7 @@ var initServer      = function () {
   app.use('/userinfo', require('./routes/userInfo'));
   app.use('/account', require('./routes/account'));
   app.use('/agb', require('../common/routes/agb'));
+  app.use('/rules', require('./routes/rules'));
 
 
   var server = require('http').Server(app);

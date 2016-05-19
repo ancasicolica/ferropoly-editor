@@ -181,34 +181,6 @@ router.post('/delete', function (req, res) {
 
 
 /**
- * Update the rules
- */
-router.post('/rules/:gameId', function (req, res) {
-  try {
-    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-      logger.info('Auth token missing, access denied');
-      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
-    }
-    logger.info(`Updating rules for ${req.params.gameId}`);
-    info = {
-      changes: req.body.changes || 'Keine Angaben',
-      text   : req.body.text
-    };
-    gameplayModel.updateRules(req.params.gameId, req.session.passport.user, info, function (err) {
-      if (err) {
-        return res.status(400).send(err.message);
-      }
-      return res.send({success: true});
-    });
-  }
-  catch (e) {
-    logger.error('Exception in gameplay.finalize.post', e);
-    return res.send({status: 'error', message: e.message});
-  }
-});
-
-
-/**
  * The exports: an init function only
  * @type {{init: Function}}
  */

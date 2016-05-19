@@ -61,6 +61,7 @@ router.get('/get/:gameId', function (req, res) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
+    
     // Only owners may finalize it
     gp = gp.toObject();
     gp.isOwner = _.get(gp, 'owner.organisatorEmail') === req.session.passport.user;
