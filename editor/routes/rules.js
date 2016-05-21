@@ -5,11 +5,8 @@
 
 const express            = require('express');
 const router             = express.Router();
-const pricelistLib       = require('../lib/pricelist');
-const commonPricelistLib = require('../../common/lib/pricelist');
 const gameplayModel      = require('../../common/models/gameplayModel');
-const logger             = require('../../common/lib/logger').getLogger('routes:pricelist');
-const downloadPricelist  = require('../../common/routes/downloadPricelist');
+const logger             = require('../../common/lib/logger').getLogger('routes:rules');
 const settings           = require('../settings');
 const _                  = require('lodash');
 
@@ -17,7 +14,7 @@ var ngFile = 'rulesctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 
-/* GET priceslist. */
+/* GET Page with rules. */
 router.get('/:gameId', function (req, res) {
 
   gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
@@ -38,7 +35,7 @@ router.get('/:gameId', function (req, res) {
 
 });
 
-/* GET priceslist. */
+/* GET Rules. */
 router.get('/data/:gameId', function (req, res) {
 
   gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
