@@ -19,12 +19,13 @@
     "url": "https://github.com/ancasicolica/ferropoly_editor"
   },
   "engines": {
-    "node": ">= 4.4.0",
-    "npm": ">= 2.14.0"
+    "node": ">= 6.1.0",
+    "npm": ">= 3.9.0"
   },
   "private": true,
   "scripts": {
-    "start": "supervisor server.js"
+    "start": "node server.js",
+    "postinstall": "bower install"
   },
   "main": "server.js",
   "dependencies": {
