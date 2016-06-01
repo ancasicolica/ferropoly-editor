@@ -3,7 +3,7 @@
 h1 Ferropoly-Spielerzugang
 .row
   .col-md-7
-    .panel.panel-default
+    .panel.panel-default#panel-online-text
       .panel-heading
         h3.panel-title Online Anmeldung
       .panel-body
@@ -15,11 +15,35 @@ h1 Ferropoly-Spielerzugang
           label(for='possibleUntil') Anmeldeschluss
           input.form-control#possibleUntil(type='datetime-local' ng-model='joiningPossibleUntil')
         .form-group
-          label(for='joiningInfotext') Info-Text (HTML zur Formatierung erlaubt)
-          textarea.form-control#joiningInfotext(rows='6' ng-model='gameplay.joining.infotext')
+          label Info-Text (Markdown Language)
+          #markdown-col
+            wiz-markdown-editor#rules-editor(content='gameplay.joining.infotext')
+              wiz-toolbar-button(command='bold')
+                i.fa.fa-bold(aria-hidden='true')
+              wiz-toolbar-button(command='italic')
+                i.fa.fa-italic(aria-hidden='true')
+              wiz-toolbar-button(command='heading')
+                i.fa.fa-header(aria-hidden='true')
+              wiz-toolbar-button(command='ullist')
+                i.fa.fa-list-ul(aria-hidden='true')
+              wiz-toolbar-button(command='ollist')
+                i.fa.fa-list-ol(aria-hidden='true')
+              wiz-toolbar-button(command='indent')
+                i.fa.fa-indent(aria-hidden='true')
+              wiz-toolbar-button(command='outdent')
+                i.fa.fa-dedent(aria-hidden='true')
+              wiz-toolbar-button(command='link')
+                i.fa.fa-link(aria-hidden='true')
+              wiz-toolbar-button(command='img')
+                i.fa.fa-picture-o(aria-hidden='true')
+              wiz-toolbar-button(command='hr') ---
+              wiz-toolbar-button(command='undo')
+                i.fa.fa-undo(aria-hidden='true')
+              wiz-toolbar-button(command='redo')
+                i.fa.fa-repeat(aria-hidden='true')
         .form-group
-          label(for='infotextPreview') Vorschau Info-Text
-          #infotextPreview(ng-bind-html='gameplay.joining.infotext')
+          label Vorschau Info-Text
+          wiz-markdown#infotextPreview(content='gameplay.joining.infotext')
 
 
   .col-md-5

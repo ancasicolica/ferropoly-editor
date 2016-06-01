@@ -5,7 +5,7 @@
 'use strict';
 
 /**********************************************************************************************************************/
-var editControl = angular.module('editApp', ['ui.bootstrap', 'ui.sortable', 'ngSanitize']);
+var editControl = angular.module('editApp', ['ui.bootstrap', 'ui.sortable', 'ngSanitize', 'wiz.markdown']);
 editControl.directive('convertToNumber', function () {
   return {
     require: 'ngModel',
