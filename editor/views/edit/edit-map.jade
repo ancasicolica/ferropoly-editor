@@ -1,0 +1,56 @@
+//
+   Created by kc on 14.02.15.
+.row
+  .col-md-8
+    #map_canvas
+  .col-md-4
+    #property-info.panel.panel-default
+      .panel-heading Ausgewähltes Ort
+      .panel-body
+        b {{currentMarker.property.data.location.name}}
+        .row
+          .col-md-3 Erreichbarkeit
+          .col-md-9 {{currentLocationAccessibility()}}
+        .row
+          .col-md-3  Verwendung
+          .col-md-9
+            select#usage.form-control.ferropoly-control(ng-change='currentPropertyChanged()' ng-model='currentMarker.property.data.pricelist.priceRange' convert-to-number)
+              option(value='-1') nicht in Preisliste
+              option(value='0') sehr billig
+              option(value='1') billig
+              option(value='2') unteres Mittelfeld
+              option(value='3') oberes Mittelfeld
+              option(value='4') teuer
+              option(value='5') sehr teuer
+
+    #property-filter.panel.panel-default
+      .panel-heading Ortfilter
+      .panel-body
+        select.form-control.ferropoly-control(ng-model='propertyFilter' ng-change='setVisibleMarkers()')
+          option(value='all' default) alle
+          option(value='allInList' default) alle in Preisliste
+          option(value='-1') nicht in Preisliste
+          option(value='0') sehr billig
+          option(value='1') billig
+          option(value='2') unteres Mittelfeld
+          option(value='3') oberes Mittelfeld
+          option(value='4') teuer
+          option(value='5') sehr teuer
+
+    #property-list-header
+      #property-list-title Anzahl Orte angezeigt: {{displayedProperties.length}}, Anzahl Orte in Preisliste: {{getNumberOfProperties()}}
+    #property-list
+      table.table.table-striped.table.condensed
+        thead
+          th
+            a(href='' ng-click="propertiesPredicate='data.location.name';reverse=!reverse") Ort
+          th
+            a(href='' ng-click="propertiesPredicate='[data.location.accessibility, data.location.name]';reverse=!reverse") Erreichbarkeit
+          th
+            a(href='' ng-click="propertiesPredicate='[data.pricelist.priceRange, data.location.name]';reverse=!reverse") Preisklasse
+        tbody
+          tr(data-ng-repeat='property in displayedProperties | orderBy:propertiesPredicate:reverse' )
+            td
+              a(href='' ng-click="setCurrentProperty(property.marker)") {{property.data.location.name}}
+            td {{property.getAccessibilityText()}}
+            td {{property.getPriceRangeText()}}

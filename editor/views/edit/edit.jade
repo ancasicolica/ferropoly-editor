@@ -1,0 +1,64 @@
+//
+   Created by kc on 31.01.15.
+
+extends ../layout
+block head
+  link(rel='stylesheet', href='/css/edit.css')
+  script(src='/modules/wiz-markdown/wizMarkdown/wizMarkdown.min.js')
+  script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyClFIdi03YvYPvLikNwLSZ748yw1tfDVXU&libraries=places')
+  script(src = propertyFile)
+  script
+    | var gameId = '#{gameId}';
+    | var gameUrl = '#{gameUrl}';
+block navbar
+  li(class='dropdown')
+    a(data-toggle='dropdown' class='dropdown-toggle' href='#') Spielparameter
+    ul(role='menu' class='dropdown-menu')
+      li
+        a(href='#' ng-click="panel='gameplay'") Spieldaten
+      li
+        a(href='#' ng-click="panel='mobile'") Spielerzugang
+      li
+        a(href='#' ng-click="panel='basics'") Preisliste
+      li
+        a(href='#' ng-click="panel='interests'") Stargeld & Zins
+      li
+        a(href='#' ng-click="panel='properties'") Häuser & Hotel
+  li
+    a(href='' ng-click="showMapTab()") Ortauswahl
+  li
+    a(href='' ng-click="showPriceList()") Reihenfolge
+  li
+    a(href='' ng-click="panel='finalize'") Preisliste erstellen
+
+block content
+  div(ng-show='panel === "init"')
+    h1 Lade die Daten... einen Moment bitte
+    p
+    a(href='/') Zurück zur Hauptseite
+  div(ng-show='panel === "error"' ng-cloak)
+    h1 Houston, we have a problem!
+    p
+    p Beim Laden des Spiels ist ein Fehler aufgetreten:
+    p {{errorMessage}}
+    p
+    p
+    p
+      a(href='/')
+        | Zurück zur Hauptseite
+  div(ng-show='panel === "gameplay"' ng-cloak)
+    include edit-gameplay
+  div(ng-show='panel === "basics"' ng-cloak)
+    include edit-basics
+  div(ng-show='panel === "mobile"' ng-cloak)
+    include edit-mobile
+  div(ng-show='panel === "interests"' ng-cloak)
+    include edit-interests
+  div(ng-show='panel === "properties"' ng-cloak)
+    include edit-properties
+  div(ng-show='panel=== "map"' ng-cloak)
+    include edit-map
+  div(ng-show='panel==="pricelist"' ng-cloak)
+    include edit-pricelist
+  div(ng-show='panel==="finalize"' ng-cloak)
+    include edit-finalize

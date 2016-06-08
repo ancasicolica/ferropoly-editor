@@ -2,7 +2,7 @@
  * Release candidate settings
  * Created by kc on 30.08.15.
  */
-'use strict';
+
 
 
 module.exports = function (settings) {
@@ -20,12 +20,14 @@ module.exports = function (settings) {
   };
 
   settings.locationDbSettings = {
-    mongoDbUrl: 'mongodb://localhost/ferropoly'
+    mongoDbUrl: 'mongodb://localhost/ferropoly_rc',
+    poolSize: 3
   };
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay: '45 1 * * *'
+    createDemoGameplay: '45 1 * * *',
+    deleteOldGameplays: '45 2 * * *'
   };
 
   settings.demoGameplay = {
@@ -43,6 +45,12 @@ module.exports = function (settings) {
     }
   };
 
+  // Facebook settings
+  settings.oAuth.facebook.callbackURL = 'https://editor-rc.ferropoly.ch/auth/facebook/callback';
+  // Google Settings
+  settings.oAuth.google.callbackURL = 'https://editor-rc.ferropoly.ch/auth/google/callback';
+
+  
   settings.mainInstances = ['http://spiel-rc.ferropoly.ch'];
 
   return settings;

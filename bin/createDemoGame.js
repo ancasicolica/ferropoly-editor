@@ -2,9 +2,9 @@
 /*
  Creates a demo game which is running today
  */
-var settings = require('../editor/settings');
+var settings    = require('../editor/settings');
 var ferropolyDb = require('../common/lib/ferropolyDb');
-var gplib = require('../editor/lib/gameplayLib');
+var gplib       = require('../editor/lib/gameplayLib');
 ferropolyDb.init(settings, function (err) {
   if (err) {
     console.log('DB initialisation error: ' + err);
@@ -12,10 +12,13 @@ ferropolyDb.init(settings, function (err) {
     return;
   }
   gplib.createDemoGameplay({
-    gameId: 'local-demo-game',
-    gameStart: '04:00',
-    gameEnd: '23:30',
-    doNotNotifyMain: true
+    gameId         : 'local-demo-game',
+    gameStart      : '04:00',
+    gameEnd        : '23:30',
+    doNotNotifyMain: true,
+    mobile         : {
+      level: 5
+    }
   }, function (err) {
     if (err) {
       console.log('Demo gameplay creation error: ' + err);

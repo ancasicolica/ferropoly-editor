@@ -1,0 +1,29 @@
+h1 Preisliste
+form(name='basicsForm')
+  .row
+    .col-md-4
+      .panel.panel-default
+        .panel-body
+          label(for='lowestPrice') Preis günstigstes Ort
+          input.form-control(type='number' name='lowestPrice' id='lowestPrice' min='100' max='4000' step='100' ng-model='gameplay.gameParams.properties.lowestPrice')
+          span.help-block Empfohlen: 1000, gültiger Bereich ist zwischen 100 und 4000.
+          p.bg-danger(ng-hide='basicsForm.lowestPrice.$valid') Ungültige Eingabe: Es sind nur Zahlen zwischen 100 und 4000 erlaubt.
+
+          label(for='highestPrice') Preis teuerstes Ort
+          input(class='form-control' type='number' name='highestPrice' id='highestPrice' min='1000' max='10000' step='100' ng-model='gameplay.gameParams.properties.highestPrice')
+          span.help-block Empfohlen: 4000, gültiger Bereich ist zwischen 1000 und 10000.
+          p.bg-danger(ng-hide='basicsForm.highestPrice.$valid') Ungültige Eingabe: Es sind nur Zahlen zwischen 1000 und 10000 erlaubt.
+
+          label(for='numberOfPriceLevels') Anzahl Preisstufen
+          select.form-control(id='numberOfPriceLevels' ng-model='numberOfPriceLevels' ng-options="numberOfPriceLevels.id as numberOfPriceLevels.name for numberOfPriceLevels in numberOfPriceLevelsOptions")
+          span.help-block Bestimmt die Preisunterschiede zwischen zwei Orten: die Differenz zwischen teuerstem und billigstem Ort wird durch diesen Wert geteilt. Empfohlen sind 8 Preisstufen. Beim Spezialwert '1' werden die Preisstufen deaktiviert (alle Orte haben einen unterschiedlichen Preis).
+
+          label(for='nbPropertiesPerGroup') Grösse der Liegenschaftsgruppen
+          select.form-control(id='nbPropertiesPerGroup' ng-model='numberOfPropertiesPerGroup' ng-options="numberOfPropertiesPerGroup.id as numberOfPropertiesPerGroup.name for numberOfPropertiesPerGroup in nbPropertiesPerGroupOptions")
+          span.help-block Bei einem Wert grösser 1 werden die in der Preisliste beieinander liegenden Orte zu Gruppen zusammengefasst. Besitzt eine Spielergruppe alle Orte einer Ortsgruppe, dann verdoppeln sich die Einnahmen. Empfohlen sind 2.
+
+    .col-md-2
+      button.btn.btn-primary(type='submit' ng-disabled='!basicsForm.$valid' ng-click="save('interests')") Speichern und weiter
+
+    .col-md-6
+      //img(src='/images/ferropoly01.jpg' class='edit-basics-pic')

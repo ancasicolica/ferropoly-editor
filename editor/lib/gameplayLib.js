@@ -3,28 +3,31 @@
  *
  * Created by kc on 14.02.15.
  */
-'use strict';
-var gameplays = require('../../common/models/gameplayModel');
-var properties = require('../../common/models/propertyModel');
-var locations = require('../../common/models/locationModel');
-var logs = require('../../common/models/logModel');
-var travelLog = require('../../common/models/travelLogModel');
-var teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
-var propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
-var chancelleryTransaction = require('../../common/models/accounting/chancelleryTransaction');
-var teams = require('../../common/models/teamModel');
-var pricelistLib = require('./pricelist');
-var _ = require('lodash');
-var async = require('async');
-var settings = require('../settings');
-var schedulerEvents = require('../../common/lib/schedulerEvents');
-var schedulerEventsModel = require('../../common/models/schedulerEventModel');
-var logger = require('../../common/lib/logger').getLogger('gameplayLib');
-var restify = require('restify');
-var moment = require('moment');
 
-var demoGameId = 'play-a-demo-game';
-var demoOrganisatorMail = 'demo@ferropoly.ch';
+const gameplays                  = require('../../common/models/gameplayModel');
+const properties                 = require('../../common/models/propertyModel');
+const locations                  = require('../../common/models/locationModel');
+const logs                       = require('../../common/models/logModel');
+const travelLog                  = require('../../common/models/travelLogModel');
+const teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
+const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
+const chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
+const teams                      = require('../../common/models/teamModel');
+const schedulerEvents            = require('../../common/lib/schedulerEvents');
+const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
+const userModel                  = require('../../common/models/userModel');
+const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
+const demoUsers                  = require('./demoUsers');
+const pricelistLib               = require('./pricelist');
+const settings                   = require('../settings');
+const rulesGenerator             = require('./rulesGenerator');
+const restify                    = require('restify');
+const moment                     = require('moment');
+const _                          = require('lodash');
+const async                      = require('async');
+
+const demoGameId          = 'play-a-demo-game';
+const demoOrganisatorMail = 'demo@ferropoly.ch';
 
 /**
  * Updates the ferropoly main program cache
@@ -39,8 +42,10 @@ function updateFerropolyMainCache(delay, callback) {
   _.delay(function () {
     async.each(settings.mainInstances, function (instance, cb) {
       var jsonClient = restify.createJsonClient({
-        url: instance,
-        version: '*'
+        url           : instance,
+        version       : '*',
+        connectTimeout: 1000,
+        requestTimeout: 1500
       });
 
       // Fire and forget, don't care about the return
@@ -66,29 +71,27 @@ function updateFerropolyMainCache(delay, callback) {
  */
 function createRandomGameplay(gameId, props, nb, callback) {
   var gplen = Math.min(nb, props.length);
-  console.log('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
+  logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   var priceRange = 0;
-  var generated = 0;
+  var generated  = 0;
 
   try {
-    // Handler for the loop
-    var updatePropertyHandler = function(err)  {
-      if (err) {
-        console.log('Error in createRandomGameplay:' + err.message);
+    async.whilst(
+      function () {
+        return generated < gplen;
+      },
+      function (cb) {
+        var index                 = _.random(0, props.length - 1);
+        var p                     = _.pullAt(props, [index]);
+        p[0].pricelist.priceRange = priceRange % 6;
+        priceRange++;
+        generated++;
+        properties.updateProperty(gameId, p[0], cb);
+      },
+      function (err) {
+        return callback(err);
       }
-      generated++;
-      if (generated === gplen) {
-        callback(null);
-      }
-    };
-
-    for (var i = 0; i < gplen; i++) {
-      var index = _.random(0, props.length - 1);
-      var p = _.pullAt(props, [index]);
-      p[0].pricelist.priceRange = priceRange % 6;
-      priceRange++;
-      properties.updateProperty(gameId, p[0], updatePropertyHandler);
-    }
+    );
   }
   catch (e) {
     console.error(e);
@@ -111,12 +114,13 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
     if (err) {
       return callback(err);
     }
+    logger.info('Read ' + gameLocations.length + ' locations for this map');
 
     async.each(gameLocations,
       function (location, cb) {
         properties.createPropertyFromLocation(gameplay.internal.gameId, location, function (err, prop) {
           if (err) {
-            console.log('Error while creating property:' + err.message);
+            logger.info('Error while creating property:' + err.message);
           }
           props.push(prop);
           cb(err);
@@ -126,8 +130,10 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
         if (err) {
           return callback(err);
         }
+        logger.info('Created properties for the game');
         if (gpOptions.random) {
           createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
+            logger.info('Created random pricelist');
             return callback(err, gameplay);
           });
         }
@@ -152,31 +158,44 @@ function createNewGameplay(gpOptions, callback) {
     return callback(new Error('Options are not complete'));
   }
 
-  console.log('New game for ' + gpOptions.email);
-  gameplays.createGameplay({
-    map: gpOptions.map,
-    name: gpOptions.gamename,
-    ownerEmail: gpOptions.email,
-    gameStart: gpOptions.gameStart || '05:00',
-    gameEnd: gpOptions.gameEnd || '18:00',
-    gameDate: gpOptions.gamedate,
-    interestInterval: gpOptions.interestInterval,
-    gameId: gpOptions.gameId,
-    instance: settings.server.serverId
-  }, function (err, gameplay) {
+  logger.info('New game for ' + gpOptions.email + ' using map ' + gpOptions.map);
+  userModel.getUserByMailAddress(gpOptions.email, function (err, user) {
     if (err) {
-      // Error while creating the gameplay, abort
       return callback(err);
     }
-    logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
-      if (err) {
-        logger.error('Log error', err);
-      }
-      // returns the gp as second param in callback
-      return copyLocationsToProperties(gpOptions, gameplay, callback);
-    });
+    // as default we use the email address as user id
+    user = user || {id: gpOptions.email};
 
+    gameplays.createGameplay({
+      map             : gpOptions.map,
+      name            : gpOptions.gamename,
+      ownerEmail      : gpOptions.email,
+      organisatorName : gpOptions.organisatorName,
+      ownerId         : user.id,
+      gameStart       : gpOptions.gameStart || '05:00',
+      gameEnd         : gpOptions.gameEnd || '18:00',
+      gameDate        : gpOptions.gamedate,
+      interestInterval: gpOptions.interestInterval,
+      gameId          : gpOptions.gameId,
+      instance        : settings.server.serverId,
+      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC}
+    }, function (err, gameplay) {
+      if (err) {
+        // Error while creating the gameplay, abort
+        return callback(err);
+      }
+      logger.info('New gameplay created: ' + gameplay._id);
+      logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
+        if (err) {
+          logger.error('Log error', err);
+        }
+        // returns the gp as second param in callback
+        return copyLocationsToProperties(gpOptions, gameplay, callback);
+      });
+
+    });
   });
+
 }
 
 /**
@@ -248,11 +267,11 @@ function createDemoTeamEntry(gameId, entry) {
 
   return {
     gameId: gameId,
-    data: {
-      name: entry[0],
+    data  : {
+      name        : entry[0],
       organization: entry[1],
-      teamLeader: {name: entry[2], email: entry[3], phone: entry[4]},
-      remarks: entry[5]
+      teamLeader  : {name: entry[2], email: entry[3], phone: entry[4]},
+      remarks     : entry[5]
     }
   };
 }
@@ -264,32 +283,32 @@ function createDemoTeamEntry(gameId, entry) {
 function createDemoTeams(gp, teamNb, callback) {
   var demoTeamData = [];
   var i;
-  teamNb = teamNb || 8;
+  teamNb           = teamNb || 8;
   if (teamNb > 20) {
     teamNb = 20;
   }
 
   var referenceData = [
-    createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', 'Heinz Muster', 'team1@ferropoly.ch', '079 000 00 01']),
-    createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', 'Nora Heinzmann', 'team2@ferropoly.ch', '079 000 00 02']),
-    createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', 'Marius Heller', 'team3@ferropoly.ch', '079 000 00 03']),
-    createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', 'Annina Cavegn', 'team4@ferropoly.ch', '079 000 00 04', 'Siegerteam letztes Jahr']),
-    createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', 'Sylvia Meyer', 'team5@ferropoly.ch', '079 000 00 05']),
-    createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', 'Marcel Grob', 'team6@ferropoly.ch', '079 000 00 06']),
-    createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', 'Olivia Huber', 'team7@ferropoly.ch', '079 000 00 07']),
-    createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', 'Olaf Meier', 'team8@ferropoly.ch', '079 000 00 08']),
-    createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', 'Claudia Mächler', 'team9@ferropoly.ch', '079 000 00 09']),
-    createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern', 'Stefan Holzer', 'team10@ferropoly.ch', '079 000 00 10']),
-    createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', 'Lea Wolfensberger', 'team11@ferropoly.ch', '079 000 00 11']),
-    createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', 'Berni Hirzel', 'team12@ferropoly.ch', '079 000 00 12']),
-    createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', 'Nicole Signer', 'team13@ferropoly.ch', '079 000 00 13']),
-    createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', 'Miriam Toto', 'team14@ferropoly.ch', '079 000 00 14']),
-    createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', 'Meinrad Wenger', 'team15@ferropoly.ch', '079 000 00 15']),
-    createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', 'Hansueli Rüdisühli', 'team16@ferropoly.ch', '079 000 00 16']),
-    createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', 'Christine Müller', 'team17@ferropoly.ch', '079 000 00 17']),
-    createDemoTeamEntry(gp.internal.gameId, ['rien-ne-va-plus', 'Verkehrsverein Interlaken', 'Beatrice Rieder', 'team18@ferropoly.ch', '079 000 00 18']),
-    createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms', 'team19@ferropoly.ch', '079 000 00 19']),
-    createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', 'Mike Hintermüller', 'team20@ferropoly.ch', '079 000 00 20'])
+    createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0), demoUsers.getTeamLeaderEmail(0), '079 000 00 01']),
+    createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1), demoUsers.getTeamLeaderEmail(1), '079 000 00 02']),
+    createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2), demoUsers.getTeamLeaderEmail(2), '079 000 00 03']),
+    createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3), demoUsers.getTeamLeaderEmail(3), '079 000 00 04', 'Siegerteam letztes Jahr']),
+    createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', demoUsers.getTeamLeaderName(4), demoUsers.getTeamLeaderEmail(4), '079 000 00 05']),
+    createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', demoUsers.getTeamLeaderName(5), demoUsers.getTeamLeaderEmail(5), '079 000 00 06']),
+    createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', demoUsers.getTeamLeaderName(6), demoUsers.getTeamLeaderEmail(6), '079 000 00 07']),
+    createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', demoUsers.getTeamLeaderName(7), demoUsers.getTeamLeaderEmail(7), '079 000 00 08']),
+    createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', demoUsers.getTeamLeaderName(8), demoUsers.getTeamLeaderEmail(8), '079 000 00 09']),
+    createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern', demoUsers.getTeamLeaderName(9), demoUsers.getTeamLeaderEmail(9), '079 000 00 10']),
+    createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', demoUsers.getTeamLeaderName(10), demoUsers.getTeamLeaderEmail(10), '079 000 00 11']),
+    createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', demoUsers.getTeamLeaderName(11), demoUsers.getTeamLeaderEmail(11), '079 000 00 12']),
+    createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', demoUsers.getTeamLeaderName(12), demoUsers.getTeamLeaderEmail(12), '079 000 00 13']),
+    createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', demoUsers.getTeamLeaderName(13), demoUsers.getTeamLeaderEmail(13), '079 000 00 14']),
+    createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', demoUsers.getTeamLeaderName(14), demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
+    createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', demoUsers.getTeamLeaderName(15), demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
+    createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', demoUsers.getTeamLeaderName(16), demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
+    createDemoTeamEntry(gp.internal.gameId, ['rien-ne-va-plus', 'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17), demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
+    createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms', demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18), '079 000 00 19']),
+    createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', demoUsers.getTeamLeaderName(19), demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
   ];
   for (i = 0; i < teamNb; i++) {
     demoTeamData.push(referenceData[i]);
@@ -327,26 +346,27 @@ function createDemoGameplay(p1, p2) {
   var gameId = settings.gameId || demoGameId;
 
   var options = {
-    map: 'sbb',
-    email: settings.email || demoOrganisatorMail,
-    ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
-    organisatorName: 'Max Muster',
-    gamedate: settings.gameDate || new Date(),
-    gameStart: settings.gameStart || '06:00',
-    gameEnd: settings.gameEnd || '21:00',
-    gamename: settings.gamename || 'Demo Spiel',
-    gameId: gameId,
-    random: settings.random || 80,
-    teamNb: settings.teamNb || 8,
-    doNotNotifyMain: settings.doNotNotifyMain,
-    interestInterval: settings.interestInterval
+    map             : 'sbb',
+    email           : settings.email || demoOrganisatorMail,
+    ownerEmail      : settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
+    organisatorName : 'Max Muster',
+    gamedate        : settings.gameDate || new Date(),
+    gameStart       : settings.gameStart || '06:00',
+    gameEnd         : settings.gameEnd || '21:00',
+    gamename        : settings.gamename || 'Demo Spiel',
+    gameId          : gameId,
+    random          : settings.random || 120,
+    teamNb          : settings.teamNb || 8,
+    doNotNotifyMain : settings.doNotNotifyMain,
+    interestInterval: settings.interestInterval,
+    mobile          : settings.mobile || {level: 5}
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
   // will be executed in the late evening (local time). Therefore the date has to be ajusted
   if (settings.demoGameplay && settings.demoGameplay.addDays) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
-    console.log('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
+    logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
   }
   var startTs = new Date();
   gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
@@ -368,29 +388,29 @@ function createDemoGameplay(p1, p2) {
       // Create new gameplay now
       createNewGameplay(options, function (err, gp) {
         if (err) {
-          console.log('Failed to create the demo gameplay: ' + err.message);
+          logger.info('Failed to create the demo gameplay: ' + err.message);
           return callback(err);
         }
         createDemoTeams(gp, options.teamNb, function (err) {
           if (err) {
-            console.log('Failed to create the demo teams: ' + err.message);
+            logger.info('Failed to create the demo teams: ' + err.message);
             return callback(err);
           }
           pricelistLib.create(gameId, demoOrganisatorMail, function (err) {
             if (err) {
-              console.log('Failed to create the demo price list: ' + err.message);
+              logger.info('Failed to create the demo price list: ' + err.message);
               return callback(err);
             }
-            gp.internal.finalized = true;
+            gp.internal.finalized       = true;
             gp.internal.doNotNotifyMain = true;
             finalizeGameplay(gp, demoOrganisatorMail, function (err) {
               if (err) {
-                console.log('Failed to save demo gameplay: ' + err.message);
+                logger.info('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-              var endTs = new Date();
+              var endTs    = new Date();
               var duration = (endTs.getTime() - startTs.getTime()) / 1000;
-              console.log('Created the demo again and I needed ' + duration + ' seconds for it!');
+              logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
               logs.add('Demo Gameplay created', callback);
             });
           });
@@ -409,27 +429,73 @@ function createDemoGameplay(p1, p2) {
 function finalizeGameplay(gameplay, email, callback) {
   gameplays.finalize(gameplay.internal.gameId, email, function (err, gpSaved) {
     if (err) {
-      logger.error('Failed to save demo gameplay: ' + err.message);
+      logger.error('Failed to finalize gameplay: ' + err.message);
       return callback(err);
     }
-    properties.finalizeProperties(gameplay.internal.gameId, function (err) {
+    var rules = rulesGenerator(gpSaved);
+    gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules}, err => {
       if (err) {
-        logger.error('Failed to finalize the properties: ' + err.message);
-        return callback(err);
+        logger.error('Error while saving rules', err.message);
+        // But continue...
       }
-      schedulerEvents.createEvents(gpSaved, function (err) {
+      properties.finalizeProperties(gameplay.internal.gameId, function (err) {
         if (err) {
-          logger.error('Error while creating events', err);
+          logger.error('Failed to finalize the properties: ' + err.message);
+          return callback(err);
         }
-        logger.info('Gameplay finalized', gameplay.internal.gameId);
-        if (gameplay.internal.doNotNotifyMain) {
-          return callback();
-        }
-        updateFerropolyMainCache(4000, callback);
+        schedulerEvents.createEvents(gpSaved, function (err) {
+          if (err) {
+            logger.error('Error while creating events', err);
+          }
+          logger.info('Gameplay finalized', gameplay.internal.gameId);
+          if (gameplay.internal.doNotNotifyMain) {
+            return callback();
+          }
+          updateFerropolyMainCache(4000, callback);
+        });
       });
     });
   });
 }
+
+/**
+ * Deletes all expired gameplays
+ * @param callback
+ */
+function deleteOldGameplays(callback) {
+  gameplays.getAllGameplays((err, gps) => {
+    if (err) {
+      return callback(err);
+    }
+
+    async.each(gps,
+      function (gp, cb) {
+        var timeout;
+        if (!gp.scheduling.deleteTs) {
+          // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
+          // the game took place. This code can be removed in the next ferropoly release
+          timeout = moment(gp.scheduling.gameDate).add(1, 'M');
+        }
+        else {
+          // This is the code which should run for current (V2) ferropolys
+          timeout = moment(gp.scheduling.deleteTs);
+        }
+        logger.info('Timeout for ' + gp._id, timeout.toDate());
+        if (!timeout) {
+          // Still no timeout, cancel this one, but still handle others
+          logger.error(new Error('No timeout found for ' + gp._id));
+          return cb();
+        }
+
+        if (moment().isAfter(timeout)) {
+          deleteGameplay({gameId: gp._id, ownerEmail: gp.owner.organisatorEmail, doNotNotifyMain: true}, cb);
+        }
+      },
+      callback
+    );
+  });
+}
+
 
 module.exports = {
   /**
@@ -458,5 +524,10 @@ module.exports = {
   /**
    * Finalize the gameplay
    */
-  finalizeGameplay: finalizeGameplay
+  finalizeGameplay: finalizeGameplay,
+
+  /**
+   * Deletes all expired gameplays
+   */
+  deleteOldGameplays: deleteOldGameplays
 };

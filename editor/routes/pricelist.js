@@ -3,42 +3,43 @@
  *
  * Created by kc on 08.03.15.
  */
-'use strict';
 
-var express = require('express');
-var router = express.Router();
-var pricelistLib = require('../lib/pricelist');
-var commonPricelistLib = require('../../common/lib/pricelist');
-var gameplays = require('../../common/models/gameplayModel');
 
-var settings = require('../settings');
-var ngFile = '/js/pricelistctrl.js';
-if (settings.minifedjs) {
-  ngFile = '/js/pricelistctrl.min.js';
-}
+const express            = require('express');
+const router             = express.Router();
+const pricelistLib       = require('../lib/pricelist');
+const commonPricelistLib = require('../../common/lib/pricelist');
+const gameplays          = require('../../common/models/gameplayModel');
+const logger             = require('../../common/lib/logger').getLogger('routes:pricelist');
+const downloadPricelist  = require('../../common/routes/downloadPricelist');
+const settings           = require('../settings');
+const _                  = require('lodash');
+
+var ngFile = 'pricelistctrl';
+ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+
 
 /* GET priceslist. */
-router.get('/', function (req, res) {
-  res.render('pricelist', {
-    title: 'Preisliste',
-    gameId: req.query.gameId,
-    gameUrl: settings.mainInstances[0], // main instance with index 0 has highest prio
+router.get('/view/:gameId', function (req, res) {
+  res.render('pricelist/pricelist', {
+    title       : 'Preisliste',
+    gameId      : req.params.gameId,
+    gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
     ngController: 'pricelistCtrl',
-    ngApp: 'pricelistApp',
-    ngFile: ngFile
+    ngApp       : 'pricelistApp',
+    ngFile      : ngFile
   });
 });
 
+router.get('/download/:gameId', downloadPricelist.handler);
 
 /**
  * Create a pricelist
  */
 router.post('/create', function (req, res) {
-  if (!req.body.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (1)'});
-  }
-  if (req.body.authToken !== req.session.authToken) {
-    return res.send({status: 'error', message: 'Permission denied (2)'});
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
   }
   pricelistLib.create(req.body.gameId, req.session.passport.user, function (err) {
     if (err) {
@@ -51,16 +52,20 @@ router.post('/create', function (req, res) {
 /**
  * Get a pricelist
  */
-router.get('/get', function (req, res) {
-  if (!req.query || !req.query.gameId) {
+router.get('/get/:gameId', function (req, res) {
+  if (!req.params || !req.params.gameId) {
     return res.send({success: false, message: 'Parameter error'});
   }
 
-  gameplays.getGameplay(req.query.gameId, req.session.passport.user, function (err, gp) {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
     if (err) {
       return res.send({success: false, message: err.message});
     }
-    commonPricelistLib.getPricelist(req.query.gameId, function(err, list) {
+    
+    // Only owners may finalize it
+    gp = gp.toObject();
+    gp.isOwner = _.get(gp, 'owner.organisatorEmail') === req.session.passport.user;
+    commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
       if (err) {
         return res.send({success: false, message: err.message});
       }

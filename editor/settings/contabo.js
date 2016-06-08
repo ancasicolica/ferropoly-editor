@@ -2,7 +2,7 @@
  * Settings for the contabo server. Fix IP is 5.189.159.156
  * Created by kc on 15.08.15.
  */
-'use strict';
+
 
 
 module.exports = function (settings) {
@@ -19,14 +19,21 @@ module.exports = function (settings) {
   };
 
   settings.locationDbSettings = {
-    mongoDbUrl: process.env.FERROPOLY_CONNECTION_STRING
+    mongoDbUrl: 'mongodb://localhost/ferropoly',
+    poolSize: 4
   };
 
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
-    createDemoGameplay: '12 1 * * *'
+    createDemoGameplay: '12 1 * * *',
+    deleteOldGameplays: '12 2 * * *'
   };
+
+  // Facebook settings
+  settings.oAuth.facebook.callbackURL = 'https://editor-preview.ferropoly.ch/auth/facebook/callback';
+  // Google Settings
+  settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
 
 
   settings.demoGameplay = {

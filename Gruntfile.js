@@ -21,51 +21,53 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     uglify: {
-      js: {
+      js     : {
         files: {
-          './editor/public/js/date.min.js': ['./editor/public/js/date.js'],
-          './editor/public/js/editctrl.min.js': ['./editor/public/js/editctrl.js'],
-          './editor/public/js/indexctrl.min.js': ['./editor/public/js/indexctrl.js'],
-          './editor/public/js/newgamectrl.min.js': ['./editor/public/js/newgamectrl.js'],
-          './editor/public/js/playerctrl.min.js': ['./editor/public/js/playerctrl.js'],
-          './editor/public/js/pricelistctrl.min.js': ['./editor/public/js/pricelistctrl.js'],
-          './editor/public/js/property.min.js': ['./editor/public/js/property.js'],
-          './editor/public/js/signupctrl.min.js': ['./editor/public/js/signupctrl.js'],
-          './editor/public/js/signupverifyctrl.min.js': ['./editor/public/js/signupverifyctrl.js'],
-          './editor/public/js/sortable.min.js': ['./editor/public/js/sortable.js'],
-          './editor/public/js/analytics.min.js': ['./editor/public/js/analytics.js']
+          './editor/public/js/min/accountctrl.min.js'     : ['./editor/public/js/src/accountctrl.js'],
+          './editor/public/js/min/adminsctrl.min.js'      : ['./editor/public/js/src/adminsctrl.js'],
+          './editor/public/js/min/editctrl.min.js'        : ['./editor/public/js/src/editctrl.js'],
+          './editor/public/js/min/indexctrl.min.js'       : ['./editor/public/js/src/indexctrl.js'],
+          './editor/public/js/min/newgamectrl.min.js'     : ['./editor/public/js/src/newgamectrl.js'],
+          './editor/public/js/min/playerctrl.min.js'      : ['./editor/public/js/src/playerctrl.js'],
+          './editor/public/js/min/pricelistctrl.min.js'   : ['./editor/public/js/src/pricelistctrl.js'],
+          './editor/public/js/min/property.min.js'        : ['./editor/public/js/src/property.js'],
+          './editor/public/js/min/rulesctrl.min.js'           : ['./editor/public/js/src/rulesctrl.js'],
+          './editor/public/js/min/signupctrl.min.js'      : ['./editor/public/js/src/signupctrl.js'],
+          './editor/public/js/min/signupverifyctrl.min.js': ['./editor/public/js/src/signupverifyctrl.js'],
+          './editor/public/js/min/analytics.min.js'       : ['./editor/public/js/src/analytics.js'],
+          './editor/public/js/min/loginctrl.min.js'       : ['./editor/public/js/src/loginctrl.js']
         }
       },
       options: {
-        unused: false,
-        dead_code: true,
+        unused    : false,
+        dead_code : true,
         properties: false,
-        beautify: false,
-        compress: false,
-        mangle: false, // do not rename variables
-        banner: '/*! <%= pkg.name %> V<%= pkg.version %> <%= grunt.template.today("dd-mm-yyyy") %>, (c) Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch> */\n'
+        beautify  : false,
+        compress  : false,
+        mangle    : false, // do not rename variables
+        banner    : '/*! <%= pkg.name %> V<%= pkg.version %> <%= grunt.template.today("dd-mm-yyyy") %>, (c) Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch> */\n'
 
       }
     },
-    bump: {
+    bump  : {
       options: {
-        files: ['package.json'],
-        updateConfigs: [],
-        commit: true,
-        commitMessage: 'New version added v%VERSION%',
-        commitFiles: ['-a'],
-        tagName: 'v%VERSION%',
-        tagMessage: 'Version %VERSION%',
-        push: true,
-        pushTo: 'ssh://git@bitbucket.org/christian_kuster/ferropoly_editor.git',
+        files             : ['package.json'],
+        updateConfigs     : [],
+        commit            : true,
+        commitMessage     : 'New version added v%VERSION%',
+        commitFiles       : ['-a'],
+        tagName           : 'v%VERSION%',
+        tagMessage        : 'Version %VERSION%',
+        push              : true,
+        pushTo            : 'ssh://git@bitbucket.org/christian_kuster/ferropoly_editor.git',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
-        globalReplace: false,
-        prereleaseName: false,
-        regExp: false
+        globalReplace     : false,
+        prereleaseName    : false,
+        regExp            : false
       }
     },
     eslint: {
-      src: [
+      src    : [
         'server.js',
         'editor/app.js',
         'editor/lib/**/*.js',
@@ -75,9 +77,9 @@ module.exports = function (grunt) {
         config: './.eslintrc'
       }
     },
-    shell: {
+    shell : {
       options: {},
-      target: {
+      target : {
         command: './bin/createDemoGame.js'
       }
     }
