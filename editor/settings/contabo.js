@@ -31,9 +31,9 @@ module.exports = function (settings) {
   };
 
   // Facebook settings
-  settings.oAuth.facebook.callbackURL = 'https://editor-preview.ferropoly.ch/auth/facebook/callback';
+  settings.oAuth.facebook.callbackURL = 'https://editor.ferropoly.ch/auth/facebook/callback';
   // Google Settings
-  settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
+  settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
 
 
   settings.demoGameplay = {
