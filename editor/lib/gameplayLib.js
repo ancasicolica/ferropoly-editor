@@ -488,7 +488,7 @@ function deleteOldGameplays(callback) {
         }
 
         if (moment().isAfter(timeout)) {
-          deleteGameplay({gameId: gp._id, ownerEmail: gp.owner.organisatorEmail, doNotNotifyMain: true}, cb);
+          deleteGameplay({gameId: gp._id, ownerEmail: gp.internal.owner, doNotNotifyMain: true}, cb);
         }
       },
       callback
