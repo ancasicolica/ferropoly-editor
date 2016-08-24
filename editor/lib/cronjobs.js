@@ -32,7 +32,7 @@ function setUpDemoGamemplayCreation() {
 
 function setupDeletingOldGameplays() {
   if (settings.cron.deleteOldGameplays) {
-    logger.info('CRON: setting up the delete-old-games job', settings.cron.createDemoGameplay);
+    logger.info('CRON: setting up the delete-old-games job', settings.cron.deleteOldGameplays);
     cron.scheduleJob(settings.cron.deleteOldGameplays, function() {
       gpLib.deleteOldGameplays(function(err) {
         if (err) {
