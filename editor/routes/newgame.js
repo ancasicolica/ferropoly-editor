@@ -2,12 +2,9 @@
  * New Game
  * Created by kc on 29.01.15.
  */
-
-
-var express  = require('express');
-var router   = express.Router();
-var multer   = require('multer');
-var settings = require('../settings');
+const express  = require('express');
+const router   = express.Router();
+const settings = require('../settings');
 
 var ngFile = 'newgamectrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
@@ -23,7 +20,6 @@ router.get('/', function (req, res) {
  */
 module.exports = {
   init: function (app) {
-    app.use(multer()); // for parsing multipart/form-data
     app.use('/newgame', router);
   }
 };

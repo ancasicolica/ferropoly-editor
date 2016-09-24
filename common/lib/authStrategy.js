@@ -8,7 +8,7 @@
 
 var LocalStrategy    = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy;
+var GoogleStrategy   = require('passport-google-oauth20').Strategy;
 var crypto           = require('crypto');
 var logger           = require('./logger').getLogger('authStrategy');
 var util             = require('util');

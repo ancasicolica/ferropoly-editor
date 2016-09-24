@@ -6,7 +6,6 @@
 
 const express       = require('express');
 const router        = express.Router();
-const multer        = require('multer');
 const gameplayLib   = require('../lib/gameplayLib');
 const gameplayModel = require('../../common/models/gameplayModel');
 const userModel     = require('../../common/models/userModel');
@@ -65,19 +64,19 @@ router.post('/createnew', function (req, res) {
 
         // Use the unit-test tested gameplay lib for this
         gameplayLib.createNewGameplay({
-            email          : user.personalData.email,
-            organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
-            map            : req.body.map,
-            gamename       : req.body.gamename,
-            gamedate       : req.body.gamedate,
-            random         : req.body.random
-          },
-          function (err, gp) {
-            if (err) {
-              return res.status(500).send({success: false, message: err.message});
+              email          : user.personalData.email,
+              organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
+              map            : req.body.map,
+              gamename       : req.body.gamename,
+              gamedate       : req.body.gamedate,
+              random         : req.body.random
+            },
+            function (err, gp) {
+              if (err) {
+                return res.status(500).send({success: false, message: err.message});
+              }
+              return res.send({success: true, gameId: gp.internal.gameId});
             }
-            return res.send({success: true, gameId: gp.internal.gameId});
-          }
         )
         ;
       });
@@ -186,7 +185,6 @@ router.post('/delete', function (req, res) {
  */
 module.exports = {
   init: function (app) {
-    app.use(multer()); // for parsing multipart/form-data
     app.use('/gameplay', router);
   }
 };
