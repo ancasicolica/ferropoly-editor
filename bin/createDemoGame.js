@@ -12,6 +12,7 @@ ferropolyDb.init(settings, function (err) {
     return;
   }
   gplib.createDemoGameplay({
+    map            : 'sbb',
     gameId         : 'local-demo-game',
     gameStart      : '04:00',
     gameEnd        : '23:30',

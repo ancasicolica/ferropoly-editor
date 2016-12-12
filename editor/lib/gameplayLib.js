@@ -346,7 +346,7 @@ function createDemoGameplay(p1, p2) {
   var gameId = settings.gameId || demoGameId;
 
   var options = {
-    map             : 'sbb',
+    map             : settings.map || 'sbb',
     email           : settings.email || demoOrganisatorMail,
     ownerEmail      : settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
     organisatorName : 'Max Muster',
