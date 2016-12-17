@@ -6,6 +6,7 @@
 
 const gameplays                  = require('../../common/models/gameplayModel');
 const properties                 = require('../../common/models/propertyModel');
+const propertyGridModel          = require('../../common/models/propertyGridModel');
 const locations                  = require('../../common/models/locationModel');
 const logs                       = require('../../common/models/logModel');
 const travelLog                  = require('../../common/models/travelLogModel');
@@ -16,6 +17,7 @@ const teams                      = require('../../common/models/teamModel');
 const schedulerEvents            = require('../../common/lib/schedulerEvents');
 const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
 const userModel                  = require('../../common/models/userModel');
+const propertyGrid               = require('../../common/lib/propertyGrid');
 const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
 const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
@@ -240,6 +242,9 @@ function deleteGameplay(gpOptions, callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
         },
         function (callback) {
+          propertyGridModel.removeAllPropertyGridsFromGameplay(gpOptions.gameId, callback);
+        },
+        function (callback) {
           logs.add('Deleted gameplay: ' + gpOptions.gameId, callback);
         }
       ], function (err, results) {
@@ -447,11 +452,16 @@ function finalizeGameplay(gameplay, email, callback) {
           if (err) {
             logger.error('Error while creating events', err);
           }
-          logger.info('Gameplay finalized', gameplay.internal.gameId);
-          if (gameplay.internal.doNotNotifyMain) {
-            return callback();
-          }
-          updateFerropolyMainCache(4000, callback);
+          propertyGrid.create(gameplay.internal.gameId, err => {
+            if (err) {
+              logger.error(err);
+            }
+            logger.info('Gameplay finalized', gameplay.internal.gameId);
+            if (gameplay.internal.doNotNotifyMain) {
+              return callback();
+            }
+            updateFerropolyMainCache(4000, callback);
+          });
         });
       });
     });
