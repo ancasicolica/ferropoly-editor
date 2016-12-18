@@ -41,6 +41,9 @@ const create = function (gameId, callback) {
       function (cb) {
         // Link all properties
         linkProperties(properties, cb)
+      },
+      function (cb) {
+        updateAllAvailability(gameId, cb);
       }
 
     ],
@@ -97,7 +100,7 @@ const linkProperty = function (props, property, callback) {
     // Get distance to every other property
     let neighbours = propertyLib.calculateDistances(property.uuid, props);
     // Get the 10 closests (to be set in options?) and save the relation
-    neighbours     = _.slice(neighbours, 0, 10);
+    neighbours     = _.slice(neighbours, 1, 11);
     if (neighbours.length > 2) {
       async.eachSeries(neighbours,
         function (neighbour, cb) {
@@ -110,8 +113,8 @@ const linkProperty = function (props, property, callback) {
               return cb();
             }
 
-            pg.neighbours.push({uuid: neighbour.propertyId, distance: neighbour.distance});
-            pgn.isNeighbourOf.push({uuid: property.uuid, distance: neighbour.distance});
+            pg.neighbours.push({propertyId: neighbour.propertyId, distance: neighbour.distance});
+            pgn.isNeighbourOf.push({propertyId: property.uuid, distance: neighbour.distance});
             propertyGridModel.saveSingle(pgn, cb);
           });
         },
@@ -127,6 +130,86 @@ const linkProperty = function (props, property, callback) {
   });
 };
 
-module.exports = {
-  create: create
+/**
+ * Evaluates the availability of a property
+ * @param pge is the property grid element which is evaluated (and changed)
+ * @param props are all properties
+ */
+const evaluatePropertyAvailability = function (pge, props) {
+  let neighbours = _.sortBy(pge.neighbours, n => {
+    return n.distance;
+  });
+
+  // Is the property itself sold?
+  let p = _.find(props, {uuid: pge.propertyId});
+  if (!p) {
+    logger.error(new Error(`Own property not found with id ${pge.propertyId}`));
+    return;
+  }
+  if (_.get(p, 'gamedata.owner', false)) {
+    // Is sold
+    pge.availabilityChance = 0;
+  } else {
+    // Is not sold: chances that it is available has a base value then
+    pge.availabilityChance = 10;
+  }
+
+  let distSum = _.reduce(neighbours, (sum, n) => {
+    return sum + (1 / n.distance);
+  }, 0);
+
+  neighbours.forEach(n => {
+    let neighbour = _.find(props, {uuid: n.propertyId});
+    if (_.get(neighbour, 'gamedata.owner', false)) {
+      // Neighbour is sold, reduces the chance
+      pge.availabilityChance += 10 * (1 / n.distance) / distSum;
+    }
+    else {
+      // sold
+      pge.availabilityChance += 90 * (1 / n.distance) / distSum;
+    }
+  });
+
+  pge.availabilityChance = _.round(pge.availabilityChance);
+
+  // Just info
+  logger.info(`${p.location.name} has a chance of ${pge.availabilityChance}`);
+};
+
+/**
+ * Updates the availability for ALL properties in a gameplay
+ * @param gameId
+ * @param callback
+ */
+const updateAllAvailability = function (gameId, callback) {
+  let properties   = null;
+  let propertyGrid = null;
+  async.waterfall([
+      function (cb) {
+        // Read all properties, so that we know which ones were sold and which not
+        propertyModel.getPropertiesForGameplay(gameId, {lean: true}, (err, props) => {
+          properties = props;
+          cb(err);
+        });
+      },
+      function (cb) {
+        // Read the property grid, which we're going to iterate through later
+        propertyGridModel.getAllForGameplay(gameId, (err, grid) => {
+          propertyGrid = grid;
+          cb(err);
+        });
+      },
+      function (cb) {
+        async.forEach(propertyGrid, (pg, cb2) => {
+          evaluatePropertyAvailability(pg, properties);
+          propertyGridModel.saveSingle(pg, cb2);
+        }, cb);
+      }
+
+    ],
+    callback);
+};
+module.exports              = {
+  create               : create,
+  updateAllAvailability: updateAllAvailability
 };

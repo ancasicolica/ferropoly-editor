@@ -66,6 +66,7 @@ const removeAllPropertyGridsFromGameplay = function (gameId, callback) {
  * Get a specific propertygrid
  * @param gameId
  * @param propertyId
+ * @param callback
  * @returns {*}
  */
 const get = function (gameId, propertyId, callback) {
@@ -80,6 +81,18 @@ const get = function (gameId, propertyId, callback) {
       return callback();
     }
     return callback(null, docs[0]);
+  });
+};
+
+
+/**
+ * Get the complete grid for a gameplay
+ * @param gameId
+ * @param callback
+ */
+const getAllForGameplay = function (gameId, callback) {
+  PropertyGrid.find({gameId: gameId}, function (err, docs) {
+    return callback(err, docs);
   });
 };
 
@@ -102,6 +115,7 @@ module.exports = {
   Model                             : propertyGridSchema,
   create                            : create,
   get                               : get,
-  saveSingle                              : saveSingle,
+  getAllForGameplay                 : getAllForGameplay,
+  saveSingle                        : saveSingle,
   removeAllPropertyGridsFromGameplay: removeAllPropertyGridsFromGameplay
 };
