@@ -111,7 +111,7 @@ function createRandomGameplay(gameId, props, nb, callback) {
  * @returns {*}
  */
 function copyLocationsToProperties(gpOptions, gameplay, callback) {
-  var props = [];
+  let props = [];
   return locations.getAllLocationsForMap(gpOptions.map, function (err, gameLocations) {
     if (err) {
       return callback(err);
@@ -286,14 +286,14 @@ function createDemoTeamEntry(gameId, entry) {
  * @param callback
  */
 function createDemoTeams(gp, teamNb, callback) {
-  var demoTeamData = [];
-  var i;
+  let demoTeamData = [];
+  let i;
   teamNb           = teamNb || 8;
   if (teamNb > 20) {
     teamNb = 20;
   }
 
-  var referenceData = [
+  let referenceData = [
     createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0), demoUsers.getTeamLeaderEmail(0), '079 000 00 01']),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1), demoUsers.getTeamLeaderEmail(1), '079 000 00 02']),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2), demoUsers.getTeamLeaderEmail(2), '079 000 00 03']),
@@ -334,8 +334,8 @@ function createDemoTeams(gp, teamNb, callback) {
  * @param p2 if settings are used, callback
  */
 function createDemoGameplay(p1, p2) {
-  var callback = p2;
-  var settings = {};
+  let callback = p2;
+  let settings = {};
 
   if (_.isFunction(p1)) {
     callback = p1;
@@ -348,9 +348,9 @@ function createDemoGameplay(p1, p2) {
     settings.gameDate = moment().add(1, 'days').toDate();
   }
 
-  var gameId = settings.gameId || demoGameId;
+  let gameId = settings.gameId || demoGameId;
 
-  var options = {
+  let options = {
     map             : settings.map || 'sbb',
     email           : settings.email || demoOrganisatorMail,
     ownerEmail      : settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
@@ -373,7 +373,7 @@ function createDemoGameplay(p1, p2) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
     logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
   }
-  var startTs = new Date();
+  let startTs = new Date();
   gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
     if (err) {
       return callback(err);
@@ -413,8 +413,8 @@ function createDemoGameplay(p1, p2) {
                 logger.info('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-              var endTs    = new Date();
-              var duration = (endTs.getTime() - startTs.getTime()) / 1000;
+              let endTs    = new Date();
+              let duration = (endTs.getTime() - startTs.getTime()) / 1000;
               logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
               logs.add('Demo Gameplay created', callback);
             });
@@ -437,7 +437,7 @@ function finalizeGameplay(gameplay, email, callback) {
       logger.error('Failed to finalize gameplay: ' + err.message);
       return callback(err);
     }
-    var rules = rulesGenerator(gpSaved);
+    let rules = rulesGenerator(gpSaved);
     gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules}, err => {
       if (err) {
         logger.error('Error while saving rules', err.message);
@@ -480,7 +480,7 @@ function deleteOldGameplays(callback) {
 
     async.each(gps,
       function (gp, cb) {
-        var timeout;
+        let timeout;
         if (!gp.scheduling.deleteTs) {
           // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
           // the game took place. This code can be removed in the next ferropoly release
