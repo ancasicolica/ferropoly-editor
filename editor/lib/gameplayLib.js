@@ -7,6 +7,7 @@
 const gameplays                  = require('../../common/models/gameplayModel');
 const properties                 = require('../../common/models/propertyModel');
 const propertyGridModel          = require('../../common/models/propertyGridModel');
+const propertyMap                = require('../../common/lib/propertyMap');
 const locations                  = require('../../common/models/locationModel');
 const logs                       = require('../../common/models/logModel');
 const travelLog                  = require('../../common/models/travelLogModel');
@@ -43,7 +44,7 @@ function updateFerropolyMainCache(delay, callback) {
   logger.info('Attempting to update main module caches in a few seconds');
   _.delay(function () {
     async.each(settings.mainInstances, function (instance, cb) {
-      var jsonClient = restify.createJsonClient({
+      let jsonClient = restify.createJsonClient({
         url           : instance,
         version       : '*',
         connectTimeout: 1000,
@@ -72,10 +73,10 @@ function updateFerropolyMainCache(delay, callback) {
  * @param callback
  */
 function createRandomGameplay(gameId, props, nb, callback) {
-  var gplen = Math.min(nb, props.length);
+  let gplen = Math.min(nb, props.length);
   logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
-  var priceRange = 0;
-  var generated  = 0;
+  let priceRange = 0;
+  let generated  = 0;
 
   try {
     async.whilst(
@@ -83,8 +84,8 @@ function createRandomGameplay(gameId, props, nb, callback) {
         return generated < gplen;
       },
       function (cb) {
-        var index                 = _.random(0, props.length - 1);
-        var p                     = _.pullAt(props, [index]);
+        let index                 = _.random(0, props.length - 1);
+        let p                     = _.pullAt(props, [index]);
         p[0].pricelist.priceRange = priceRange % 6;
         priceRange++;
         generated++;
@@ -149,9 +150,6 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
 /**
  * Creates a complete new gameplay, including copying the locations to the properties
  * @param gpOptions options for the gameplay.
- * @param gameplays
- * @param locations
- * @param properties
  * @param callback
  */
 function createNewGameplay(gpOptions, callback) {
@@ -283,6 +281,7 @@ function createDemoTeamEntry(gameId, entry) {
 /**
  * Creates the teams for the demo
  * @param gp
+ * @param teamNb
  * @param callback
  */
 function createDemoTeams(gp, teamNb, callback) {
@@ -452,15 +451,22 @@ function finalizeGameplay(gameplay, email, callback) {
           if (err) {
             logger.error('Error while creating events', err);
           }
-          propertyGrid.create(gameplay.internal.gameId, err => {
+          logger.info('Scheduler Events created');
+          propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
+            logger.info('Property map created');
             if (err) {
               logger.error(err);
             }
-            logger.info('Gameplay finalized', gameplay.internal.gameId);
-            if (gameplay.internal.doNotNotifyMain) {
-              return callback();
-            }
-            updateFerropolyMainCache(4000, callback);
+            propertyGrid.create(gameplay.internal.gameId, err => {
+              if (err) {
+                logger.error(err);
+              }
+              logger.info('Gameplay finalized', gameplay.internal.gameId);
+              if (gameplay.internal.doNotNotifyMain) {
+                return callback();
+              }
+              updateFerropolyMainCache(4000, callback);
+            });
           });
         });
       });
