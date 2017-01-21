@@ -34,16 +34,16 @@ app.controller('rulesCtrl', ['$scope', '$http', '$interval', '$timeout', functio
   };
 
   /*
-  Undo local changes
+   Undo local changes
    */
-  $scope.undoLoadedChanges = function() {
+  $scope.undoLoadedChanges = function () {
     console.warn('Unsaved changes discarded');
   };
 
   /**
    * Save local changes
    */
-  $scope.saveLoadedChanges = function() {
+  $scope.saveLoadedChanges = function () {
     $scope.rules = $scope.unsavedRulesFound.text;
     console.log('Unsaved changes applied');
   };
@@ -52,40 +52,40 @@ app.controller('rulesCtrl', ['$scope', '$http', '$interval', '$timeout', functio
    * After loading the document, we load the gameplay and pricelist
    */
   $(document).ready(function () {
-    $http.get('/rules/data/' + gameId).success(function (data) {
-      console.log(data);
-      $scope.data      = data;
-      $scope.changelog = data.changelog;
-      $scope.changelog.forEach(function (c) {
-        c.ts = new Date(c.ts);
+    $http.get('/rules/data/' + gameId).then(
+      function (resp) {
+        var data = resp.data;
+        $scope.data      = data;
+        $scope.changelog = data.changelog;
+        $scope.changelog.forEach(function (c) {
+          c.ts = new Date(c.ts);
+        });
+        $scope.rules = data.text;
+
+        var savedRules = localStorage.getItem(gameId + '-rules-text');
+        if (savedRules && (savedRules !== $scope.rules)) {
+          console.log('Local saved rules are different');
+          $scope.unsavedRulesFound = {ts: localStorage.getItem(gameId + '-rules-ts'), text: savedRules};
+          $('#modal-unsaved-changes').modal({show: true});
+        }
+        console.log('rules loaded');
+
+        $http.get('/authtoken').then(
+          function (resp) {
+            authToken = resp.data.authToken;
+            console.log('Auth ok');
+          },
+          function (resp) {
+            console.error('/authtoken failed', resp);
+            $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + resp.status;
+          });
+
+      },
+      function (resp) {
+        console.error('/rules/data failed', resp);
+        $scope.panel        = 'error';
+        $scope.errorMessage = 'Ladefehler, das Spiel kann nicht angesehen werden. Status: ' + resp.status;
       });
-      $scope.rules = data.text;
-
-      var savedRules = localStorage.getItem(gameId + '-rules-text');
-      if (savedRules && (savedRules !== $scope.rules)) {
-        console.log('Local saved rules are different');
-        $scope.unsavedRulesFound = {ts: localStorage.getItem(gameId + '-rules-ts'), text: savedRules};
-        $('#modal-unsaved-changes').modal({show: true});
-      }
-      console.log('rules loaded');
-
-      $http.get('/authtoken').success(function (data) {
-        authToken = data.authToken;
-        console.log('Auth ok');
-      }).error(function (data, status) {
-        console.error('authtoken error:');
-        console.error(data);
-        console.error(status);
-        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
-      });
-
-    }).error(function (data, status) {
-      console.error('load-game-error');
-      console.error(data);
-      console.error(status);
-      $scope.panel        = 'error';
-      $scope.errorMessage = 'Ladefehler, das Spiel kann nicht angesehen werden. Status: ' + status;
-    });
   });
 
 

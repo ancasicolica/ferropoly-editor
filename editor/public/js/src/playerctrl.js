@@ -20,7 +20,7 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
   $scope.currentTeam        = undefined;
   $scope.currentDataChanged = false;
   $scope.maxGroupNb         = 20; // That's checked on server side too, don't try to fake it :-)
-  $scope.gameplay = gameplay;
+  $scope.gameplay           = gameplay;
   /**
    * Sort the teams
    */
@@ -84,26 +84,27 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
   };
 
   function createNewTeam(callback) {
-    $http.post('/player/create', {gameId: gameId, authToken: authToken}).success(function (data, status) {
-      console.log('team created', data);
-      $scope.statusText = 'Neues Team angelegt';
-      fa.event('Teams', 'new', {gameId: gameId});
-      $scope.teams.push(data.team);
-      $scope.sortTeams();
-      $scope.currentTeam = data.team;
-      _.delay($scope.validateForm, 500);
-      if (callback) {
-        return callback(null);
+    $http.post('/player/create', {gameId: gameId, authToken: authToken}).then(
+      function (resp) {
+        console.log('team created', resp.data);
+        $scope.statusText = 'Neues Team angelegt';
+        fa.event('Teams', 'new', {gameId: gameId});
+        $scope.teams.push(resp.data.team);
+        $scope.sortTeams();
+        $scope.currentTeam = resp.data.team;
+        _.delay($scope.validateForm, 500);
+        if (callback) {
+          return callback(null);
+        }
+      },
+      function (resp) {
+        console.error('/player/create failed', resp)
+        $scope.statusText = 'Fehler beim anlegen';
+        if (callback) {
+          return callback(new Error(resp.data.message));
+        }
       }
-    }).error(function (data, status) {
-      console.log('ERROR');
-      console.log(data);
-      console.log(status);
-      $scope.statusText = 'Fehler beim anlegen';
-      if (callback) {
-        return callback(new Error(data.message));
-      }
-    });
+    );
   }
 
   /**
@@ -138,37 +139,38 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
         console.log(err)
       };
     }
-    $http.post('/player/store', {team: $scope.currentTeam, authToken: authToken}).success(function (data, status) {
-      if (data.success) {
-        console.log('team updated', data.team);
-        $scope.statusText  = $scope.currentTeam.data.name + ' gespeichert';
-        $scope.currentTeam = data.team;
-        // replace also in list
-        var t = _.find($scope.teams, {'uuid': data.team.uuid});
-        if (t) {
-          _.remove($scope.teams, {'uuid': data.team.uuid});
-          $scope.teams.push(data.team);
+    $http.post('/player/store', {team: $scope.currentTeam, authToken: authToken}).then(
+      function (resp) {
+        var data = resp.data;
+        if (data.success) {
+          console.log('team updated', data.team);
+          $scope.statusText  = $scope.currentTeam.data.name + ' gespeichert';
+          $scope.currentTeam = data.team;
+          // replace also in list
+          var t              = _.find($scope.teams, {'uuid': data.team.uuid});
+          if (t) {
+            _.remove($scope.teams, {'uuid': data.team.uuid});
+            $scope.teams.push(data.team);
+          }
+          else {
+            console.warn('Was not able to update the team');
+          }
+          $scope.sortTeams();
+          fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
+          return callback(null);
         }
         else {
-          console.warn('Was not able to update the team');
+          console.log('Error');
+          console.log(data);
+          $scope.statusText = 'Fehler beim speichern';
+          return callback(new Error(data.message));
         }
-        $scope.sortTeams();
-        fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
-        return callback(null);
-      }
-      else {
-        console.log('Error');
-        console.log(data);
+      },
+      function (resp) {
+        console.error('/player/store failed', resp)
         $scope.statusText = 'Fehler beim speichern';
         return callback(new Error(data.message));
-      }
-    }).error(function (data, status) {
-      console.log('ERROR');
-      console.log(data);
-      console.log(status);
-      $scope.statusText = 'Fehler beim speichern';
-      return callback(new Error(data.message));
-    });
+      });
   };
 
   /**
@@ -205,27 +207,28 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
       teamId   : $scope.currentTeam.uuid,
       gameId   : gameId,
       authToken: authToken
-    }).success(function (data, status) {
-      if (data.success) {
-        console.log('team deleted');
+    }).then(
+      function (resp) {
+        var data = resp.data;
+        if (data.success) {
+          console.log('team deleted');
 
-        if (i > -1) {
-          $scope.teams.splice(i, 1);
+          if (i > -1) {
+            $scope.teams.splice(i, 1);
+          }
+          $scope.sortTeams();
+          $scope.currentTeam = undefined;
+          if ($scope.teams.length > 0) {
+            $scope.setCurrentTeam($scope.teams[0]);
+          }
         }
-        $scope.sortTeams();
-        $scope.currentTeam = undefined;
-        if ($scope.teams.length > 0) {
-          $scope.setCurrentTeam($scope.teams[0]);
+        else {
+          console.log('error while deleting: ' + data);
         }
-      }
-      else {
-        console.log('error while deleting: ' + data);
-      }
-    }).error(function (data, status) {
-      console.log('ERROR');
-      console.log(data);
-      console.log(status);
-    });
+      },
+      function (resp) {
+        console.error('/player/delete failed', resp)
+      });
   };
 
   /**
@@ -256,32 +259,32 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
    * Load teams when document ready
    */
   $(document).ready(function () {
-    $http.get('/authtoken').success(function (data) {
-      authToken = data.authToken;
-      console.log('Auth ok');
-      $http.get('/player/get/' + gameId).success(function (data) {
-        console.log(data);
-        $scope.teams = data.teams;
-        $scope.sortTeams();
-        if ($scope.teams.length > 0) {
-          $scope.setCurrentTeam($scope.teams[0]);
-        }
-        else {
-          $scope.currentTeam = undefined;
-        }
-        console.log('Teams geladen', $scope.teams);
-        $scope.statusText = 'Daten geladen';
-      }).error(function (data, status) {
-        $scope.statusText = 'Fehler beim Laden der Teams';
-        console.log('load-game-error');
-        console.log(data);
-        console.log(status);
+    $http.get('/authtoken').then(
+      function (resp) {
+        authToken = resp.data.authToken;
+        console.log('Auth ok');
+        $http.get('/player/get/' + gameId).then(
+          function (resp) {
+            console.log('player/get', resp.data);
+            $scope.teams = resp.data.teams;
+            $scope.sortTeams();
+            if ($scope.teams.length > 0) {
+              $scope.setCurrentTeam($scope.teams[0]);
+            }
+            else {
+              $scope.currentTeam = undefined;
+            }
+            console.log('Teams geladen', $scope.teams);
+            $scope.statusText = 'Daten geladen';
+          },
+          function (resp) {
+            $scope.statusText = 'Fehler beim Laden der Teams';
+            console.error('/player/get failed', resp);
+          });
+      },
+      function (resp) {
+        console.error('/player/get failed', resp);
+        $scope.statusText = 'Authentisierungsfehler';
       });
-    }).error(function (data, status) {
-      console.log('error:');
-      console.log(data);
-      console.log(status);
-      $scope.statusText = 'Authentisierungsfehler';
-    });
   });
 }]);

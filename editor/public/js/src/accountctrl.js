@@ -10,13 +10,16 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
   $scope.data = null;
 
   // Load the user data of the user the session belongs to
-  $http.get('/userinfo').success(function (data) {
-    $scope.data = data.info;
-  }).error(function (data, status) {
-    console.log('error:');
-    console.log(data);
-    console.log(status);
-  });
+  $http.get('/userinfo').then(
+    function (resp) {
+      $scope.data = resp.data.info;
+    },
+    function (data, status) {
+      console.log('error:');
+      console.log(data);
+      console.log(status);
+    }
+  );
 
   $scope.getRegistrationDate = function () {
     if (!$scope.data) {

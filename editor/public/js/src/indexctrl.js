@@ -7,9 +7,9 @@
 var indexControl = angular.module('indexApp', ['ui.bootstrap']);
 indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http) {
 
-  $scope.gameplays = [];
-  var authToken;
-  $scope.gameplayToDelete;
+  $scope.gameplays        = [];
+  var authToken           = undefined;
+  $scope.gameplayToDelete = undefined;
 
   // Be kind and say hello
   if (moment().hour() < 4) {
@@ -26,20 +26,21 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
    * Get the auttoken (async!)
    */
   var getAuthToken = function () {
-    $http.get('/authtoken').success(function (data) {
-      authToken = data.authToken;
-      console.log('Auth ok');
-    }).error(function (data, status) {
-      console.log('error:');
-      console.log(data);
-      console.log(status);
-      $scope.panel        = 'error';
-      $scope.errorMessage = 'Authentisierungsfehler. Status: ' + status;
-    });
+    $http.get('/authtoken').then(
+      function (data) {
+        authToken = data.authToken;
+        console.log('Auth ok');
+      }, function (data, status) {
+        console.log('error:');
+        console.log(data);
+        console.log(status);
+        $scope.panel        = 'error';
+        $scope.errorMessage = 'Authentisierungsfehler. Status: ' + status;
+      });
   };
 
   // Accept AGB
-  $scope.acceptAgb = function () {
+  $scope.acceptAgb  = function () {
     $http({method: 'POST', url: '/agb/accept'}).then(
       function () {
         $scope.agb.accepted = true;
@@ -133,33 +134,31 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
     $http.post('/gameplay/delete', {
       gameId   : $scope.gameplayToDelete.internal.gameId,
       authToken: authToken
-    }).success(function (data) {
-      if (data.success) {
-        console.log('gameplay deleted');
-        console.log(data);
-        // Remove from UI
-        _.remove($scope.gameplays, function (gp) {
-          return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
-        });
-        $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
-        fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
-        $scope.gameplayToDelete = null;
-      }
-      else {
-        console.log('Error');
-        console.log(data);
+    }).then(
+      function (resp) {
+        if (resp.data.success) {
+          console.log('gameplay deleted', resp.data);
+          // Remove from UI
+          _.remove($scope.gameplays, function (gp) {
+            return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
+          });
+          $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
+          fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
+          $scope.gameplayToDelete = null;
+        }
+        else {
+          console.log('Error', resp.data);
+          $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
+          fa.exception('Can not delete gameplay:' + resp.data.message);
+          $scope.gameplayToDelete = null;
+        }
+      },
+      function (resp) {
+        console.log('/gameplay/delete failed', resp)
         $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
-        fa.exception('Can not delete gameplay:' + data.message);
+        fa.exception('Can not delete gameplay:' + resp.data.message);
         $scope.gameplayToDelete = null;
-      }
-    }).error(function (data, status) {
-      console.log('ERROR');
-      console.log(data);
-      console.log(status);
-      $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
-      fa.exception('Can not delete gameplay:' + data.message);
-      $scope.gameplayToDelete = null;
-    });
+      });
   }
 
 }]);

@@ -11,44 +11,43 @@ var verificationControl = angular.module('verificationApp', ['ui.bootstrap']);
  */
 verificationControl.controller('verificationCtrl', ['$scope', '$http', function ($scope, $http) {
   $scope.verificationText = '';
-  $scope.errorMessage = '';
-  $scope.errorNewMessage = '';
+  $scope.errorMessage     = '';
+  $scope.errorNewMessage  = '';
 
-  $scope.verifiy = function() {
+  $scope.verifiy = function () {
     console.log($scope.verificationText);
-    $http.post('/signup/verifyText' , {
+    $http.post('/signup/verifyText', {
       text: $scope.verificationText
-    }).
-      success(function (data) {
-        if (data.valid) {
-          console.log('OK, go on for index page');
-          window.location.href = "/";
-        }
-        else {
-          console.warn(data.message);
-          $scope.errorMessage = 'Fehler! Der Server meldet: ' + data.message;
-        }
-      }).
-      error(function (data, status) {
-        console.log(status);
-      });
+    }).success(function (data) {
+      if (data.valid) {
+        console.log('OK, go on for index page');
+        window.location.href = "/";
+      }
+      else {
+        console.warn(data.message);
+        $scope.errorMessage = 'Fehler! Der Server meldet: ' + data.message;
+      }
+    }).error(function (data, status) {
+      console.log(status);
+    });
   };
 
-  $scope.generateNew = function() {
-    $http.post('/signup/generateNewText' , {})
-      .success(function (data) {
-        if (data.valid) {
-          console.log('OK, go on for index page');
+  $scope.generateNew = function () {
+    $http.post('/signup/generateNewText', {})
+      .then(
+        function (resp) {
+          if (resp.data.valid) {
+            console.log('OK, go on for index page');
 
-        }
-        else {
-          console.warn(data.message);
-          $scope.errorNewMessage = 'Fehler! Der Server meldet: ' + data.message;
-        }
-      }).
-      error(function (data, status) {
-        console.log(status);
-      });
+          }
+          else {
+            console.warn(resp.data.message);
+            $scope.errorNewMessage = 'Fehler! Der Server meldet: ' + resp.data.message;
+          }
+        },
+        function (resp) {
+          console.error('/signup/generateNewText failed', resp);
+        });
   };
 }]);
 console.log('LOADED');

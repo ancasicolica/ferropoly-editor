@@ -101,12 +101,13 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
   $scope.verifyEmail = function () {
     $http.post('/signup/verifyemail', {
       email: $scope.email
-    }).success(function (data) {
-      onEmailVerificationResult(data);
-    }).error(function (data, status) {
-      console.log(status);
-      onEmailVerificationResult(data);
-    });
+    }).then(function (resp) {
+        onEmailVerificationResult(resp.data);
+      },
+      function (resp) {
+        console.error('/signup/verifyemail failed', resp);
+        onEmailVerificationResult(resp.data);
+      });
   };
   /**
    * Verify the forname
@@ -163,22 +164,23 @@ signupControl.controller('signupCtrl', ['$scope', '$http', '$interval', function
           email   : $scope.email
         },
         password    : $scope.password
-      }).success(function (data) {
-        console.log(data);
-        if (data.saved) {
-          $scope.emailSentSuccess = true;
-        }
-        else {
-          $scope.emailError = data.message;
-        }
-        $scope.view++;
-        fa.event('Signup', 'new user', $scope.email);
-      }).error(function (data, status) {
-        $scope.emailError = status;
-        console.warn(status);
-        console.log(data);
-        $scope.view++;
-      });
+      }).then(
+        function (resp) {
+          console.log(resp.data);
+          if (resp.data.saved) {
+            $scope.emailSentSuccess = true;
+          }
+          else {
+            $scope.emailError = resp.data.message;
+          }
+          $scope.view++;
+          fa.event('Signup', 'new user', $scope.email);
+        },
+        function (resp) {
+          $scope.emailError = resp.status;
+          console.error('/signup/new failed', resp);
+          $scope.view++;
+        });
     }
   }
 }]);
