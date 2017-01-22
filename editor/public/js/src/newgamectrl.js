@@ -27,13 +27,13 @@ newGameControl.directive('convertToNumber', function () {
 
 newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
 
-  $scope.map          = 'zvv';
-  $scope.gamename     = 'Ferropoly Spiel';
-  $scope.errorMessage = '';
-  $scope.gamedate     = moment().add(1, 'd').format('YYYY-MM-DD');
-  $scope.minDate      = moment().format('YYYY-MM-DD');
-  $scope.random       = 0;
-  $scope.maps         = ferropolyMaps.maps; // loaded over ferropoly api
+  $scope.map           = 'zvv';
+  $scope.gamename      = 'Ferropoly Spiel';
+  $scope.errorMessage  = '';
+  $scope.gamedate      = moment().add(1, 'd').format('YYYY-MM-DD');
+  $scope.minDate       = moment().format('YYYY-MM-DD');
+  $scope.random        = 0;
+  $scope.maps          = ferropolyMaps.maps; // loaded over ferropoly api
   $scope.createEnabled = true;
 
   var authToken = 'none';
@@ -60,15 +60,18 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
    * Some kind of a workaround as the value did not change of the ng-model attached to the radio button???
    * @param t
    */
-  $scope.setMap = function(t) {
+  $scope.setMap = function (t) {
     console.log(t);
     $scope.map = t.map;
   };
 
   /**
    * Create game
+   *
+   * button.btn.btn-success(data-toggle='modal' data-target='#modal-success') TEST
    */
   $scope.validateAndSave = function () {
+
     $scope.createEnabled = false;
     $http({
       method: 'POST',
@@ -89,10 +92,9 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
       },
       function (resp) {
         // Error
-        console.log('Error');
-        console.log(data);
-        $scope.errorMessage = 'Leider trat ein Fehler auf, Info:' + resp.data.message;
-        fa.exception('Can not create gameplay:' + resp.data.message);
+        console.error('/gameplay/edit/ failed', resp);
+        genericModals.showError('Fehler', 'Das neue Spiel konnte nicht angelegt werden. Fehlermeldung: "' + resp.data + '"');
+        fa.exception('Can not create gameplay:' + resp.data);
         $scope.createEnabled = true;
       }
     );
