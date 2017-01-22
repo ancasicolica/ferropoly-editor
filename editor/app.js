@@ -69,6 +69,7 @@ var initServer = function () {
   passport.use(authStrategy.facebookStrategy);
   passport.use(authStrategy.googleStrategy);
   passport.use(authStrategy.localStrategy);
+  passport.use(authStrategy.microsoftStrategy);
   // Session serializing of the user
   passport.serializeUser(authStrategy.serializeUser);
   // Session deserialisation of the user
