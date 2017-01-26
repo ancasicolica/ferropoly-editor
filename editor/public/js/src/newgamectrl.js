@@ -29,7 +29,6 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
 
   $scope.map           = 'zvv';
   $scope.gamename      = 'Ferropoly Spiel';
-  $scope.errorMessage  = '';
   $scope.gamedate      = moment().add(1, 'd').format('YYYY-MM-DD');
   $scope.minDate       = moment().format('YYYY-MM-DD');
   $scope.random        = 0;
@@ -50,9 +49,8 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
       },
       function (resp) {
         // Error promise
-        console.log('error:');
-        console.log(resp);
-        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht erstellt werden. Status: ' + resp.status;
+        console.error('/authtoken error:', resp);
+        genericModals.showError('Fehler', 'Anmeldefehler, bitte neu einloggen und nochmals versuchen. Fehlermeldung: "' + resp.data + '"');
       });
   });
 
