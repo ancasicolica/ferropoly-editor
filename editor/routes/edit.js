@@ -4,18 +4,18 @@
  */
 
 
-var express  = require('express');
-var settings = require('../settings');
-var logger   = require('../../common/lib/logger').getLogger('routes:edit');
-var async    = require('async');
-var router   = express.Router();
-var gameplays;
-var properties;
+const express  = require('express');
+const settings = require('../settings');
+const logger   = require('../../common/lib/logger').getLogger('routes:edit');
+const async    = require('async');
+const router   = express.Router();
+let gameplays;
+let properties;
 
-var ngFile = 'editctrl';
+let ngFile = 'editctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
-var propertyFile = 'property';
+let propertyFile = 'property';
 propertyFile           = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
 
 
@@ -63,7 +63,7 @@ router.get('/load/:gameId', function (req, res) {
 router.post('/save/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   if (req.params.gameId !== req.body.gameplay.internal.gameId) {
@@ -85,13 +85,13 @@ router.post('/save/:gameId', function (req, res) {
 router.post('/saveProperty/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   if (!req.body.property || !req.body.property.location) {
     return res.status(400).send({message: 'Ungültige Parameter'});
   }
-  var prop = req.body.property;
+  let prop = req.body.property;
 
   if (req.params.gameId !== prop.gameId) {
     res.status(400).send({message: 'GameID mismatch'});
@@ -125,7 +125,7 @@ router.post('/saveProperty/:gameId', function (req, res) {
 router.post('/dataChanged/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId, function (err) {
@@ -142,13 +142,13 @@ router.post('/dataChanged/:gameId', function (req, res) {
 router.post('/savePositionInPricelist/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   if (!req.body.properties) {
     return res.status(400).send({message: 'Properties fehlen'});
   }
-  var props = req.body.properties;
+  let props = req.body.properties;
   if (props.length === 0) {
     return res.send({
       success: true,

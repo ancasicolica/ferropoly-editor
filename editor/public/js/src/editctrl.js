@@ -22,7 +22,6 @@ editControl.directive('convertToNumber', function () {
 editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', function ($scope, $http, $interval, $timeout) {
 
   $scope.panel               = 'init';
-  $scope.errorMessage        = '';
   $scope.gameplay            = {};
   $scope.allProperties       = [];
   $scope.markers             = [];
@@ -208,9 +207,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
           updateEditDate();
         },
         function (resp) {
-          console.log('ERROR');
-          console.log(resp);
-          $scope.statusText = 'Fehler beim Speichern: ' + resp.data.message;
+          console.error('/gameplay/savePositionInPricelist/', resp);
+          genericModals.showError('Fehler', 'Die Änderung konnte leider nicht gespeichert werden.', resp, function () {
+          });
         }
       );
     }
@@ -427,8 +426,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       },
       function (resp) {
         console.error('ERROR', resp);
-        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + resp.data.message;
-        $scope.statusText   = 'Fehler beim Speichern: ' + resp.data.message;
+        genericModals.showError('Fehler', 'Das Spiel konnte leider nicht gespeichert werden.', resp, function () {
+          window.location.href = "/";
+        });
         fa.exception('Can not save game: ' + resp.data.message);
       });
 
@@ -507,8 +507,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
             console.log('gameplay loaded', data);
             if (data.gameplay.internal.finalized) {
               // finalized data, we can't edit
-              $scope.panel        = 'error';
-              $scope.errorMessage = 'Das Spiel wurde schon finalisiert, Du solltest eigentlich gar nicht hier sein.';
+              genericModals.showError('Fehler', 'Das Spiel ist bereits finalisiert, Du solltest das nicht sehen!', resp, function () {
+                window.location.href = "/";
+              });
               return;
             }
             $scope.gameplay                      = data.gameplay;
@@ -542,21 +543,19 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
 
             initPropertyMarkers(map, $scope.allProperties);
           },
-          function (data, status) {
-            console.log('load-game-error');
-            console.log(data);
-            console.log(status);
-            $scope.panel        = 'error';
-            $scope.errorMessage = 'Ladefehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
+          function (resp) {
+            console.error('/gameplay/load', resp);
+            genericModals.showError('Fehler', 'Fehler beim Laden des Spiels', resp, function () {
+              window.location.href = "/";
+            });
           });
 
       },
       function (data, status) {
-        console.log('error:');
-        console.log(data);
-        console.log(status);
-        $scope.panel        = 'error';
-        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
+        console.log('authtoken failed', resp);
+        genericModals.showError('Fehler', 'Bitte neu einloggen.', resp, function () {
+          window.location.href = "/";
+        });
       });
 
   });
@@ -600,8 +599,9 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       },
       function (resp) {
         console.error('/gameplay/saveProperty/ failed', resp);
-        $scope.errorMessage = 'Leider trat ein Fehler auf: Status:' + status + ', Info:' + resp.data.message;
-        $scope.statusText   = 'Fehler beim Speichern: ' + resp.data.message;
+        genericModals.showError('Fehler', 'Leider trat beim Speichern der Änderung ein Fehler auf.', resp, function () {
+          window.location.href = "/";
+        });
       });
   };
 
@@ -681,10 +681,10 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       },
       function (resp) {
         console.error('/pricelist/create failed', resp);
-        $scope.statusText = resp.data.message;
+        genericModals.showError('Fehler', 'Die Preisliste konnte nicht erstellt werden.', resp, function () {
+        });
         a.exception('Can not create pricelist: ' + resp.data.message);
       });
   };
-
 
 }]);

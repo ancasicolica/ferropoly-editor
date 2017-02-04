@@ -33,16 +33,7 @@ block content
     h1 Lade die Daten... einen Moment bitte
     p
     a(href='/') Zurück zur Hauptseite
-  div(ng-show='panel === "error"' ng-cloak)
-    h1 Houston, we have a problem!
-    p
-    p Beim Laden des Spiels ist ein Fehler aufgetreten:
-    p {{errorMessage}}
-    p
-    p
-    p
-      a(href='/')
-        | Zurück zur Hauptseite
+
   div(ng-show='panel === "gameplay"' ng-cloak)
     include edit-gameplay
   div(ng-show='panel === "basics"' ng-cloak)
