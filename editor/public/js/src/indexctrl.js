@@ -131,7 +131,7 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
       return;
     }
 
-    $http.post('/gameplay/delete', {
+    $http.delete('/gameplay/delete', {
       gameId   : $scope.gameplayToDelete.internal.gameId,
       authToken: authToken
     }).then(
@@ -148,13 +148,16 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
         }
         else {
           console.log('Error', resp.data);
+          genericModals.showError('Fehler', 'Spiel konnte nicht gelöscht werden.', resp);
+
           $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
           fa.exception('Can not delete gameplay:' + resp.data.message);
           $scope.gameplayToDelete = null;
         }
       },
       function (resp) {
-        console.log('/gameplay/delete failed', resp)
+        console.log('/gameplay/delete failed', resp);
+        genericModals.showError('Fehler', 'Spiel konnte nicht gelöscht werden.', resp);
         $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
         fa.exception('Can not delete gameplay:' + resp.data.message);
         $scope.gameplayToDelete = null;

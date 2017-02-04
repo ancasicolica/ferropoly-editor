@@ -14,10 +14,11 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
     function (resp) {
       $scope.data = resp.data.info;
     },
-    function (data, status) {
-      console.log('error:');
-      console.log(data);
-      console.log(status);
+    function (resp) {
+      console.error('/userinfo', resp);
+      genericModals.showError('Fehler', 'Die Accountdaten konnten nicht geaden werden.', resp, function() {
+        window.location.href = "/";
+      });
     }
   );
 

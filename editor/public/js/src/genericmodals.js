@@ -3,10 +3,47 @@
  */
 
 var genericModals = {
-  showError: function (title, body) {
+  /**
+   * Shows an error
+   * @param title  Title to be displayed
+   * @param body   Body message HTML
+   * @param resp   response object (of a REST call, optional)
+   * @param callback optional function to be called after sucess
+   */
+  showError: function (title, body, resp, callback) {
+    if (_.isFunction(body)) {
+      resp = body;
+      body = null;
+    }
+    if (_.isFunction(resp)) {
+      callback = resp;
+      resp     = null;
+    }
+
+    if (resp) {
+      body += '<br/>Fehlermeldung:<br/>\n';
+      if (resp.data) {
+        var info = resp.data;
+        if (resp.data.message) {
+          info = resp.data.message;
+        }
+        body += info + '<br/><br/>';
+      }
+      body += 'Status: ' + resp.status + ', ' + resp.statusText + '<br/>\n';
+
+    }
+
+    if (callback) {
+      var btnError = $('#mod-error-btn');
+      btnError.on('click', function () {
+        btnError.off('click');
+        callback();
+      });
+    }
     $('#mod-error-title').text(title);
-    $('#mod-error-body').text(body);
+    $('#mod-error-body').html(body);
     $('#modal-error').modal('show');
+    console.info('Generic error-modal fired!', title, body, resp);
   }
-}
+};
 

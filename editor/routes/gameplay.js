@@ -130,28 +130,25 @@ router.post('/finalize', function (req, res) {
 /**
  * Deletes a gameplay and everything associated to it
  */
-router.post('/delete', function (req, res) {
+router.delete('/:gameId', function (req, res) {
   try {
-    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-      logger.info('Auth token missing, access denied');
-      return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
-    }
+    const gameId = req.params.gameId;
 
-    if (req.body.gameId === 'play-a-demo-game') {
+    if (gameId === 'play-a-demo-game') {
       return res.send({status: 'error', message: 'Can not delete the demo game'});
     }
 
     // Get gameplay first, verify user
-    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
+    gameplayModel.getGameplay(gameId, req.session.passport.user, function (err, gp) {
       if (err) {
         return res.send({
           status : 'error',
-          message: 'Gameplay load error: ' + err.message + ' GameplayId: : ' + req.body.gameId
+          message: 'Gameplay load error: ' + err.message + ' GameplayId: : ' + gameId
         });
       }
       // Gameplay not found (or wrong user for it)
       if (!gp || gp.length === 0) {
-        return res.send({status: 'error', message: 'Gameplay not found: ' + req.body.gameId});
+        return res.send({status: 'error', message: 'Gameplay not found: ' + gameId});
       }
       // Only the owner is allowed to delete the game, not admins!
       if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
