@@ -76,19 +76,15 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
         }
       },
       function (resp) {
-        console.error(resp);
+        // This is not important when failing
+        console.error('/agb failed', resp);
       }
     );
 
     $http({method: 'GET', url: '/gameplay/mygames'}).then(
       function (resp) {
         console.log(resp);
-        if (resp.data.success) {
-          $scope.gameplays = resp.data.gameplays;
-        }
-        else {
-          $scope.gameplays = [];
-        }
+        $scope.gameplays = resp.data.gameplays;
         console.log('Gameplays loaded, nb:' + $scope.gameplays.length);
 
         $scope.gameplays.forEach(function (gp) {
@@ -99,8 +95,11 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
         getAuthToken();
       },
       function (resp) {
-        console.error(resp);
+        console.error('/gameplay/mygames', resp);
         $scope.gameplays = [];
+        genericModals.showError('Fehler', 'Die Spiele konnten nicht geladen werden.', resp, function () {
+          window.location.href = "/";
+        });
       });
   });
   /**
@@ -131,29 +130,18 @@ indexControl.controller('indexCtrl', ['$scope', '$http', function ($scope, $http
       return;
     }
 
-    $http.delete('/gameplay/delete', {
-      gameId   : $scope.gameplayToDelete.internal.gameId,
+    $http.delete('/gameplay/' + $scope.gameplayToDelete.internal.gameId, {
       authToken: authToken
     }).then(
       function (resp) {
-        if (resp.data.success) {
-          console.log('gameplay deleted', resp.data);
-          // Remove from UI
-          _.remove($scope.gameplays, function (gp) {
-            return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
-          });
-          $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
-          fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
-          $scope.gameplayToDelete = null;
-        }
-        else {
-          console.log('Error', resp.data);
-          genericModals.showError('Fehler', 'Spiel konnte nicht gelöscht werden.', resp);
-
-          $scope.statusText = 'Spiel konnte nicht gelöscht werden: ' + $scope.gameplayToDelete.gamename;
-          fa.exception('Can not delete gameplay:' + resp.data.message);
-          $scope.gameplayToDelete = null;
-        }
+        console.log('gameplay deleted', resp.data);
+        // Remove from UI
+        _.remove($scope.gameplays, function (gp) {
+          return (gp.internal.gameId === $scope.gameplayToDelete.internal.gameId);
+        });
+        $scope.statusText = 'Spiel gelöscht: ' + $scope.gameplayToDelete.gamename;
+        fa.event('Gameplay', 'deleted', $scope.gameplayToDelete.internal.gameId);
+        $scope.gameplayToDelete = null;
       },
       function (resp) {
         console.log('/gameplay/delete failed', resp);
