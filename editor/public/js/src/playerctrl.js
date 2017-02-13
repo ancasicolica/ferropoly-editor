@@ -71,6 +71,9 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
       $scope.saveTeam(function (err) {
         if (err) {
           console.error(err);
+          genericModals.showError('Fehler', 'Das Team konnte nicht gespeichert werden.', {data: err}, function () {
+            window.location.href = "/";
+          });
         }
         $scope.currentTeam        = team;
         $scope.currentDataChanged = false;
@@ -103,6 +106,9 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
         if (callback) {
           return callback(new Error(resp.data.message));
         }
+        genericModals.showError('Fehler', 'Das Team konnte nicht angelegt werden.', resp, function () {
+          window.location.href = "/";
+        });
       }
     );
   }
@@ -142,29 +148,22 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
     $http.post('/player/store', {team: $scope.currentTeam, authToken: authToken}).then(
       function (resp) {
         var data = resp.data;
-        if (data.success) {
-          console.log('team updated', data.team);
-          $scope.statusText  = $scope.currentTeam.data.name + ' gespeichert';
-          $scope.currentTeam = data.team;
-          // replace also in list
-          var t              = _.find($scope.teams, {'uuid': data.team.uuid});
-          if (t) {
-            _.remove($scope.teams, {'uuid': data.team.uuid});
-            $scope.teams.push(data.team);
-          }
-          else {
-            console.warn('Was not able to update the team');
-          }
-          $scope.sortTeams();
-          fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
-          return callback(null);
+        console.log('team updated', data.team);
+        $scope.statusText  = $scope.currentTeam.data.name + ' gespeichert';
+        $scope.currentTeam = data.team;
+        // replace also in list
+        var t              = _.find($scope.teams, {'uuid': data.team.uuid});
+        if (t) {
+          _.remove($scope.teams, {'uuid': data.team.uuid});
+          $scope.teams.push(data.team);
         }
         else {
-          console.log('Error');
-          console.log(data);
-          $scope.statusText = 'Fehler beim speichern';
-          return callback(new Error(data.message));
+          console.warn('Was not able to update the team');
         }
+        $scope.sortTeams();
+        fa.event('Teams', 'new', {name: $scope.currentTeam.data.name, gameId: gameId});
+        return callback(null);
+
       },
       function (resp) {
         console.error('/player/store failed', resp)
@@ -203,31 +202,26 @@ angular.module('playerApp', []).controller('playerCtrl', ['$scope', '$http', fun
       return;
     }
     var i = $scope.teams.indexOf($scope.currentTeam);
-    $http.post('/player/delete', {
-      teamId   : $scope.currentTeam.uuid,
-      gameId   : gameId,
+    $http.delete('/player/' + gameId + '/' + $scope.currentTeam.uuid, {
       authToken: authToken
     }).then(
-      function (resp) {
-        var data = resp.data;
-        if (data.success) {
-          console.log('team deleted');
+      function () {
+        console.log('team deleted');
 
-          if (i > -1) {
-            $scope.teams.splice(i, 1);
-          }
-          $scope.sortTeams();
-          $scope.currentTeam = undefined;
-          if ($scope.teams.length > 0) {
-            $scope.setCurrentTeam($scope.teams[0]);
-          }
+        if (i > -1) {
+          $scope.teams.splice(i, 1);
         }
-        else {
-          console.log('error while deleting: ' + data);
+        $scope.sortTeams();
+        $scope.currentTeam = undefined;
+        if ($scope.teams.length > 0) {
+          $scope.setCurrentTeam($scope.teams[0]);
         }
       },
       function (resp) {
         console.error('/player/delete failed', resp)
+        genericModals.showError('Fehler', 'Das Team konnte nicht gelöscht werden.', resp, function () {
+          window.location.href = "/";
+        });
       });
   };
 
