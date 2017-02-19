@@ -54,7 +54,7 @@ app.controller('rulesCtrl', ['$scope', '$http', '$interval', '$timeout', functio
   $(document).ready(function () {
     $http.get('/rules/data/' + gameId).then(
       function (resp) {
-        var data = resp.data;
+        var data         = resp.data;
         $scope.data      = data;
         $scope.changelog = data.changelog;
         $scope.changelog.forEach(function (c) {
@@ -77,14 +77,17 @@ app.controller('rulesCtrl', ['$scope', '$http', '$interval', '$timeout', functio
           },
           function (resp) {
             console.error('/authtoken failed', resp);
-            $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + resp.status;
+            genericModals.showError('Fehler', 'Authentisierungsfehler, bitte neu einloggen.', function () {
+              window.location.href = "/";
+            });
           });
 
       },
       function (resp) {
         console.error('/rules/data failed', resp);
-        $scope.panel        = 'error';
-        $scope.errorMessage = 'Ladefehler, das Spiel kann nicht angesehen werden. Status: ' + resp.status;
+        genericModals.showError('Fehler', 'Daten konnten nicht empfangen werden.', resp, function () {
+          window.location.href = "/";
+        });
       });
   });
 
@@ -110,6 +113,7 @@ app.controller('rulesCtrl', ['$scope', '$http', '$interval', '$timeout', functio
       },
       function (resp) {
         console.error('Error while saving rules', resp);
+        genericModals.showError('Fehler', 'Die Spielregeln konnten leider nicht gespeichert werden', resp);
       }
     );
   }
