@@ -54,22 +54,24 @@ router.post('/create', function (req, res) {
  */
 router.get('/get/:gameId', function (req, res) {
   if (!req.params || !req.params.gameId) {
-    return res.status(400).send({success: false, message: 'Parameter error'});
+    return res.status(400).send({message: 'Parameter error'});
   }
 
   gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
     if (err) {
-      return res.send({success: false, message: err.message});
+      logger.error('getGameplay failed', err);
+      return res.status(500).send({message: err.message});
     }
-    
+
     // Only owners may finalize it
-    gp = gp.toObject();
+    gp         = gp.toObject();
     gp.isOwner = _.get(gp, 'owner.organisatorEmail') === req.session.passport.user;
     commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
       if (err) {
-        return res.send({success: false, message: err.message});
+        logger.error('getPricelist failed', err);
+        return res.status(500).send({message: err.message});
       }
-      return res.send({success: true, gameplay: gp, pricelist: list});
+      return res.send({gameplay: gp, pricelist: list});
     });
   });
 });

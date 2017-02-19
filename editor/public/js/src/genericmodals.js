@@ -44,6 +44,30 @@ var genericModals = {
     $('#mod-error-body').html(body);
     $('#modal-error').modal('show');
     console.info('Generic error-modal fired!', title, body, resp);
+  },
+  /**
+   * An modal for a successful action is displayed
+   * @param title
+   * @param body   optional body of the dialog
+   * @param callback optional callback
+   */
+  showSuccess : function (title, body, callback) {
+    if (_.isFunction(body)) {
+      body     = null;
+      callback = body;
+    }
+
+    if (callback) {
+      var btnError = $('#mod-success-btn');
+      btnError.on('click', function () {
+        btnError.off('click');
+        callback();
+      });
+    }
+    $('#mod-success-title').text(title);
+    $('#mod-success-body').html(body);
+    $('#modal-success').modal('show');
+    console.info('Generic success-modal fired!', title, body);
   }
 };
 

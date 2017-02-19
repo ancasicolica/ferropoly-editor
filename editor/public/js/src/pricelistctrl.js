@@ -43,24 +43,19 @@ app.controller('pricelistCtrl', ['$scope', '$http', function ($scope, $http) {
       gameId   : $scope.data.gameplay.internal.gameId,
       authToken: authToken
     }).then(
-      function (resp) {
+      function () {
         $scope.finalizing = false;
-        if (resp.data.success) {
-          console.log('Gameplay finalized');
-          $scope.statusText                       = resp.data.message;
-          $scope.data.gameplay.internal.finalized = true;
-          fa.event('Gameplay', 'finalized', $scope.data.gameplay.internal.gameId);
-        }
-        else {
-          console.log('Error');
-          console.log(resp.data);
-          $scope.statusText = 'Fehler beim Speichern: ' + resp.data.message;
-        }
+        console.log('Gameplay finalized');
+        $scope.data.gameplay.internal.finalized = true;
+        fa.event('Gameplay', 'finalized', $scope.data.gameplay.internal.gameId);
+        genericModals.showSuccess('Preisliste finalisiert', 'Die Preisliste kann nun nicht mehr verändert werden, nun kannst Du sie den Teams zusenden.');
       },
       function (resp) {
         $scope.finalizing = false;
         console.error('/gameplay/finalize failed', resp);
-        $scope.statusText = 'Fehler beim Speichern: ' + resp.data.message;
+        genericModals.showError('Fehler', 'Die Preisliste konnte nicht finalisiert werden.', resp, function () {
+          window.location.href = "/";
+        });
       });
   };
 
@@ -70,12 +65,7 @@ app.controller('pricelistCtrl', ['$scope', '$http', function ($scope, $http) {
   $(document).ready(function () {
     $http.get('/pricelist/get/' + gameId).then(
       function (resp) {
-        var data = resp.data;
-        if (!resp.data.success) {
-          $scope.panel        = 'error';
-          $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
-          return;
-        }
+        var data    = resp.data;
         $scope.data = data;
 
         $http.get('/authtoken').then(
@@ -85,14 +75,17 @@ app.controller('pricelistCtrl', ['$scope', '$http', function ($scope, $http) {
           },
           function (resp) {
             console.error('/authtoken failed', resp);
-            $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + resp.status;
+            genericModals.showError('Fehler', 'Authentisierungsfehler, bitte neu einloggen.', function () {
+              window.location.href = "/";
+            });
           });
 
       },
       function (resp) {
         console.error('/pricelist/get failed', resp);
-        $scope.panel        = 'error';
-        $scope.errorMessage = 'Ladefehler, das Spiel kann nicht angesehen werden. Status: ' + resp.status;
+        genericModals.showError('Fehler', 'Ladefehler, das Spiel kann nicht angesehen werden.', function () {
+          window.location.href = "/";
+        });
       });
   });
 
