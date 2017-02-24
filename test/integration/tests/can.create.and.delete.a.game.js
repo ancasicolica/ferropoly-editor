@@ -4,13 +4,13 @@
  */
 
 const expect   = require('expect.js');
-const settings = require('./../fixtures/settings')();
+const settings = require('./../fixtures/settings');
 const login    = require('./../routes/login');
 const async    = require('async');
 const gameplay = require('./../routes/gameplay');
 const _        = require('lodash');
 
-describe.only('Create and delete a gameplay', function () {
+describe('Create and delete a gameplay', function () {
   let session             = {};
   let gameplaysBeforeTest = [];
   let newGameId           = '';

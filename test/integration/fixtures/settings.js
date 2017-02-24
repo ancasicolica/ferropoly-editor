@@ -5,7 +5,7 @@
  */
 
 
-module.exports = function (settings) {
+function localSettings(settings) {
 
   settings = settings || {};
 
@@ -14,4 +14,6 @@ module.exports = function (settings) {
   };
 
   return settings;
-};
+}
+
+module.exports = localSettings();
