@@ -7,6 +7,7 @@ const needle              = require('needle');
 const settings            = require('../../fixtures/settings');
 const logout              = require('../../routes/logout');
 const createFinalizedGame = require('../../sequences/createFinalizedGame');
+const deleteAllGames      = require('../../sequences/deleteAllGames');
 const gameplay            = require('../../routes/gameplay');
 const _                   = require('lodash');
 
@@ -16,15 +17,19 @@ describe('/admins route test', function () {
 
   before(function (done) {
     this.timeout(10000);
-    createFinalizedGame({}, (err, res) => {
+    deleteAllGames(err => {
       if (err) {
         return done(err);
       }
-      gameId  = res.gameId;
-      session = res.session;
-      logout(done);
+      createFinalizedGame({}, (err, res) => {
+        if (err) {
+          return done(err);
+        }
+        gameId  = res.gameId;
+        session = res.session;
+        logout(done);
+      });
     });
-
   });
 
   after(done => {
