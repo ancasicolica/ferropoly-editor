@@ -7,19 +7,18 @@
 const createGame = require('./createGame');
 const gameplay   = require('../routes/gameplay');
 const pricelist  = require('../routes/pricelist');
-const _ = require('lodash');
-const settings = require('../fixtures/settings');
+const _          = require('lodash');
 
 module.exports = function (options, callback) {
-  createGame(_.assign(options, {random:80}), (err, result) => {
+  createGame(_.assign(options, {random: 80}), (err, result) => {
     if (err) {
       return callback(err);
     }
-    pricelist.create({settings, session: result.session, gameId: result.gameId}, err => {
+    pricelist.create(result.session, {gameId: result.gameId}, err => {
       if (err) {
         return callback(err);
       }
-      gameplay.finalize({settings, session: result.session, gameId: result.gameId}, err => {
+      gameplay.finalize(result.session, {gameId: result.gameId}, err => {
         callback(err, result);
       });
     });

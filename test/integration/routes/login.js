@@ -3,18 +3,22 @@
  * Created by christian on 23.02.17.
  */
 
-const needle = require('needle');
-const _      = require('lodash');
-const assert = require('assert');
+const needle   = require('needle');
+const _        = require('lodash');
+const assert   = require('assert');
+const settings = require('../fixtures/settings');
 
 module.exports = function (options, callback) {
-  options = options || {};
+  if (_.isFunction(options)) {
+    callback = options;
+    options = {};
+  }
 
   // Login
-  needle.post(options.host.url + '/login',
+  needle.post(settings.host.url + '/login',
     {
-      username: _.get(options, 'login.user', 'demo@ferropoly.ch'),
-      password: _.get(options, 'login.password', '12345678')
+      username: _.get(options, 'login.user', _.get(settings, 'login.user', 'team16@ferropoly.ch')),
+      password: _.get(options, 'login.password', _.get(settings, 'login.password', '12345678'))
     },
     function (err, resp) {
       assert.equal(resp.statusCode, 302);
@@ -27,8 +31,10 @@ module.exports = function (options, callback) {
       let cookies = _.get(resp, 'cookies', {});
 
       // Get the authToken
-      needle.get(options.host.url + '/authtoken', {cookies: cookies}, (err, resp) => {
+      needle.get(settings.host.url + '/authtoken', {cookies: cookies}, (err, resp) => {
         assert.ok(resp.body.authToken);
+
+        // Returning the session: authtoken and cookies
         callback(err, {authToken: _.get(resp, 'body.authToken'), cookies: cookies});
       });
     });

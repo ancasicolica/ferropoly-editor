@@ -3,15 +3,14 @@
  * Created by christian on 24.02.17.
  */
 
-const needle = require('needle');
-const _      = require('lodash');
-const assert = require('assert');
+const needle   = require('needle');
+const assert   = require('assert');
+const settings = require('../fixtures/settings');
 
-module.exports = function (options, callback) {
-  options = options || {};
+module.exports = function (callback) {
 
   // Logout
-  needle.post(options.host.url + '/logout',
+  needle.post(settings.host.url + '/logout',
     {},
     function (err, resp) {
       assert.equal(resp.statusCode, 200);

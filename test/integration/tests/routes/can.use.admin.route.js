@@ -11,28 +11,28 @@ const gameplay            = require('../../routes/gameplay');
 const _                   = require('lodash');
 
 describe('/admins route test', function () {
-  let gameId = '';
+  let gameId  = '';
   let session = {};
 
   before(function (done) {
     this.timeout(10000);
-    createFinalizedGame(settings, (err, res) => {
+    createFinalizedGame({}, (err, res) => {
       if (err) {
         return done(err);
       }
-      gameId = res.gameId;
+      gameId  = res.gameId;
       session = res.session;
-      logout(settings, done);
+      logout(done);
     });
 
   });
 
   after(done => {
-    gameplay.delete({settings, session, gameId}, err => {
+    gameplay.delete(session, {gameId}, err => {
       if (err) {
         return done(err);
       }
-      logout(settings, done);
+      logout(done);
     });
   });
 

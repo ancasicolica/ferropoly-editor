@@ -3,32 +3,32 @@
  * Created by christian on 23.02.17.
  */
 
-const needle = require('needle');
-const _      = require('lodash');
-const assert = require('assert');
-const moment = require('moment');
+const needle   = require('needle');
+const _        = require('lodash');
+const assert   = require('assert');
+const moment   = require('moment');
+const settings = require('../fixtures/settings');
 
 module.exports = {
   /**
    * Returns the games of the user
-   * @param options
    * @param session
    * @param callback
    */
-  getMyGames: function (options, callback) {
-    needle.get(options.settings.host.url + '/gameplay/mygames', options.session, (err, resp) => {
+  getMyGames: function (session, callback) {
+    needle.get(settings.host.url + '/gameplay/mygames', session, (err, resp) => {
       callback(err, resp.body);
     });
   },
 
-  createNew: function (options, callback) {
-    needle.post(options.settings.host.url + '/gameplay/createnew', {
-      authToken: options.session.authToken,
+  createNew: function (session, options, callback) {
+    needle.post(settings.host.url + '/gameplay/createnew', {
+      authToken: session.authToken,
       map      : _.get(options, 'map', 'sbb'),
       gamename : _.get(options, 'gamename', 'integration-test'),
       gamedate : _.get(options, 'gamedate', moment().add(10, 'd').toISOString()),
       random   : _.get(options, 'random', 80)
-    }, options.session, (err, resp) => {
+    }, session, (err, resp) => {
       assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
       callback(err, resp.body);
     });
@@ -36,28 +36,32 @@ module.exports = {
 
   /**
    * Finalizing a game
+   * @param session
    * @param options
    * @param callback
    */
-  finalize: function (options, callback) {
-    needle.post(options.settings.host.url + '/gameplay/finalize', {
-      authToken: options.session.authToken,
-      gameId: options.gameId
-    }, options.session, (err, resp) => {
-      assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
-      callback(err, resp.body);
-    });
+  finalize: function (session, options, callback) {
+    needle.post(settings.host.url + '/gameplay/finalize', {
+        authToken: session.authToken,
+        gameId   : options.gameId
+      },
+      session,
+      (err, resp) => {
+        assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
+        callback(err, resp.body);
+      });
   },
 
   /**
    * Delete a game
+   * @param session
    * @param options
    * @param callback
    */
-  delete: function (options, callback) {
-    needle.delete(options.settings.host.url + '/gameplay/' + _.get(options, 'gameId', 'none'),
+  delete: function (session, options, callback) {
+    needle.delete(settings.host.url + '/gameplay/' + _.get(options, 'gameId', 'none'),
       null,
-      options.session,
+      session,
       (err, resp) => {
         if (resp.statusCode !== 200) {
           return callback(new Error('Delete failed with status ' + resp.statusCode));

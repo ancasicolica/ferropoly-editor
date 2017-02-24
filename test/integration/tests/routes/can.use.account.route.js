@@ -9,11 +9,11 @@ const logout   = require('../../routes/logout');
 
 describe('/account route test', function () {
   before(function (done) {
-    logout(settings, done);
+    logout(done);
   });
 
   after(done => {
-    logout(settings, done);
+    logout(done);
   });
 
   it('should not work without being logged in', done => {
@@ -24,7 +24,7 @@ describe('/account route test', function () {
   });
 
   it('should  work after being logged in', done => {
-    require('../../routes/login')(settings, (err, session) => {
+    require('../../routes/login')((err, session) => {
       if (err) {
         return done(err);
       }

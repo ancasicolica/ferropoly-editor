@@ -31,7 +31,7 @@ describe('Create and delete a gameplay', function () {
   describe('Get the current games', () => {
     this.timeout(4000);
     it('should return some', done => {
-      gameplay.getMyGames({settings, session}, (err, resp) => {
+      gameplay.getMyGames(session, (err, resp) => {
         gameplaysBeforeTest = resp.gameplays;
         done(err);
       });
@@ -40,7 +40,7 @@ describe('Create and delete a gameplay', function () {
 
   describe('Create new game', () => {
     it('should work', done => {
-      gameplay.createNew({settings, session, random: 0}, (err, resp) => {
+      gameplay.createNew(session, {random: 0}, (err, resp) => {
         newGameId = resp.gameId;
         done(err);
       });
@@ -49,7 +49,7 @@ describe('Create and delete a gameplay', function () {
 
   describe('Check if the gameplay is available', () => {
     it('should be', done => {
-      gameplay.getMyGames({settings, session}, (err, resp) => {
+      gameplay.getMyGames(session, (err, resp) => {
         let newGame = _.find(resp.gameplays, g => {
           return g.internal.gameId == newGameId;
         });
@@ -62,7 +62,7 @@ describe('Create and delete a gameplay', function () {
   describe('Delete the game again', () => {
     this.timeout(20000); // if main is not running, this takes a long time!
     it('should delete the game', done => {
-      gameplay.delete({settings, session, gameId: newGameId}, (err) => {
+      gameplay.delete(session, {gameId: newGameId}, (err) => {
         done(err);
       });
     });

@@ -3,11 +3,11 @@
  * Created by christian on 23.02.17.
  */
 
-const needle = require('needle');
-const _ = require('lodash');
-const assert = require('assert');
-const login = require('../routes/login');
-const async = require('async');
+const needle   = require('needle');
+const _        = require('lodash');
+const assert   = require('assert');
+const login    = require('../routes/login');
+const async    = require('async');
 const settings = require('../fixtures/settings');
 const gameplay = require('../routes/gameplay');
 
@@ -24,15 +24,15 @@ module.exports = function (options, callback) {
       function (s, cb) {
         // Create game
         session = s;
-        gameplay.createNew({
-          settings,
+        gameplay.createNew(
           session,
-          random: _.get(options, 'random', 0),
-          map: _.get(options, 'map', 'sbb')
-        }, (err, resp) => {
-          result.gameId = resp.gameId;
-          cb(err);
-        });
+          {
+            random: _.get(options, 'random', 0),
+            map   : _.get(options, 'map', 'sbb')
+          }, (err, resp) => {
+            result.gameId = resp.gameId;
+            cb(err);
+          });
       }
     ],
     function (err) {
