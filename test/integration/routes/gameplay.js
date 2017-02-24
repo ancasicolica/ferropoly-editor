@@ -34,8 +34,19 @@ module.exports = {
     });
   },
 
+  /**
+   * Finalizing a game
+   * @param options
+   * @param callback
+   */
   finalize: function (options, callback) {
-    callback();
+    needle.post(options.settings.host.url + '/gameplay/finalize', {
+      authToken: options.session.authToken,
+      gameId: options.gameId
+    }, options.session, (err, resp) => {
+      assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
+      callback(err, resp.body);
+    });
   },
 
   /**

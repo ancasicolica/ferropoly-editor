@@ -13,6 +13,11 @@ function localSettings(settings) {
     url: 'http://localhost:3002'
   };
 
+  settings.login = {
+    user: 'team1@ferropoly.ch',
+    password: '12345678'
+  };
+
   return settings;
 }
 

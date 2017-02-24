@@ -13,8 +13,8 @@ module.exports = function (options, callback) {
   // Login
   needle.post(options.host.url + '/login',
     {
-      username: _.get(options, 'username', 'demo@ferropoly.ch'),
-      password: _.get(options, 'password', '12345678')
+      username: _.get(options, 'login.user', 'demo@ferropoly.ch'),
+      password: _.get(options, 'login.password', '12345678')
     },
     function (err, resp) {
       assert.equal(resp.statusCode, 302);

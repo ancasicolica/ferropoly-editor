@@ -7,7 +7,7 @@ const needle   = require('needle');
 const settings = require('../../fixtures/settings');
 const logout   = require('../../routes/logout');
 
-describe.only('/account route test', function () {
+describe('/account route test', function () {
   before(function (done) {
     logout(settings, done);
   });
