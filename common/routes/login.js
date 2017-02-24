@@ -19,7 +19,7 @@ var logger   = require('../lib/logger').getLogger('login');
  */
 router.get('/', function (req, res) {
   var loginController = 'loginctrl';
-  loginController = settings.minifiedjs ? '/js/min/' + loginController +'.min.js' : '/js/src/' + loginController +'.js';
+  loginController     = settings.minifiedjs ? '/js/min/' + loginController + '.min.js' : '/js/src/' + loginController + '.js';
 
   res.render('login', {
     title       : settings.appName + ' Login',
@@ -93,7 +93,13 @@ module.exports = {
         // valid user in session
         logger.info(uri + " redirected in login.js to login");
         req.session.targetUrl = req.url;
-        res.redirect('/login');
+        res.status(401);
+
+        res.render('error/401', {
+          message: 'Zugriff nicht erlaubt',
+          error  : {status: 401, stack: {}}
+        });
+
       } else {
         return next();
       }

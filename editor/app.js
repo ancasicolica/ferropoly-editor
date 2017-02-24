@@ -120,8 +120,21 @@ var initServer = function () {
   // will print stacktrace
   if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-      res.status(err.status || 500);
-      res.render('error', {
+      let status    = err.status || 500;
+      let errorPage = 'error';
+      res.status(status);
+      switch (status) {
+        case 401:
+          errorPage = 'error/401';
+          break;
+        case 403:
+          errorPage = 'error/403';
+          break;
+        case 404:
+          errorPage = 'error/404';
+          break;
+      }
+      res.render(errorPage, {
         message: err.message,
         error  : err
       });
@@ -131,7 +144,20 @@ var initServer = function () {
   // production error handler
   // no stacktraces leaked to user
   app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
+    let status    = err.status || 500;
+    let errorPage = 'error';
+    res.status(status);
+    switch (status) {
+      case 401:
+        errorPage = 'error/401';
+        break;
+      case 403:
+        errorPage = 'error/403';
+        break;
+      case 404:
+        errorPage = 'error/404';
+        break;
+    }
     res.render('error', {
       message: err.message,
       error  : {}
