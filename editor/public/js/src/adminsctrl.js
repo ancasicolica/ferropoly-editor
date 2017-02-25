@@ -70,8 +70,7 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
    * Saves all admins
    */
   $scope.save = function () {
-    $http.post('/admins/save', {
-      gameId   : gameplay.gameId,
+    $http.post('/admins/' + gameplay.gameId, {
       logins   : $scope.logins,
       authToken: authToken
     }).then(

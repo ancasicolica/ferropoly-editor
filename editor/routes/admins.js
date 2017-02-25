@@ -90,16 +90,18 @@ router.get('/edit/:gameId', function (req, res) {
 /**
  * Save all admins
  */
-router.post('/save', function (req, res) {
+router.post('/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
+    return res.status(401).send({message:'Kein Zugriff möglich, bitte einloggen'});
   }
 
-  gameplays.setAdmins(req.body.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {
+  logger.info(req.body);
+
+  gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {
     if (err) {
       logger.error('Can not set admins', err);
-      logger.info('gameId', req.body.gameId);
+      logger.info('gameId', req.params.gameId);
       logger.info('user', req.session.passport.user);
       res.status(500).send({message: 'can not save admins', errorMessage: err.message});
       return;
@@ -115,6 +117,18 @@ router.post('/save', function (req, res) {
   });
 });
 
+/**
+ * Get the admins
+ */
+router.get('/:gameId', (req, res) => {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
+    if (err) {
+      logger.error('getGameplay fails', err);
+      return res.status(500).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
+    }
+    res.send(_.get(gp, 'admins.logins', []));
+  });
+});
 
 module.exports = router;
 
