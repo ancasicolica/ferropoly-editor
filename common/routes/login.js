@@ -74,9 +74,6 @@ module.exports = {
         logger.info('Signup !');
         return next();
       }
-      if (uri === '/configuration.js') {
-        return next();
-      }
       if (_.endsWith(uri, 'jpg')) {
         return next();
       }
