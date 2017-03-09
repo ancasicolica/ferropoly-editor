@@ -24,7 +24,6 @@ router.get('/', function (req, res) {
   res.render('login', {
     title       : settings.appName + ' Login',
     hideLogout  : true,
-    showSignUp  : true,
     versionInfo : settings.version,
     preview     : settings.preview,
     ngController: 'loginCtrl',

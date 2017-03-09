@@ -11,7 +11,6 @@ const cookieParser  = require('cookie-parser');
 const bodyParser    = require('body-parser');
 const routes        = require('./routes/index');
 const login         = require('./routes/login');
-const signup        = require('./routes/signup');
 const useradmin     = require('./routes/useradmin');
 const edit          = require('./routes/edit');
 const newgame       = require('./routes/newgame');
@@ -85,7 +84,6 @@ var initServer = function () {
 
 
   app.use('/appinfo', infoRoute);
-  signup.init(app, users);
   login.init(app, settings);
   authtoken.init(app);
   useradmin.init(app, settings, users);
