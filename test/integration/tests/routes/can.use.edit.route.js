@@ -18,7 +18,7 @@ const admin2 = 'nobody@ferropoly.ch';
 const admin3 = 'team3@ferropoly.ch';
 const admin4 = 'team9@ferropoly.ch';
 
-describe('/admins route test', function () {
+describe('/edit route test', function () {
   let gameId  = '';
   let session = {};
 

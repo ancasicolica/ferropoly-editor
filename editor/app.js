@@ -17,7 +17,6 @@ const newgame       = require('./routes/newgame');
 const gameplay      = require('./routes/gameplay');
 const authtoken     = require('./routes/authtoken');
 const issuetracker  = require('./routes/issuetracker');
-const configuration = require('./routes/configuration');
 const infoRoute     = require('../common/routes/info');
 const settings      = require('./settings');
 const passport      = require('passport');
@@ -93,7 +92,6 @@ var initServer = function () {
   newgame.init(app);
   edit.init(app, gameplays, users, properties);
   gameplay.init(app);
-  configuration.init(app, settings);
   app.use('/pricelist', pricelist);
   app.use('/player', require('./routes/player'));
   app.use('/admins', require('./routes/admins'));
