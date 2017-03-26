@@ -9,7 +9,6 @@
 const LocalStrategy     = require('passport-local').Strategy;
 const FacebookStrategy  = require('passport-facebook').Strategy;
 const GoogleStrategy    = require('passport-google-oauth20').Strategy;
-const MicrosoftStrategy = require('passport-windowslive').Strategy;
 const crypto            = require('crypto');
 const logger            = require('./logger').getLogger('authStrategy');
 const util              = require('util');
@@ -108,26 +107,11 @@ module.exports = function (settings, users) {
     }
   );
 
-  const microsoftStrategy = new MicrosoftStrategy({
-      clientID    : settings.oAuth.microsoft.appId,
-      clientSecret: settings.oAuth.microsoft.secret,
-      callbackURL : settings.oAuth.microsoft.callbackURL
-    },
-    function (accessToken, refreshToken, profile, done) {
-      console.log('WINDOWS Profile:', profile);
-
-      users.findOrCreateMicrosoftUser(profile, function (err, foundUser) {
-        return done(err, foundUser);
-      });
-    }
-  );
-
 
   return {
     localStrategy    : localStrategy,
     facebookStrategy : facebookStrategy,
     googleStrategy   : googleStrategy,
-    microsoftStrategy: microsoftStrategy,
     deserializeUser  : deserializeUser,
     serializeUser    : serializeUser
   }

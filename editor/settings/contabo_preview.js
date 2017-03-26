@@ -51,8 +51,6 @@ module.exports = function (settings) {
   settings.oAuth.facebook.callbackURL = 'https://editor-preview.ferropoly.ch/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
-  // Microsoft Settings
-  settings.oAuth.microsoft.callbackURL = 'https://editor-preview.ferropoly.ch/auth/microsoft/callback';
 
   settings.mainInstances = ['https://spiel-preview.ferropoly.ch'];
 

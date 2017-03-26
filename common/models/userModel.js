@@ -46,7 +46,7 @@ var userSchema = mongoose.Schema({
     lastLogin       : Date,
     facebook        : Object,
     google          : Object,
-    microsoft       : Object,
+    microsoft       : Object, // even not used now, we leave it here, maybe we recycle it later
     agbAccepted     : {type: Number, default: 0}
   }
 }, {autoIndex: true});

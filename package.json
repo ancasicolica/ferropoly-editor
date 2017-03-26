@@ -54,7 +54,6 @@
     "passport-google-oauth": "1.0.0",
     "passport-google-oauth20": "^1.0.0",
     "passport-local": "1.*",
-    "passport-windowslive": "^1.0.2",
     "pbkdf2-sha256": "1.1.1",
     "pug": "2.0.0-beta6",
     "restify": "4.3.0",

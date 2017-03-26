@@ -46,21 +46,6 @@ module.exports = function (app) {
       res.redirect(req.session.targetUrl || '/');
     });
 
-  /**
-   * Authentication Route for Windows Live
-   */
-  app.get('/auth/microsoft',
-    passport.authenticate('windowslive', { scope: ['wl.signin', 'wl.emails'] }));
-
-  /**
-   * Callback for Windows Live
-   */
-  app.get('/auth/microsoft/callback',
-    passport.authenticate('windowslive', { failureRedirect: '/login' }),
-    function(req, res) {
-      // Successful authentication, redirect home.
-      res.redirect('/');
-    });
 };
 
 
