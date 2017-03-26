@@ -118,7 +118,7 @@ var Gameplay = mongoose.model('Gameplay', gameplaySchema);
  * @param callback
  */
 var createGameplay      = function (gpOptions, callback) {
-  var gp = new Gameplay();
+  let gp = new Gameplay();
   if (!gpOptions.map || !gpOptions.ownerEmail || !gpOptions.name) {
     return callback(new Error('Missing parameter'));
   }
@@ -135,7 +135,7 @@ var createGameplay      = function (gpOptions, callback) {
   gp.joining.possibleUntil       = gpOptions.joiningUntilDate || moment(gp.scheduling.gameDate).subtract(5, 'days').set('hour', 20).set('minute', 0).set('second', 0).toDate();
   gp.joining.infotext            = gpOptions.infoText;
   gp.gamename                    = gpOptions.name;
-  gp.internal.gameId             = gpOptions.gameId || Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
+  gp.internal.gameId             = gpOptions.gameId || Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
   gp.internal.creatingInstance   = gpOptions.instance;
   gp.mobile                      = gpOptions.mobile || {level: MOBILE_NONE};
   gp._id                         = gp.internal.gameId;
@@ -146,7 +146,7 @@ var createGameplay      = function (gpOptions, callback) {
     }
     if (isExisting) {
       // generate new gameID
-      gpOptions.gameId = Moniker.generator([Moniker.verb, Moniker.adjective, Moniker.noun]).choose();
+      gpOptions.gameId = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
       return createGameplay(gpOptions, callback);
     }
     else {
@@ -185,7 +185,7 @@ var getGameplaysForUser = function (email, callback) {
  * @param gameId
  * @param callback
  */
-var checkIfGameIdExists   = function (gameId, callback) {
+var checkIfGameIdExists = function (gameId, callback) {
   Gameplay.count({'internal.gameId': gameId}, function (err, nb) {
     if (err) {
       return callback(err);
@@ -193,6 +193,26 @@ var checkIfGameIdExists   = function (gameId, callback) {
     callback(null, nb > 0);
   });
 };
+
+/**
+ * Creates a new GameID which is not used already (tested)
+ * @param callback
+ */
+function createNewGameId(callback) {
+  let gameId = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
+
+  checkIfGameIdExists(gameId, function (err, isExisting) {
+    if (err) {
+      return callback(err);
+    }
+    if (isExisting) {
+      // generate new gameID, recursive
+      return createNewGameId(callback);
+    }
+    callback(null, gameId);
+  });
+}
+
 /**
  * Counts the gameplays for a user
  * @param ownerId
@@ -479,7 +499,11 @@ function updateRules(gameId, ownerId, info, callback) {
       gp.rules = {
         version: 0, text: info.text, date: new Date(), changelog: []
       };
-      gp.rules.changelog.push({ts: new Date(), version: gp.rules.version, changes: 'Automatisch erstellte Grundversion'});
+      gp.rules.changelog.push({
+        ts     : new Date(),
+        version: gp.rules.version,
+        changes: 'Automatisch erstellte Grundversion'
+      });
     }
     else {
       gp.rules.version++;
@@ -522,6 +546,7 @@ module.exports = {
 
   Model                         : Gameplay,
   createGameplay                : createGameplay,
+  createNewGameId               : createNewGameId,
   getGameplaysForUser           : getGameplaysForUser,
   removeGameplay                : removeGameplay,
   updateGameplay                : updateGameplay,
