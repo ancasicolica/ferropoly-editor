@@ -87,54 +87,6 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
     {name: '20', id: 20}
   ];
 
-  $scope.noHouseOptions = [
-    {name: '0.05', id: 0.05},
-    {name: '0.1', id: 0.1},
-    {name: '0.125', id: 0.125},
-    {name: '0.25', id: 0.25}
-  ];
-
-  $scope.oneHouseOptions = [
-    {name: '0.25', id: 0.25},
-    {name: '0.4', id: 0.4},
-    {name: '0.5', id: 0.5},
-    {name: '0.75', id: 0.75},
-    {name: '1', id: 1}
-  ];
-
-  $scope.twoHousesOptions = [
-    {name: '1', id: 1},
-    {name: '1.5', id: 1.5},
-    {name: '2', id: 2},
-    {name: '2.5', id: 2.5}
-  ];
-
-  $scope.threeHousesOptions = [
-    {name: '2.5', id: 2.5},
-    {name: '3', id: 3},
-    {name: '3.5', id: 3.5}
-  ];
-
-  $scope.fourHousesOptions = [
-    {name: '3.5', id: 3.5},
-    {name: '4', id: 4},
-    {name: '4.5', id: 4.5}
-  ];
-
-  $scope.hotelOptions = [
-    {name: '4.5', id: 4.5},
-    {name: '5', id: 5},
-    {name: '5.5', id: 5.5},
-    {name: '6', id: 6}
-  ];
-
-  $scope.housePricesOptions = [
-    {name: '0.25', id: 0.25},
-    {name: '0.5', id: 0.5},
-    {name: '0.75', id: 0.75},
-    {name: '1', id: 1}
-  ];
-
   var map                              = null; // the google map handle
   var authToken                        = 'none';
   var mapCenter                        = new google.maps.LatLng(0, 0);

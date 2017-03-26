@@ -1,0 +1,12 @@
+.col-md-offset-1.col-md-10.col-sm-12
+  h2 Spiel-Datum
+  span(class='help-block') Wann möchtet ihr spielen? Gegenwärtig werden nur eintägige Spiele unterstützt, die Start- und Endzeit kann in den Spieleinstellungen später angepasst werden.
+  div(pickadate ng-model="gamedate" name='gamedate' id='gamedate' week-starts-on="1" min-date="minDate")
+
+
+  p &nbsp;
+  p
+    button.btn.btn-primary(ng-click='step=1' ng-disabled='!createEnabled || (!newForm.$valid)') Zurück
+    | &nbsp;
+    button.btn.btn-primary(ng-click='step=3' ng-disabled='!createEnabled || (!newForm.$valid)') Weiter
+

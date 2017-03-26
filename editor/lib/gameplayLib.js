@@ -148,6 +148,93 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
 }
 
 /**
+ * Creates the preset set for gameParams
+ * @param presets
+ * @returns {*}
+ */
+function getGameParamsPresetSet(presets) {
+  logger.info(`Using '${presets}' for new gameplay as preset`);
+  switch (presets) {
+    case 'easy':
+      return {
+        presets                  : 'easy',
+        interestInterval         : 60,
+        interest                 : 4000,
+        interestCyclesAtEndOfGame: 2,
+        startCapital             : 4000,
+        debtInterest             : 20,
+        housePrices              : 0.5,
+        properties               : {
+          lowestPrice               : 1000,
+          highestPrice              : 2000,
+          numberOfPriceLevels       : 6,
+          numberOfPropertiesPerGroup: 2
+        },
+        rentFactors              : {
+          noHouse             : 0.25,
+          oneHouse            : 2,
+          twoHouses           : 2.75,
+          threeHouses         : 3,
+          fourHouses          : 3.5,
+          hotel               : 4,
+          allPropertiesOfGroup: 2
+        }
+      };
+
+    case 'moderate':
+      return {
+        presets                  : 'moderate',
+        interestInterval         : 60,
+        interest                 : 4000,
+        interestCyclesAtEndOfGame: 2,
+        startCapital             : 4000,
+        debtInterest             : 20,
+        housePrices              : 0.5,
+        properties               : {
+          lowestPrice               : 1000,
+          highestPrice              : 4000,
+          numberOfPriceLevels       : 7,
+          numberOfPropertiesPerGroup: 2
+        },
+        rentFactors              : {
+          noHouse             : 0.2,
+          oneHouse            : 0.8,
+          twoHouses           : 2.5,
+          threeHouses         : 3.5,
+          fourHouses          : 4,
+          hotel               : 5,
+          allPropertiesOfGroup: 2
+        }
+      };
+
+    default:
+      return {
+        presets                  : 'classic',
+        interestInterval         : 60,
+        interest                 : 4000,
+        interestCyclesAtEndOfGame: 2,
+        startCapital             : 4000,
+        debtInterest             : 20,
+        housePrices              : 0.5,
+        properties               : {
+          lowestPrice               : 1000,
+          highestPrice              : 8000,
+          numberOfPriceLevels       : 8,
+          numberOfPropertiesPerGroup: 2
+        },
+        rentFactors              : {
+          noHouse             : 0.125,
+          oneHouse            : 0.5,
+          twoHouses           : 2,
+          threeHouses         : 3,
+          fourHouses          : 4,
+          hotel               : 5,
+          allPropertiesOfGroup: 2
+        }
+      };
+  }
+}
+/**
  * Creates a complete new gameplay, including copying the locations to the properties
  * @param gpOptions options for the gameplay.
  * @param callback
@@ -167,6 +254,7 @@ function createNewGameplay(gpOptions, callback) {
     user = user || {id: gpOptions.email};
 
     gameplays.createGameplay({
+      gameId          : gpOptions.gameId || '',
       map             : gpOptions.map,
       name            : gpOptions.gamename,
       ownerEmail      : gpOptions.email,
@@ -175,10 +263,10 @@ function createNewGameplay(gpOptions, callback) {
       gameStart       : gpOptions.gameStart || '05:00',
       gameEnd         : gpOptions.gameEnd || '18:00',
       gameDate        : gpOptions.gamedate,
-      interestInterval: gpOptions.interestInterval,
-      gameId          : gpOptions.gameId,
       instance        : settings.server.serverId,
-      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC}
+      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
+      gameParams      : getGameParamsPresetSet(gpOptions.presets),
+      interestInterval: gpOptions.interestInterval
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
@@ -363,7 +451,8 @@ function createDemoGameplay(p1, p2) {
     teamNb          : settings.teamNb || 8,
     doNotNotifyMain : settings.doNotNotifyMain,
     interestInterval: settings.interestInterval,
-    mobile          : settings.mobile || {level: 5}
+    mobile          : settings.mobile || {level: 5},
+    presets         : settings.presets
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job

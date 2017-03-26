@@ -9,22 +9,24 @@
  * Created by kc on 22.01.15.
  */
 
-var mongoose           = require('mongoose');
-var crypto             = require('crypto');
-var uuid               = require('node-uuid');
-var Moniker            = require('moniker');
-var finalizedGameplays = [];
-var moment             = require('moment-timezone');
-var logger             = require('../lib/logger').getLogger('gameplayModel');
+const mongoose = require('mongoose');
+const crypto   = require('crypto');
+const uuid     = require('node-uuid');
+const Moniker  = require('moniker');
+const _        = require('lodash');
+const moment   = require('moment-timezone');
+const logger   = require('../lib/logger').getLogger('gameplayModel');
 
 const MOBILE_NONE  = 0;
 const MOBILE_BASIC = 5;
 const MOBILE_FULL  = 10;
 
+let finalizedGameplays = [];
+
 /**
  * The mongoose schema for an user
  */
-var gameplaySchema = mongoose.Schema({
+const gameplaySchema = mongoose.Schema({
   _id       : {type: String, index: true},
   gamename  : String, // name of the game
   owner     : {
@@ -45,6 +47,7 @@ var gameplaySchema = mongoose.Schema({
     deleteTs   : Date    // Timestamp when the game is deleted
   },
   gameParams: {
+    presets                  : {type: String, default: 'custom'},
     interestInterval         : {type: Number, default: 60},   // Interval in minutes of the interests
     interest                 : {type: Number, default: 4000}, // "Startgeld"
     interestCyclesAtEndOfGame: {type: Number, default: 2},    // number of interests at end of game
@@ -110,14 +113,14 @@ var gameplaySchema = mongoose.Schema({
 /**
  * The Gameplay model
  */
-var Gameplay = mongoose.model('Gameplay', gameplaySchema);
+const Gameplay = mongoose.model('Gameplay', gameplaySchema);
 
 /**
  * Create a new gameplay and stores it immediately
  * @param gpOptions is an object with at least 'map', 'ownerEmail' and 'name'
  * @param callback
  */
-var createGameplay      = function (gpOptions, callback) {
+let createGameplay      = function (gpOptions, callback) {
   let gp = new Gameplay();
   if (!gpOptions.map || !gpOptions.ownerEmail || !gpOptions.name) {
     return callback(new Error('Missing parameter'));
@@ -131,7 +134,6 @@ var createGameplay      = function (gpOptions, callback) {
   gp.scheduling.gameStart        = gpOptions.gameStart;
   gp.scheduling.gameEnd          = gpOptions.gameEnd;
   gp.scheduling.deleteTs         = moment(gpOptions.gameDate).add(30, 'd').hour(23).minute(59).toDate();
-  gp.gameParams.interestInterval = gpOptions.interestInterval || gp.gameParams.interestInterval;
   gp.joining.possibleUntil       = gpOptions.joiningUntilDate || moment(gp.scheduling.gameDate).subtract(5, 'days').set('hour', 20).set('minute', 0).set('second', 0).toDate();
   gp.joining.infotext            = gpOptions.infoText;
   gp.gamename                    = gpOptions.name;
@@ -139,6 +141,9 @@ var createGameplay      = function (gpOptions, callback) {
   gp.internal.creatingInstance   = gpOptions.instance;
   gp.mobile                      = gpOptions.mobile || {level: MOBILE_NONE};
   gp._id                         = gp.internal.gameId;
+
+  gp.gameParams = _.assign(gp.gameParams, gpOptions.gameParams);
+  gp.gameParams.interestInterval = gpOptions.interestInterval || gp.gameParams.interestInterval;
 
   checkIfGameIdExists(gp.internal.gameId, function (err, isExisting) {
     if (err) {
@@ -164,7 +169,7 @@ var createGameplay      = function (gpOptions, callback) {
  * @param email is an object with either id or email or both
  * @param callback
  */
-var getGameplaysForUser = function (email, callback) {
+let getGameplaysForUser = function (email, callback) {
   Gameplay.find({
     $or: [
       {'internal.owner': email},
@@ -185,7 +190,7 @@ var getGameplaysForUser = function (email, callback) {
  * @param gameId
  * @param callback
  */
-var checkIfGameIdExists = function (gameId, callback) {
+let checkIfGameIdExists = function (gameId, callback) {
   Gameplay.count({'internal.gameId': gameId}, function (err, nb) {
     if (err) {
       return callback(err);
@@ -218,7 +223,7 @@ function createNewGameId(callback) {
  * @param ownerId
  * @param callback
  */
-var countGameplaysForUser = function (ownerId, callback) {
+let countGameplaysForUser = function (ownerId, callback) {
   Gameplay.count({'internal.owner': ownerId}, function (err, nb) {
     if (err) {
       return callback(err);
@@ -231,7 +236,7 @@ var countGameplaysForUser = function (ownerId, callback) {
  * Counts all gameplays for all users
  * @param callback
  */
-var countGameplays = function (callback) {
+let countGameplays = function (callback) {
   Gameplay.count({}, function (err, nb) {
     if (err) {
       return callback(err);
@@ -246,8 +251,8 @@ var countGameplays = function (callback) {
  * @param ownerId which is the email address of the person getting the data
  * @param callback
  */
-var getGameplay = function (gameId, ownerId, callback) {
-  var params = {$or: [{'internal.owner': ownerId}, {'admins.logins': ownerId}], 'internal.gameId': gameId};
+let getGameplay = function (gameId, ownerId, callback) {
+  let params = {$or: [{'internal.owner': ownerId}, {'admins.logins': ownerId}], 'internal.gameId': gameId};
   //  var params = {'internal.owner': ownerId, 'internal.gameId': gameId};
   if (ownerId === null) {
     params = {'internal.gameId': gameId};
@@ -270,7 +275,7 @@ var getGameplay = function (gameId, ownerId, callback) {
  * Returns all gameplays of all users. Of course only needed in the admin app
  * @param callback
  */
-var getAllGameplays = function (callback) {
+let getAllGameplays = function (callback) {
   Gameplay.find({}).lean().exec(function (err, docs) {
     if (err) {
       return callback(err);
@@ -285,7 +290,7 @@ var getAllGameplays = function (callback) {
  * @param callback
  * @returns {*}
  */
-var removeGameplay = function (gp, callback) {
+let removeGameplay = function (gp, callback) {
   if (!gp || !gp.internal || !gp.internal.gameId) {
     return callback(new Error('Invalid gameplay'));
   }
@@ -303,11 +308,11 @@ var removeGameplay = function (gp, callback) {
  */
 function finalizeTime(date, time) {
   try {
-    var e      = time.split(':');
-    var hour   = e[0];
-    var minute = e[1];
+    let e      = time.split(':');
+    let hour   = e[0];
+    let minute = e[1];
 
-    var newDate = moment.tz(date.getTime(), 'Europe/Zurich');
+    let newDate = moment.tz(date.getTime(), 'Europe/Zurich');
     newDate.minute(minute);
     newDate.hour(hour);
     newDate.second(0);
@@ -324,7 +329,7 @@ function finalizeTime(date, time) {
  * @param ownerId
  * @param callback
  */
-var finalize = function (gameId, ownerId, callback) {
+let finalize = function (gameId, ownerId, callback) {
   getGameplay(gameId, ownerId, function (err, gp) {
     if (err) {
       callback(err);
@@ -358,7 +363,7 @@ var finalize = function (gameId, ownerId, callback) {
  * @param gameId
  * @param callback
  */
-var isFinalized    = function (gameId, callback) {
+let isFinalized    = function (gameId, callback) {
   if (finalizedGameplays[gameId]) {
     // return cached value
     logger.info('return cached value');
@@ -382,7 +387,7 @@ var isFinalized    = function (gameId, callback) {
  * @param gp
  * @param callback
  */
-var updateGameplay = function (gp, callback) {
+let updateGameplay = function (gp, callback) {
   gp.log.lastEdited = new Date();
 
   if (!gp.save) {
@@ -433,7 +438,7 @@ var updateGameplay = function (gp, callback) {
  * @param logins is an array with the entries to write
  * @param callback
  */
-var setAdmins = function (gameId, ownerId, logins, callback) {
+let setAdmins = function (gameId, ownerId, logins, callback) {
   getGameplay(gameId, ownerId, function (err, gameplay) {
     if (err) {
       return callback(err);
@@ -452,7 +457,7 @@ var setAdmins = function (gameId, ownerId, logins, callback) {
  * @param callback
  * @returns {*}
  */
-var updateGameplayLastChangedField = function (ownerId, gameId, callback) {
+let updateGameplayLastChangedField = function (ownerId, gameId, callback) {
   if (!gameId || !ownerId) {
     return callback(new Error('no gameplay name or email supplied'));
   }
@@ -521,7 +526,7 @@ function updateRules(gameId, ownerId, info, callback) {
  * @param gameplay
  * @param callback
  */
-var saveNewPriceListRevision = function (gameplay, callback) {
+let saveNewPriceListRevision = function (gameplay, callback) {
   if (gameplay.internal.finalized) {
     // We can't save it, it is finalized!
     return callback(new Error('already finalized'));
