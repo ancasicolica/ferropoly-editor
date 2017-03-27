@@ -36,6 +36,8 @@ module.exports = function (settings) {
   settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
   // Microsoft Settings
   settings.oAuth.microsoft.callbackURL = 'https://editor.ferropoly.ch/auth/microsoft/callback';
+  settings.oAuth.microsoft.appId       = process.env.FERROPOLY_MICROSOFT_APP_ID_ER || 'nodos';
+  settings.oAuth.microsoft.secret      = process.env.FERROPOLY_MICROSOFT_APP_SECRET_ER || 'no_secret';
 
 
   settings.demoGameplay = {

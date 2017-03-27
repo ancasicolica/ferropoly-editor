@@ -53,6 +53,8 @@ module.exports = function (settings) {
   settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
   // Microsoft Settings
   settings.oAuth.microsoft.callbackURL = 'https://editor-preview.ferropoly.ch/auth/microsoft/callback';
+  settings.oAuth.microsoft.appId       = process.env.FERROPOLY_MICROSOFT_APP_ID_EP || 'nodos';
+  settings.oAuth.microsoft.secret      = process.env.FERROPOLY_MICROSOFT_APP_SECRET_EP || 'no_secret';
 
   settings.mainInstances = ['https://spiel-preview.ferropoly.ch'];
 

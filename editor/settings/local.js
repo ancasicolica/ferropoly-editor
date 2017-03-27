@@ -17,7 +17,7 @@ module.exports = function (settings) {
 
   settings.locationDbSettings = {
     mongoDbUrl: 'mongodb://localhost/ferropoly',
-    poolSize: 3
+    poolSize  : 3
   };
 
   settings.cron = {
@@ -37,14 +37,16 @@ module.exports = function (settings) {
   };
 
   // Facebook settings
-  settings.oAuth.facebook.callbackURL = 'http://localhost:3002/auth/facebook/callback';
+  settings.oAuth.facebook.callbackURL  = 'http://localhost:3002/auth/facebook/callback';
   // Google Settings
-  settings.oAuth.google.callbackURL = 'http://localhost:3002/auth/google/callback';
+  settings.oAuth.google.callbackURL    = 'http://localhost:3002/auth/google/callback';
   // Microsoft Settings
   settings.oAuth.microsoft.callbackURL = 'http://localhost:3002/auth/microsoft/callback';
+  settings.oAuth.microsoft.appId       = process.env.FERROPOLY_MICROSOFT_APP_ID_EL || 'nodos';
+  settings.oAuth.microsoft.secret      = process.env.FERROPOLY_MICROSOFT_APP_SECRET_EL || 'no_secret';
 
   // Ferropoly main instances to update when a gameplay was added / removed
-  settings.mainInstances = ['http://localhost:3004'];
+  settings.mainInstances               = ['http://localhost:3004'];
 
   return settings;
 };
