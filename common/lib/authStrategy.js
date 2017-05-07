@@ -6,12 +6,13 @@
  * Created by kc on 17.01.15.
  */
 
-const LocalStrategy     = require('passport-local').Strategy;
-const FacebookStrategy  = require('passport-facebook').Strategy;
-const GoogleStrategy    = require('passport-google-oauth20').Strategy;
-const crypto            = require('crypto');
-const logger            = require('./logger').getLogger('authStrategy');
-const util              = require('util');
+const LocalStrategy    = require('passport-local').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy   = require('passport-google-oauth20').Strategy;
+const DropboxStrategy  = require('passport-dropbox').Strategy;
+const crypto           = require('crypto');
+const logger           = require('./logger').getLogger('authStrategy');
+const util             = require('util');
 
 module.exports = function (settings, users) {
 
@@ -107,12 +108,33 @@ module.exports = function (settings, users) {
     }
   );
 
+  /**
+   * Dropbox Strategy
+   */
+  const dropboxStrategy = new DropboxStrategy({
+      consumerKey      : settings.oAuth.dropbox.clientId,
+      consumerSecret   : settings.oAuth.dropbox.clientSecret,
+      callbackURL      : settings.oAuth.dropbox.callbackURL,
+      passReqToCallback: true
+    },
+    function (accessToken, refreshToken, donotknow, profile, done) {
+      //console.log('accessToken', accessToken);
+      //console.log('refreshToken', refreshToken);
+      console.log('Dropbox Profile:', profile);
+
+      users.findOrCreateDropboxUser(profile, function (err, foundUser) {
+        return done(err, foundUser);
+      });
+    }
+  );
+
 
   return {
-    localStrategy    : localStrategy,
-    facebookStrategy : facebookStrategy,
-    googleStrategy   : googleStrategy,
-    deserializeUser  : deserializeUser,
-    serializeUser    : serializeUser
+    localStrategy   : localStrategy,
+    facebookStrategy: facebookStrategy,
+    googleStrategy  : googleStrategy,
+    dropboxStrategy : dropboxStrategy,
+    deserializeUser : deserializeUser,
+    serializeUser   : serializeUser
   }
 };

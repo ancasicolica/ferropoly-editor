@@ -52,6 +52,12 @@ var settings = {
       clientId: process.env.FERROPOLY_GOOGLE_CLIENT_ID || 'none',
       clientSecret: process.env.FERROPOLY_GOOGLE_CLIENT_SECRET || 'no_secret',
       callbackURL: 'none' // is set in settings file for environment
+    },
+
+    dropbox: {
+      clientId: process.env.FERROPOLY_DROPBOX_CLIENT_ID || 'none',
+      clientSecret: process.env.FERROPOLY_DROPBOX_CLIENT_SECRET || 'no_secret',
+      callbackURL: 'none' // is set in settings file for environment
     }
   }
 };

@@ -79,6 +79,16 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
     }
     return ($scope.data.login.googleProfileId);
   };
+  /**
+   * Check if google is active
+   * @returns {boolean}
+   */
+  $scope.isDropboxActive = function () {
+    if (!$scope.data) {
+      return false;
+    }
+    return ($scope.data.login.dropboxProfileId);
+  };
 
   $scope.isMicrosoftActive = function() {
     if (!$scope.data) {

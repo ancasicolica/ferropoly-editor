@@ -34,6 +34,8 @@ module.exports = function (settings) {
   settings.oAuth.facebook.callbackURL = 'https://editor.ferropoly.ch/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
+  // Dropbox settings
+  settings.oAuth.dropbox.callbackURL = 'https://editor.ferropoly.ch/auth/dropbox/callback';
 
 
   settings.demoGameplay = {
