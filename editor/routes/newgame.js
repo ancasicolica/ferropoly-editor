@@ -11,7 +11,7 @@ ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' 
 
 /* GET page for new gameplay */
 router.get('/', function (req, res) {
-  res.render('newgame', {title: 'Neues Spiel', ngController: 'newgameCtrl', ngApp: 'newgameApp', ngFile: ngFile});
+  res.render('newgame/newgame', {title: 'Neues Spiel', ngController: 'newgameCtrl', ngApp: 'newgameApp', ngFile: ngFile});
 });
 
 /**

@@ -7,23 +7,23 @@ form(name='propertiesForm')
           h3.panel-title Faktoren Mietpreise
         .panel-body
           label(for='noHouse') Unbebaut
-          select.form-control(id='noHouse' ng-model='noHouse' ng-options="noHouse.id as noHouse.name for noHouse in noHouseOptions")
+          input.form-control(id='noHouse' type='number' min='0' max='10' step='0.25' ng-model='noHouse')
           span.help-block Mit den Faktoren in diesem Abschnitt wird der Ertrag pro Stunde (bzw. die Miete wenn eine andere Gruppe das Ort besucht) bestimmt. Im Normalfall sind keine Anpassungen nötig, die Standardwerte haben sich bewährt.
 
           label(for='oneHouse') Ein Haus
-          select.form-control(id='oneHouse' ng-model='oneHouse' ng-options="oneHouse.id as oneHouse.name for oneHouse in oneHouseOptions")
+          input.form-control(id='oneHouse' type='number' ng-model='oneHouse'  min='0' max='10' step='0.25')
 
           label(for='twoHouses') Zwei Häuser
-          select.form-control(id='twoHouses' ng-model='twoHouses' ng-options="twoHouses.id as twoHouses.name for twoHouses in twoHousesOptions")
+          input.form-control(id='twoHouses' type='number' ng-model='twoHouses'  min='0' max='10' step='0.25')
 
           label(for='threeHouses') Drei Häuser
-          select.form-control(id='threeHouses' ng-model='threeHouses' ng-options="threeHouses.id as threeHouses.name for threeHouses in threeHousesOptions")
+          input.form-control(id='threeHouses' type='number' ng-model='threeHouses'  min='0' max='10' step='0.25')
 
           label(for='fourHouses') Vier Häuser
-          select.form-control(id='fourHouses' ng-model='fourHouses' ng-options="fourHouses.id as fourHouses.name for fourHouses in fourHousesOptions")
+          input.form-control(id='fourHouses' type='number' ng-model='fourHouses'  min='0' max='10' step='0.25')
 
           label(for='hotel') Hotel
-          select.form-control(id='hotel' ng-model='hotel' ng-options="hotel.id as hotel.name for hotel in hotelOptions")
+          input.form-control(id='hotel' type='number' ng-model='hotel'  min='0' max='10' step='0.25')
 
     .col-md-4
       .panel.panel-default
@@ -31,7 +31,7 @@ form(name='propertiesForm')
           h3.panel-title Häuser / Hotel
         .panel-body
           label(for='housePrices') Kosten für ein Haus / Hotel
-          select.form-control(id='housePrices' ng-model='housePrices' ng-options="housePrices.id as housePrices.name for housePrices in housePricesOptions")
+          input.form-control(id='housePrices' type='number' ng-model='housePrices'  min='0' max='10' step='0.25')
           span.help-block Dieser Faktor bestimmt, wie teuer ein Haus (bzw. Hotel) im Vergleich mit dem Kaufpreis ist
 
       .col-md-4

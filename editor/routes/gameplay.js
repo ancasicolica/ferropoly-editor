@@ -6,6 +6,7 @@
 
 const express       = require('express');
 const router        = express.Router();
+const async         = require('async');
 const gameplayLib   = require('../lib/gameplayLib');
 const gameplayModel = require('../../common/models/gameplayModel');
 const userModel     = require('../../common/models/userModel');
@@ -69,6 +70,8 @@ router.post('/createnew', function (req, res) {
             map            : req.body.map,
             gamename       : req.body.gamename,
             gamedate       : req.body.gamedate,
+            gameId         : req.body.gameId || '',
+            presets        : req.body.presets || 'classic',
             random         : req.body.random
           },
           function (err, gp) {
@@ -123,6 +126,36 @@ router.post('/finalize', function (req, res) {
     logger.error('Exception in gameplay.finalize.post', e);
     return res.status(500).send({message: e.message});
   }
+});
+
+/**
+ * Checks the gameId provided, if invalid, returns a few ideas instead
+ */
+router.post('/checkid', (req, res) => {
+  let gameId = req.body.gameId || '';
+
+  gameplayModel.checkIfGameIdExists(gameId, (err, exists) => {
+    if (err) {
+      return res.status(500).send({message: 'Error while getting gameplay: ' + err.message});
+    }
+    logger.info(`Checks if ${gameId} is already taken: ${exists}`);
+    if (gameId.length === 0 || exists) {
+      // Return 5 suggestions
+      async.times(7, (n, next) => {
+          gameplayModel.createNewGameId((err, id) => {
+            next(err, id);
+          });
+        },
+        (err, ids) => {
+          if (err) {
+            return res.status(500).send({message: 'Error while getting ids: ' + err.message});
+          }
+          return res.send({valid: false, ids: ids});
+        });
+      return;
+    }
+    res.send({valid: true});
+  });
 });
 
 

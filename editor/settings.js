@@ -54,9 +54,9 @@ var settings = {
       callbackURL: 'none' // is set in settings file for environment
     },
 
-    microsoft: {
-      appId: process.env.FERROPOLY_MICROSOFT_APP_ID || 'nodos',
-      secret: process.env.FERROPOLY_MICROSOFT_APP_SECRET || 'no_secret',
+    dropbox: {
+      clientId: process.env.FERROPOLY_DROPBOX_CLIENT_ID || 'none',
+      clientSecret: process.env.FERROPOLY_DROPBOX_CLIENT_SECRET || 'no_secret',
       callbackURL: 'none' // is set in settings file for environment
     }
   }

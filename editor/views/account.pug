@@ -62,16 +62,14 @@ block content
         .col-md-6
           .panel.panel-default
             .panel-heading
-              h3.panel-title Microsoft Windows Live
+              h3.panel-title Dropbox
             .panel-body
-              div(ng-show='isMicrosoftActive()')
-                h4 Windows Live Profile ID
-                | {{data.login.microsoftProfileId}}
+              div(ng-show='isDropboxActive()')
+                h4 Dropbox Profile ID
+                | {{data.login.dropboxProfileId}}
                 h4 Email-Adresse
-                | {{data.info.microsoft.emails[0].value}}
+                | {{data.info.dropbox.emails[0].value}}
                 h4 Avatar
-                img(ng-src='{{getAvatarUrl(3)}}')
-              div(ng-hide='isMicrosoftActive()')
-                | Dein Zugang mit Microsoft Live wurde noch nicht aktiviert. Die bei Microsoft hinterlegte Email-Adresse muss identisch mit dem Benutzernamen sein, sonst kann das Konto nicht zusammengeführt werden.
-
-
+                img(ng-src='{{getAvatarUrl(2)}}')
+              div(ng-hide='isDropboxActive()')
+                | Dein Zugang mit Dropbox wurde noch nicht aktiviert. Die bei Dropbox hinterlegte Email-Adresse muss identisch mit dem Benutzernamen sein, sonst kann das Konto nicht zusammengeführt werden.

@@ -190,3 +190,6 @@ a {
     border-bottom: 3px solid #ffce55;
 }
 
+.bg-danger {
+    color: white;
+}

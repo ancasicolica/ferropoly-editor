@@ -55,11 +55,6 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
           return $scope.data.info.generatedAvatar;
         }
         return $scope.data.info.google.photos[0].value;
-      case 3:
-        if (!$scope.data.info.microsoft || !$scope.data.info.microsoft.photos) {
-          return $scope.data.info.generatedAvatar;
-        }
-        return $scope.data.info.microsoft.photos[0].value;
     }
 
   };
@@ -83,6 +78,16 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
       return false;
     }
     return ($scope.data.login.googleProfileId);
+  };
+  /**
+   * Check if google is active
+   * @returns {boolean}
+   */
+  $scope.isDropboxActive = function () {
+    if (!$scope.data) {
+      return false;
+    }
+    return ($scope.data.login.dropboxProfileId);
   };
 
   $scope.isMicrosoftActive = function() {
