@@ -21,6 +21,9 @@ module.exports = function (options, callback) {
       password: _.get(options, 'login.password', _.get(settings, 'login.password', '12345678'))
     },
     function (err, resp) {
+      if (err) {
+        return callback(err);
+      }
       assert.equal(resp.statusCode, 302);
       assert.notEqual(resp.headers.location, '/login');
 
