@@ -15,6 +15,7 @@ module.exports = function (options, callback) {
 
   let session = {};
   let result  = {};
+  console.log('creating a game...');
 
   async.waterfall([
       function (cb) {

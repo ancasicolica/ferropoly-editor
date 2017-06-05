@@ -19,6 +19,7 @@ module.exports = {
     });
   },
   save   : function (session, options, callback) {
+    console.log(`POST /admins/${options.gameId}`);
     needle.post(settings.host.url + `/admins/${options.gameId}`, {
         authToken: session.authToken,
         logins   : options.logins
@@ -30,6 +31,7 @@ module.exports = {
       });
   },
   get    : function (session, options, callback) {
+    console.log(`GET /admins/${options.gameId}`);
     needle.get(settings.host.url + `/admins/${options.gameId}`,
       session,
       (err, resp) => {

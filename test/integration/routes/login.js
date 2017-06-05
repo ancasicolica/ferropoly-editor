@@ -13,8 +13,8 @@ module.exports = function (options, callback) {
     callback = options;
     options = {};
   }
-
   // Login
+  console.log('logging in... /login');
   needle.post(settings.host.url + '/login',
     {
       username: _.get(options, 'login.user', _.get(settings, 'login.user', 'team16@ferropoly.ch')),

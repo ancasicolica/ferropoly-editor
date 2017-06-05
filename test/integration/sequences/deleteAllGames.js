@@ -15,7 +15,7 @@ const gameplay = require('../routes/gameplay');
 module.exports = function (callback) {
 
   let session = {};
-
+  console.log('deleting all games...');
   async.waterfall([
       function (cb) {
         // Login

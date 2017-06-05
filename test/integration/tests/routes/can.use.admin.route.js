@@ -97,28 +97,31 @@ describe('/admins route test', function () {
     it('should fail with wrong token', done => {
       admins.save({accessToken: '1234'},
         {
-          gameId, expectedStatusCode: 401,
-          logins                    : [admin1, admin2, admin3, admin4]
+          gameId,
+          expectedStatusCode: 401,
+          logins            : [admin1, admin2, admin3, admin4]
         }, (err, admins) => {
           console.log(admins);
           done(err);
         });
     });
-    it('post should fail with invalid game', done => {
+    it('POST should fail with invalid game', done => {
       admins.save(session,
         {
-          gameId: 'dont-know', expectedStatusCode: 500,
-          logins                                 : [admin1, admin2, admin3, admin4]
+          gameId            : 'dont-know',
+          expectedStatusCode: 500,
+          logins            : [admin1, admin2, admin3, admin4]
         }, (err, admins) => {
           console.log(admins);
           done(err);
         });
     });
-    it('get should fail with invalid game', done => {
+    it('GET should fail with invalid game', done => {
       admins.get(session,
         {
-          gameId: 'dont-know', expectedStatusCode: 500,
-          logins                                 : [admin1, admin2, admin3, admin4]
+          gameId            : 'dont-know',
+          expectedStatusCode: 404,
+          logins            : [admin1, admin2, admin3, admin4]
         }, (err, admins) => {
           console.log(admins);
           done(err);

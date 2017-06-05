@@ -41,6 +41,7 @@ module.exports = {
    * @param callback
    */
   finalize: function (session, options, callback) {
+    console.log('finalize game...');
     needle.post(settings.host.url + '/gameplay/finalize', {
         authToken: session.authToken,
         gameId   : options.gameId

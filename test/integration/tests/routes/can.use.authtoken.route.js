@@ -20,7 +20,15 @@ describe('/authtoken route test',() => {
 
   it('should refuse the token without login', done => {
     needle.get(settings.host.url + '/authtoken', {}, (err, resp) => {
-      expect(resp.statusCode).to.be(401);
+      // Not logged in -> forward to login page
+      switch(resp.statusCode) {
+        case 302:
+        case 401:
+          break;
+
+        default:
+          expect().fail('Invalid status code: ' + resp.statusCode);
+      }
       done(err);
     });
   });

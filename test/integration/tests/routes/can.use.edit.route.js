@@ -18,7 +18,7 @@ const admin2 = 'nobody@ferropoly.ch';
 const admin3 = 'team3@ferropoly.ch';
 const admin4 = 'team9@ferropoly.ch';
 
-describe('/edit route test', function () {
+describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
   let gameId  = '';
   let session = {};
 
@@ -45,7 +45,9 @@ describe('/edit route test', function () {
   describe('Loading the HTML page', () => {
     it('should not work without being logged in', done => {
       needle.get(settings.host.url + `/admins/edit/${gameId}`, {}, (err, resp) => {
-        expect(resp.statusCode).to.be(401);
+        if (!resp.statusCode == 302 && !resp.statusCode === 401) {
+         expect.fail('Wrong status code: ' + resp.statusCode);
+        }
         done(err);
       });
     });
@@ -105,7 +107,7 @@ describe('/edit route test', function () {
           done(err);
         });
     });
-    it('post should fail with invalid game', done => {
+    it('POST should fail with invalid game', done => {
       admins.save(session,
         {
           gameId: 'dont-know', expectedStatusCode: 500,
@@ -115,10 +117,10 @@ describe('/edit route test', function () {
           done(err);
         });
     });
-    it('get should fail with invalid game', done => {
+    it('GET should fail with invalid game', done => {
       admins.get(session,
         {
-          gameId: 'dont-know', expectedStatusCode: 500,
+          gameId: 'dont-know', expectedStatusCode: 404,
           logins                                 : [admin1, admin2, admin3, admin4]
         }, (err, admins) => {
           console.log(admins);

@@ -18,7 +18,24 @@ describe('/account route test', function () {
 
   it('should not work without being logged in', done => {
     needle.get(settings.host.url + '/account', {}, (err, resp) => {
-      expect(resp.statusCode).to.be(401);
+      // Not logged in: forwarding
+      switch(resp.statusCode) {
+        case 302:
+        case 401:
+          break;
+
+        default:
+          expect().fail('Invalid status code: ' + resp.statusCode);
+      }
+
+      switch(resp.statusCode) {
+        case 302:
+        case 401:
+          break;
+
+        default:
+          expect().fail('Invalid status code: ' + resp.statusCode);
+      }
       done(err);
     });
   });

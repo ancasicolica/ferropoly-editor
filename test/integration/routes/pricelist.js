@@ -18,6 +18,7 @@ module.exports = {
     callback()
   },
   create  : function (session, options, callback) {
+    console.log('crating pricelist...');
     needle.post(settings.host.url + '/pricelist/create', {
         authToken: session.authToken,
         gameId   : options.gameId

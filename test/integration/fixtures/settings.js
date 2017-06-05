@@ -12,8 +12,7 @@ function localSettings(settings) {
   settings = settings || {};
 
   settings.host = {
-    //url: 'http://localhost:3002'
-    url: 'https://editor-preview.ferropoly.ch'
+    url: process.env.TARGET_URL || 'http://localhost:3002' //'https://editor-preview.ferropoly.ch'
   };
 
   settings.login = {

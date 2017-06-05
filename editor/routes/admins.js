@@ -124,7 +124,8 @@ router.get('/:gameId', (req, res) => {
   gameplays.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
     if (err) {
       logger.error('getGameplay fails', err);
-      return res.status(500).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
+      // "not found" is the most likely error thrown
+      return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
     }
     res.send(_.get(gp, 'admins.logins', []));
   });
