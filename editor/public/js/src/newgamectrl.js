@@ -28,16 +28,16 @@ newGameControl.directive('convertToNumber', function () {
 /**
  * Allows only a-z 0-9 and '-' to be entered into the id box
  */
-newGameControl.directive('createGameId', function(){
+newGameControl.directive('createGameId', function () {
   return {
     require: 'ngModel',
-    link: function(scope, element, attrs, modelCtrl) {
+    link   : function (scope, element, attrs, modelCtrl) {
 
       modelCtrl.$parsers.push(function (inputValue) {
 
         var transformedInput = inputValue.toLowerCase().replace(/[^0-9a-z-]/gi, '');
 
-        if (transformedInput!=inputValue) {
+        if (transformedInput != inputValue) {
           modelCtrl.$setViewValue(transformedInput);
           modelCtrl.$render();
         }
@@ -62,6 +62,7 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
   $scope.presets         = 'moderate';
   $scope.suggestedIds    = [];
   $scope.requestedGameId = '';
+  $scope.requestPending  = false;
 
   var authToken = 'none';
 
@@ -118,13 +119,14 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
    * Sets the requested ID
    * @param id
    */
-  $scope.setRequestedId = function(id) {
+  $scope.setRequestedId = function (id) {
     $scope.requestedGameId = id;
   };
   /**
    * Checks if the id is already used or not and creates the game
    */
-  $scope.checkIdAndCreateGame = function() {
+  $scope.checkIdAndCreateGame = function () {
+    $scope.requestPending = true;
     $http({
       method: 'POST', data: {gameId: $scope.requestedGameId}, url: '/gameplay/checkid'
     }).then(
@@ -139,12 +141,14 @@ newGameControl.controller('newgameCtrl', ['$scope', '$http', '$interval', functi
           $scope.suggestedIds    = resp.data.ids;
           $scope.requestedGameId = _.pullAt($scope.suggestedIds, [0])[0];
           console.log('suggested IDs', resp.data.ids);
+          $scope.requestPending = false;
         }
       },
       function (resp) {
         // Error promise
         console.error('/checkid error:', resp);
         genericModals.showError('Fehler', 'Die ID konnte nicht überprüft werden. Fehlermeldung: "' + resp.data + '"');
+        $scope.requestPending = false;
       });
   };
   /**

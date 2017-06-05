@@ -9,7 +9,7 @@
 
     p
     p
-    button.btn.btn-primary(ng-click='checkIdAndCreateGame()' ng-disabled='(!newForm.$valid)') ID prüfen und Spiel anlegen
+    button.btn.btn-primary(ng-click='checkIdAndCreateGame()' ng-disabled='(!newForm.$valid || requestPending)') ID prüfen und Spiel anlegen
 .col-md-12(ng-show='gameId.length > 0')
   h3 Neues Spiel erfolgreich angelegt!
 
