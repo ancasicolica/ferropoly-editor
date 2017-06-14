@@ -60,10 +60,15 @@ module.exports = {
    * @param callback
    */
   delete: function (session, options, callback) {
-    needle.delete(settings.host.url + '/gameplay/' + _.get(options, 'gameId', 'none'),
+    let gameId = _.get(options, 'gameId', 'none');
+    console.log('Deleting game: ' + gameId);
+    needle.delete(settings.host.url + '/gameplay/' + gameId,
       null,
       session,
       (err, resp) => {
+        if (err) {
+          return callback(err);
+        }
         if (resp.statusCode !== 200) {
           return callback(new Error('Delete failed with status ' + resp.statusCode));
         }
