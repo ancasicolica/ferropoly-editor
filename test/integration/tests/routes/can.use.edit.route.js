@@ -12,13 +12,14 @@ const deleteAllGames = require('../../sequences/deleteAllGames');
 const gameplay       = require('../../routes/gameplay');
 const _              = require('lodash');
 const admins         = require('../../routes/admins');
+const edit         = require('../../routes/edit');
 
 const admin1 = 'demo@ferropoly.ch';
 const admin2 = 'nobody@ferropoly.ch';
 const admin3 = 'team3@ferropoly.ch';
 const admin4 = 'team9@ferropoly.ch';
 
-describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
+describe.skip('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
   let gameId  = '';
   let session = {};
 
@@ -44,6 +45,9 @@ describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
   });
   describe('Loading the HTML page', () => {
     it('should not work without being logged in', done => {
+
+
+      /// DO IT RIGHT! use edit route for it
       needle.get(settings.host.url + `/admins/edit/${gameId}`, {}, (err, resp) => {
         if (!resp.statusCode == 302 && !resp.statusCode === 401) {
          expect.fail('Wrong status code: ' + resp.statusCode);

@@ -27,7 +27,8 @@ module.exports = {
       map      : _.get(options, 'map', 'sbb'),
       gamename : _.get(options, 'gamename', 'integration-test'),
       gamedate : _.get(options, 'gamedate', moment().add(10, 'd').toISOString()),
-      random   : _.get(options, 'random', 80)
+      random   : _.get(options, 'random', 80),
+      debug    : options.debug || 'Integration Test: creating new Game'
     }, session, (err, resp) => {
       assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
       callback(err, resp.body);
@@ -44,7 +45,8 @@ module.exports = {
     console.log('finalize game...');
     needle.post(settings.host.url + '/gameplay/finalize', {
         authToken: session.authToken,
-        gameId   : options.gameId
+        gameId   : options.gameId,
+        debug    : options.debug || 'Integration Test: Finalizing Game'
       },
       session,
       (err, resp) => {

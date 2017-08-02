@@ -36,6 +36,8 @@ router.get('/', function (req, res) {
  * The login post route
  */
 router.post('/', function (req, res) {
+  logger.test(_.get(req, 'body.debug'));
+
   let redirectUri = req.session.targetUrl || '/';
   passport.authenticate('local', {
     successRedirect: redirectUri,
@@ -61,6 +63,7 @@ module.exports = {
       res.redirect('/login');
     });
     app.post('/logout', function (req, res) {
+      logger.test(_.get(req, 'body.debug'));
       req.session.targetUrl = undefined;
       req.logout();
       res.send({});

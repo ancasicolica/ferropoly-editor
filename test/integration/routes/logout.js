@@ -11,7 +11,9 @@ module.exports = function (callback) {
 
   // Logout
   needle.post(settings.host.url + '/logout',
-    {},
+    {
+      debug: 'Integration Test: logout'
+    },
     function (err, resp) {
       assert.equal(resp.statusCode, 200);
 

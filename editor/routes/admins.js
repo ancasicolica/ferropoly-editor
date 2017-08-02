@@ -97,6 +97,7 @@ router.post('/:gameId', function (req, res) {
   }
 
   logger.info(req.body);
+  logger.test(req.body.debug);
 
   gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {
     if (err) {

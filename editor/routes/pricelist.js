@@ -37,6 +37,8 @@ router.get('/download/:gameId', downloadPricelist.handler);
  * Create a pricelist
  */
 router.post('/create', function (req, res) {
+  logger.test(_.get(req, 'body.debug'));
+
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(401).send('Kein Zugriff möglich, bitte einloggen');

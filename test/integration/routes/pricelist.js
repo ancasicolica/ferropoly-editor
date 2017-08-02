@@ -21,7 +21,8 @@ module.exports = {
     console.log('crating pricelist...');
     needle.post(settings.host.url + '/pricelist/create', {
         authToken: session.authToken,
-        gameId   : options.gameId
+        gameId   : options.gameId,
+        debug    : options.debug || 'Integration Test: Create pricelist'
       },
       session,
       (err, resp) => {

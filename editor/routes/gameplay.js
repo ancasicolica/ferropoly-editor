@@ -44,6 +44,8 @@ router.post('/createnew', function (req, res) {
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
 
+    logger.test(_.get(req, 'body.debug'));
+
     gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
       if (err) {
         return res.status(500).send({message: 'DB read error: ' + err.message});
@@ -97,6 +99,8 @@ router.post('/createnew', function (req, res) {
  */
 router.post('/finalize', function (req, res) {
   try {
+    logger.test(_.get(req, 'body.debug'));
+
     if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
       logger.info('Auth token missing, access denied');
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
@@ -133,6 +137,8 @@ router.post('/finalize', function (req, res) {
  */
 router.post('/checkid', (req, res) => {
   let gameId = req.body.gameId || '';
+
+  logger.test(_.get(req, 'body.debug'));
 
   gameplayModel.checkIfGameIdExists(gameId, (err, exists) => {
     if (err) {

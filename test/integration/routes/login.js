@@ -11,14 +11,15 @@ const settings = require('../fixtures/settings');
 module.exports = function (options, callback) {
   if (_.isFunction(options)) {
     callback = options;
-    options = {};
+    options  = {};
   }
   // Login
   console.log('logging in... /login');
   needle.post(settings.host.url + '/login',
     {
       username: _.get(options, 'login.user', _.get(settings, 'login.user', 'team16@ferropoly.ch')),
-      password: _.get(options, 'login.password', _.get(settings, 'login.password', '12345678'))
+      password: _.get(options, 'login.password', _.get(settings, 'login.password', '12345678')),
+      debug   : options.debug || 'Integration Test Login'
     },
     function (err, resp) {
       if (err) {

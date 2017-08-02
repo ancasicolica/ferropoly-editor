@@ -22,7 +22,8 @@ module.exports = {
     console.log(`POST /admins/${options.gameId}`);
     needle.post(settings.host.url + `/admins/${options.gameId}`, {
         authToken: session.authToken,
-        logins   : options.logins
+        logins   : options.logins,
+        debug    : options.debug || 'Integration Test'
       },
       {cookies: session.cookies, json: true},
       (err, resp) => {
