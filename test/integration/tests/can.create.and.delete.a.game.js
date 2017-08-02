@@ -3,12 +3,14 @@
  * Created by christian on 24.02.17.
  */
 
-const expect   = require('expect.js');
-const settings = require('./../fixtures/settings');
-const login    = require('./../routes/login');
-const async    = require('async');
-const gameplay = require('./../routes/gameplay');
-const _        = require('lodash');
+const expect         = require('expect.js');
+const settings       = require('./../fixtures/settings');
+const login          = require('./../routes/login');
+const async          = require('async');
+const gameplay       = require('./../routes/gameplay');
+const _              = require('lodash');
+const deleteAllGames = require('../sequences/deleteAllGames');
+const debug          = require('../routes/debug');
 
 describe('Create and delete a gameplay', function () {
   let session             = {};
@@ -16,10 +18,14 @@ describe('Create and delete a gameplay', function () {
   let newGameId           = '';
 
   before(done => {
-    login(settings, (err, s) => {
-      session = s;
-      done(err);
-    });
+    debug(__filename, () => {
+      deleteAllGames(err => {
+        login(settings, (err, s) => {
+          session = s;
+          done(err);
+        })
+      })
+    })
   });
 
   // Close DB afterwards

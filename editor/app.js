@@ -18,6 +18,7 @@ const gameplay      = require('./routes/gameplay');
 const authtoken     = require('./routes/authtoken');
 const issuetracker  = require('./routes/issuetracker');
 const infoRoute     = require('../common/routes/info');
+const debugRoute     = require('../common/routes/debug');
 const settings      = require('./settings');
 const passport      = require('passport');
 const session       = require('express-session');
@@ -83,6 +84,7 @@ var initServer = function () {
 
 
   app.use('/appinfo', infoRoute);
+  app.use('/debug', debugRoute(settings.integrationTest));
   login.init(app, settings);
   authtoken.init(app);
   useradmin.init(app, settings, users);

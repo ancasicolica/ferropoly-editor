@@ -10,9 +10,13 @@ const createFinalizedGame = require('../../sequences/createFinalizedGame');
 const deleteAllGames      = require('../../sequences/deleteAllGames');
 const _                   = require('lodash');
 const admins              = require('../../routes/admins');
+const debug               = require('../../routes/debug');
 
 
-describe('/authtoken route test',() => {
+describe('/authtoken route test', () => {
+  before(function (done) {
+    debug(__filename, done);
+  });
 
   after(done => {
     logout(done);
@@ -21,7 +25,7 @@ describe('/authtoken route test',() => {
   it('should refuse the token without login', done => {
     needle.get(settings.host.url + '/authtoken', {}, (err, resp) => {
       // Not logged in -> forward to login page
-      switch(resp.statusCode) {
+      switch (resp.statusCode) {
         case 302:
         case 401:
           break;
@@ -37,8 +41,8 @@ describe('/authtoken route test',() => {
     // Login
     needle.post(settings.host.url + '/login',
       {
-        username:  _.get(settings, 'login.user', 'team16@ferropoly.ch'),
-        password:  _.get(settings, 'login.password', '12345678')
+        username: _.get(settings, 'login.user', 'team16@ferropoly.ch'),
+        password: _.get(settings, 'login.password', '12345678')
       },
       function (err, resp) {
         expect(resp.statusCode, 302).to.be(302);

@@ -6,10 +6,13 @@ const expect   = require('expect.js');
 const needle   = require('needle');
 const settings = require('../../fixtures/settings');
 const logout   = require('../../routes/logout');
+const debug    = require('../../routes/debug');
 
 describe('/account route test', function () {
   before(function (done) {
-    logout(done);
+    debug(__filename, () => {
+      logout(done);
+    });
   });
 
   after(done => {
@@ -19,7 +22,7 @@ describe('/account route test', function () {
   it('should not work without being logged in', done => {
     needle.get(settings.host.url + '/account', {}, (err, resp) => {
       // Not logged in: forwarding
-      switch(resp.statusCode) {
+      switch (resp.statusCode) {
         case 302:
         case 401:
           break;
@@ -28,7 +31,7 @@ describe('/account route test', function () {
           expect().fail('Invalid status code: ' + resp.statusCode);
       }
 
-      switch(resp.statusCode) {
+      switch (resp.statusCode) {
         case 302:
         case 401:
           break;

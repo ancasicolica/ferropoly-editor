@@ -11,6 +11,7 @@ const deleteAllGames      = require('../../sequences/deleteAllGames');
 const gameplay            = require('../../routes/gameplay');
 const _                   = require('lodash');
 const admins              = require('../../routes/admins');
+const debug               = require('../../routes/debug');
 
 const admin1 = 'demo@ferropoly.ch';
 const admin2 = 'nobody@ferropoly.ch';
@@ -23,17 +24,19 @@ describe('/admins route test', function () {
 
   before(function (done) {
     this.timeout(10000);
-    deleteAllGames(err => {
-      if (err) {
-        return done(err);
-      }
-      createFinalizedGame({}, (err, res) => {
+    debug(__filename, () => {
+      deleteAllGames(err => {
         if (err) {
           return done(err);
         }
-        gameId  = res.gameId;
-        session = res.session;
-        logout(done);
+        createFinalizedGame({}, (err, res) => {
+          if (err) {
+            return done(err);
+          }
+          gameId  = res.gameId;
+          session = res.session;
+          logout(done);
+        });
       });
     });
   });

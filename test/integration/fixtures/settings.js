@@ -16,8 +16,12 @@ function localSettings(settings) {
   };
 
   settings.login = {
-    user: 'team1@ferropoly.ch',
+    user    : 'team1@ferropoly.ch',
     password: '12345678'
+  };
+
+  settings.debug = {
+    key: process.env.DEBUG_KEY || '1234'
   };
 
   return settings;
