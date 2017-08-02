@@ -53,7 +53,7 @@ router.get('/load/:gameId', function (req, res) {
       if (!propertyData) {
         return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
       }
-      res.send({success: true, gameplay: gameplayData, properties: propertyData});
+      res.send({gameplay: gameplayData, properties: propertyData});
     });
 
   });

@@ -27,7 +27,7 @@ function statusCodeCheck(options, resp, callback) {
   if (!statusCodeOk) {
     return callback(new Error('Status Code not allowed, was ' + resp.statusCode));
   }
-  callback(err, resp.body);
+  callback(null, resp.body);
 }
 
 module.exports = {
@@ -39,7 +39,7 @@ module.exports = {
    * @returns {*}
    */
   getPage                : function (session, options, callback) {
-    needle.get(`${settings.host.url}/edit/${options.gameId}`, session, (err, resp) => {
+    needle.get(`${settings.host.url}/gameplay/edit/${options.gameId}`, session, (err, resp) => {
       statusCodeCheck(options, resp, callback);
     });
   },
@@ -51,9 +51,9 @@ module.exports = {
    * @returns {*}
    */
   load                   : function (session, options, callback) {
-    needle.get(`${settings.host.url}/load/${options.gameId}`, {
-      authToken: session.authToken
-    }, session, (err, resp) => {
+    needle.get(`${settings.host.url}/gameplay/load/${options.gameId}`, _.assign(session, {
+      authToken: _.get(session, 'authToken', '123')
+    }), (err, resp) => {
       statusCodeCheck(options, resp, callback);
     });
   },
