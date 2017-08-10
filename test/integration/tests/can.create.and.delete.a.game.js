@@ -46,20 +46,30 @@ describe('Create and delete a gameplay', function () {
 
   describe('Create new game', () => {
     it('should work', done => {
-      gameplay.createNew(session, {random: 0}, (err, resp) => {
+      gameplay.createNew(session, {random: 40}, (err, resp) => {
         newGameId = resp.gameId;
         done(err);
       });
     });
   });
 
-  describe('Check if the gameplay is available', () => {
+  describe('Check if the gameplay is available and data correct', () => {
     it('should be', done => {
       gameplay.getMyGames(session, (err, resp) => {
         let newGame = _.find(resp.gameplays, g => {
           return g.internal.gameId == newGameId;
         });
         expect(newGame.internal.gameId).to.be(newGameId);
+        expect(newGame.internal.creatingInstance).to.be.a('string');
+        expect(newGame.internal.finalized).to.be(false);
+        expect(newGame.internal.map).to.be('sbb');
+        expect(newGame.internal.owner).to.be(settings.login.user);
+        expect(newGame.isOwner).to.be(true);
+        expect(newGame.log.priceListVersion).to.be(0);
+        expect(newGame.scheduling.gameDate).to.be.a('string');
+        expect(newGame.scheduling.deleteTs).to.be.a('string');
+        expect(newGame.scheduling.gameStart).to.be.a('string');
+        expect(newGame.scheduling.gameEnd).to.be.a('string');
         done(err);
       });
     });
