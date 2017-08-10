@@ -84,7 +84,7 @@ router.post('/save/:gameId', function (req, res) {
   logger.info('Save game ' + req.params.gameId);
   gameplays.updateGameplay(req.body.gameplay, function (err, gameplay) {
     if (err) {
-      logger.err('updateGameplay failed', err);
+      logger.error('updateGameplay failed', err);
       return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});
     }
     return res.send({success: true, gameId: gameplay.internal.gameId});
@@ -145,6 +145,7 @@ router.post('/dataChanged/:gameId', function (req, res) {
   gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId, function (err) {
     if (err) {
       logger.info('Error while updating gameplay: ' + err.message);
+      return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
     }
     res.send({});
   });
