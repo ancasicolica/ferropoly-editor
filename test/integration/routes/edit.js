@@ -102,8 +102,7 @@ module.exports = {
   dataChanged            : function (session, options, callback) {
     needle.post(`${settings.host.url}/gameplay/dataChanged/${options.gameId}`,
       {
-        authToken: session.authToken,
-        property
+        authToken: session.authToken
       },
       {cookies: session.cookies, json: true},
       (err, resp) => {

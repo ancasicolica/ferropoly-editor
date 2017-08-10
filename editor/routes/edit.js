@@ -9,7 +9,7 @@ const settings = require('../settings');
 const logger   = require('../../common/lib/logger').getLogger('routes:edit');
 const async    = require('async');
 const router   = express.Router();
-const _ =require('lodash');
+const _        = require('lodash');
 let gameplays;
 let properties;
 
@@ -76,6 +76,7 @@ router.post('/save/:gameId', function (req, res) {
   }
 
   if (req.params.gameId !== req.body.gameplay.internal.gameId) {
+    logger.info(`/save/${req.params.gameId} : GameId mismatch: ${req.params.gameId} vs ${req.body.gameplay.internal.gameId}`);
     res.status(400).send({message: 'GameID mismatch'});
     return;
   }

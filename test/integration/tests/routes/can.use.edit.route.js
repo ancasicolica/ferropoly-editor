@@ -16,13 +16,9 @@ const _                   = require('lodash');
 const admins              = require('../../routes/admins');
 const edit                = require('../../routes/edit');
 const debug               = require('../../routes/debug');
+const moment              = require('moment');
 
-const admin1 = 'demo@ferropoly.ch';
-const admin2 = 'nobody@ferropoly.ch';
-const admin3 = 'team3@ferropoly.ch';
-const admin4 = 'team9@ferropoly.ch';
-
-describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
+describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
   let gameId  = '';
   let session = {};
 
@@ -39,7 +35,7 @@ describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
           }
           gameId  = res.gameId;
           session = res.session;
-          logout(()=>{
+          logout(() => {
             login(settings, (err, mySession) => {
               session = mySession;
               done(err);
@@ -90,36 +86,97 @@ describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
     });
   });
 
-  describe.only('Saving a game', () => {
-    it('should woirk', done => {
+  describe('Saving a game', () => {
+    it('should work', done => {
+      edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+        if (err) {
+          return done(err);
+        }
+        expect(data).to.be.an('object');
+        expect(data.gameplay).to.be.an('object');
+        expect(data.properties).to.be.an('object');
 
-        edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+        // Change a field of the gameplay
+        let gp                   = data.gameplay;
+        gp.owner.organisatorName = "Galileo";
+        edit.save(session, {gameId: gp.internal.gameId, statusCodes: [200]}, gp, err => {
           if (err) {
             return done(err);
           }
-          expect(data).to.be.an('object');
-          expect(data.gameplay).to.be.an('object');
-          expect(data.properties).to.be.an('object');
 
-          // Change a field of the gameplay
-          let gp                   = data.gameplay;
-          gp.owner.organisatorName = "Galileo";
-          edit.save(session, {gameId: gp.internal.gameId, statusCodes: [200]}, gp, err => {
+          // Load again, it must be the new setting!
+          edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
             if (err) {
               return done(err);
             }
+            expect(data.gameplay.owner.organisatorName).to.be('Galileo');
+          });
+          done();
+        });
+      });
+    });
+    it('should be refused for a wrong gameId', done => {
+      edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+        if (err) {
+          return done(err);
+        }
+        expect(data).to.be.an('object');
+        expect(data.gameplay).to.be.an('object');
+        expect(data.properties).to.be.an('object');
 
-            // Load again, it must be the new setting!
-            edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
-              if (err) {
-                return done(err);
-              }
-              expect(data.gameplay.owner.organisatorName).to.be('Galileo');
-            });
+        // Change a field of the gameplay
+        let gp             = data.gameplay;
+        let correctGameId  = gp.internal.gameId;
+        gp.internal.gameId = "fake-id";
+        edit.save(session, {gameId: correctGameId, statusCodes: [400]}, gp, err => {
+          if (err) {
+            return done(err);
+          }
+
+          // Load again, it must be the new setting!
+          edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+            if (err) {
+              return done(err);
+            }
+            expect(data.gameplay.internal.gameId).to.be(correctGameId);
+          });
+          done();
+        });
+      });
+    });
+  });
+
+  describe('Touching the data changed flag', () => {
+    it('should work', done => {
+      edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+        if (err) {
+          return done(err);
+        }
+        expect(data).to.be.an('object');
+        expect(data.gameplay).to.be.an('object');
+        expect(data.properties).to.be.an('object');
+
+        // Get the last timestamp
+        let gp          = data.gameplay;
+        let lastTouched = moment(gp.log.lastEdited);
+        edit.dataChanged(session, {gameId: gp.internal.gameId, statusCodes: [200]}, err => {
+          if (err) {
+            return done(err);
+          }
+
+          // Load again, there must be a new timestamp
+          edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+            if (err) {
+              return done(err);
+            }
+            expect(lastTouched.isBefore(moment(data.gameplay.log.lastEdited))).to.be(true);
+            console.log(lastTouched);
+            console.log(data.gameplay.log.lastEdited);
             done();
           });
-        });
 
+        });
+      });
     });
   });
 });
