@@ -22,7 +22,7 @@ const admin2 = 'nobody@ferropoly.ch';
 const admin3 = 'team3@ferropoly.ch';
 const admin4 = 'team9@ferropoly.ch';
 
-describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
+describe('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
   let gameId  = '';
   let session = {};
 
@@ -39,7 +39,12 @@ describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
           }
           gameId  = res.gameId;
           session = res.session;
-          logout(done);
+          logout(()=>{
+            login(settings, (err, mySession) => {
+              session = mySession;
+              done(err);
+            });
+          });
         });
       })
     });
@@ -83,6 +88,38 @@ describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
         });
       });
     });
+  });
 
+  describe.only('Saving a game', () => {
+    it('should woirk', done => {
+
+        edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+          if (err) {
+            return done(err);
+          }
+          expect(data).to.be.an('object');
+          expect(data.gameplay).to.be.an('object');
+          expect(data.properties).to.be.an('object');
+
+          // Change a field of the gameplay
+          let gp                   = data.gameplay;
+          gp.owner.organisatorName = "Galileo";
+          edit.save(session, {gameId: gp.internal.gameId, statusCodes: [200]}, gp, err => {
+            if (err) {
+              return done(err);
+            }
+
+            // Load again, it must be the new setting!
+            edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+              if (err) {
+                return done(err);
+              }
+              expect(data.gameplay.owner.organisatorName).to.be('Galileo');
+            });
+            done();
+          });
+        });
+
+    });
   });
 });

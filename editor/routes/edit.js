@@ -9,6 +9,7 @@ const settings = require('../settings');
 const logger   = require('../../common/lib/logger').getLogger('routes:edit');
 const async    = require('async');
 const router   = express.Router();
+const _ =require('lodash');
 let gameplays;
 let properties;
 
@@ -16,7 +17,7 @@ let ngFile = 'editctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 let propertyFile = 'property';
-propertyFile           = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
+propertyFile     = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
 
 
 /* GET edit page */
@@ -33,7 +34,11 @@ router.get('/edit/:gameId', function (req, res) {
   });
 });
 
-/* Load a game */
+/**
+ * Load a game
+ *
+ * This route returns the gameplay and all properties belonging to it
+ * */
 router.get('/load/:gameId', function (req, res) {
 
   return gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplayData) {
@@ -59,10 +64,14 @@ router.get('/load/:gameId', function (req, res) {
   });
 });
 
-/* Save a game */
+/**
+ * Save a game
+ * An already existing Gameplay is saved with this route
+ * */
 router.post('/save/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    logger.info('Auth token missing, access denied');
+    logger.info(`/save/${req.params.gameId} : Auth token missing or wrong, access denied: ${req.body.authToken} vs ${req.session.authToken}`);
+    logger.info('Passport Info:' + _.get(req, 'session.passport', 'none'));
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
@@ -81,7 +90,11 @@ router.post('/save/:gameId', function (req, res) {
   });
 });
 
-/* Save Property */
+/**
+ * Save Property
+ * Saves ONE SINGLE property which was edited in the editor. Properties can only be updated
+ * if the gameplay is not finalized yet.
+ * */
 router.post('/saveProperty/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
@@ -101,7 +114,7 @@ router.post('/saveProperty/:gameId', function (req, res) {
   // load gameplay, check if finalized
   gameplays.isFinalized(req.params.gameId, function (err, finalized) {
     if (err) {
-      return res.status(500).send({message: 'Fehler bei Finalisierung: ' + err.message});
+      return res.status(500).send({message: 'Fehler bei Check Finalisierung: ' + err.message});
     }
     if (finalized) {
       return res.status(400).send({message: 'Bereits finalisiertes Spiel'});
@@ -132,12 +145,12 @@ router.post('/dataChanged/:gameId', function (req, res) {
     if (err) {
       logger.info('Error while updating gameplay: ' + err.message);
     }
-    res.send({success: true, status: 'ok'});
+    res.send({});
   });
 });
 
 /**
- * Saves _ONLY_ the position in the pricelist
+ * Saves _ONLY_ the position in the pricelist of all properties supplied
  */
 router.post('/savePositionInPricelist/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
@@ -161,7 +174,7 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
   // Load gameplay, check if finalized
   gameplays.isFinalized(req.params.gameId, function (err, finalized) {
     if (err) {
-      return res.status(500).send({message: 'Abfrage isFinalized schulg fehl ' + err.message});
+      return res.status(500).send({message: 'Abfrage isFinalized schlug fehl ' + err.message});
     }
     if (finalized) {
       return res.status(403).send({message: 'Spiel ist bereits finalisiert'});
@@ -170,7 +183,6 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
     async.each(props,
       function (p, cb) {
         properties.updatePositionInPriceList(req.params.gameId, p.uuid, p.positionInPriceRange, cb);
-
       },
       function (err) {
         if (err) {

@@ -24,7 +24,7 @@ const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
 const settings                   = require('../settings');
 const rulesGenerator             = require('./rulesGenerator');
-const restify                    = require('restify');
+const needle                     = require('needle');
 const moment                     = require('moment');
 const _                          = require('lodash');
 const async                      = require('async');
@@ -44,15 +44,10 @@ function updateFerropolyMainCache(delay, callback) {
   logger.info('Attempting to update main module caches in a few seconds');
   _.delay(function () {
     async.each(settings.mainInstances, function (instance, cb) {
-      let jsonClient = restify.createJsonClient({
-        url           : instance,
-        version       : '*',
-        connectTimeout: 1000,
-        requestTimeout: 1500
-      });
-
       // Fire and forget, don't care about the return
-      jsonClient.post('/gamecache/refresh', cb);
+      needle.post(`${instance}/gamecache/refresh`,
+        {},
+        cb);
     }, function (err) {
       if (err) {
         logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
@@ -234,6 +229,7 @@ function getGameParamsPresetSet(presets) {
       };
   }
 }
+
 /**
  * Creates a complete new gameplay, including copying the locations to the properties
  * @param gpOptions options for the gameplay.
@@ -366,6 +362,7 @@ function createDemoTeamEntry(gameId, entry) {
     }
   };
 }
+
 /**
  * Creates the teams for the demo
  * @param gp
