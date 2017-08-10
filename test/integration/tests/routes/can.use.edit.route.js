@@ -17,8 +17,9 @@ const admins              = require('../../routes/admins');
 const edit                = require('../../routes/edit');
 const debug               = require('../../routes/debug');
 const moment              = require('moment');
+const async               = require('async');
 
-describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
+describe('/edit route tests', function () {
   let gameId  = '';
   let session = {};
 
@@ -146,6 +147,132 @@ describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
     });
   });
 
+  describe('Saving a single property', () => {
+    it('should work', done => {
+      edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+        if (err) {
+          return done(err);
+        }
+        expect(data).to.be.an('object');
+        expect(data.gameplay).to.be.an('object');
+        expect(data.properties).to.be.an('object');
+
+        let property = _.find(data.properties, p => {
+          return p.location.name === 'Chur'
+        });
+        // Just check basics
+        expect(property.gameId).to.be(gameId);
+        expect(property.gamedata.buildingEnabled).to.be(false);
+        expect(property.location.accessibility).to.be('train');
+
+        // Set price range to 4, the other value is not really effective
+        property.pricelist.priceRange           = 4;
+        property.pricelist.positionInPriceRange = 1;
+
+
+        edit.saveProperty(session, {gameId, statusCodes: [200]}, property, err => {
+          if (err) {
+            return done(err);
+          }
+
+          // Load again, there must be a new timestamp
+          edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+            if (err) {
+              return done(err);
+            }
+
+            property = _.find(data.properties, p => {
+              return p.location.name === 'Chur'
+            });
+            expect(property.pricelist.priceRange).to.be(4);
+            expect(property.pricelist.positionInPriceRange).to.be(1);
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  describe('Saving a few properties', () => {
+    it('should work', done => {
+      edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+        if (err) {
+          return done(err);
+        }
+        expect(data).to.be.an('object');
+        expect(data.gameplay).to.be.an('object');
+        expect(data.properties).to.be.an('object');
+
+        let properties = _.filter(data.properties, p => {
+          switch (p.location.name) {
+            case 'Chur':
+            case 'Hinwil':
+            case 'Trin':
+            case 'Locarno':
+            case 'Zermatt':
+            case 'Grindelwald':
+              return true;
+          }
+        });
+        // Just check basics
+        expect(properties.length).to.be(6);
+        properties = _.sortBy(properties, p => {
+          return p.location.name;
+        });
+        for (let i = 0; i < properties.length; i++) {
+          properties[i].pricelist.priceRange           = 5;
+          properties[i].pricelist.positionInPriceRange = i;
+        }
+        async.each(properties,
+          function (p, cb) {
+            edit.saveProperty(session, {gameId, statusCodes: [200]}, p, cb);
+          },
+          function (err) {
+            if (err) {
+              return done(err);
+            }
+
+            // Now we can test what we want...
+            edit.savePositionInPricelist(session, {gameId, statusCodes: [200]}, properties, err => {
+              if (err) {
+                return done(err);
+              }
+
+              // Load again, new data must fit
+              edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
+                if (err) {
+                  return done(err);
+                }
+
+                properties = _.filter(data.properties, p => {
+                  switch (p.location.name) {
+                    case 'Chur':
+                    case 'Hinwil':
+                    case 'Trin':
+                    case 'Locarno':
+                    case 'Zermatt':
+                    case 'Grindelwald':
+                      return true;
+                  }
+                });
+
+                expect(properties.length).to.be(6);
+                properties = _.sortBy(properties, p => {
+                  return p.location.name;
+                });
+                for (let i = 0; i < properties.length; i++) {
+                  expect(properties[i].pricelist.priceRange).to.be(5);
+                  expect(properties[i].pricelist.positionInPriceRange).to.be(i);
+                }
+
+                done();
+              });
+            });
+          });
+      });
+    });
+  });
+
   describe('Touching the data changed flag', () => {
     it('should work', done => {
       edit.load(session, {gameId, statusCodes: [200]}, (err, data) => {
@@ -179,4 +306,5 @@ describe.only('/edit route test WHICH IS DUMMY ONLY SO FAR', function () {
       });
     });
   });
+
 });
