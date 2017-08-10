@@ -4,15 +4,15 @@
  */
 
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 const session = require('express-session');
-const uuid = require('node-uuid');
-const logger = require('../lib/logger').getLogger('authToken');
+const uuid    = require('uuid/v4');
+const logger  = require('../lib/logger').getLogger('authToken');
 
 /* GET the authtoken, which you only can get when logged in */
 router.get('/', function (req, res) {
   if (!req.session.authToken) {
-    req.session.authToken = uuid.v4();
+    req.session.authToken = uuid();
   }
   logger.info(req.session.authToken);
 
