@@ -90,14 +90,19 @@ module.exports = {
       }
       if (!req.session.passport || !req.session.passport.user) {
         // valid user in session
-        logger.info(uri + " redirected in login.js to login");
-        req.session.targetUrl = req.url;
-        res.status(401);
+        if (uri === '/') {
+          res.redirect('/login');
+        }
+        else {
+          logger.info(uri + " redirected in login.js to login");
+          req.session.targetUrl = req.url;
+          res.status(401);
 
-        res.render('error/401', {
-          message: 'Zugriff nicht erlaubt',
-          error  : {status: 401, stack: {}}
-        });
+          res.render('error/401', {
+            message: 'Zugriff nicht erlaubt',
+            error  : {status: 401, stack: {}}
+          });
+        }
 
       } else {
         return next();
