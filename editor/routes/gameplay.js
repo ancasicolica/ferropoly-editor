@@ -45,6 +45,7 @@ router.post('/createnew', function (req, res) {
     }
 
     logger.test(_.get(req, 'body.debug'));
+    logger.info('/gameplay/createnew for ' + req.session.passport.user);
 
     gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
       if (err) {

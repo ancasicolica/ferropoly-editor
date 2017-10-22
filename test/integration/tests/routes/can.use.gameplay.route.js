@@ -16,7 +16,7 @@ const debug               = require('../../routes/debug');
 const maxNumberOfGames = 4;
 
 // Finalization is not tested, this feature is used in the fixtures quite often
-describe.only('/gameplay route tests', function () {
+describe('/gameplay route tests', function () {
   let gameId  = '';
   let session = {};
 

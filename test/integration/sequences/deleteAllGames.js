@@ -12,14 +12,19 @@ const async    = require('async');
 const settings = require('../fixtures/settings');
 const gameplay = require('../routes/gameplay');
 
-module.exports = function (callback) {
+module.exports = function (customSettings, callback) {
+  if (_.isFunction(customSettings)) {
+    callback = customSettings;
+    customSettings = undefined;
+  }
+  customSettings = customSettings || settings;
 
   let session = {};
   console.log('deleting all games...');
   async.waterfall([
       function (cb) {
         // Login
-        login(settings, cb);
+        login(customSettings, cb);
       },
       function (s, cb) {
         // Create game
