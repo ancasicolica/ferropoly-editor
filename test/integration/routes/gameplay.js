@@ -13,21 +13,28 @@ module.exports = {
   /**
    * Returns the games of the user
    * @param session
+   * @param options (optional)
    * @param callback
    */
-  getMyGames: function (session, callback) {
+  getMyGames: function (session, options, callback) {
+    if (_.isFunction(options)) {
+      callback = options;
+      options  = {};
+    }
     needle.get(settings.host.url + '/gameplay/mygames', session, (err, resp) => {
+      assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
       callback(err, resp.body);
     });
   },
 
   createNew: function (session, options, callback) {
     needle.post(settings.host.url + '/gameplay/createnew', {
-      authToken: session.authToken,
+      authToken: _.get(session, 'authToken', undefined),
       map      : _.get(options, 'map', 'sbb'),
       gamename : _.get(options, 'gamename', 'integration-test'),
       gamedate : _.get(options, 'gamedate', moment().add(10, 'd').toISOString()),
       random   : _.get(options, 'random', 80),
+      gameId   : _.get(options, 'gameId', undefined),
       debug    : options.debug || 'Integration Test: creating new Game'
     }, session, (err, resp) => {
       assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
@@ -56,6 +63,26 @@ module.exports = {
   },
 
   /**
+   * Checks if the id of a game already exists
+   * @param session
+   * @param options
+   * @param callback
+   */
+  checkId: function (session, options, callback) {
+    console.log('check gameId...');
+    needle.post(settings.host.url + '/gameplay/checkid', {
+        authToken: _.get(session, 'authToken', undefined),
+        gameId   : options.gameId,
+        debug    : options.debug || 'Integration Test: Check Game-ID'
+      },
+      session,
+      (err, resp) => {
+        assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
+        callback(err, resp.body);
+      });
+  },
+
+  /**
    * Delete a game
    * @param session
    * @param options
@@ -71,9 +98,7 @@ module.exports = {
         if (err) {
           return callback(err);
         }
-        if (resp.statusCode !== 200) {
-          return callback(new Error('Delete failed with status ' + resp.statusCode));
-        }
+        assert.equal(resp.statusCode, _.get(options, 'expectedStatusCode', 200));
         callback(err);
       });
   }

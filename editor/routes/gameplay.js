@@ -81,11 +81,8 @@ router.post('/createnew', function (req, res) {
               return res.status(500).send({message: err.message});
             }
             return res.send({gameId: gp.internal.gameId});
-          }
-        )
-        ;
+          });
       });
-
     });
   }
   catch (e) {
