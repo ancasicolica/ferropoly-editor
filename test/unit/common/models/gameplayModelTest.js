@@ -4,11 +4,11 @@
  */
 'use strict';
 
-var expect    = require('expect.js');
-var db        = require('./../../../common/lib/ferropolyDb');
-var gameplays = require('./../../../common/models/gameplayModel');
-var settings  = require('./../../../editor/settings');
-var moment    = require('moment');
+const expect    = require('expect.js');
+const db        = require('./../../../../common/lib/ferropolyDb');
+const gameplays = require('./../../../../common/models/gameplayModel');
+const settings  = require('./../../../../editor/settings');
+const moment    = require('moment');
 describe('GameplayModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
@@ -190,9 +190,9 @@ describe('GameplayModel Tests', function () {
     });
   });
 
-  describe('Updating rules', function() {
-    it('should create version 1 the first time', function(done) {
-      gameplays.updateRules(gp3.internal.gameId, 'admin2@ferropoly.ch', {text:'Spielregeln'}, err => {
+  describe('Updating rules', function () {
+    it('should create version 1 the first time', function (done) {
+      gameplays.updateRules(gp3.internal.gameId, 'admin2@ferropoly.ch', {text: 'Spielregeln'}, err => {
         expect(err).to.be(null);
 
         gameplays.getGameplay(gp3.internal.gameId, 'admin2@ferropoly.ch', (err, gp) => {
@@ -200,7 +200,7 @@ describe('GameplayModel Tests', function () {
           expect(gp.rules.text).to.be('Spielregeln');
           expect(gp.rules.version).to.be(0);
 
-          gameplays.updateRules(gp3.internal.gameId, 'admin2@ferropoly.ch', {text:'Updated', changes:'abc'}, err => {
+          gameplays.updateRules(gp3.internal.gameId, 'admin2@ferropoly.ch', {text: 'Updated', changes: 'abc'}, err => {
             expect(err).to.be(null);
 
             gameplays.getGameplay(gp3.internal.gameId, 'admin2@ferropoly.ch', (err, gp) => {
@@ -215,9 +215,9 @@ describe('GameplayModel Tests', function () {
           });
         });
       });
-    });  
+    });
   });
-  
+
   describe('Deleting all gameplays again', function () {
     it('should work with #1', function (done) {
       gameplays.getGameplay(gp1.internal.gameId, 'admin1@ferropoly.ch', function (err, gp) {

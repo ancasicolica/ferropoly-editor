@@ -6,8 +6,8 @@
 'use strict';
 
 
-var expect = require('expect.js');
-var pll = require('../../../editor/lib/pricelist');
+const expect = require('expect.js');
+const pll = require('../../../../editor/lib/pricelist');
 
 var properties; // The faked properties
 var ranges;

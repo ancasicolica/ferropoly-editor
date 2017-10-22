@@ -2,10 +2,10 @@
  * Created by kc on 15.01.15.
  */
 
-var expect = require('expect.js');
-var users = require('./../../../common/models/userModel');
-var settings = require('./../../../editor/settings');
-var db = require('./../../../common/lib/ferropolyDb');
+const expect   = require('expect.js');
+const users    = require('./../../../../common/models/userModel');
+const settings = require('./../../../../editor/settings');
+const db       = require('./../../../../common/lib/ferropolyDb');
 describe('UserModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
@@ -38,7 +38,7 @@ describe('UserModel Tests', function () {
       expect(users.verifyPassword(user, 'Taibika')).to.be(false);
     });
     it('with correct password but manipulated has should fail', function () {
-      var originalHash = user.login.passwordHash;
+      var originalHash        = user.login.passwordHash;
       user.login.passwordHash = '31963ada680a676def6dfe00989104858b7c3471835ffd639a38ea60fa42bda8';
       expect(users.verifyPassword(user, 'taibika')).to.be(false);
       user.login.passwordHash = originalHash;
@@ -56,9 +56,15 @@ describe('UserModel Tests', function () {
   });
 
   describe('Updating / creating', function () {
-    var user1 = new users.Model({personalData: {surname: 'Kunz', forename: 'Olivia', email: 'olivia@gm-x.ch'}});
+    var user1          = new users.Model({
+      personalData: {
+        surname : 'Kunz',
+        forename: 'Olivia',
+        email   : 'olivia@gm-x.ch'
+      }
+    });
     user1.roles.editor = true;
-    var password1 = 'erstfeld';
+    var password1      = 'erstfeld';
 
     describe('Removing user 1', function () {
       it('should work if it exits', function (done) {
@@ -130,9 +136,9 @@ describe('UserModel Tests', function () {
   });
 
   var nb = 0;
-  describe('Getting all users', function() {
-    it('should return some', function(done) {
-      users.getAllUsers(function(err, users) {
+  describe('Getting all users', function () {
+    it('should return some', function (done) {
+      users.getAllUsers(function (err, users) {
         nb = users.length;
         expect(nb >= 2).to.be(true);
         done(err);
@@ -140,9 +146,9 @@ describe('UserModel Tests', function () {
     })
   });
 
-  describe('Count all users', function() {
-    it('should return some', function(done) {
-      users.countUsers(function(err, userNb) {
+  describe('Count all users', function () {
+    it('should return some', function (done) {
+      users.countUsers(function (err, userNb) {
         expect(userNb).to.be(nb);
         done(err);
       });

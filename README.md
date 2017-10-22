@@ -13,3 +13,13 @@ Using Bootstrap and great free designs from [Bootswatch](https://bootswatch.com/
 
 ## Licence
 GPL V3
+
+## Testing
+### Unit Tests
+Run the unit tests in folder test/unit. These "unit" tests are testing several functionalites of the game, they need the mongodb running (so they don't use any sandboxing, could be refactored to be "real" unit tests).
+
+### Intgration Tests
+These tests are validating the functionality of the backend system: HTTP-Routes and sequences of the game. They're located in the test/integration/tests directory (the other folders in the integration directory contain helpers for easier testing).
+
+Note that for the tests both instances, Editor and Main, must be running!
+

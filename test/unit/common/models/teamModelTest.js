@@ -4,10 +4,10 @@
  */
 'use strict';
 
-var expect = require('expect.js');
-var teams = require('./../../../common/models/teamModel');
-var settings = require('./../../../editor/settings');
-var db = require('./../../../common/lib/ferropolyDb');
+const expect = require('expect.js');
+const teams = require('./../../../../common/models/teamModel');
+const settings = require('./../../../../editor/settings');
+const db = require('./../../../../common/lib/ferropolyDb');
 
 var team1;
 var team2;

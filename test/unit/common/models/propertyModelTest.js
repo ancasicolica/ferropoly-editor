@@ -3,11 +3,11 @@
  * Created by kc on 13.02.15.
  */
 'use strict';
-var expect = require('expect.js');
-var db = require('./../../../common/lib/ferropolyDb');
-var locations = require('./../../../common/models/locationModel');
-var properties = require('./../../../common/models/propertyModel');
-var settings = require('./../../../editor/settings');
+const expect     = require('expect.js');
+const db         = require('./../../../../common/lib/ferropolyDb');
+const locations  = require('./../../../../common/models/locationModel');
+const properties = require('./../../../../common/models/propertyModel');
+const settings   = require('./../../../../editor/settings');
 
 var gameId = 'gameplay-test-id';
 var foundLocations;
@@ -35,8 +35,8 @@ describe('PropertyModel Tests', function () {
   });
 
   describe('Add some locations to the properties', function () {
-    it('should add the first location', function(done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[0], function(err, prop){
+    it('should add the first location', function (done) {
+      properties.createPropertyFromLocation(gameId, foundLocations[0], function (err, prop) {
         expect(prop.location.uuid).to.be(foundLocations[0].uuid);
         expect(prop.gameId).to.be(gameId);
         expect(prop.uuid.length > 6).to.be(true);
@@ -44,24 +44,24 @@ describe('PropertyModel Tests', function () {
         done(err);
       })
     });
-    it('should not add the first location twice', function(done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[0], function(err, prop){
+    it('should not add the first location twice', function (done) {
+      properties.createPropertyFromLocation(gameId, foundLocations[0], function (err, prop) {
         expect(prop.location.uuid).to.be(foundLocations[0].uuid);
         expect(prop.gameId).to.be(gameId);
         expect(prop.uuid.length > 6).to.be(true);
-        properties.getPropertiesForGameplay(gameId, null, function(err, props) {
+        properties.getPropertiesForGameplay(gameId, null, function (err, props) {
           expect(props.length).to.be(1);
           done(err);
         });
 
       })
     });
-    it('should add the second location', function(done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[1], function(err, prop){
+    it('should add the second location', function (done) {
+      properties.createPropertyFromLocation(gameId, foundLocations[1], function (err, prop) {
         expect(prop.location.uuid).to.be(foundLocations[1].uuid);
         expect(prop.gameId).to.be(gameId);
         expect(prop.uuid.length > 6).to.be(true);
-        properties.getPropertiesForGameplay(gameId, null, function(err, props) {
+        properties.getPropertiesForGameplay(gameId, null, function (err, props) {
           expect(props.length).to.be(2);
           done(err);
         });
@@ -69,23 +69,23 @@ describe('PropertyModel Tests', function () {
     });
   });
 
-  describe('Set the price range in a property', function() {
-    it('should set the price range', function(done) {
-      properties.updatePositionInPriceList(gameId, propId0, 12, function(err, prop) {
+  describe('Set the price range in a property', function () {
+    it('should set the price range', function (done) {
+      properties.updatePositionInPriceList(gameId, propId0, 12, function (err, prop) {
         expect(err).to.be(null);
         expect(prop.pricelist.positionInPriceRange).to.be(12);
         done(err);
       })
     });
-    it('should set the price range again', function(done) {
-      properties.updatePositionInPriceList(gameId, propId0, 2, function(err, prop) {
+    it('should set the price range again', function (done) {
+      properties.updatePositionInPriceList(gameId, propId0, 2, function (err, prop) {
         expect(err).to.be(null);
         expect(prop.pricelist.positionInPriceRange).to.be(2);
         done(err);
       })
     });
-    it('should fail as the gameId is wrong', function(done) {
-      properties.updatePositionInPriceList('test', propId0, 2, function(err, prop) {
+    it('should fail as the gameId is wrong', function (done) {
+      properties.updatePositionInPriceList('test', propId0, 2, function (err, prop) {
         expect(err).not.to.be(null);
         expect(prop).to.be(undefined);
         done();
