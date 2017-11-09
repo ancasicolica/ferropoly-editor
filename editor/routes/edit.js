@@ -121,6 +121,15 @@ router.post('/saveProperty/:gameId', function (req, res) {
       return res.status(400).send({message: 'Bereits finalisiertes Spiel'});
     }
 
+    // Bug #35: if a property was removed from the pricelist, delete all associated data for it
+    if (_.get(prop, 'pricelist.priceRange', -1) < 0) {
+      _.set(prop, 'pricelist.priceRange', -1);
+      _.set(prop, 'pricelist.positionInPriceRange', -1);
+      _.set(prop, 'pricelist.position', -1);
+      prop.pricelist = _.omit(prop.pricelist, ['rents', 'propertyGroup', 'pricePerHouse', 'price']);
+      logger.info('Removed Property from previous price list: ' + prop.location.name)
+    }
+
     logger.info('Save property ' + prop.location.name);
     properties.updateProperty(req.params.gameId, prop, function (err, updatedProp) {
       if (err) {
