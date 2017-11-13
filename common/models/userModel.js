@@ -530,7 +530,11 @@ function findOrCreateDropboxUser(profile, callback) {
         let newUser                    = new User();
         newUser._id                    = emailAddress || profile.id;
         newUser.login.dropboxProfileId = profile.id;
-        newUser.info.dropbox           = profile;
+        newUser.info.dropbox           = {
+          emails     : _.get(profile, 'emails', []),
+          name       : _.get(profile, 'name', {}),
+          displayName: _.get(profile, 'displayName', '?')
+        };
         newUser.info.registrationDate  = new Date();
         newUser.login.verifiedEmail    = true; // Dropbox does not need verification
         newUser.personalData.forename  = _.get(profile, '_json.name_details.given_name', '');
@@ -554,7 +558,11 @@ function findOrCreateDropboxUser(profile, callback) {
           }
           if (user) {
             // Ok, we know this user. Update profile for dropbox access
-            user.info.dropbox           = profile;
+            user.info.dropbox           = {
+              emails     : _.get(profile, 'emails', []),
+              name       : _.get(profile, 'name', {}),
+              displayName: _.get(profile, 'displayName', '?')
+            };
             user.info.registrationDate  = new Date();
             user.login.verifiedEmail    = true; // Dropbox does not need verification
             user.personalData.forename  = _.get(profile, '_json.name_details.given_name', '');
@@ -582,11 +590,16 @@ function findOrCreateDropboxUser(profile, callback) {
     }
 
     // User found, update
-    user.info.dropbox        = profile;
+    user.info.dropbox        = {
+      emails     : _.get(profile, 'emails', []),
+      name       : _.get(profile, 'name', {}),
+      displayName: _.get(profile, 'displayName', '?')
+    };
     user.personalData.avatar = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
     updateUser(user, null, callback);
   });
 }
+
 module.exports = {
   Model: User,
 
