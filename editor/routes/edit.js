@@ -8,6 +8,7 @@ var express  = require('express');
 var settings = require('../settings');
 var logger   = require('../../common/lib/logger').getLogger('routes:edit');
 var async    = require('async');
+var _        = require('lodash');
 var router   = express.Router();
 var gameplays;
 var properties;
@@ -105,6 +106,15 @@ router.post('/saveProperty/:gameId', function (req, res) {
     }
     if (finalized) {
       return res.status(400).send({message: 'Bereits finalisiertes Spiel'});
+    }
+
+    // Bug #35: if a property was removed from the pricelist, delete all associated data for it
+    if (_.get(prop, 'pricelist.priceRange', -1) < 0) {
+      _.set(prop, 'pricelist.priceRange', -1);
+      _.set(prop, 'pricelist.positionInPriceRange', -1);
+      _.set(prop, 'pricelist.position', -1);
+      prop.pricelist = _.omit(prop.pricelist, ['rents', 'propertyGroup', 'pricePerHouse', 'price']);
+      logger.info('Removed Property from previous price list: ' + prop.location.name)
     }
 
     logger.info('Save property ' + prop.location.name);
