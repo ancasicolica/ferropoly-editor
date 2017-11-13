@@ -87,6 +87,7 @@ router.post('/save/:gameId', function (req, res) {
       logger.error('updateGameplay failed', err);
       return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});
     }
+
     return res.send({success: true, gameId: gameplay.internal.gameId});
   });
 });
@@ -135,10 +136,12 @@ router.post('/saveProperty/:gameId', function (req, res) {
       if (err) {
         return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
       }
-      return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+      // Updating a property invalidates the pricelist!
+      gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
+        return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+      });
     });
   });
-
 });
 
 /**
@@ -156,7 +159,11 @@ router.post('/dataChanged/:gameId', function (req, res) {
       logger.info('Error while updating gameplay: ' + err.message);
       return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
     }
-    res.send({});
+
+    // This also invalidates the pricelist
+    gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
+      res.send({});
+    });
   });
 });
 
@@ -200,11 +207,14 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
           logger.error('Saving properties fails', err);
           return res.status(500).send({message: 'Speichern schlug fehl: ' + err.message});
         }
-        res.send({
-          success: true,
-          status : 'ok',
-          message: props.length + ' Orte gespeichert',
-          nbSaved: props.length
+        // This also invalidates the pricelist
+        gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
+          res.send({
+            success: true,
+            status : 'ok',
+            message: props.length + ' Orte gespeichert',
+            nbSaved: props.length
+          });
         });
       }
     );

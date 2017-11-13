@@ -1,6 +1,14 @@
+div(ng-show='data.gameplay.internal.priceListPendingChanges')
+  h1.pricelist-error
+    i.fa.fa-exclamation-triangle
+    span &nbsp;Die Preisliste ist nicht aktuell!
+  p Unter "bearbeiten" Parameter kontrollieren und neu erstellen.
+
 h1 {{data.gameplay.gamename}}
 
 |{{data.gameplay.scheduling.gameDate | date:'dd.MM.yyyy'}} {{data.gameplay.scheduling.gameStart}} - {{data.gameplay.scheduling.gameEnd}}
+
+
 
 table(class='table table-striped table.condensed')
   thead

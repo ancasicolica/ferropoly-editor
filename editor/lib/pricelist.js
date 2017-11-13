@@ -5,9 +5,9 @@
  */
 
 
-var gameplays = require('../../common/models/gameplayModel');
-var properties = require('../../common/models/propertyModel');
-var _ = require('lodash');
+const gameplays  = require('../../common/models/gameplayModel');
+const properties = require('../../common/models/propertyModel');
+const _          = require('lodash');
 
 /**
  * Create and save the complete price list
@@ -15,7 +15,7 @@ var _ = require('lodash');
  * @param ownerEmail
  * @param callback
  */
-var createPriceList = function (gameId, ownerEmail, callback) {
+function createPriceList(gameId, ownerEmail, callback) {
 
   // Collect the information
   gameplays.getGameplay(gameId, ownerEmail, function (err, gp) {
@@ -41,7 +41,7 @@ var createPriceList = function (gameId, ownerEmail, callback) {
       });
     });
   });
-};
+}
 
 /**
  * This is the internal (but exposed for unit tests) calculation for the price list
@@ -49,28 +49,29 @@ var createPriceList = function (gameId, ownerEmail, callback) {
  * @param props    Properties
  * @param callback
  */
-var createPriceListInternal = function (gp, props, callback) {
+function createPriceListInternal(gp, props, callback) {
 
-  var priceRangeLists = extractRanges(props);
-  var priceList = createPriceListArray(priceRangeLists);
-  priceList = setPropertyPrices(gp, priceList);
-  priceList = setPropertyHousePricing(gp, priceList);
-  priceList = setPropertyGroups(gp, priceList);
+  let priceRangeLists = extractRanges(props);
+  let priceList       = createPriceListArray(priceRangeLists);
+  priceList           = setPropertyPrices(gp, priceList);
+  priceList           = setPropertyHousePricing(gp, priceList);
+  priceList           = setPropertyGroups(gp, priceList);
   if (!priceList) {
     return callback(new Error('error while creating pricelist'));
   }
   callback(null, priceList);
-};
+}
 
 /**
  * Extract the properties for each price range into one array each
  * @param props  Properties
  * @returns {Array}
  */
+
 /*eslint-disable no-loop-func*/
-var extractRanges = function (props) {
-  var ranges = [];
-  for (var i = 0; i < 6; i++) {
+function extractRanges(props) {
+  let ranges = [];
+  for (let i = 0; i < 6; i++) {
     ranges[i] = _.sortBy(_.filter(props, function (p) {
       return p.pricelist.priceRange === i;
     }), function (n) {
@@ -78,7 +79,8 @@ var extractRanges = function (props) {
     });
   }
   return ranges;
-};
+}
+
 /*eslint-enable no-loop-func*/
 
 /**
@@ -86,14 +88,14 @@ var extractRanges = function (props) {
  * @param ranges
  * @returns {Array}
  */
-var createPriceListArray = function (ranges) {
+function createPriceListArray(ranges) {
   try {
-    var arr = [];
-    for (var i = 0; i < ranges.length; i++) {
+    let arr = [];
+    for (let i = 0; i < ranges.length; i++) {
       arr = arr.concat(ranges[i]);
     }
     // Set the absolute position in the list
-    for (var t = 0; t < arr.length; t++) {
+    for (let t = 0; t < arr.length; t++) {
       arr[t].pricelist.position = t;
     }
     return arr;
@@ -102,7 +104,7 @@ var createPriceListArray = function (ranges) {
     console.log(e);
     return null;
   }
-};
+}
 
 /**
  * Sets the property prices according to the number of price levels, min and max
@@ -110,13 +112,13 @@ var createPriceListArray = function (ranges) {
  * @param pricelist
  * @returns {*}
  */
-var setPropertyPrices = function (gameplay, pricelist) {
+function setPropertyPrices(gameplay, pricelist) {
   try {
-    var priceMin = gameplay.gameParams.properties.lowestPrice;
-    var priceMax = gameplay.gameParams.properties.highestPrice;
-    var i;
-    var priceDifference = 0;
-    var p = 0;
+    const priceMin      = gameplay.gameParams.properties.lowestPrice;
+    const priceMax      = gameplay.gameParams.properties.highestPrice;
+    let i;
+    let priceDifference = 0;
+    let p               = 0;
 
     if (gameplay.gameParams.properties.numberOfPriceLevels === 1) {
       // Special case: every property has its own value
@@ -130,14 +132,14 @@ var setPropertyPrices = function (gameplay, pricelist) {
     }
     else {
       // several properties together in one price group
-      priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
-      var nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
-      var nbOfPropertiesLeft = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
-      var t = 0;
-      var n = 0;
-      p = priceMin;
+      priceDifference                 = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
+      const nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
+      let nbOfPropertiesLeft          = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
+      let t                           = 0;
+      let n                           = 0;
+      p                               = priceMin;
       do {
-        var target = nbOfPropertiesInSameGroup;
+        let target = nbOfPropertiesInSameGroup;
         if (nbOfPropertiesLeft) {
           nbOfPropertiesLeft--;
           target++;
@@ -150,7 +152,7 @@ var setPropertyPrices = function (gameplay, pricelist) {
             // The last group of prices can be larger (not handled with the nbOfProbertiesInSameGroup, e.g. 150 places
             // with a numberOfPriceLevels = 8 leads to 148 handled places, leaving two with a wrong price).
             // ==> if the price is higher han priceMax, set it to priceMax
-            var price = Math.floor(p / 10) * 10;
+            let price                        = Math.floor(p / 10) * 10;
             pricelist[i + t].pricelist.price = (price < priceMax) ? price : priceMax;
           }
         }
@@ -170,7 +172,7 @@ var setPropertyPrices = function (gameplay, pricelist) {
     console.error(e);
     return null;
   }
-};
+}
 
 /**
  * Sets the prices for a house and the rents with the different hous levels
@@ -178,20 +180,20 @@ var setPropertyPrices = function (gameplay, pricelist) {
  * @param pricelist
  * @returns {*}
  */
-var setPropertyHousePricing = function (gameplay, pricelist) {
+function setPropertyHousePricing(gameplay, pricelist) {
   try {
-    var rentFactor = gameplay.gameParams.rentFactors;
+    const rentFactor = gameplay.gameParams.rentFactors;
 
-    for (var i = 0; i < pricelist.length; i++) {
-      var p = pricelist[i].pricelist.price;
+    for (let i = 0; i < pricelist.length; i++) {
+      let p                                = pricelist[i].pricelist.price;
       pricelist[i].pricelist.pricePerHouse = Math.floor(p * gameplay.gameParams.housePrices / 10) * 10;
-      pricelist[i].pricelist.rents = {
-        noHouse: Math.floor(p * rentFactor.noHouse / 10) * 10,
-        oneHouse: Math.floor(p * rentFactor.oneHouse / 10) * 10,
-        twoHouses: Math.floor(p * rentFactor.twoHouses / 10) * 10,
+      pricelist[i].pricelist.rents         = {
+        noHouse    : Math.floor(p * rentFactor.noHouse / 10) * 10,
+        oneHouse   : Math.floor(p * rentFactor.oneHouse / 10) * 10,
+        twoHouses  : Math.floor(p * rentFactor.twoHouses / 10) * 10,
         threeHouses: Math.floor(p * rentFactor.threeHouses / 10) * 10,
-        fourHouses: Math.floor(p * rentFactor.fourHouses / 10) * 10,
-        hotel: Math.floor(p * rentFactor.hotel / 10) * 10
+        fourHouses : Math.floor(p * rentFactor.fourHouses / 10) * 10,
+        hotel      : Math.floor(p * rentFactor.hotel / 10) * 10
       };
     }
     return pricelist;
@@ -202,20 +204,20 @@ var setPropertyHousePricing = function (gameplay, pricelist) {
     return null;
   }
 
-};
+}
 
 /**
  * Sets the property groups: several properties belonging to each other
  * @param gameplay
  * @param pricelist
  */
-var setPropertyGroups = function (gameplay, pricelist) {
+let setPropertyGroups = function (gameplay, pricelist) {
   try {
-    var nbOfPropertiesInGroup = gameplay.gameParams.properties.numberOfPropertiesPerGroup;
-    var n = 1;
+    let nbOfPropertiesInGroup = gameplay.gameParams.properties.numberOfPropertiesPerGroup;
+    let n                     = 1;
 
-    for (var i = 0; i < pricelist.length; i += nbOfPropertiesInGroup) {
-      for (var t = 0; t < nbOfPropertiesInGroup; t++) {
+    for (let i = 0; i < pricelist.length; i += nbOfPropertiesInGroup) {
+      for (let t = 0; t < nbOfPropertiesInGroup; t++) {
         pricelist[i + t].pricelist.propertyGroup = n;
       }
       n++;
@@ -230,12 +232,12 @@ var setPropertyGroups = function (gameplay, pricelist) {
 };
 
 module.exports = {
-  create: createPriceList,
+  create  : createPriceList,
   internal: {
-    extractRanges: extractRanges,
-    createPriceListArray: createPriceListArray,
-    setPropertyPrices: setPropertyPrices,
+    extractRanges          : extractRanges,
+    createPriceListArray   : createPriceListArray,
+    setPropertyPrices      : setPropertyPrices,
     setPropertyHousePricing: setPropertyHousePricing,
-    setPropertyGroups: setPropertyGroups
+    setPropertyGroups      : setPropertyGroups
   }
 };
