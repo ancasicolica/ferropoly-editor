@@ -537,8 +537,8 @@ function findOrCreateDropboxUser(profile, callback) {
         };
         newUser.info.registrationDate  = new Date();
         newUser.login.verifiedEmail    = true; // Dropbox does not need verification
-        newUser.personalData.forename  = _.get(profile, '_json.name_details.given_name', '');
-        newUser.personalData.surname   = _.get(profile, '_json.name_details.surname', profile.displayName);
+        newUser.personalData.forename  = _.get(profile, 'name.givenName', '');
+        newUser.personalData.surname   = _.get(profile, 'name.familyName', profile.displayName);
         newUser.personalData.email     = emailAddress ? emailAddress : profile.id; // using profile id as email alternative
         newUser.personalData.avatar    = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
         newUser.save(function (err, savedUser) {
@@ -565,15 +565,15 @@ function findOrCreateDropboxUser(profile, callback) {
             };
             user.info.registrationDate  = new Date();
             user.login.verifiedEmail    = true; // Dropbox does not need verification
-            user.personalData.forename  = _.get(profile, '_json.name_details.given_name', '');
-            user.personalData.surname   = _.get(profile, '_json.name_details.surename', profile.displayName);
+            user.personalData.forename  = _.get(profile, 'name.givenName', '');
+            user.personalData.surname   = _.get(profile, 'name.familyName', profile.displayName);
             user.login.dropboxProfileId = profile.id;
             user.personalData.avatar    = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
             user.save(function (err) {
               if (err) {
                 return callback(err);
               }
-              logger.info('Upgraded user ' + emailAddress + ' for microsoft access');
+              logger.info('Upgraded user ' + emailAddress + ' for dropbox access');
               // Recursive call, now we'll find this user
               return findOrCreateDropboxUser(profile, callback);
             });
