@@ -15,7 +15,6 @@ const edit         = require('./routes/edit');
 const newgame      = require('./routes/newgame');
 const gameplay     = require('./routes/gameplay');
 const authtoken    = require('./routes/authtoken');
-const issuetracker = require('./routes/issuetracker');
 const infoRoute    = require('../common/routes/info');
 const debugRoute   = require('../common/routes/debug');
 const settings     = require('./settings');
@@ -102,7 +101,6 @@ var initServer = function (db) {
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
-  app.use('/issuetracker', issuetracker);
   newgame.init(app);
   edit.init(app, gameplays, users, properties);
   gameplay.init(app);
