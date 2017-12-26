@@ -19,8 +19,8 @@
     "url": "https://github.com/ancasicolica/ferropoly_editor"
   },
   "engines": {
-    "node": ">= 6.1.0",
-    "npm": ">= 3.9.0"
+    "node": ">= 8.9.0",
+    "npm": ">= 5.5.0"
   },
   "private": true,
   "scripts": {
@@ -33,15 +33,15 @@
     "body-parser": "1.18.2",
     "compression": "1.7.1",
     "connect-flash": "0.1.1",
-    "connect-mongo": "^2.0.0",
+    "connect-mongo": "2.0.0",
     "cookie-parser": "1.4.3",
-    "debug": "2.6.8",
+    "debug": "3.1.0",
     "express": "4.16.2",
     "express-session": "1.15.6",
     "lodash": "4.17.4",
-    "moment": "2.19.4",
+    "moment": "2.20.1",
     "moment-timezone": "0.5.14",
-    "mongodb": "3.0.0-rc0",
+    "mongodb": "3.0.1",
     "mongoose": "4.13.7",
     "moniker": "0.1.2",
     "morgan": "1.9.0",
@@ -64,7 +64,7 @@
     "winston": "2.4.0"
   },
   "devDependencies": {
-    "eslint": "4.3.0",
+    "eslint": "4.14.0",
     "expect.js": "0.3.1",
     "grunt": "1.0.1",
     "grunt-bump": "0.8.0",
@@ -72,10 +72,10 @@
     "grunt-contrib-concat": "1.0.1",
     "grunt-contrib-copy": "1.0.0",
     "grunt-contrib-cssmin": "2.2.1",
-    "grunt-contrib-uglify": "3.2.1",
+    "grunt-contrib-uglify": "3.3.0",
     "grunt-contrib-watch": "1.0.0",
-    "grunt-eslint": "20.0.0",
-    "grunt-mocha-test": "0.13.2",
+    "grunt-eslint": "20.1.0",
+    "grunt-mocha-test": "0.13.3",
     "grunt-processhtml": "0.4.1",
     "grunt-shell": "2.1.0",
     "load-grunt-tasks": "3.5.2",
