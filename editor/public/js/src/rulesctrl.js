@@ -95,7 +95,7 @@ app.controller('rulesCtrl', ['$scope', '$http', '$interval', '$timeout', functio
   /**
    * When the window unloads, save data
    */
-  $(window).unload(function () {
+  $(window).on('unload', function () {
     localStorage.setItem(gameId + '-rules-text', $scope.rules);
     localStorage.setItem(gameId + '-rules-ts', new Date());
   });
