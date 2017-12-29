@@ -16,6 +16,7 @@ const moment       = require('moment');
 const async        = require('async');
 const gravatar     = require('../../common/lib/gravatar');
 const mailer       = require('../../common/lib/mailer');
+const _            = require('lodash');
 const MAX_NB_TEAMS = 20;
 
 let ngFile = 'playerctrl';
@@ -26,21 +27,33 @@ ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' 
 router.get('/edit/:gameId', function (req, res) {
   gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
     if (err) {
-      res.status(404).send('Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung');
-      return;
+      return res.render('error/404', {
+        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+        error  : {status: 401, stack: {}}
+      });
     }
     let gameplay = {
       scheduling: gp.scheduling,
       mobile    : gp.mobile
     };
-    res.render('player', {
-      title       : 'Spieler',
-      ngController: 'playerCtrl',
-      ngApp       : 'playerApp',
-      ngFile      : ngFile,
-      gameId      : req.params.gameId,
-      gameplay    : JSON.stringify(gameplay)
-    });
+
+    // Only the owner is allowed to edit the game, not the team mates!
+    if (_.get(gp, 'internal.owner', 'none') === req.session.passport.user) {
+      res.render('player', {
+        title       : 'Spieler',
+        ngController: 'playerCtrl',
+        ngApp       : 'playerApp',
+        ngFile      : ngFile,
+        gameId      : req.params.gameId,
+        gameplay    : JSON.stringify(gameplay)
+      });
+    }
+    else {
+      res.render('error/401', {
+        message: 'Zugriff nicht erlaubt',
+        error  : {status: 401, stack: {}}
+      });
+    }
   });
 
 });

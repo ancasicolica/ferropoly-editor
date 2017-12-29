@@ -49,6 +49,10 @@ router.get('/load/:gameId', function (req, res) {
     if (!gameplayData) {
       return res.status(400).send({message: 'Spiel nicht gefunden'});
     }
+    // Only the owner is allowed to edit the game, not the team mates!
+    if (_.get(gameplayData, 'internal.owner', 'none') !== req.session.passport.user) {
+      return res.status(401).send({message: 'Zugriff nicht erlaubt'});
+    }
     // Now get all properties of this gameplay
     return properties.getPropertiesForGameplay(req.params.gameId, null, function (err, propertyData) {
       if (err) {
