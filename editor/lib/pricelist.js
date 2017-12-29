@@ -8,6 +8,8 @@
 const gameplays  = require('../../common/models/gameplayModel');
 const properties = require('../../common/models/propertyModel');
 const _          = require('lodash');
+const logger     = require('../../common/lib/logger').getLogger('pricelist');
+
 
 /**
  * Create and save the complete price list
@@ -101,7 +103,7 @@ function createPriceListArray(ranges) {
     return arr;
   }
   catch (e) {
-    console.log(e);
+    logger.error('Error in createPriceListArray', e);
     return null;
   }
 }
@@ -168,8 +170,7 @@ function setPropertyPrices(gameplay, pricelist) {
     }
   }
   catch (e) {
-    console.log('Error in set pricing: ' + e.message);
-    console.error(e);
+    logger.error('Error in setPropertyPrices', e);
     return null;
   }
 }
@@ -199,8 +200,7 @@ function setPropertyHousePricing(gameplay, pricelist) {
     return pricelist;
   }
   catch (e) {
-    console.log('error in setPropertyHousePricing');
-    console.error(e);
+    logger.error('Error in setPropertyHousePricing', e);
     return null;
   }
 
@@ -225,8 +225,7 @@ let setPropertyGroups = function (gameplay, pricelist) {
     return pricelist;
   }
   catch (e) {
-    console.log('error in setPropertyGroups');
-    console.error(e);
+    logger.error('Error in setPropertyGroups', e);
     return null;
   }
 };
