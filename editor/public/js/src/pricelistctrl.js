@@ -42,58 +42,51 @@ app.controller('pricelistCtrl', ['$scope', '$http', function ($scope, $http) {
     $http.post('/gameplay/finalize', {
       gameId   : $scope.data.gameplay.internal.gameId,
       authToken: authToken
-    }).success(function (data) {
-      $scope.finalizing = false;
-      if (data.success) {
+    }).then(
+      function () {
+        $scope.finalizing = false;
         console.log('Gameplay finalized');
-        $scope.statusText                       = data.message;
         $scope.data.gameplay.internal.finalized = true;
         fa.event('Gameplay', 'finalized', $scope.data.gameplay.internal.gameId);
-      }
-      else {
-        console.log('Error');
-        console.log(data);
-        $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-      }
-    }).error(function (data, status) {
-      $scope.finalizing = false;
-      console.log('ERROR');
-      console.log(data);
-      console.log(status);
-      $scope.statusText = 'Fehler beim Speichern: ' + data.message;
-    });
+        genericModals.showSuccess('Preisliste finalisiert', 'Die Preisliste kann nun nicht mehr verändert werden, nun kannst Du sie den Teams zusenden.');
+      },
+      function (resp) {
+        $scope.finalizing = false;
+        console.error('/gameplay/finalize failed', resp);
+        genericModals.showError('Fehler', 'Die Preisliste konnte nicht finalisiert werden.', resp, function () {
+          window.location.href = "/";
+        });
+      });
   };
 
   /**
    * After loading the document, we load the gameplay and pricelist
    */
   $(document).ready(function () {
-    $http.get('/pricelist/get/' + gameId).success(function (data) {
-      console.log(data);
-      if (!data.success) {
-        $scope.panel        = 'error';
-        $scope.errorMessage = 'Der Server liefert folgende Antwort: ' + data.message;
-        return;
-      }
-      $scope.data  = data;
+    $http.get('/pricelist/get/' + gameId).then(
+      function (resp) {
+        var data    = resp.data;
+        $scope.data = data;
 
-      $http.get('/authtoken').success(function (data) {
-        authToken = data.authToken;
-        console.log('Auth ok');
-      }).error(function (data, status) {
-        console.log('error:');
-        console.log(data);
-        console.log(status);
-        $scope.errorMessage = 'Authentisierungsfehler, das Spiel kann nicht bearbeitet werden. Status: ' + status;
+        $http.get('/authtoken').then(
+          function (resp) {
+            authToken = resp.data.authToken;
+            console.log('Auth ok');
+          },
+          function (resp) {
+            console.error('/authtoken failed', resp);
+            genericModals.showError('Fehler', 'Authentisierungsfehler, bitte neu einloggen.', function () {
+              window.location.href = "/";
+            });
+          });
+
+      },
+      function (resp) {
+        console.error('/pricelist/get failed', resp);
+        genericModals.showError('Fehler', 'Ladefehler, das Spiel kann nicht angesehen werden.', function () {
+          window.location.href = "/";
+        });
       });
-
-    }).error(function (data, status) {
-      console.log('load-game-error');
-      console.log(data);
-      console.log(status);
-      $scope.panel        = 'error';
-      $scope.errorMessage = 'Ladefehler, das Spiel kann nicht angesehen werden. Status: ' + status;
-    });
   });
 
 }]);

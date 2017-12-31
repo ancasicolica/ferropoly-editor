@@ -5,26 +5,25 @@
  */
 
 
-var express  = require('express');
-var passport = require('passport');
-var url      = require('url');
-var router   = express.Router();
-var settings;
-var _        = require('lodash');
-var logger   = require('../lib/logger').getLogger('login');
+const express  = require('express');
+const passport = require('passport');
+const url      = require('url');
+const router   = express.Router();
+let settings;
+const _        = require('lodash');
+const logger   = require('../lib/logger').getLogger('login');
 
 
 /**
  * Get the login page
  */
 router.get('/', function (req, res) {
-  var loginController = 'loginctrl';
-  loginController = settings.minifiedjs ? '/js/min/' + loginController +'.min.js' : '/js/src/' + loginController +'.js';
+  let loginController = 'loginctrl';
+  loginController     = settings.minifiedjs ? '/js/min/' + loginController + '.min.js' : '/js/src/' + loginController + '.js';
 
   res.render('login', {
     title       : settings.appName + ' Login',
     hideLogout  : true,
-    showSignUp  : true,
     versionInfo : settings.version,
     preview     : settings.preview,
     ngController: 'loginCtrl',
@@ -37,7 +36,9 @@ router.get('/', function (req, res) {
  * The login post route
  */
 router.post('/', function (req, res) {
-  var redirectUri = req.session.targetUrl || '/';
+  logger.test(_.get(req, 'body.debug'));
+
+  let redirectUri = req.session.targetUrl || '/';
   passport.authenticate('local', {
     successRedirect: redirectUri,
     failureRedirect: '/login',
@@ -62,6 +63,7 @@ module.exports = {
       res.redirect('/login');
     });
     app.post('/logout', function (req, res) {
+      logger.test(_.get(req, 'body.debug'));
       req.session.targetUrl = undefined;
       req.logout();
       res.send({});
@@ -69,12 +71,9 @@ module.exports = {
 
     // Filter for get, redirect to login page if not logged out
     app.get('*', function (req, res, next) {
-      var uri = url.parse(req.url).pathname;
+      let uri = url.parse(req.url).pathname;
       if (_.startsWith(uri, '/signup')) {
         logger.info('Signup !');
-        return next();
-      }
-      if (uri === '/configuration.js') {
         return next();
       }
       if (_.endsWith(uri, 'jpg')) {
@@ -91,9 +90,21 @@ module.exports = {
       }
       if (!req.session.passport || !req.session.passport.user) {
         // valid user in session
-        logger.info(uri + " redirected in login.js to login");
-        req.session.targetUrl = req.url;
-        res.redirect('/login');
+        if (uri === '/') {
+          logger.info(uri + " redirected to login");
+          res.redirect('/login');
+        }
+        else {
+          logger.info(uri + " is not allowed (401)");
+          req.session.targetUrl = req.url;
+          res.status(401);
+
+          res.render('error/401', {
+            message: 'Zugriff nicht erlaubt',
+            error  : {status: 401, stack: {}}
+          });
+        }
+
       } else {
         return next();
       }

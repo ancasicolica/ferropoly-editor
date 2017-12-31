@@ -14,22 +14,22 @@ const logger   = require('../../common/lib/logger').getLogger('cronjobs');
  * Set game options, different for different days
  */
 function generateGameOptions() {
-  let today = new Date();
+  let today       = new Date();
   let gameOptions = {};
 
   switch (today.getUTCDate() % 4) {
     case 0:
-      gameOptions.map = 'ostwind';
+      gameOptions.map    = 'ostwind';
       gameOptions.random = 60;
       break;
 
     case 1:
-      gameOptions.map = 'zvv';
+      gameOptions.map    = 'zvv';
       gameOptions.random = 60;
       break;
 
     default:
-      gameOptions.map = 'sbb';
+      gameOptions.map    = 'sbb';
       gameOptions.random = 120;
       gameOptions.teamNb = 12;
       break;

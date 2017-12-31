@@ -1,0 +1,40 @@
+.col-md-offset-1.col-md-10.col-sm-12
+  h2 Preisliste
+  p Wie gut kennt ihr das Spiel schon? Die Gestaltung der Preisliste hat einen grossen Einfluss auf den Spielverlauf. Wähle hier die Variante aus, welche am Besten zu Euch passt, Du kannst später die Einstellungen noch nach Belieben verändern.
+
+  .radio
+    label
+      input(type='radio' name='priceliststyle' value='easy' ng-model='presets')
+      strong Einfach:&nbsp;
+      | Die Preisspanne zwischen dem günstigsten und teuersten Ort ist klein. Es kommt im Spiel mehr darauf an wie viele Orte man kauft und weniger welche es sind. Diese Art von Preisliste ist gut geeignet für wenig erfahrene Spieler.
+    p &nbsp;
+    label
+      input(type='radio' name='priceliststyle' value='moderate' ng-model='presets')
+      strong Mittel:&nbsp;
+      | Das teuerste Ort ist vier mal so teuer wie das billigste und der Häuserbau wird wichtig. Eine Routenplanung beginnt sich für die Gruppen zu lohnen, doch auch günstige Orte bleiben attraktiv. Diese Preisliste ist eine gute Wahl für Gelegenheitsspieler.
+    p &nbsp;
+    label
+      input(type='radio' name='priceliststyle' value='classic' ng-model='presets')
+      strong Schwierig (Original Ferropoly):&nbsp;
+      | Die Preisspanne zwischen dem günstigsten und teuersten Ort ist gross: das teuerste Ort kostet achtmal mehr als das günstigste! Es wird das Team gewinnen, welches die meisten teuersten Orte oder Paare kaufen kann, ohne Planung hat man als Spieler keine Chance. Als Spielleiter musst Bei der Gestaltung der Preisliste darauf achten, dass die teuersten Orte gut verteilt und nicht so einfach erreichbar sind.
+
+
+  h2 Zufallspreisliste
+  p Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
+
+  select(class='form-control' ng-model='random' convert-to-number)
+    option(value='0' default) Keine Orte der Preisliste zuweisen
+    option(value='60') 60
+    option(value='80') 80
+    option(value='100') 100
+    option(value='120') 120
+    option(value='150') 150
+    option(value='180') 180
+    option(value='200') 200
+
+
+  p &nbsp;
+  p
+    button.btn.btn-primary(ng-click='step=2' ng-disabled='!createEnabled || (!newForm.$valid)') Zurück
+    | &nbsp;
+    button.btn.btn-primary(ng-click='step=4' ng-disabled='!createEnabled || (!newForm.$valid)') Weiter

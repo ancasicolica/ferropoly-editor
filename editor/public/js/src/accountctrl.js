@@ -10,13 +10,17 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
   $scope.data = null;
 
   // Load the user data of the user the session belongs to
-  $http.get('/userinfo').success(function (data) {
-    $scope.data = data.info;
-  }).error(function (data, status) {
-    console.log('error:');
-    console.log(data);
-    console.log(status);
-  });
+  $http.get('/userinfo').then(
+    function (resp) {
+      $scope.data = resp.data.info;
+    },
+    function (resp) {
+      console.error('/userinfo', resp);
+      genericModals.showError('Fehler', 'Die Accountdaten konnten nicht geaden werden.', resp, function() {
+        window.location.href = "/";
+      });
+    }
+  );
 
   $scope.getRegistrationDate = function () {
     if (!$scope.data) {
@@ -75,4 +79,21 @@ angular.module('accountApp', []).controller('accountCtrl', ['$scope', '$http', f
     }
     return ($scope.data.login.googleProfileId);
   };
+  /**
+   * Check if google is active
+   * @returns {boolean}
+   */
+  $scope.isDropboxActive = function () {
+    if (!$scope.data) {
+      return false;
+    }
+    return ($scope.data.login.dropboxProfileId);
+  };
+
+  $scope.isMicrosoftActive = function() {
+    if (!$scope.data) {
+      return false;
+    }
+    return ($scope.data.login.microsoftProfileId);
+  }
 }]);

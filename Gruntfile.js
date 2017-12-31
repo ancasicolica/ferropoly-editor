@@ -31,8 +31,7 @@ module.exports = function (grunt) {
           './editor/public/js/min/playerctrl.min.js'      : ['./editor/public/js/src/playerctrl.js'],
           './editor/public/js/min/pricelistctrl.min.js'   : ['./editor/public/js/src/pricelistctrl.js'],
           './editor/public/js/min/property.min.js'        : ['./editor/public/js/src/property.js'],
-          './editor/public/js/min/rulesctrl.min.js'           : ['./editor/public/js/src/rulesctrl.js'],
-          './editor/public/js/min/signupctrl.min.js'      : ['./editor/public/js/src/signupctrl.js'],
+          './editor/public/js/min/rulesctrl.min.js'       : ['./editor/public/js/src/rulesctrl.js'],
           './editor/public/js/min/signupverifyctrl.min.js': ['./editor/public/js/src/signupverifyctrl.js'],
           './editor/public/js/min/analytics.min.js'       : ['./editor/public/js/src/analytics.js'],
           './editor/public/js/min/loginctrl.min.js'       : ['./editor/public/js/src/loginctrl.js']

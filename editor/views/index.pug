@@ -1,0 +1,62 @@
+extends layout
+
+block head
+  link(rel='stylesheet', href='/css/index.css')
+
+block navbar
+  li
+    a(id='new-game' href='/newgame' ng-hide='gameplays.length > 3') Neues Spiel
+  li
+    a(href='/account') Mein Account
+
+block content-fix
+  #info-header
+    #info-welcome
+      h1.info-header {{intro}}
+        = ' ' + user.personalData.forename
+block content
+  include index-modal-delete
+  include index-modal-agb
+
+  p.intro Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
+    a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
+    | .
+
+  h2 Meine Spiele
+  div(ng-show='gameplays.length === 0' ng-cloak)
+    | Du hast noch keine Spiele angelegt.&nbsp;
+    a(href='/newgame') Neues Spiel anlegen.
+  div(ng-show='gameplays.length > 0' ng-cloak)
+    .row
+      div(class='col-md-3' data-ng-repeat='gameplay in gameplays')
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title {{gameplay.gamename}}
+          .panel-body
+            p Spieldatum: {{gameplay.scheduling.gameDate | date:'d.M.yyyy'}}, {{gameplay.scheduling.gameStart}} - {{gameplay.scheduling.gameEnd}}
+            p Karte: {{gameplay.internal.map.toUpperCase()}}
+            p Erstellt: {{gameplay.log.created | date:'d.M.yyyy H:mm'}}
+            p Letzte Bearbeitung: {{gameplay.log.lastEdited | date:'d.M.yyyy H:mm'}}
+            p(ng-show='gameplay.log.priceListVersion > 0') Preisliste: {{gameplay.log.priceListCreated | date:'d.M.yyyy H:mm'}}
+              div(ng-show='gameplay.internal.finalized') Preisliste ist finalisiert
+            p Das Spiel wird am {{gameplay.scheduling.deleteTs | date:'d.M.yyyy'}} automatisch gelöscht.
+            p(class='gameplay-id') ID: {{gameplay.internal.gameId}}
+            p
+              a(class='btn btn-default btn-xs btn-gameplay' ng-hide='gameplay.internal.finalized || !gameplay.isOwner' href='/gameplay/edit/{{gameplay.internal.gameId}}' ng-click="") Bearbeiten&nbsp;
+                i.fa.fa-pencil
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/pricelist/view/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0') Preisliste&nbsp;
+                i.fa.fa-eye
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/rules/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.internal.finalized') Spielregeln&nbsp;
+                i.fa.fa-book
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/player/edit/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0 && gameplay.isOwner') Spieler&nbsp;
+                i.fa.fa-users
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='/admins/edit/{{gameplay.internal.gameId}}' ng-click="" ng-show='gameplay.log.priceListVersion > 0 && gameplay.isOwner') Spielleiter&nbsp;
+                i.fa.fa-user
+
+              a(class='btn btn-default btn-xs btn-gameplay' href='#' data-toggle="modal" data-target="#deleteModal" ng-click="prepareToDelete(this)" ng-show="gameplay.isOwner" ng-disabled="notAllowedToDeleteGameplay(gameplay)") Löschen&nbsp;
+                i.fa.fa-trash
+

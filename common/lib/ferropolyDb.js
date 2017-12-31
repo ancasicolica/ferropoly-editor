@@ -5,11 +5,14 @@
  * Created by kc on 02.01.15.
  */
 
-var mongoose = require('mongoose');
-var logger = require('./logger').getLogger('ferropolyDb');
+const mongoose = require('mongoose');
+const logger   = require('./logger').getLogger('ferropolyDb');
 
-var db = undefined;
-var mongooseThis = undefined;
+let db           = undefined;
+let mongooseThis = undefined;
+
+// Needed for the new mongoose, using the ES6 native promises
+mongoose.Promise = global.Promise;
 
 module.exports = {
   /**
@@ -21,7 +24,7 @@ module.exports = {
   },
 
   init: function (settings, callback) {
-    var poolSize = settings.locationDbSettings.poolSize || 5;
+    let poolSize = settings.locationDbSettings.poolSize || 5;
     logger.info(`Connecting to MongoDb with a pool size of ${poolSize}`);
 
     // Already initialized
@@ -30,17 +33,13 @@ module.exports = {
     }
 
     // Connect to the MongoDb
-    var options = {
-      server: {
-        socketOptions: {keepAlive: 1},
-        poolSize: poolSize
-      },
-      replset: {
-        socketOptions: {keepAlive: 1}
-      }
+    let options  = {
+      useMongoClient: true,
+      poolSize     : poolSize
+
     };
     mongooseThis = mongoose.connect(settings.locationDbSettings.mongoDbUrl, options);
-    db = mongoose.connection;
+    db           = mongoose.connection;
 
     db.on('error', function (err) {
       logger.error('MongoDb Connection Error:', err);

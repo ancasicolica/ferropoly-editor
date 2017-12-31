@@ -9,16 +9,16 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
   var authToken = '';
 
   $scope.adminInfo = adminInfo; // contains info about the users already available
-  $scope.logins = gameplay.admins.logins;
-  $scope.saved = false;
+  $scope.logins    = gameplay.admins.logins;
+  $scope.saved     = false;
   $scope.saveError = '';
-  $scope.changed = false;
+  $scope.changed   = false;
 
   /**
    * Checks if a user is existing (known) by the ferropoly
    * @param index
    */
-  $scope.isExistingUser = function(index) {
+  $scope.isExistingUser = function (index) {
     if (_.isString($scope.logins[index]) && $scope.logins[index].length === 0) {
       return 'empty';
     }
@@ -28,8 +28,8 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
   /**
    * Checks if there is a user without a login
    */
-  $scope.hasUserWithoutLogin = function() {
-    if($scope.changed) {
+  $scope.hasUserWithoutLogin = function () {
+    if ($scope.changed) {
       return false;
     }
 
@@ -44,8 +44,8 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
   /**
    * Checks if all users (if there are any) have a login
    */
-  $scope.allDefinedUsersHaveLogin = function() {
-    if(!$scope.changed) {
+  $scope.allDefinedUsersHaveLogin = function () {
+    if (!$scope.changed) {
       return false;
     }
 
@@ -70,42 +70,39 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
    * Saves all admins
    */
   $scope.save = function () {
-    $http.post('/admins/save', {
-      gameId: gameplay.gameId,
-      logins: $scope.logins,
+    $http.post('/admins/' + gameplay.gameId, {
+      logins   : $scope.logins,
       authToken: authToken
-    }).
-      success(function (data, status) {
-        console.log(data);
-        console.warn(status);
-        if (data.success) {
-          console.log('admins updated');
-          // Google Analytics
-          fa.event('Admins', 'store', {gameId: gameId});
-          $scope.adminInfo = data.result;
-          $scope.saved = true;
-          $scope.saveError = '';
+    }).then(
+      function (resp) {
+        console.log('admins updated');
+        // Google Analytics
+        fa.event('Admins', 'store', {gameId: gameId});
+        $scope.adminInfo = resp.data.result;
+        $scope.saved     = true;
+        $scope.changed   = false;
+        $scope.saveError = '';
+      },
+      function (resp) {
+        console.error('/admins/save', resp);
+        if (resp.status == 401) {
+          genericModals.showError('Fehler', 'Gegenwärtig fehlt die Berechtigung für den Zugriff auf diese Seite.', resp, function () {
+            window.location.href = "/";
+          });
         }
         else {
-          console.log('Error');
-          console.log(data);
-          $scope.saved = false;
-          $scope.saveError = data.message;
+          genericModals.showError('Fehler', 'Beim Speichern der Admins trat ein Problem auf', resp);
         }
-      }).
-      error(function (data, status) {
-        console.log('ERROR: ' + status);
-        console.log(data);
-        $scope.saved = false;
-        $scope.saveError = ' der Server meldet Status ' + status + ' (' + data + ')';
+        $scope.saved     = false;
+        $scope.saveError = ' der Server meldet Status ' + status + ' (' + resp.data + ')';
       });
   };
 
   /**
    * Any data changed
    */
-  $scope.dataChanged = function() {
-    $scope.saved = false;
+  $scope.dataChanged = function () {
+    $scope.saved   = false;
     $scope.changed = true;
   };
 
@@ -113,15 +110,15 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
    * Load authToken when document ready
    */
   $(document).ready(function () {
-    $http.get('/authtoken').
-      success(function (data) {
-        authToken = data.authToken;
+    $http.get('/authtoken').then(
+      function (resp) {
+        authToken = resp.data.authToken;
         console.log('Auth ok');
-      }).
-      error(function (data, status) {
-        console.log('Auth error:');
-        console.log(data);
-        console.log(status);
+      }, function (resp) {
+        console.error('/authtoken', resp);
+        genericModals.showError('Fehler', 'Die Berechtigung für diese Seite konnte nicht überpürft werden.', resp, function () {
+          window.location.href = "/";
+        });
       });
   });
 }]);

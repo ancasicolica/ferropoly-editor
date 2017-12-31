@@ -6,12 +6,13 @@
  * Created by kc on 17.01.15.
  */
 
-var LocalStrategy    = require('passport-local').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy;
-var crypto           = require('crypto');
-var logger           = require('./logger').getLogger('authStrategy');
-var util             = require('util');
+const LocalStrategy    = require('passport-local').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy   = require('passport-google-oauth20').Strategy;
+const DropboxStrategy  = require('passport-dropbox-oauth2').Strategy;
+const crypto           = require('crypto');
+const logger           = require('./logger').getLogger('authStrategy');
+const util             = require('util');
 
 module.exports = function (settings, users) {
 
@@ -20,18 +21,18 @@ module.exports = function (settings, users) {
    * @param user
    * @param done
    */
-  var serializeUser = function (user, done) {
+  function serializeUser(user, done) {
     logger.debug("serializeUser:" + user);
     done(null, user.personalData.email);
-  };
+  }
 
   /**
    * deserialize an user
-   * @param user
+   * @param userId
    * @param done
    * @returns {*}
    */
-  var deserializeUser = function (userId, done) {
+  function deserializeUser(userId, done) {
     logger.debug("deserializeUser:" + userId);
     return users.getUserByMailAddress(userId, function (err, foundUser) {
       if (err || !foundUser) {
@@ -39,13 +40,13 @@ module.exports = function (settings, users) {
       }
       return done(null, foundUser);
     });
-  };
+  }
 
   /**
    * The local strategy for users registered in the ferropoly site
    * @type {LocalStrategy}
    */
-  var localStrategy = new LocalStrategy(
+  const localStrategy = new LocalStrategy(
     function (username, password, done) {
       logger.info('Login attempt: ' + username);
       users.getUserByMailAddress(username, function (err, foundUser) {
@@ -70,12 +71,12 @@ module.exports = function (settings, users) {
   /**
    * Facebook strategy for users using their facebook account
    */
-  var facebookStrategy = new FacebookStrategy({
-      clientID         : settings.oAuth.facebook.appId,
-      clientSecret     : settings.oAuth.facebook.secret,
-      callbackURL      : settings.oAuth.facebook.callbackURL,
-      enableProof      : false,
-      profileFields    : ['id', 'about', 'website', 'cover', 'picture', 'email', 'gender', 'name']
+  const facebookStrategy = new FacebookStrategy({
+      clientID     : settings.oAuth.facebook.appId,
+      clientSecret : settings.oAuth.facebook.secret,
+      callbackURL  : settings.oAuth.facebook.callbackURL,
+      enableProof  : false,
+      profileFields: ['id', 'about', 'website', 'cover', 'picture', 'email', 'gender', 'name']
     },
     function (accessToken, refreshToken, profile, done) {
       //console.log('ACCESS-TOKEN  ' + util.inspect(accessToken));
@@ -90,7 +91,7 @@ module.exports = function (settings, users) {
   /**
    * Google Strategy
    */
-  var googleStrategy = new GoogleStrategy({
+  const googleStrategy = new GoogleStrategy({
       clientID         : settings.oAuth.google.clientId,
       clientSecret     : settings.oAuth.google.clientSecret,
       callbackURL      : settings.oAuth.google.callbackURL,
@@ -107,10 +108,33 @@ module.exports = function (settings, users) {
     }
   );
 
+  /**
+   * Dropbox Strategy
+   */
+  const dropboxStrategy = new DropboxStrategy({
+      apiVersion       : '2',
+      clientID         : settings.oAuth.dropbox.clientId,
+      clientSecret     : settings.oAuth.dropbox.clientSecret,
+      callbackURL      : settings.oAuth.dropbox.callbackURL,
+      passReqToCallback: true
+    },
+    function (accessToken, refreshToken, donotknow, profile, done) {
+      //console.log('accessToken', accessToken);
+      //console.log('refreshToken', refreshToken);
+      console.log('Dropbox Profile:', profile);
+
+      users.findOrCreateDropboxUser(profile, function (err, foundUser) {
+        return done(err, foundUser);
+      });
+    }
+  );
+
+
   return {
     localStrategy   : localStrategy,
     facebookStrategy: facebookStrategy,
     googleStrategy  : googleStrategy,
+    dropboxStrategy : dropboxStrategy,
     deserializeUser : deserializeUser,
     serializeUser   : serializeUser
   }

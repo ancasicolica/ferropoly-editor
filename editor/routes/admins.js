@@ -5,16 +5,16 @@
 
 
 
-var express   = require('express');
-var router    = express.Router();
-var gameplays = require('../../common/models/gameplayModel');
-var settings  = require('../settings');
-var _         = require('lodash');
-var async     = require('async');
-var logger    = require('../../common/lib/logger').getLogger('routes:admins');
-var users     = require('../../common/models/userModel');
+const express   = require('express');
+const router    = express.Router();
+const gameplays = require('../../common/models/gameplayModel');
+const settings  = require('../settings');
+const _         = require('lodash');
+const async     = require('async');
+const logger    = require('../../common/lib/logger').getLogger('routes:admins');
+const users     = require('../../common/models/userModel');
 
-var ngFile = 'adminsctrl';
+let ngFile = 'adminsctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 /**
@@ -24,7 +24,7 @@ ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' 
  */
 function checkAdminUsers(logins, callback) {
   // Check if the users exist
-  var result = {};
+  let result = {};
   async.each(logins, function (login, cb) {
       if (!login) {
         return cb();
@@ -58,13 +58,13 @@ router.get('/edit/:gameId', function (req, res) {
     }
 
     // Default is an array with 3 empty entries. Create it here if needed.
-    var admins    = gp.admins || {};
+    let admins    = gp.admins || {};
     admins.logins = gp.admins.logins || [];
-    for (var i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       admins.logins.push('');
     }
 
-    var gameplay = {
+    let gameplay = {
       admins: gp.admins,
       gameId: gp.internal.gameId
     };
@@ -90,31 +90,47 @@ router.get('/edit/:gameId', function (req, res) {
 /**
  * Save all admins
  */
-router.post('/save', function (req, res) {
+router.post('/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
+    return res.status(401).send({message:'Kein Zugriff möglich, bitte einloggen'});
   }
 
-  gameplays.setAdmins(req.body.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {
+  logger.info(req.body);
+  logger.test(req.body.debug);
+
+  gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {
     if (err) {
       logger.error('Can not set admins', err);
-      logger.info('gameId', req.body.gameId);
+      logger.info('gameId', req.params.gameId);
       logger.info('user', req.session.passport.user);
-      res.send({status: 'error', message: 'can not save admins', errorMessage: err.message});
+      res.status(500).send({message: 'can not save admins', errorMessage: err.message});
       return;
     }
 
     checkAdminUsers(gp.admins.logins, function (err, result) {
       if (err) {
         logger.error('Error while checking users', err);
-        return res.send({status: 'error', message: 'Error while checking users'});
+        return res.status(500).send({message: 'Error while checking users', errorMessage: err.message});
       }
-      return res.send({success: true, result: result});
+      return res.send({result: result});
     });
   });
 });
 
+/**
+ * Get the admins
+ */
+router.get('/:gameId', (req, res) => {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
+    if (err) {
+      logger.error('getGameplay fails', err);
+      // "not found" is the most likely error thrown
+      return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
+    }
+    res.send(_.get(gp, 'admins.logins', []));
+  });
+});
 
 module.exports = router;
 

@@ -4,19 +4,20 @@
  */
 
 
-var express  = require('express');
-var settings = require('../settings');
-var logger   = require('../../common/lib/logger').getLogger('routes:edit');
-var async    = require('async');
-var router   = express.Router();
-var gameplays;
-var properties;
+const express  = require('express');
+const settings = require('../settings');
+const logger   = require('../../common/lib/logger').getLogger('routes:edit');
+const async    = require('async');
+const router   = express.Router();
+const _        = require('lodash');
+let gameplays;
+let properties;
 
-var ngFile = 'editctrl';
+let ngFile = 'editctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
-var propertyFile = 'property';
-propertyFile           = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
+let propertyFile = 'property';
+propertyFile     = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
 
 
 /* GET edit page */
@@ -33,7 +34,11 @@ router.get('/edit/:gameId', function (req, res) {
   });
 });
 
-/* Load a game */
+/**
+ * Load a game
+ *
+ * This route returns the gameplay and all properties belonging to it
+ * */
 router.get('/load/:gameId', function (req, res) {
 
   return gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplayData) {
@@ -44,6 +49,10 @@ router.get('/load/:gameId', function (req, res) {
     if (!gameplayData) {
       return res.status(400).send({message: 'Spiel nicht gefunden'});
     }
+    // Only the owner is allowed to edit the game, not the team mates!
+    if (_.get(gameplayData, 'internal.owner', 'none') !== req.session.passport.user) {
+      return res.status(401).send({message: 'Zugriff nicht erlaubt'});
+    }
     // Now get all properties of this gameplay
     return properties.getPropertiesForGameplay(req.params.gameId, null, function (err, propertyData) {
       if (err) {
@@ -53,20 +62,25 @@ router.get('/load/:gameId', function (req, res) {
       if (!propertyData) {
         return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
       }
-      res.send({success: true, gameplay: gameplayData, properties: propertyData});
+      res.send({gameplay: gameplayData, properties: propertyData});
     });
 
   });
 });
 
-/* Save a game */
+/**
+ * Save a game
+ * An already existing Gameplay is saved with this route
+ * */
 router.post('/save/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    logger.info(`/save/${req.params.gameId} : Auth token missing or wrong, access denied: ${req.body.authToken} vs ${req.session.authToken}`);
+    logger.info('Passport Info:' + _.get(req, 'session.passport', 'none'));
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   if (req.params.gameId !== req.body.gameplay.internal.gameId) {
+    logger.info(`/save/${req.params.gameId} : GameId mismatch: ${req.params.gameId} vs ${req.body.gameplay.internal.gameId}`);
     res.status(400).send({message: 'GameID mismatch'});
     return;
   }
@@ -74,24 +88,29 @@ router.post('/save/:gameId', function (req, res) {
   logger.info('Save game ' + req.params.gameId);
   gameplays.updateGameplay(req.body.gameplay, function (err, gameplay) {
     if (err) {
-      logger.err('updateGameplay failed', err);
+      logger.error('updateGameplay failed', err);
       return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});
     }
+
     return res.send({success: true, gameId: gameplay.internal.gameId});
   });
 });
 
-/* Save Property */
+/**
+ * Save Property
+ * Saves ONE SINGLE property which was edited in the editor. Properties can only be updated
+ * if the gameplay is not finalized yet.
+ * */
 router.post('/saveProperty/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   if (!req.body.property || !req.body.property.location) {
     return res.status(400).send({message: 'Ungültige Parameter'});
   }
-  var prop = req.body.property;
+  let prop = req.body.property;
 
   if (req.params.gameId !== prop.gameId) {
     res.status(400).send({message: 'GameID mismatch'});
@@ -101,10 +120,19 @@ router.post('/saveProperty/:gameId', function (req, res) {
   // load gameplay, check if finalized
   gameplays.isFinalized(req.params.gameId, function (err, finalized) {
     if (err) {
-      return res.status(500).send({message: 'Fehler bei Finalisierung: ' + err.message});
+      return res.status(500).send({message: 'Fehler bei Check Finalisierung: ' + err.message});
     }
     if (finalized) {
       return res.status(400).send({message: 'Bereits finalisiertes Spiel'});
+    }
+
+    // Bug #35: if a property was removed from the pricelist, delete all associated data for it
+    if (_.get(prop, 'pricelist.priceRange', -1) < 0) {
+      _.set(prop, 'pricelist.priceRange', -1);
+      _.set(prop, 'pricelist.positionInPriceRange', -1);
+      _.set(prop, 'pricelist.position', -1);
+      prop.pricelist = _.omit(prop.pricelist, ['rents', 'propertyGroup', 'pricePerHouse', 'price']);
+      logger.info('Removed Property from previous price list: ' + prop.location.name)
     }
 
     logger.info('Save property ' + prop.location.name);
@@ -112,10 +140,12 @@ router.post('/saveProperty/:gameId', function (req, res) {
       if (err) {
         return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
       }
-      return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+      // Updating a property invalidates the pricelist!
+      gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
+        return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+      });
     });
   });
-
 });
 
 /**
@@ -125,30 +155,35 @@ router.post('/saveProperty/:gameId', function (req, res) {
 router.post('/dataChanged/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId, function (err) {
     if (err) {
       logger.info('Error while updating gameplay: ' + err.message);
+      return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
     }
-    res.send({success: true, status: 'ok'});
+
+    // This also invalidates the pricelist
+    gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
+      res.send({});
+    });
   });
 });
 
 /**
- * Saves _ONLY_ the position in the pricelist
+ * Saves _ONLY_ the position in the pricelist of all properties supplied
  */
 router.post('/savePositionInPricelist/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
   if (!req.body.properties) {
     return res.status(400).send({message: 'Properties fehlen'});
   }
-  var props = req.body.properties;
+  let props = req.body.properties;
   if (props.length === 0) {
     return res.send({
       success: true,
@@ -161,7 +196,7 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
   // Load gameplay, check if finalized
   gameplays.isFinalized(req.params.gameId, function (err, finalized) {
     if (err) {
-      return res.status(500).send({message: 'Abfrage isFinalized schulg fehl ' + err.message});
+      return res.status(500).send({message: 'Abfrage isFinalized schlug fehl ' + err.message});
     }
     if (finalized) {
       return res.status(403).send({message: 'Spiel ist bereits finalisiert'});
@@ -170,18 +205,20 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
     async.each(props,
       function (p, cb) {
         properties.updatePositionInPriceList(req.params.gameId, p.uuid, p.positionInPriceRange, cb);
-
       },
       function (err) {
         if (err) {
           logger.error('Saving properties fails', err);
           return res.status(500).send({message: 'Speichern schlug fehl: ' + err.message});
         }
-        res.send({
-          success: true,
-          status : 'ok',
-          message: props.length + ' Orte gespeichert',
-          nbSaved: props.length
+        // This also invalidates the pricelist
+        gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
+          res.send({
+            success: true,
+            status : 'ok',
+            message: props.length + ' Orte gespeichert',
+            nbSaved: props.length
+          });
         });
       }
     );

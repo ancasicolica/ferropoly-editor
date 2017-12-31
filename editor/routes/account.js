@@ -3,11 +3,11 @@
  * Created by kc on 29.12.15.
  */
 
-var express  = require('express');
-var router   = express.Router();
-var settings = require('../settings');
+const express  = require('express');
+const router   = express.Router();
+const settings = require('../settings');
 
-var ngFile = 'accountctrl';
+let ngFile = 'accountctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 router.get('/', function (req, res) {

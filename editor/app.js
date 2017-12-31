@@ -5,49 +5,48 @@
  *
  * @type {*|exports}
  */
-const express       = require('express');
-const path          = require('path');
-const cookieParser  = require('cookie-parser');
-const bodyParser    = require('body-parser');
-const routes        = require('./routes/index');
-const login         = require('./routes/login');
-const signup        = require('./routes/signup');
-const useradmin     = require('./routes/useradmin');
-const edit          = require('./routes/edit');
-const newgame       = require('./routes/newgame');
-const gameplay      = require('./routes/gameplay');
-const authtoken     = require('./routes/authtoken');
-const issuetracker  = require('./routes/issuetracker');
-const configuration = require('./routes/configuration');
-const infoRoute     = require('../common/routes/info');
-const settings      = require('./settings');
-const passport      = require('passport');
-const session       = require('express-session');
-const flash         = require('connect-flash');
-const app           = express();
-const users         = require('../common/models/userModel');
-const gameplays     = require('../common/models/gameplayModel');
-const properties    = require('../common/models/propertyModel');
-const ferropolyDb   = require('../common/lib/ferropolyDb');
-const pricelist     = require('./routes/pricelist');
-const cronjobs      = require('./lib/cronjobs');
-const logger        = require('../common/lib/logger').getLogger('editor-app');
-const mailer        = require('../common/lib/mailer');
-const logs          = require('../common/models/logModel');
-const morgan        = require('morgan');
-const moment        = require('moment');
-const compression   = require('compression');
-const authStrategy  = require('../common/lib/authStrategy')(settings, users);
-const demoUsers     = require('./lib/demoUsers');
+const express      = require('express');
+const path         = require('path');
+const bodyParser   = require('body-parser');
+const routes       = require('./routes/index');
+const login        = require('./routes/login');
+const useradmin    = require('./routes/useradmin');
+const edit         = require('./routes/edit');
+const newgame      = require('./routes/newgame');
+const gameplay     = require('./routes/gameplay');
+const authtoken    = require('./routes/authtoken');
+const infoRoute    = require('../common/routes/info');
+const debugRoute   = require('../common/routes/debug');
+const settings     = require('./settings');
+const passport     = require('passport');
+const session      = require('express-session');
+const MongoStore   = require('connect-mongo')(session);
+const flash        = require('connect-flash');
+const app          = express();
+const users        = require('../common/models/userModel');
+const gameplays    = require('../common/models/gameplayModel');
+const properties   = require('../common/models/propertyModel');
+const ferropolyDb  = require('../common/lib/ferropolyDb');
+const pricelist    = require('./routes/pricelist');
+const cronjobs     = require('./lib/cronjobs');
+const logger       = require('../common/lib/logger').getLogger('editor-app');
+const mailer       = require('../common/lib/mailer');
+const logs         = require('../common/models/logModel');
+const morgan       = require('morgan');
+const moment       = require('moment');
+const compression  = require('compression');
+const authStrategy = require('../common/lib/authStrategy')(settings, users);
+const demoUsers    = require('./lib/demoUsers');
+const uuid         = require('uuid');
 
-var initServer = function () {
+var initServer = function (db) {
   cronjobs.init();
   mailer.init(settings);
   logs.init(settings);
 
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
-  app.set('view engine', 'jade');
+  app.set('view engine', 'pug');
 
   morgan.token('prefix', function getId(req) {
     return 'http: ' + moment().format();
@@ -56,7 +55,6 @@ var initServer = function () {
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: false}));
-  app.use(cookieParser());
 
   // Using compression speeds up the connection (and uses much less data for mobile)
   app.use(compression());
@@ -68,13 +66,26 @@ var initServer = function () {
   // Define Strategy, login
   passport.use(authStrategy.facebookStrategy);
   passport.use(authStrategy.googleStrategy);
+  passport.use(authStrategy.dropboxStrategy);
   passport.use(authStrategy.localStrategy);
   // Session serializing of the user
   passport.serializeUser(authStrategy.serializeUser);
   // Session deserialisation of the user
   passport.deserializeUser(authStrategy.deserializeUser);
   // required for passport: configuration
-  app.use(session({secret: 'ferropolyIsAGameWithAVeryLargePlayground', resave: true, saveUninitialized: false})); // session secret
+  app.use(session({
+    secret           : 'ferropolyIsAGameWithAVeryLargePlayground',
+    resave           : true,
+    saveUninitialized: false,
+    cookie           : {
+      secure: 'auto'
+    },
+    genid            : function () {
+      return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid.v4();
+    },
+    store            : new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60}),
+    name             : 'ferropoly-editor'
+  }));
   app.use(passport.initialize());
   app.use(passport.session()); // persistent login sessions
   app.use(flash()); // use connect-flash for flash messages stored in session
@@ -84,17 +95,15 @@ var initServer = function () {
 
 
   app.use('/appinfo', infoRoute);
-  signup.init(app, users);
+  app.use('/debug', debugRoute(settings.integrationTest));
   login.init(app, settings);
   authtoken.init(app);
   useradmin.init(app, settings, users);
 
   app.use('/', routes);
-  app.use('/issuetracker', issuetracker);
   newgame.init(app);
   edit.init(app, gameplays, users, properties);
   gameplay.init(app);
-  configuration.init(app, settings);
   app.use('/pricelist', pricelist);
   app.use('/player', require('./routes/player'));
   app.use('/admins', require('./routes/admins'));
@@ -119,8 +128,21 @@ var initServer = function () {
   // will print stacktrace
   if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-      res.status(err.status || 500);
-      res.render('error', {
+      let status    = err.status || 500;
+      let errorPage = 'error';
+      res.status(status);
+      switch (status) {
+        case 401:
+          errorPage = 'error/401';
+          break;
+        case 403:
+          errorPage = 'error/403';
+          break;
+        case 404:
+          errorPage = 'error/404';
+          break;
+      }
+      res.render(errorPage, {
         message: err.message,
         error  : err
       });
@@ -130,7 +152,20 @@ var initServer = function () {
   // production error handler
   // no stacktraces leaked to user
   app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
+    let status    = err.status || 500;
+    let errorPage = 'error';
+    res.status(status);
+    switch (status) {
+      case 401:
+        errorPage = 'error/401';
+        break;
+      case 403:
+        errorPage = 'error/403';
+        break;
+      case 404:
+        errorPage = 'error/404';
+        break;
+    }
     res.render('error', {
       message: err.message,
       error  : {}
@@ -159,12 +194,12 @@ var initServer = function () {
 /**
  * Initialize DB connection, has to be only once for all models
  */
-ferropolyDb.init(settings, function (err) {
+ferropolyDb.init(settings, function (err, db) {
   if (err) {
     logger.warning('Failed to init ferropolyDb');
     logger.error(err);
   }
-  initServer();
+  initServer(db);
 
 });
 

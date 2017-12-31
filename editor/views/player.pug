@@ -1,0 +1,110 @@
+extends layout
+block head-start
+  script
+    | var gameId = '#{gameId}';
+    | var gameplay =
+    != gameplay
+    | ;
+
+block head
+  link(rel='stylesheet', href='/css/player.css',  type='text/css')
+
+block navbar
+  li
+    a(href='#' ng-click='newTeam()' ng-show='isAddingNewTeamsAllowed()') Neue&nbsp;Gruppe
+
+block content
+  .modal.fade(id='saveModal')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h4.modal-title Löschen?
+        .modal-body
+          p Soll die Gruppe wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!
+        .modal-footer
+          button(type='button' class='btn btn-default' data-dismiss='modal') Nein
+          button(type='button' class='btn btn-primary' ng-disabled='!isDeleteAllowed()' ng-click='deleteTeam()' data-dismiss='modal') Ja
+  p
+  .row
+    .col-md-5
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title Teilnehmende Gruppen ({{teams.length}} / max {{maxGroupNb}})
+        .panel-body
+          .alert.alert-info(ng-hide='teams.length > 0') Es sind noch keine Gruppen vorhanden. Mit 'Neue Gruppe" können Gruppen hinzugefügt werden.
+          .list-group
+            a(class='list-group-item' href='#' ng-disabled='!playerForm.$valid' ng-click='setCurrentTeam(p)' data-ng-repeat='p in teams')
+              .row
+                .col-xs-7.col-sm-8.col-md-8
+                  h4(class='list-group-item-heading')
+                    i.fa.fa-user-plus(ng-hide='p.data.confirmed') &nbsp;
+                    | {{p.data.name}}&nbsp;
+                    span.missing-login(ng-show='gameplay.mobile.level > 0 && !p.login.personalData')
+                      i.fa.fa-exclamation-triangle
+                  | {{p.data.organization}}
+                .col-xs-5.col-xs-4.col-md-4
+                  img(ng-src='{{p.login.personalData.avatar}}')
+
+    .col-md-7
+      .panel.panel-default(ng-hide='currentTeam === undefined')
+        .panel-heading
+          h3.panel-title Gruppe bearbeiten
+        .panel-body
+          form.form-horizontal(name='playerForm')
+            .form-group
+              label.col-sm-2.control-label(for='name') Team-Name
+              .col-sm-10
+                input(class='form-control' type='text' id='name' name='name' placeholder='Team Name' ng-blur='validateForm()' ng-change='sortTeams();validateForm();currentDataChanged=true' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.name')
+
+            .form-group
+              label.col-sm-2.control-label(for='contactName') Kontaktperson
+              .col-sm-10
+                input(class='form-control' type='text' id='contactName' name='contactName' ng-blur='validateForm()' ng-change='validateForm();currentDataChanged=true' placeholder='' required ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.name')
+
+            .form-group
+              label.col-sm-2.control-label(for='organization') Organisation
+              .col-sm-10
+                input(class='form-control' type='text' id='organization' placeholder='' ng-change='currentDataChanged=true' ng-model='currentTeam.data.organization')
+
+            .form-group
+              label.col-sm-2.control-label(for='phone') Telefon
+              .col-sm-10
+                input(class='form-control' type='text' id='phone' placeholder='044 111 22 33'  ng-minlength='3' ng-maxlength='20' ng-change='currentDataChanged=true' ng-model='currentTeam.data.teamLeader.phone')
+
+            .form-group
+              label.col-sm-2.control-label(for='email') E-Mail
+              .col-sm-10
+                input(class='form-control' ng-disabled='currentTeam.data.onlineRegistration' type='email' id='email' name='email' placeholder='spieler@ferropoly.ch'  ng-minlength='3' ng-maxlength='60' ng-model='currentTeam.data.teamLeader.email')
+
+            .form-group
+              label.col-sm-2.control-label(for='remarks') Bemerkungen
+              .col-sm-10
+                textarea(class='form-control' type='text' id='remarks' rows='4'  ng-maxlength='6000' ng-change='currentDataChanged=true' ng-model='currentTeam.data.remarks')
+
+            div(ng-show='gameplay.mobile.level > 0')
+              div(ng-show='currentTeam.data.onlineRegistration && currentTeam.data.confirmed')
+                .well.well-ok
+                  | &nbsp;Dieses Team hat sich online angemeldet und wurde bestätigt. Alles Bestens!
+              div(ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed')
+                .well.well-info
+                  | &nbsp;Dieses Team hat sich online angemeldet. Bestätige die Teilnahme oder lösche das Team. Wenn Du das Team bestätigst, wird der Kontaktperson ein Email mit der Bestätigung gesendet.
+              div(ng-show='currentTeam.login.personalData && !currentTeam.data.onlineRegistration')
+                .well.well-ok
+                  | &nbsp;Dieser Benutzer hat ein Login und kann damit auf die ihm freigegebenen Spieldaten zugreifen.
+              div(ng-show='!currentTeam.login.personalData && currentTeam.data.teamLeader.email')
+                .well.well-attention
+                  i.fa.fa-exclamation-triangle
+                  | &nbsp;Dieser Benutzer hat noch kein Login, bzw. seine Email-Adresse konnte noch nicht überprüft werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
+              div(ng-show='!currentTeam.login.personalData && !currentTeam.data.teamLeader.email')
+                .well.well-error
+                  i.fa.fa-exclamation-triangle
+                  | &nbsp;Für die gewählte Spielform ist muss eine Email-Adresse für das Team angegeben werden. Die Email-Adresse seines Logins muss derjenigen in diesem Formular genau entsprechen.
+
+            button.btn.btn-primary.btn-sm(ng-show='currentTeam.data.onlineRegistration && !currentTeam.data.confirmed'  ng-click='confirmTeam(currentTeam)' ng-disabled='!playerForm.$valid || isDemoGame() || currentTeam.confirmationActive') Gruppe bestätigen&nbsp;
+              span(class='glyphicon glyphicon-check' aria-hidden='true')
+            | &nbsp;
+            button.btn.btn-primary.btn-sm(ng-click='saveTeam()' ng-disabled='!playerForm.$valid || isDemoGame()') Gruppe speichern&nbsp;
+              span(class='glyphicon glyphicon-save' aria-hidden='true')
+            | &nbsp;
+            button.btn.btn-default.btn-sm(data-toggle='modal' data-target='#saveModal' ng-disabled='isDemoGame() || !isDeleteAllowed()') Gruppe löschen&nbsp;
+              span(class='glyphicon glyphicon-trash' aria-hidden='true')

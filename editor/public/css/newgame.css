@@ -1,8 +1,12 @@
 #error-message {
-    font-size : larger;
-    color     : red;
+    font-size: larger;
+    color: red;
 }
 
 .map-item {
     display: block;
+}
+
+.btn-id {
+    margin-right: 10px;
 }

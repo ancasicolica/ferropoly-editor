@@ -3,7 +3,7 @@
  * Created by kc on 26.12.15.
  */
 
-var passport = require('passport');
+const passport = require('passport');
 
 
 module.exports = function (app) {
@@ -45,8 +45,24 @@ module.exports = function (app) {
       console.log('SUCCESSFUL LOGGED IN WITH GOOGLE ------------------------------------');
       res.redirect(req.session.targetUrl || '/');
     });
+
+  /**
+   * Authentication Route for Dropbox
+   */
+  app.get('/auth/dropbox',
+    passport.authenticate('dropbox-oauth2'));
+
+  /**
+   * Callback for Dropbox
+   */
+  app.get('/auth/dropbox/callback',
+    passport.authenticate('dropbox-oauth2', {failureRedirect: '/login'}),
+    function (req, res) {
+      // Successful authentication, redirect home.
+      console.log('SUCCESSFUL LOGGED IN WITH DROPBOX ------------------------------------');
+      res.redirect(req.session.targetUrl || '/');
+    });
+
 };
-
-
 
 

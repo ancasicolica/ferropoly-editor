@@ -1,93 +1,93 @@
 html,
 body {
-    font-size   : 14px;
-    font-family : 'Open Sans', sans-serif;
-    width       : 100%;
-    height      : 100%;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    width: 100%;
+    height: 100%;
 }
 
 a {
-    color : #00B7FF;
+    color: #00B7FF;
 }
 
 .header {
-    background-color : black;
-    color            : white;
-    padding-top      : 5px;
-    padding-bottom   : 5px;
+    background-color: black;
+    color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .logout {
-    text-align : right;
+    text-align: right;
 }
 
 .ferropoly-control {
-    font-size : inherit;
-    height    : auto;
+    font-size: inherit;
+    height: auto;
 }
 
 .ferropoly-button {
-    font-size : inherit;
-    height    : auto;
+    font-size: inherit;
+    height: auto;
 }
 
 /* Wrapper for page content to push down footer */
 #wrap {
-    min-height : 100%;
-    height     : auto;
+    min-height: 100%;
+    height: auto;
     /* Negative indent footer by its height */
-    margin     : 0 auto -20px;
+    margin: 0 auto -20px;
     /* Pad bottom by footer height */
-    padding    : 0 0 20px;
+    padding: 0 0 20px;
 }
 
 /* Set the fixed height of the footer here */
 #footer {
-    height           : 20px;
-    background-color : black;
-    color            : white;
-    z-index          : 100;
+    height: 20px;
+    background-color: black;
+    color: white;
+    z-index: 100;
 }
 
 #footer-time {
-    text-align : right;
+    text-align: right;
 }
 
 .edit-basics-pic {
-    max-width  : 100%;
-    max-height : 800px;
-    position   : relative;
-    display    : inline-block;
-    overflow   : hidden;
+    max-width: 100%;
+    max-height: 800px;
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
 }
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-    display : none !important;
+    display: none !important;
 }
 
 /* General wells for status information, to be used everywhere in the editor */
 .well-ok {
-    background-color : #adeaa9;
-    background-image : none;
+    background-color: #adeaa9;
+    background-image: none;
 }
 
 .well-error {
-    background-color : #ffa4a5;
-    background-image : none;
+    background-color: #ffa4a5;
+    background-image: none;
 }
 
 .well-info {
-    background-color : #a4d3fd;
-    background-image : none;
+    background-color: #a4d3fd;
+    background-image: none;
 }
 
 .well-attention {
-    background-color : #dbad3e;
-    background-image : none;
+    background-color: #dbad3e;
+    background-image: none;
 }
 
 .navbar {
-    border-radius : 0px;
+    border-radius: 0px;
 
     border-bottom-width: 0px;
     margin-bottom: 0px;
@@ -96,3 +96,100 @@ a {
     border-right-width: 0px;
 }
 
+/* Modals : http://bootdey.com/snippets/view/Nice-modal */
+
+.modal-content {
+    -webkit-border-radius: 0;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 0;
+    -moz-background-clip: padding;
+    border-radius: 6px;
+    background-clip: padding-box;
+    -webkit-box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+    -moz-box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+    box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+    color: #000;
+    background-color: #fff;
+    border: rgba(0, 0, 0, 0);
+}
+
+.modal-message .modal-dialog {
+    width: 66%;
+}
+
+.modal-message .modal-body, .modal-message .modal-footer, .modal-message .modal-header, .modal-message .modal-title {
+    background: 0 0;
+    border: none;
+    margin: 0;
+    padding: 0 20px;
+    text-align: center !important;
+}
+
+.modal-message .modal-title {
+    font-size: 24px;
+    color: #737373;
+    margin-bottom: 3px;
+}
+
+.modal-message .modal-body {
+    color: #737373;
+}
+
+.modal-message .modal-header {
+    color: #fff;
+    margin-bottom: 10px;
+    padding: 15px 0 8px;
+}
+
+.modal-message .modal-header .fa,
+.modal-message .modal-header,
+.glyphicon, .modal-message,
+.modal-header .typcn, .modal-message .modal-header .wi {
+    font-size: 16px;
+}
+
+.modal-message .modal-footer {
+    margin: 25px 0 20px;
+    padding-bottom: 10px;
+}
+
+.modal-backdrop.in {
+    zoom: 1;
+    filter: alpha(opacity=75);
+    -webkit-opacity: .75;
+    -moz-opacity: .75;
+    opacity: .75;
+}
+
+.modal-backdrop {
+    background-color: #fff;
+}
+
+.modal-message.modal-success .modal-header {
+    color: #53a93f;
+    border-bottom: 3px solid #a0d468;
+}
+
+.modal-message.modal-info .modal-header {
+    color: #57b5e3;
+    border-bottom: 3px solid #57b5e3;
+}
+
+.modal-message.modal-danger .modal-header {
+    color: #d73d32;
+    border-bottom: 3px solid #e46f61;
+}
+
+.modal-message.modal-error .modal-header {
+    color: #d73d32;
+    border-bottom: 3px solid #e46f61;
+}
+
+.modal-message.modal-warning .modal-header {
+    color: #f4b400;
+    border-bottom: 3px solid #ffce55;
+}
+
+.bg-danger {
+    color: white;
+}

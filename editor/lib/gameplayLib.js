@@ -6,6 +6,8 @@
 
 const gameplays                  = require('../../common/models/gameplayModel');
 const properties                 = require('../../common/models/propertyModel');
+const propertyGridModel          = require('../../common/models/propertyGridModel');
+const propertyMap                = require('../../common/lib/propertyMap');
 const locations                  = require('../../common/models/locationModel');
 const logs                       = require('../../common/models/logModel');
 const travelLog                  = require('../../common/models/travelLogModel');
@@ -16,12 +18,13 @@ const teams                      = require('../../common/models/teamModel');
 const schedulerEvents            = require('../../common/lib/schedulerEvents');
 const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
 const userModel                  = require('../../common/models/userModel');
+const propertyGrid               = require('../../common/lib/propertyGrid');
 const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
 const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
 const settings                   = require('../settings');
 const rulesGenerator             = require('./rulesGenerator');
-const restify                    = require('restify');
+const needle                     = require('needle');
 const moment                     = require('moment');
 const _                          = require('lodash');
 const async                      = require('async');
@@ -41,15 +44,10 @@ function updateFerropolyMainCache(delay, callback) {
   logger.info('Attempting to update main module caches in a few seconds');
   _.delay(function () {
     async.each(settings.mainInstances, function (instance, cb) {
-      var jsonClient = restify.createJsonClient({
-        url           : instance,
-        version       : '*',
-        connectTimeout: 1000,
-        requestTimeout: 1500
-      });
-
       // Fire and forget, don't care about the return
-      jsonClient.post('/gamecache/refresh', cb);
+      needle.post(`${instance}/gamecache/refresh`,
+        {},
+        cb);
     }, function (err) {
       if (err) {
         logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
@@ -70,10 +68,10 @@ function updateFerropolyMainCache(delay, callback) {
  * @param callback
  */
 function createRandomGameplay(gameId, props, nb, callback) {
-  var gplen = Math.min(nb, props.length);
+  let gplen = Math.min(nb, props.length);
   logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
-  var priceRange = 0;
-  var generated  = 0;
+  let priceRange = 0;
+  let generated  = 0;
 
   try {
     async.whilst(
@@ -81,8 +79,8 @@ function createRandomGameplay(gameId, props, nb, callback) {
         return generated < gplen;
       },
       function (cb) {
-        var index                 = _.random(0, props.length - 1);
-        var p                     = _.pullAt(props, [index]);
+        let index                 = _.random(0, props.length - 1);
+        let p                     = _.pullAt(props, [index]);
         p[0].pricelist.priceRange = priceRange % 6;
         priceRange++;
         generated++;
@@ -109,7 +107,7 @@ function createRandomGameplay(gameId, props, nb, callback) {
  * @returns {*}
  */
 function copyLocationsToProperties(gpOptions, gameplay, callback) {
-  var props = [];
+  let props = [];
   return locations.getAllLocationsForMap(gpOptions.map, function (err, gameLocations) {
     if (err) {
       return callback(err);
@@ -145,11 +143,96 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
 }
 
 /**
+ * Creates the preset set for gameParams
+ * @param presets
+ * @returns {*}
+ */
+function getGameParamsPresetSet(presets) {
+  logger.info(`Using '${presets}' for new gameplay as preset`);
+  switch (presets) {
+    case 'easy':
+      return {
+        presets                  : 'easy',
+        interestInterval         : 60,
+        interest                 : 4000,
+        interestCyclesAtEndOfGame: 2,
+        startCapital             : 4000,
+        debtInterest             : 20,
+        housePrices              : 0.5,
+        properties               : {
+          lowestPrice               : 1000,
+          highestPrice              : 2000,
+          numberOfPriceLevels       : 6,
+          numberOfPropertiesPerGroup: 2
+        },
+        rentFactors              : {
+          noHouse             : 0.25,
+          oneHouse            : 2,
+          twoHouses           : 2.75,
+          threeHouses         : 3,
+          fourHouses          : 3.5,
+          hotel               : 4,
+          allPropertiesOfGroup: 2
+        }
+      };
+
+    case 'moderate':
+      return {
+        presets                  : 'moderate',
+        interestInterval         : 60,
+        interest                 : 4000,
+        interestCyclesAtEndOfGame: 2,
+        startCapital             : 4000,
+        debtInterest             : 20,
+        housePrices              : 0.5,
+        properties               : {
+          lowestPrice               : 1000,
+          highestPrice              : 4000,
+          numberOfPriceLevels       : 7,
+          numberOfPropertiesPerGroup: 2
+        },
+        rentFactors              : {
+          noHouse             : 0.2,
+          oneHouse            : 0.8,
+          twoHouses           : 2.5,
+          threeHouses         : 3.5,
+          fourHouses          : 4,
+          hotel               : 5,
+          allPropertiesOfGroup: 2
+        }
+      };
+
+    default:
+      return {
+        presets                  : 'classic',
+        interestInterval         : 60,
+        interest                 : 4000,
+        interestCyclesAtEndOfGame: 2,
+        startCapital             : 4000,
+        debtInterest             : 20,
+        housePrices              : 0.5,
+        properties               : {
+          lowestPrice               : 1000,
+          highestPrice              : 8000,
+          numberOfPriceLevels       : 8,
+          numberOfPropertiesPerGroup: 2
+        },
+        rentFactors              : {
+          noHouse             : 0.125,
+          oneHouse            : 0.5,
+          twoHouses           : 2,
+          threeHouses         : 3,
+          fourHouses          : 4,
+          hotel               : 5,
+          allPropertiesOfGroup: 2
+        }
+      };
+  }
+}
+
+/**
  * Creates a complete new gameplay, including copying the locations to the properties
  * @param gpOptions options for the gameplay.
- * @param gameplays
- * @param locations
- * @param properties
  * @param callback
  */
 function createNewGameplay(gpOptions, callback) {
@@ -167,6 +250,7 @@ function createNewGameplay(gpOptions, callback) {
     user = user || {id: gpOptions.email};
 
     gameplays.createGameplay({
+      gameId          : gpOptions.gameId || '',
       map             : gpOptions.map,
       name            : gpOptions.gamename,
       ownerEmail      : gpOptions.email,
@@ -175,10 +259,10 @@ function createNewGameplay(gpOptions, callback) {
       gameStart       : gpOptions.gameStart || '05:00',
       gameEnd         : gpOptions.gameEnd || '18:00',
       gameDate        : gpOptions.gamedate,
-      interestInterval: gpOptions.interestInterval,
-      gameId          : gpOptions.gameId,
       instance        : settings.server.serverId,
-      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC}
+      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
+      gameParams      : getGameParamsPresetSet(gpOptions.presets),
+      interestInterval: gpOptions.interestInterval
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
@@ -240,6 +324,9 @@ function deleteGameplay(gpOptions, callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
         },
         function (callback) {
+          propertyGridModel.removeAllPropertyGridsFromGameplay(gpOptions.gameId, callback);
+        },
+        function (callback) {
           logs.add('Deleted gameplay: ' + gpOptions.gameId, callback);
         }
       ], function (err, results) {
@@ -275,20 +362,22 @@ function createDemoTeamEntry(gameId, entry) {
     }
   };
 }
+
 /**
  * Creates the teams for the demo
  * @param gp
+ * @param teamNb
  * @param callback
  */
 function createDemoTeams(gp, teamNb, callback) {
-  var demoTeamData = [];
-  var i;
+  let demoTeamData = [];
+  let i;
   teamNb           = teamNb || 8;
   if (teamNb > 20) {
     teamNb = 20;
   }
 
-  var referenceData = [
+  let referenceData = [
     createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0), demoUsers.getTeamLeaderEmail(0), '079 000 00 01']),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1), demoUsers.getTeamLeaderEmail(1), '079 000 00 02']),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2), demoUsers.getTeamLeaderEmail(2), '079 000 00 03']),
@@ -329,8 +418,8 @@ function createDemoTeams(gp, teamNb, callback) {
  * @param p2 if settings are used, callback
  */
 function createDemoGameplay(p1, p2) {
-  var callback = p2;
-  var settings = {};
+  let callback = p2;
+  let settings = {};
 
   if (_.isFunction(p1)) {
     callback = p1;
@@ -343,9 +432,9 @@ function createDemoGameplay(p1, p2) {
     settings.gameDate = moment().add(1, 'days').toDate();
   }
 
-  var gameId = settings.gameId || demoGameId;
+  let gameId = settings.gameId || demoGameId;
 
-  var options = {
+  let options = {
     map             : settings.map || 'sbb',
     email           : settings.email || demoOrganisatorMail,
     ownerEmail      : settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
@@ -359,7 +448,8 @@ function createDemoGameplay(p1, p2) {
     teamNb          : settings.teamNb || 8,
     doNotNotifyMain : settings.doNotNotifyMain,
     interestInterval: settings.interestInterval,
-    mobile          : settings.mobile || {level: 5}
+    mobile          : settings.mobile || {level: 5},
+    presets         : settings.presets
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
@@ -368,7 +458,7 @@ function createDemoGameplay(p1, p2) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
     logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
   }
-  var startTs = new Date();
+  let startTs = new Date();
   gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
     if (err) {
       return callback(err);
@@ -408,8 +498,8 @@ function createDemoGameplay(p1, p2) {
                 logger.info('Failed to save demo gameplay: ' + err.message);
                 return callback(err);
               }
-              var endTs    = new Date();
-              var duration = (endTs.getTime() - startTs.getTime()) / 1000;
+              let endTs    = new Date();
+              let duration = (endTs.getTime() - startTs.getTime()) / 1000;
               logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
               logs.add('Demo Gameplay created', callback);
             });
@@ -432,7 +522,7 @@ function finalizeGameplay(gameplay, email, callback) {
       logger.error('Failed to finalize gameplay: ' + err.message);
       return callback(err);
     }
-    var rules = rulesGenerator(gpSaved);
+    let rules = rulesGenerator(gpSaved);
     gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules}, err => {
       if (err) {
         logger.error('Error while saving rules', err.message);
@@ -447,11 +537,23 @@ function finalizeGameplay(gameplay, email, callback) {
           if (err) {
             logger.error('Error while creating events', err);
           }
-          logger.info('Gameplay finalized', gameplay.internal.gameId);
-          if (gameplay.internal.doNotNotifyMain) {
-            return callback();
-          }
-          updateFerropolyMainCache(4000, callback);
+          logger.info('Scheduler Events created');
+          propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
+            logger.info('Property map created');
+            if (err) {
+              logger.error(err);
+            }
+            propertyGrid.create(gameplay.internal.gameId, err => {
+              if (err) {
+                logger.error(err);
+              }
+              logger.info('Gameplay finalized', gameplay.internal.gameId);
+              if (gameplay.internal.doNotNotifyMain) {
+                return callback();
+              }
+              updateFerropolyMainCache(4000, callback);
+            });
+          });
         });
       });
     });
@@ -470,7 +572,7 @@ function deleteOldGameplays(callback) {
 
     async.each(gps,
       function (gp, cb) {
-        var timeout;
+        let timeout;
         if (!gp.scheduling.deleteTs) {
           // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
           // the game took place. This code can be removed in the next ferropoly release

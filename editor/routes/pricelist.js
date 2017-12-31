@@ -15,7 +15,7 @@ const downloadPricelist  = require('../../common/routes/downloadPricelist');
 const settings           = require('../settings');
 const _                  = require('lodash');
 
-var ngFile = 'pricelistctrl';
+let ngFile = 'pricelistctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 
@@ -37,9 +37,11 @@ router.get('/download/:gameId', downloadPricelist.handler);
  * Create a pricelist
  */
 router.post('/create', function (req, res) {
+  logger.test(_.get(req, 'body.debug'));
+
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(404).send('Kein Zugriff möglich, bitte einloggen');
+    return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
   }
   pricelistLib.create(req.body.gameId, req.session.passport.user, function (err) {
     if (err) {
@@ -54,22 +56,24 @@ router.post('/create', function (req, res) {
  */
 router.get('/get/:gameId', function (req, res) {
   if (!req.params || !req.params.gameId) {
-    return res.send({success: false, message: 'Parameter error'});
+    return res.status(400).send({message: 'Parameter error'});
   }
 
   gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
     if (err) {
-      return res.send({success: false, message: err.message});
+      logger.error('getGameplay failed', err);
+      return res.status(500).send({message: err.message});
     }
-    
+
     // Only owners may finalize it
-    gp = gp.toObject();
+    gp         = gp.toObject();
     gp.isOwner = _.get(gp, 'owner.organisatorEmail') === req.session.passport.user;
     commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
       if (err) {
-        return res.send({success: false, message: err.message});
+        logger.error('getPricelist failed', err);
+        return res.status(500).send({message: err.message});
       }
-      return res.send({success: true, gameplay: gp, pricelist: list});
+      return res.send({gameplay: gp, pricelist: list});
     });
   });
 });
