@@ -5,7 +5,7 @@
     input.form-control(type='text' id='requestedGameId'  name='requestedGameId' required ng-minlength='6' ng-maxlength='60' ng-model='requestedGameId' create-game-id)
 
     p Oder wie wäre es mit einer der folgenden IDs?
-    button.btn.btn-sm.btn-id(ng-repeat=('id in suggestedIds') ng-click='setRequestedId(id)') {{id}}
+    button.btn.btn-sm.btn-default.btn-id(ng-repeat=('id in suggestedIds') ng-click='setRequestedId(id)') {{id}}
 
     p
     p
