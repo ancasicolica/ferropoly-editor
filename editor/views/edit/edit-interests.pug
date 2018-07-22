@@ -5,12 +5,12 @@ form(name='interestForm')
       .panel.panel-default
         .panel-body
           label(for='startCapital') Guthaben zu Beginn des Spieles
-          input.form-control(type='number' name='startCapital' id='startCapital' min='0' max='50000' step='1000' ng-model='gameplay.gameParams.startCapital')
+          input.form-control(type='number' name='startCapital' id='startCapital' min='0' max='50000' ng-model='gameplay.gameParams.startCapital')
           span.help-block Empfohlen: 4000, gültiger Bereich zwischen 0 und 50000.
           p.bg-danger(ng-hide='interestForm.startCapital.$valid') Ungültige Eingabe.
 
           label(for='interest') Startgeld pro Spielrunde
-          input(class='form-control' type='number' name='interest' id='interest' min='1000' max='10000' step='1000' ng-model='gameplay.gameParams.interest')
+          input(class='form-control' type='number' name='interest' id='interest' min='1000' max='10000' ng-model='gameplay.gameParams.interest')
           span.help-block Empfohlen: 4000, gültiger Bereich zwischen 1000 und 10000.
           p.bg-danger(ng-hide='interestForm.interest.$valid') Ungültige Eingabe.
 

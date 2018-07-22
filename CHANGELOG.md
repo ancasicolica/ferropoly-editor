@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* In Numeric-Input Felder alle Steps entfernt (Bug Angular.js)
+
 V2.4
 * Benutzer können via Kommandozeile erzeugt werden
 * Passwörter von Benutzer via Kommandozeile änderbar
