@@ -5,12 +5,12 @@ form(name='basicsForm')
       .panel.panel-default
         .panel-body
           label(for='lowestPrice') Preis günstigstes Ort
-          input.form-control(type='number' name='lowestPrice' id='lowestPrice' min='100' max='4000' step='100' ng-model='gameplay.gameParams.properties.lowestPrice')
+          input.form-control(type='number' name='lowestPrice' id='lowestPrice' min='100' max='4000' ng-model='gameplay.gameParams.properties.lowestPrice')
           span.help-block Empfohlen: 1000, gültiger Bereich ist zwischen 100 und 4000.
           p.bg-danger(ng-hide='basicsForm.lowestPrice.$valid') Ungültige Eingabe: Es sind nur Zahlen zwischen 100 und 4000 erlaubt.
 
           label(for='highestPrice') Preis teuerstes Ort
-          input(class='form-control' type='number' name='highestPrice' id='highestPrice' min='1000' max='10000' step='100' ng-model='gameplay.gameParams.properties.highestPrice')
+          input(class='form-control' type='number' name='highestPrice' id='highestPrice' min='1000' max='10000' ng-model='gameplay.gameParams.properties.highestPrice')
           span.help-block Empfohlen: 4000, gültiger Bereich ist zwischen 1000 und 10000.
           p.bg-danger(ng-hide='basicsForm.highestPrice.$valid') Ungültige Eingabe: Es sind nur Zahlen zwischen 1000 und 10000 erlaubt.
 
