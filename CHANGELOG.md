@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+V2.4.2
 * In Numeric-Input Felder alle Steps entfernt (Bug Angular.js)
 
 V2.4
