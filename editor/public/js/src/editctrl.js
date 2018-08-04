@@ -639,4 +639,37 @@ editControl.controller('editCtrl', ['$scope', '$http', '$interval', '$timeout', 
       });
   };
 
+  /* This is a workaround for numeric input controls: Angular.js does not allow values outside
+     the 'steps' interval. If you enter such a value, _undefined_ is the result. This workaround
+     sets the data when angular would reject it.
+  */
+  var numericControls = [
+    {id: '#noHouse', name: 'noHouse'},
+    {id: '#oneHouse', name: 'oneHouse'},
+    {id: '#twoHouses', name: 'twoHouses'},
+    {id: '#threeHouses', name: 'threeHouses'},
+    {id: '#fourHouses', name: 'fourHouses'},
+    {id: '#hotel', name: 'hotel'},
+    {id: '#housePrices', name: 'housePrices'},
+    {id: '#lowestPrice', name: 'gameplay.gameParams.properties.lowestPrice'},
+    {id: '#highestPrice', name: 'gameplay.gameParams.properties.highestPrice'},
+    {id: '#interest', name: 'gameplay.gameParams.interest'},
+    {id: '#startCapital', name: 'gameplay.gameParams.startCapital'},
+
+  ];
+
+  function numericControlCorrection(controls) {
+    controls.forEach(function (control) {
+      $(control.id).focusout(function () {
+        if (!$scope[control.name]) {
+          $scope[control.name] = parseFloat($(control.id).val());
+          console.info('Undefined value corrected for "' + control.name + '" :' + $scope[control.name]);
+        }
+      });
+    });
+  }
+
+  numericControlCorrection(numericControls);
+
+
 }]);

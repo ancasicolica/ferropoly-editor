@@ -1,6 +1,8 @@
 # Changelog Ferropoly Editor
 
-* In Numeric-Input Felder alle Steps entfernt (Bug Angular.js)
+
+V2.4.2
+* Bugfix (Workaround) für Inputfelder mit numerischen Werten (angular.js)
 
 V2.4
 * Benutzer können via Kommandozeile erzeugt werden

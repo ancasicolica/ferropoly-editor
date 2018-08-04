@@ -5,14 +5,14 @@ form(name='interestForm')
       .panel.panel-default
         .panel-body
           label(for='startCapital') Guthaben zu Beginn des Spieles
-          input.form-control(type='number' name='startCapital' id='startCapital' min='0' max='50000' ng-model='gameplay.gameParams.startCapital')
+          input.form-control(type='number' name='startCapital' id='startCapital' min='0' step='10' max='50000' ng-model='gameplay.gameParams.startCapital')
           span.help-block Empfohlen: 4000, gültiger Bereich zwischen 0 und 50000.
-          p.bg-danger(ng-hide='interestForm.startCapital.$valid') Ungültige Eingabe.
+          p.bg-danger(ng-hide='interestForm.startCapital.$valid') Wert muss zwischen 0 und 50000 liegen und durch 10 teilbar sein.
 
           label(for='interest') Startgeld pro Spielrunde
-          input(class='form-control' type='number' name='interest' id='interest' min='1000' max='10000' ng-model='gameplay.gameParams.interest')
+          input(class='form-control' type='number' name='interest' id='interest' min='1000' step='10' max='10000' ng-model='gameplay.gameParams.interest')
           span.help-block Empfohlen: 4000, gültiger Bereich zwischen 1000 und 10000.
-          p.bg-danger(ng-hide='interestForm.interest.$valid') Ungültige Eingabe.
+          p.bg-danger(ng-hide='interestForm.interest.$valid') Wert muss zwischen 1000 und 10000 liegen und durch 10 teilbar sein.
 
           label(for='interestInterval') Dauer einer Spielrunde (in Minuten)
           select.form-control( id='interestInterval' ng-model='interestInterval' ng-options="interestInterval.id as interestInterval.name for interestInterval in interestIntervalOptions")
