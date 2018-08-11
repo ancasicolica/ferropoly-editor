@@ -4,9 +4,9 @@
  */
 
 const mongoose = require('mongoose');
-const moment     = require('moment');
-const _          = require('lodash');
-const logger     = require('../lib/logger').getLogger('postboxModel');
+const moment   = require('moment');
+const _        = require('lodash');
+const logger   = require('../lib/logger').getLogger('postboxModel');
 
 
 /**
@@ -94,6 +94,10 @@ let deleteAllEntries = function (gameId, callback) {
  * @param callback
  */
 let getMessages = function (gameId, teamId, options, callback) {
+  if (_.isFunction(options)) {
+    callback = options;
+    options  = {};
+  }
   let limit = options.limit || 20;
   let skip  = options.skip || 0;
   let ts    = options.timestamp || 0;
@@ -107,9 +111,32 @@ let getMessages = function (gameId, teamId, options, callback) {
     .exec(callback);
 };
 
+
+/**
+ * Returns one specific message
+ * @param gameId
+ * @param messageId
+ * @param options
+ * @param callback
+ */
+let getMessage = function (gameId, messageId, callback) {
+  Message.find({gameId: gameId, _id: messageId})
+    .limit(1)
+    .lean()
+    .exec((err, messages) => {
+      if (err) {
+        return callback(err);
+      }
+      if (messages.length < 1) {
+        return callback(null, {});
+      }
+      callback(null, messages[0])
+    });
+};
 module.exports = {
   Model           : messageSchema,
   createMessage   : createMessage,
   deleteAllEntries: deleteAllEntries,
-  getMessages     : getMessages
+  getMessages     : getMessages,
+  getMessage      : getMessage
 };
