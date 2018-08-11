@@ -17,6 +17,7 @@ const chancelleryTransaction     = require('../../common/models/accounting/chanc
 const teams                      = require('../../common/models/teamModel');
 const schedulerEvents            = require('../../common/lib/schedulerEvents');
 const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
+const postbox                    = require('../../common/models/postboxModel');
 const userModel                  = require('../../common/models/userModel');
 const propertyGrid               = require('../../common/lib/propertyGrid');
 const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
@@ -325,6 +326,9 @@ function deleteGameplay(gpOptions, callback) {
         },
         function (callback) {
           propertyGridModel.removeAllPropertyGridsFromGameplay(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          postbox.deleteAllEntries(gpOptions.gameId, callback);
         },
         function (callback) {
           logs.add('Deleted gameplay: ' + gpOptions.gameId, callback);
