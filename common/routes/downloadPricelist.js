@@ -24,12 +24,19 @@ function handler(req, res) {
     if (err) {
       return res.send({status: 'error', message: err.message});
     }
-    var buffer = xlsx.build([{name: report.name, data: report.data}]);
+    let sheetName = '';
+    if (report.name.length > 30) {
+      sheetName = report.name.substring(0, 30);
+    }
+    else {
+      sheetName = report.name;
+    }
+    var buffer = xlsx.build([{name: sheetName, data: report.data}]);
 
     res.set({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Description': 'File Transfer',
-      'Content-Disposition': 'attachment; filename=' + report.name,
+      'Content-Disposition': 'attachment; filename=' + sheetName,
       'Content-Length': buffer.length
     });
     res.send(buffer);
