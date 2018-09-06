@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+#V2.4.4
+* Bugfix: Bei zu langen Spielnamen stürzte der Editor beim Laden der Preisliste ab
+
 
 ## V2.4
 * Benutzer können via Kommandozeile erzeugt werden
