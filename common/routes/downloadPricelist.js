@@ -25,12 +25,12 @@ function handler(req, res) {
       return res.send({status: 'error', message: err.message});
     }
 
-    var buffer = xlsx.build([{name: report.name, data: report.data}]);
+    var buffer = xlsx.build([{name: report.sheetName, data: report.data}]);
 
     res.set({
       'Content-Type'       : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Description': 'File Transfer',
-      'Content-Disposition': 'attachment; filename=' + report.name,
+      'Content-Disposition': 'attachment; filename=' + report.fileName,
       'Content-Length'     : buffer.length
     });
     res.send(buffer);

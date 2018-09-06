@@ -4,11 +4,11 @@
  */
 
 
-var _             = require('lodash');
-var properties    = require('../models/propertyModel');
-var gameplayModel = require('../models/gameplayModel');
-var logger        = require('./logger').getLogger('lib:pricelist');
-var moment        = require('moment');
+const _             = require('lodash');
+const properties    = require('../models/propertyModel');
+const gameplayModel = require('../models/gameplayModel');
+const logger        = require('./logger').getLogger('lib:pricelist');
+const moment        = require('moment');
 
 module.exports = {
   /**
@@ -76,14 +76,9 @@ module.exports = {
         }
         csvList.push(['Stand: ' + moment(gp.log.priceListCreated).format('D.M.YYYY') + ', Version: ' + gp.log.priceListVersion]);
 
-        // Avoid too long names
-        let name = _.kebabCase(gp.gamename) + '-pricelist';
-        if (name.length > 25) {
-          name = name.substring(0, 25);
-        }
-        name += '.xlsx';
+        let fileName  = _.kebabCase(gp.gamename) + '-pricelist.xlsx';
 
-        callback(null, {name: name, data: csvList});
+        callback(null, {sheetName: 'Preisliste', fileName: fileName, data: csvList});
       });
     });
   }
