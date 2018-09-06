@@ -79,10 +79,7 @@ module.exports = {
         // Avoid too long names
         let name = _.kebabCase(gp.gamename) + '-pricelist';
         if (name.length > 25) {
-          name = report.name.substring(0, 25);
-        }
-        else {
-          name = report.name;
+          name = name.substring(0, 25);
         }
         name += '.xlsx';
 
