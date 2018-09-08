@@ -19,7 +19,7 @@ ferropolyDb.init(settings, function (err) {
     gameEnd: '18:00',
     random: 200,
     teamNb: 20,
-    tomorrow: true,
+    tomorrow: false,
     doNotNotifyMain: false
   }, function (err) {
     if (err) {
