@@ -395,7 +395,7 @@ function createDemoTeams(gp, teamNb, callback) {
     createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', demoUsers.getTeamLeaderName(14), demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
     createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', demoUsers.getTeamLeaderName(15), demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
     createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', demoUsers.getTeamLeaderName(16), demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
-    createDemoTeamEntry(gp.internal.gameId, ['rien-ne-va-plus', 'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17), demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
+    createDemoTeamEntry(gp.internal.gameId, ['Know-Nothing Bozo the Non-Wonder Dog & Wonko the sane', 'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17), demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
     createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms', demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18), '079 000 00 19']),
     createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', demoUsers.getTeamLeaderName(19), demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
   ];
