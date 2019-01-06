@@ -8,7 +8,6 @@ const router        = express.Router();
 const gameplayModel = require('../../common/models/gameplayModel');
 const logger        = require('../../common/lib/logger').getLogger('routes:rules');
 const settings      = require('../settings');
-const _             = require('lodash');
 
 let ngFile = 'rulesctrl';
 ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';

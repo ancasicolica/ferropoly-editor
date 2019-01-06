@@ -132,7 +132,7 @@ router.post('/saveProperty/:gameId', function (req, res) {
       _.set(prop, 'pricelist.positionInPriceRange', -1);
       _.set(prop, 'pricelist.position', -1);
       prop.pricelist = _.omit(prop.pricelist, ['rents', 'propertyGroup', 'pricePerHouse', 'price']);
-      logger.info('Removed Property from previous price list: ' + prop.location.name)
+      logger.info('Removed Property from previous price list: ' + prop.location.name);
     }
 
     logger.info('Save property ' + prop.location.name);

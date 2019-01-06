@@ -172,7 +172,7 @@ var initServer = function (db) {
         errorPage = 'error/404';
         break;
     }
-    res.render('error', {
+    res.render(errorPage, {
       message: err.message,
       error  : {}
     });
