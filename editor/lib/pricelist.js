@@ -131,14 +131,12 @@ function setPropertyPrices(gameplay, pricelist) {
       // make sure that the maximum price is the max!
       pricelist[pricelist.length - 1].pricelist.price = priceMax;
       return pricelist;
-    }
-    else {
+    } else {
       // several properties together in one price group
       priceDifference                 = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
       const nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
       let nbOfPropertiesLeft          = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
       let t                           = 0;
-      let n                           = 0;
       p                               = priceMin;
       do {
         let target = nbOfPropertiesInSameGroup;
@@ -161,8 +159,8 @@ function setPropertyPrices(gameplay, pricelist) {
 
         p += priceDifference;
         t += i;
-        n++;
-      } while (t < pricelist.length);
+      }
+      while (t < pricelist.length);
 
       // make sure that the maximum price is the max!
       pricelist[pricelist.length - 1].pricelist.price = priceMax;

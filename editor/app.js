@@ -5,6 +5,14 @@
  *
  * @type {*|exports}
  */
+
+// Logging has highest prio
+const settings     = require('./settings');
+const logging      = require('../common/lib/logger');
+logging.init({debugLevel: settings.logger.debugLevel});
+const logger       = logging.getLogger('editor-app');
+
+
 const express      = require('express');
 const path         = require('path');
 const bodyParser   = require('body-parser');
@@ -17,7 +25,6 @@ const gameplay     = require('./routes/gameplay');
 const authtoken    = require('./routes/authtoken');
 const infoRoute    = require('../common/routes/info');
 const debugRoute   = require('../common/routes/debug');
-const settings     = require('./settings');
 const passport     = require('passport');
 const session      = require('express-session');
 const MongoStore   = require('connect-mongo')(session);
@@ -29,10 +36,8 @@ const properties   = require('../common/models/propertyModel');
 const ferropolyDb  = require('../common/lib/ferropolyDb');
 const pricelist    = require('./routes/pricelist');
 const cronjobs     = require('./lib/cronjobs');
-const logger       = require('../common/lib/logger').getLogger('editor-app');
 const mailer       = require('../common/lib/mailer');
 const logs         = require('../common/models/logModel');
-const morgan       = require('morgan');
 const moment       = require('moment');
 const compression  = require('compression');
 const authStrategy = require('../common/lib/authStrategy')(settings, users);
@@ -48,10 +53,11 @@ var initServer = function (db) {
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'pug');
 
-  morgan.token('prefix', function getId(req) {
-    return 'http: ' + moment().format();
-  });
-  app.use(morgan(':prefix :method :status :remote-addr :url'));
+  //morgan.token('prefix', function getId(req) {
+  //  return 'http: ' + moment().format();
+  //});
+  // app.use(morgan(':prefix :method :status :remote-addr :url'));
+  logging.setExpressLogger(app);
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: false}));
@@ -166,7 +172,7 @@ var initServer = function (db) {
         errorPage = 'error/404';
         break;
     }
-    res.render('error', {
+    res.render(errorPage, {
       message: err.message,
       error  : {}
     });

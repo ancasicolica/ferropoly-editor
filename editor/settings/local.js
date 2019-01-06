@@ -51,5 +51,10 @@ module.exports = function (settings) {
   // Ferropoly main instances to update when a gameplay was added / removed
   settings.mainInstances = ['http://localhost:3004'];
 
+  // Logger
+  settings.logger = {
+    debugLevel: 'silly'
+  };
+
   return settings;
 };

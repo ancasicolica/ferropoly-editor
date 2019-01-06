@@ -47,8 +47,7 @@ router.get('/edit/:gameId', function (req, res) {
         gameId      : req.params.gameId,
         gameplay    : JSON.stringify(gameplay)
       });
-    }
-    else {
+    } else {
       res.render('error/401', {
         message: 'Zugriff nicht erlaubt',
         error  : {status: 401, stack: {}}
@@ -348,7 +347,7 @@ function sendConfirmationMail(gameplay, team, callback) {
 
   text += 'Bestätigung Ferropoly Anmeldung\n';
   text += `Hallo ${team.data.teamLeader.name}\n>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.\n`;
-  text += `Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!\n`;
+  text += 'Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!\n';
 
   html += '<p></p>';
   html += '<p>Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly:<a href="http://www.ferropoly.ch">www.ferropoly.ch</a></p>';
