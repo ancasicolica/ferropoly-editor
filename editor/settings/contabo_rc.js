@@ -54,5 +54,10 @@ module.exports = function (settings) {
 
   settings.mainInstances = ['http://spiel-rc.ferropoly.ch'];
 
+  // Logger
+  settings.logger = {
+    debugLevel: 'debug'
+  };
+
   return settings;
 };

@@ -56,5 +56,10 @@ module.exports = function (settings) {
 
   settings.mainInstances = ['https://spiel-preview.ferropoly.ch'];
 
+  // Logger
+  settings.logger = {
+    debugLevel: 'debug'
+  };
+
   return settings;
 };
