@@ -10,6 +10,7 @@ const LocalStrategy    = require('passport-local').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy   = require('passport-google-oauth20').Strategy;
 const DropboxStrategy  = require('passport-dropbox-oauth2').Strategy;
+const TwitterStrategy  = require('passport-twitter').Strategy;
 const crypto           = require('crypto');
 const logger           = require('./logger').getLogger('authStrategy');
 const util             = require('util');
@@ -59,8 +60,7 @@ module.exports = function (settings, users) {
           users.updateUser(foundUser, null, function () {
             return done(null, foundUser);
           });
-        }
-        else {
+        } else {
           logger.info('invalid password supplied for ' + foundUser);
           return done(null, false);
         }
@@ -129,12 +129,24 @@ module.exports = function (settings, users) {
     }
   );
 
+  const twitterStrategy = new TwitterStrategy({
+      consumerKey   : settings.oAuth.twitter.consumerKey,
+      consumerSecret: settings.oAuth.twitter.consumerSecret,
+      callbackURL   : settings.oAuth.twitter.callbackURL
+    },
+    function (token, tokenSecret, profile, cb) {
+      User.findOrCreateTwitterUser(profile, function (err, user) {
+        return cb(err, user);
+      });
+    });
+
 
   return {
     localStrategy   : localStrategy,
     facebookStrategy: facebookStrategy,
     googleStrategy  : googleStrategy,
     dropboxStrategy : dropboxStrategy,
+    twitterStrategy : twitterStrategy,
     deserializeUser : deserializeUser,
     serializeUser   : serializeUser
   }

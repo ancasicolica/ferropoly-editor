@@ -73,6 +73,7 @@ var initServer = function (db) {
   passport.use(authStrategy.facebookStrategy);
   passport.use(authStrategy.googleStrategy);
   passport.use(authStrategy.dropboxStrategy);
+  passport.use(authStrategy.twitterStrategy);
   passport.use(authStrategy.localStrategy);
   // Session serializing of the user
   passport.serializeUser(authStrategy.serializeUser);
