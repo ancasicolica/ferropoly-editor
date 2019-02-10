@@ -48,7 +48,7 @@ module.exports = function (settings) {
   // Dropbox settings
   settings.oAuth.dropbox.callbackURL  = 'http://localhost:3002/auth/dropbox/callback';
   // Twitter settings
-  settings.oAuth.twitter.callbackURL  = 'http://localhost:3002/auth/dropbox/twitter';
+  settings.oAuth.twitter.callbackURL  = 'http://localhost:3002/auth/twitter/callback';
 
   // Ferropoly main instances to update when a gameplay was added / removed
   settings.mainInstances = ['http://localhost:3004'];

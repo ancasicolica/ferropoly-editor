@@ -51,6 +51,9 @@ module.exports = function (settings) {
   settings.oAuth.google.callbackURL = 'https://editor-rc.ferropoly.ch/auth/google/callback';
   // Dropbox settings
   settings.oAuth.dropbox.callbackURL = 'https://editor-rc.ferropoly.ch/auth/dropbox/callback';
+  // Twitter settings
+  settings.oAuth.twitter.callbackURL  = 'https://editor-rc.ferropoly.ch/auth/twitter/callback';
+
 
   settings.mainInstances = ['http://spiel-rc.ferropoly.ch'];
 

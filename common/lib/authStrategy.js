@@ -110,6 +110,7 @@ module.exports = function (settings, users) {
 
   /**
    * Dropbox Strategy
+   * Not applicable right now, not registered in dropbox
    */
   const dropboxStrategy = new DropboxStrategy({
       apiVersion       : '2',
@@ -129,13 +130,18 @@ module.exports = function (settings, users) {
     }
   );
 
+  /**
+   * Twitter strategy
+   * They do not supply an email address when logging in. Breaks the code so far as the email address is the
+   * key identification element in ferropoly. Don't use it therefore.
+   */
   const twitterStrategy = new TwitterStrategy({
       consumerKey   : settings.oAuth.twitter.consumerKey,
       consumerSecret: settings.oAuth.twitter.consumerSecret,
       callbackURL   : settings.oAuth.twitter.callbackURL
     },
     function (token, tokenSecret, profile, cb) {
-      User.findOrCreateTwitterUser(profile, function (err, user) {
+      users.findOrCreateTwitterUser(profile, function (err, user) {
         return cb(err, user);
       });
     });
