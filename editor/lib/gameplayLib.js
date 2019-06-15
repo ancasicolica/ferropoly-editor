@@ -75,8 +75,8 @@ function createRandomGameplay(gameId, props, nb, callback) {
 
   try {
     async.whilst(
-      function () {
-        return generated < gplen;
+      function (cb) {
+        return cb(null, generated < gplen);
       },
       function (cb) {
         let index                 = _.random(0, props.length - 1);
