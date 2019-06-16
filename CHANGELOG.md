@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+#V2.4.6
+* Bugfixes und Update MongoDb
+
 #V2.4.5
 * Dependency Updates
 
