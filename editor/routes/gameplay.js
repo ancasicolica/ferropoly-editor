@@ -112,7 +112,7 @@ router.post('/finalize', function (req, res) {
       }
 
       // Only the owner is allowed to finalize the game, not admins!
-      if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
+      if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
         return res.status(403).send('Not allowed');
       }
 
@@ -190,7 +190,7 @@ router.delete('/:gameId', function (req, res) {
         return res.status(404).send({message: 'Gameplay not found: ' + gameId});
       }
       // Only the owner is allowed to delete the game, not admins!
-      if (_.get(gp, 'owner.organisatorEmail') !== req.session.passport.user) {
+      if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
         return res.status(403).send('Not allowed');
       }
 

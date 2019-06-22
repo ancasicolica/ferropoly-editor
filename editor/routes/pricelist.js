@@ -67,7 +67,7 @@ router.get('/get/:gameId', function (req, res) {
 
     // Only owners may finalize it
     gp         = gp.toObject();
-    gp.isOwner = _.get(gp, 'owner.organisatorEmail') === req.session.passport.user;
+    gp.isOwner = _.get(gp, 'internal.owner') === req.session.passport.user;
     commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
       if (err) {
         logger.error('getPricelist failed', err);
