@@ -28,7 +28,7 @@ router.get('/mygames', function (req, res) {
           gamename  : gameplay.gamename,
           scheduling: gameplay.scheduling,
           log       : gameplay.log,
-          isOwner   : _.get(gameplay, 'owner.organisatorEmail') === req.session.passport.user
+          isOwner   : _.get(gameplay, 'internal.owner') === req.session.passport.user
         });
       });
     }
