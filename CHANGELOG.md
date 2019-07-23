@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+#V2.5.0
+* Games in the City of Zurich added
+
 #V2.4.6
 * Bugfixes und Update MongoDb
 
