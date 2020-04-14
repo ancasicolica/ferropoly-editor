@@ -1,5 +1,9 @@
 # Changelog Ferropoly Editor
 
+* Dependency Updates
+* DB-Zugriff aktualisiert
+* wiz-markdown fix integriert (nicht mehr verfügbar)
+
 #V2.5.0
 * Games in the City of Zurich added
 
