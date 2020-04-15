@@ -14,6 +14,7 @@ const teamAccountTransaction     = require('../../common/models/accounting/teamA
 const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
 const chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
 const teams                      = require('../../common/models/teamModel');
+const gameLog                    = require('../../common/models/gameLogModel');
 const schedulerEvents            = require('../../common/lib/schedulerEvents');
 const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
 const userModel                  = require('../../common/models/userModel');
@@ -316,6 +317,9 @@ function deleteGameplay(gpOptions, callback) {
         },
         function (callback) {
           propertyGridModel.removeAllPropertyGridsFromGameplay(gpOptions.gameId, callback);
+        },
+        function (callback) {
+          gameLog.deleteAllEntries(gpOptions.gameId, callback);
         }
       ], function (err, results) {
         if (err) {

@@ -7,10 +7,10 @@
  */
 
 // Logging has highest prio
-const settings     = require('./settings');
-const logging      = require('../common/lib/logger');
+const settings = require('./settings');
+const logging  = require('../common/lib/logger');
 logging.init({debugLevel: settings.logger.debugLevel});
-const logger       = logging.getLogger('editor-app');
+const logger = logging.getLogger('editor-app');
 
 
 const express      = require('express');
@@ -41,7 +41,7 @@ const moment       = require('moment');
 const compression  = require('compression');
 const authStrategy = require('../common/lib/authStrategy')(settings, users);
 const demoUsers    = require('./lib/demoUsers');
-const uuid         = require('uuid');
+const {v4: uuid}   = require('uuid');
 
 var initServer = function (db) {
   cronjobs.init();
