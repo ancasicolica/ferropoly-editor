@@ -9,7 +9,6 @@ const properties                 = require('../../common/models/propertyModel');
 const propertyGridModel          = require('../../common/models/propertyGridModel');
 const propertyMap                = require('../../common/lib/propertyMap');
 const locations                  = require('../../common/models/locationModel');
-const logs                       = require('../../common/models/logModel');
 const travelLog                  = require('../../common/models/travelLogModel');
 const teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
 const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
@@ -134,8 +133,7 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
             logger.info('Created random pricelist');
             return callback(err, gameplay);
           });
-        }
-        else {
+        } else {
           return callback(null, gameplay);
         }
       });
@@ -269,14 +267,7 @@ function createNewGameplay(gpOptions, callback) {
         return callback(err);
       }
       logger.info('New gameplay created: ' + gameplay._id);
-      logs.add('New Gameplay created: ' + gpOptions.gameId, function (err) {
-        if (err) {
-          logger.error('Log error', err);
-        }
-        // returns the gp as second param in callback
-        return copyLocationsToProperties(gpOptions, gameplay, callback);
-      });
-
+      return copyLocationsToProperties(gpOptions, gameplay, callback);
     });
   });
 
@@ -325,9 +316,6 @@ function deleteGameplay(gpOptions, callback) {
         },
         function (callback) {
           propertyGridModel.removeAllPropertyGridsFromGameplay(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          logs.add('Deleted gameplay: ' + gpOptions.gameId, callback);
         }
       ], function (err, results) {
         if (err) {
@@ -378,26 +366,50 @@ function createDemoTeams(gp, teamNb, callback) {
   }
 
   let referenceData = [
-    createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0), demoUsers.getTeamLeaderEmail(0), '079 000 00 01']),
-    createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1), demoUsers.getTeamLeaderEmail(1), '079 000 00 02']),
-    createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2), demoUsers.getTeamLeaderEmail(2), '079 000 00 03']),
-    createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3), demoUsers.getTeamLeaderEmail(3), '079 000 00 04', 'Siegerteam letztes Jahr']),
-    createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', demoUsers.getTeamLeaderName(4), demoUsers.getTeamLeaderEmail(4), '079 000 00 05']),
-    createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', demoUsers.getTeamLeaderName(5), demoUsers.getTeamLeaderEmail(5), '079 000 00 06']),
-    createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', demoUsers.getTeamLeaderName(6), demoUsers.getTeamLeaderEmail(6), '079 000 00 07']),
-    createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', demoUsers.getTeamLeaderName(7), demoUsers.getTeamLeaderEmail(7), '079 000 00 08']),
-    createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', demoUsers.getTeamLeaderName(8), demoUsers.getTeamLeaderEmail(8), '079 000 00 09']),
-    createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern', demoUsers.getTeamLeaderName(9), demoUsers.getTeamLeaderEmail(9), '079 000 00 10']),
-    createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', demoUsers.getTeamLeaderName(10), demoUsers.getTeamLeaderEmail(10), '079 000 00 11']),
-    createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', demoUsers.getTeamLeaderName(11), demoUsers.getTeamLeaderEmail(11), '079 000 00 12']),
-    createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', demoUsers.getTeamLeaderName(12), demoUsers.getTeamLeaderEmail(12), '079 000 00 13']),
-    createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', demoUsers.getTeamLeaderName(13), demoUsers.getTeamLeaderEmail(13), '079 000 00 14']),
-    createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', demoUsers.getTeamLeaderName(14), demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
-    createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', demoUsers.getTeamLeaderName(15), demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
-    createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', demoUsers.getTeamLeaderName(16), demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
-    createDemoTeamEntry(gp.internal.gameId, ['Know-Nothing Bozo the Non-Wonder Dog & Wonko the sane', 'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17), demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
-    createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms', demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18), '079 000 00 19']),
-    createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', demoUsers.getTeamLeaderName(19), demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
+    createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0),
+                                             demoUsers.getTeamLeaderEmail(0), '079 000 00 01']),
+    createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
+                                             demoUsers.getTeamLeaderEmail(1), '079 000 00 02']),
+    createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
+                                             demoUsers.getTeamLeaderEmail(2), '079 000 00 03']),
+    createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3),
+                                             demoUsers.getTeamLeaderEmail(3), '079 000 00 04',
+                                             'Siegerteam letztes Jahr']),
+    createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', demoUsers.getTeamLeaderName(4),
+                                             demoUsers.getTeamLeaderEmail(4), '079 000 00 05']),
+    createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', demoUsers.getTeamLeaderName(5),
+                                             demoUsers.getTeamLeaderEmail(5), '079 000 00 06']),
+    createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', demoUsers.getTeamLeaderName(6),
+                                             demoUsers.getTeamLeaderEmail(6), '079 000 00 07']),
+    createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', demoUsers.getTeamLeaderName(7),
+                                             demoUsers.getTeamLeaderEmail(7), '079 000 00 08']),
+    createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', demoUsers.getTeamLeaderName(8),
+                                             demoUsers.getTeamLeaderEmail(8), '079 000 00 09']),
+    createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern',
+                                             demoUsers.getTeamLeaderName(9), demoUsers.getTeamLeaderEmail(9),
+                                             '079 000 00 10']),
+    createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', demoUsers.getTeamLeaderName(10),
+                                             demoUsers.getTeamLeaderEmail(10), '079 000 00 11']),
+    createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', demoUsers.getTeamLeaderName(11),
+                                             demoUsers.getTeamLeaderEmail(11), '079 000 00 12']),
+    createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', demoUsers.getTeamLeaderName(12),
+                                             demoUsers.getTeamLeaderEmail(12), '079 000 00 13']),
+    createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', demoUsers.getTeamLeaderName(13),
+                                             demoUsers.getTeamLeaderEmail(13), '079 000 00 14']),
+    createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', demoUsers.getTeamLeaderName(14),
+                                             demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
+    createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', demoUsers.getTeamLeaderName(15),
+                                             demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
+    createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', demoUsers.getTeamLeaderName(16),
+                                             demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
+    createDemoTeamEntry(gp.internal.gameId, ['Know-Nothing Bozo the Non-Wonder Dog & Wonko the sane',
+                                             'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17),
+                                             demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
+    createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms',
+                                             demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18),
+                                             '079 000 00 19']),
+    createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', demoUsers.getTeamLeaderName(19),
+                                             demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
   ];
   for (i = 0; i < teamNb; i++) {
     demoTeamData.push(referenceData[i]);
@@ -423,8 +435,7 @@ function createDemoGameplay(p1, p2) {
 
   if (_.isFunction(p1)) {
     callback = p1;
-  }
-  else {
+  } else {
     settings = p1;
   }
 
@@ -467,14 +478,12 @@ function createDemoGameplay(p1, p2) {
       return deleteGameplay(options, function (err) {
         if (err) {
           return callback(err);
-        }
-        else {
+        } else {
           // recursive!
           return createDemoGameplay(p1, p2);
         }
       });
-    }
-    else {
+    } else {
       // Create new gameplay now
       createNewGameplay(options, function (err, gp) {
         if (err) {
@@ -501,7 +510,7 @@ function createDemoGameplay(p1, p2) {
               let endTs    = new Date();
               let duration = (endTs.getTime() - startTs.getTime()) / 1000;
               logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
-              logs.add('Demo Gameplay created', callback);
+              callback();
             });
           });
         });
@@ -577,8 +586,7 @@ function deleteOldGameplays(callback) {
           // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
           // the game took place. This code can be removed in the next ferropoly release
           timeout = moment(gp.scheduling.gameDate).add(1, 'M');
-        }
-        else {
+        } else {
           // This is the code which should run for current (V2) ferropolys
           timeout = moment(gp.scheduling.deleteTs);
         }

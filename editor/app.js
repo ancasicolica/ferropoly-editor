@@ -37,7 +37,6 @@ const ferropolyDb  = require('../common/lib/ferropolyDb');
 const pricelist    = require('./routes/pricelist');
 const cronjobs     = require('./lib/cronjobs');
 const mailer       = require('../common/lib/mailer');
-const logs         = require('../common/models/logModel');
 const moment       = require('moment');
 const compression  = require('compression');
 const authStrategy = require('../common/lib/authStrategy')(settings, users);
@@ -47,7 +46,6 @@ const uuid         = require('uuid');
 var initServer = function (db) {
   cronjobs.init();
   mailer.init(settings);
-  logs.init(settings);
 
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
