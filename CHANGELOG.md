@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+## 2.5.1 16.4.20
+* Google Plus von Authentisierung entfernt
+
 #V2.5.0
 * Games in the City of Zurich added
 
