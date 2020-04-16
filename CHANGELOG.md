@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+# V2.6.0 16.4.2020
 * Dependency Updates
 * DB-Zugriff aktualisiert
 * wiz-markdown fix integriert (nicht mehr verfügbar)
