@@ -86,7 +86,7 @@ var initServer = function (db) {
       secure: 'auto'
     },
     genid            : function () {
-      return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid.v4();
+      return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid();
     },
     store            : new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60}),
     name             : 'ferropoly-editor'
