@@ -4,6 +4,7 @@
 * DB-Zugriff aktualisiert
 * wiz-markdown fix integriert (nicht mehr verfügbar)
 * Game-Log neu
+* Anpassungen Models: Mailer kann nun BCC, Scheduler kennt Summary
 
 #V2.5.0
 * Games in the City of Zurich added
