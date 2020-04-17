@@ -7,7 +7,7 @@
 const express = require('express');
 const router  = express.Router();
 const cors    = require('cors');
-const logger  = require('../lib/logger').getLogger('info');
+const package = require('../../package.json');
 const moment  = require('moment');
 const _       = require('lodash');
 
@@ -42,6 +42,16 @@ module.exports = function (settings, customData) {
       let uptime = moment.duration(process.uptime(), 'seconds');
       res.send({
         copyright  : 'Ferropoly ©2015 Christian Kuster, CH-8342 Wernetshausen, Sources provided under GPL licence, see www.ferropoly.ch for details.',
+        app        : {
+          name: package.name,
+          title: package.title,
+          version: package.version
+        },
+        settings: {
+          serverId: settings.server.serverId,
+          debugInstance: settings.debug,
+          preview: settings.preview
+        },
         memory     : memUsage,
         nodeVersion: versions,
         uptime     : {
