@@ -99,7 +99,7 @@ var initServer = function (db) {
   require('../common/routes/auth')(app);
 
 
-  app.use('/appinfo', infoRoute);
+  app.use('/appinfo', infoRoute(settings));
   app.use('/debug', debugRoute(settings.integrationTest));
   login.init(app, settings);
   authtoken.init(app);

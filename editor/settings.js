@@ -3,10 +3,12 @@
  * Created by kc on 04.01.15
  */
 
-const pkg  = require('./../package.json');
-const fs   = require('fs');
-const _    = require('lodash');
-const path = require('path');
+const pkg        = require('./../package.json');
+const fs         = require('fs');
+const _          = require('lodash');
+const path       = require('path');
+const {v4: uuid} = require('uuid');
+
 
 // Set default
 let deployType = process.env.DEPLOY_TYPE || 'local';
@@ -17,19 +19,16 @@ let debug      = process.env.DEBUG || false;
 if (process.env.OPENSHIFT_NODEJS_IP) {
   deployType = 'openshift';
   preview    = false;
-}
-else if (process.env.DEPLOY_TYPE === 'contabo') {
+} else if (process.env.DEPLOY_TYPE === 'contabo') {
   // check which instance
   let rootPath = path.join(__dirname, '..');
   console.log('Root path: ' + rootPath);
   if (_.endsWith(rootPath, 'preview')) {
     deployType = 'contabo_preview';
     debug      = true;
-  }
-  else if (_.endsWith(rootPath, 'rc')) {
+  } else if (_.endsWith(rootPath, 'rc')) {
     deployType = 'contabo_rc';
-  }
-  else {
+  } else {
     preview = false;
   }
 }
@@ -64,20 +63,24 @@ let settings = {
     },
 
     twitter: {
-      consumerKey    : process.env.FERROPOLY_TWITTER_CONSUMER_KEY || 'none',
+      consumerKey   : process.env.FERROPOLY_TWITTER_CONSUMER_KEY || 'none',
       consumerSecret: process.env.FERROPOLY_TWITTER_CONSUMER_SECRET || 'no_secret',
-      callbackURL : 'none' // is set in settings file for environment
+      callbackURL   : 'none' // is set in settings file for environment
     }
   }
 };
 
+// This is a secret for debugging routes
+settings.debugSecret = process.env.FERROPOLY_DEBUG_SECRET || uuid();
+
+// API Key for requests
+settings.apiKey = process.env.FERROPOLY_API_KEY || uuid();
 
 if (debug) {
   console.log('DEBUG Settings used');
   // Use minified javascript files wherever available
   settings.minifiedjs = false;
-}
-else {
+} else {
   console.log('DIST Settings with minified js files used');
   // Use minified javascript files wherever available
   settings.minifiedjs = true;
