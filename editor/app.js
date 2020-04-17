@@ -98,8 +98,7 @@ var initServer = function (db) {
   // Set auth route
   require('../common/routes/auth')(app);
 
-
-  app.use('/appinfo', infoRoute(settings));
+  app.use('/appinfo', infoRoute(settings, require('./lib/infoRouteData')));
   app.use('/debug', debugRoute(settings.integrationTest));
   login.init(app, settings);
   authtoken.init(app);
