@@ -37,11 +37,12 @@ if (process.env.OPENSHIFT_NODEJS_IP) {
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 let settings = {
-  name   : pkg.name,
-  appName: pkg.title,
-  version: pkg.version,
-  debug  : (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
-  preview: preview,
+  name    : pkg.name,
+  appName : pkg.title,
+  version : pkg.version,
+  debug   : (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
+  preview : preview,
+  instance: deployType,
 
   oAuth: {
     facebook: {
@@ -75,6 +76,12 @@ settings.debugSecret = process.env.FERROPOLY_DEBUG_SECRET || uuid();
 
 // API Key for requests
 settings.apiKey = process.env.FERROPOLY_API_KEY || uuid();
+
+// Google Storage
+settings.googleStorage = {
+  keyFile   : path.join(__dirname, '..', 'keys', 'ferropoly-google-storage.json'),
+  bucketName: 'ferropoly'
+}
 
 if (debug) {
   console.log('DEBUG Settings used');

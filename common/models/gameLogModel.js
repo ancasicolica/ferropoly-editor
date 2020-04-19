@@ -25,14 +25,15 @@ const CAT_CHANCELLERY = 2; // chancellery actions
  * The mongoose schema for a log entry
  */
 let gameLogSchema     = mongoose.Schema({
-  _id      : String,
-  gameId   : String,
-  teamId   : String, // Set only if relevant, otherwise undefined
-  title    : String, // Title of the entry, as short and informative as possible
-  message  : String, // This is the more detailed message (if any)
-  category : {type: Number, default: CAT_GENERAL},
-  files    : {type: Array, default: []}, // this is an array with objects for pics
-  timestamp: {type: Date, default: Date.now}
+  _id       : String,
+  gameId    : String,
+  teamId    : String, // Set only if relevant, otherwise undefined
+  title     : String, // Title of the entry, as short and informative as possible
+  message   : String, // This is the more detailed message (if any)
+  propertyId: String, // Property ID (if any)
+  category  : {type: Number, default: CAT_GENERAL},
+  files     : {type: Array, default: []}, // this is an array with objects for pics
+  timestamp : {type: Date, default: Date.now}
 });
 
 
@@ -58,14 +59,15 @@ let addEntry = function (gameId, category, title, options, callback) {
   if (!_.isString(gameId) || !_.isString(title)) {
     return callback(new Error('all params in createEntry must be strings'));
   }
-  let logEntry      = new GameLog();
-  logEntry.gameId   = gameId;
-  logEntry.title    = title;
-  logEntry.message  = _.get(options, 'message', '');
-  logEntry.category = category
-  logEntry.teamId   = _.get(options, 'teamId', undefined);
-  logEntry.files    = []; // Not used yet
-  logEntry._id      = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  let logEntry        = new GameLog();
+  logEntry.gameId     = gameId;
+  logEntry.title      = title;
+  logEntry.message    = _.get(options, 'message', '');
+  logEntry.category   = category
+  logEntry.teamId     = _.get(options, 'teamId', undefined);
+  logEntry.propertyId = _.get(options, 'propertyId', undefined);
+  logEntry.files      = []; // Not used yet
+  logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
   logEntry.save(callback);
 };
 

@@ -29,6 +29,7 @@
   },
   "main": "server.js",
   "dependencies": {
+    "@google-cloud/storage": "^4.7.0",
     "async": "3.2.0",
     "body-parser": "1.19.0",
     "compression": "1.7.4",
@@ -40,6 +41,7 @@
     "express": "4.17.1",
     "express-session": "1.17.0",
     "express-winston": "4.0.3",
+    "jimp": "^0.10.2",
     "lodash": "4.17.15",
     "minimist": "1.2.5",
     "moment": "2.24.0",
