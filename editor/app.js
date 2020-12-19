@@ -193,18 +193,6 @@ var initServer = function (db) {
     });
   });
 
-  let test = require('../common/lib/googleStorage')(settings);
-  const fs = require('fs');
-  fs.readFile('/Users/christian/Downloads/eugen.jpg', (err, data) => {
-    test.addLocationPurchasePic('none', data, {
-      teamId: 'nada',
-      title : 'Testbild'
-    }, err => {
-      console.log('finished upload');
-    })
-
-  });
-
 };
 
 /**
