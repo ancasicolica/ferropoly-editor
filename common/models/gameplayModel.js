@@ -87,7 +87,8 @@ const gameplaySchema = mongoose.Schema({
     map                    : String,                          // map to use
     finalized              : {type: Boolean, default: false}, // finalized means no edits anymore,
     priceListPendingChanges: {type: Boolean, default: false}, // Are there pending changes?
-    creatingInstance       : String                           // Instance creating this gameplay
+    creatingInstance       : String,                          // Instance creating this gameplay
+    isDemo                 : {type: Boolean, default: false}  // Demo games have some special behaviour
   },
   joining   : {
     possibleUntil: {type: Date},
@@ -128,6 +129,7 @@ let createGameplay      = function (gpOptions, callback) {
 
   gp.internal.map              = gpOptions.map;
   gp.internal.owner            = gpOptions.ownerId || gpOptions.ownerEmail;
+  gp.internal.isDemo           = gpOptions.isDemo || false;
   gp.owner.organisatorEmail    = gpOptions.ownerEmail;
   gp.owner.organisatorName     = gpOptions.organisatorName;
   gp.scheduling.gameDate       = gpOptions.gameDate;
@@ -153,8 +155,7 @@ let createGameplay      = function (gpOptions, callback) {
       // generate new gameID
       gpOptions.gameId = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
       return createGameplay(gpOptions, callback);
-    }
-    else {
+    } else {
       gp.save(function (err, savedGp) {
         if (err) {
           return callback(err);
@@ -256,8 +257,7 @@ let getGameplay = function (gameId, ownerId, callback) {
   //  var params = {'internal.owner': ownerId, 'internal.gameId': gameId};
   if (ownerId === null) {
     params = {'internal.gameId': gameId};
-  }
-  else if (ownerId === undefined) {
+  } else if (ownerId === undefined) {
     return callback(new Error('undefined is not a valid value for ownerId'));
   }
   Gameplay.find(params, function (err, docs) {
@@ -534,8 +534,7 @@ function updateRules(gameId, ownerId, info, callback) {
         version: gp.rules.version,
         changes: 'Automatisch erstellte Grundversion'
       });
-    }
-    else {
+    } else {
       gp.rules.version++;
       gp.rules.text = info.text;
       gp.rules.changelog.push({ts: new Date(), version: gp.rules.version, changes: info.changes});
@@ -561,8 +560,7 @@ let saveNewPriceListRevision = function (gameplay, callback) {
   gameplay.log.priceListCreated             = new Date();
   if (!gameplay.log.priceListVersion) {
     gameplay.log.priceListVersion = 1;
-  }
-  else {
+  } else {
     gameplay.log.priceListVersion++;
   }
   gameplay.save(function (err) {
