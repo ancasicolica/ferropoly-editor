@@ -27,7 +27,7 @@ const infoRoute    = require('../common/routes/info');
 const debugRoute   = require('../common/routes/debug');
 const passport     = require('passport');
 const session      = require('express-session');
-const MongoStore   = require('connect-mongo')(session);
+const MongoStore   = require('connect-mongo');
 const flash        = require('connect-flash');
 const app          = express();
 const users        = require('../common/models/userModel');
@@ -88,7 +88,7 @@ var initServer = function (db) {
     genid            : function () {
       return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid();
     },
-    store            : new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60}),
+    store            : MongoStore.create({mongoUrl: settings.locationDbSettings.mongoDbUrl, ttl: 2 * 24 * 60 * 60}),
     name             : 'ferropoly-editor'
   }));
   app.use(passport.initialize());
