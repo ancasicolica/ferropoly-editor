@@ -16,6 +16,9 @@
  *
  * @param grunt
  */
+const webpackDevConfig  = require('./editor/webapp/webpack.dev.js');
+const webpackProdConfig = require('./editor/webapp/webpack.prod.js');
+
 module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -81,6 +84,13 @@ module.exports = function (grunt) {
       target : {
         command: './bin/createDemoGame.js'
       }
+    },
+    webpack: {
+      options: {
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+      },
+      prod   : webpackProdConfig,
+      dev    : Object.assign({watch: true}, webpackDevConfig)
     }
 
   });
@@ -100,4 +110,5 @@ module.exports = function (grunt) {
   grunt.registerTask('v:major', ['bump-only:major']);
   grunt.registerTask('demo', ['shell']);
   grunt.registerTask('lint', ['eslint']);
+  grunt.loadNpmTasks('grunt-webpack');
 };

@@ -1,0 +1,22 @@
+extends layout-v2
+
+block head
+
+
+block body
+  #game-selector-app
+    #ferropoly-navbar
+      b-navbar(toggleable='lg' type='dark' variant='dark')
+        b-navbar-brand(href='#') Ferropoly
+        b-navbar-toggle(target='nav-collapse')
+        b-collapse#nav-collapse(is-nav='')
+          b-navbar-nav
+            b-nav-item(href='/newgame') Neues Spiel
+          // Right aligned nav items
+          b-navbar-nav.ml-auto
+            b-nav-item-dropdown(right='')
+              template(#button-content='')
+                em Benutzer
+              b-dropdown-item(href='/account') Mein Account
+              b-dropdown-item(href='/logout') Abmelden
+    welcome-bar

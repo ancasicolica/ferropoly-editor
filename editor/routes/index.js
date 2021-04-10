@@ -8,8 +8,8 @@ const users    = require('../../common/models/userModel');
 const settings = require('../settings');
 const logger   = require('../../common/lib/logger').getLogger('routes:index');
 
-let ngIndexFile = 'indexctrl';
-ngIndexFile     = settings.minifiedjs ? '/js/min/' + ngIndexFile + '.min.js' : '/js/src/' + ngIndexFile + '.js';
+let appFile = 'game-selector';
+appFile     = settings.minifiedjs ? '/js/min/' + appFile + '.min.js' : '/js/' + appFile + '.js';
 
 /* GET home page. */
 router.get('/', function (req, res) {
@@ -20,11 +20,9 @@ router.get('/', function (req, res) {
       logger.error('getUserByMailAddress Error', err);
       user = {};
     }
-    res.render('index', {
+    res.render('game-selector', {
       title       : 'Ferropoly',
-      ngController: 'indexCtrl',
-      ngApp       : 'indexApp',
-      ngFile      : ngIndexFile,
+      appFile     : appFile,
       user        : user
     });
 
