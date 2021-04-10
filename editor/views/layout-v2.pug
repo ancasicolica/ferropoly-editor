@@ -25,6 +25,7 @@ html(lang='de')
     meta(name='description' content='Ferropoly ist ein Spiel auf dem Schweizer Eisenbahnnetz.')
     meta(charset='UTF-8')
     meta(name='author' content='Christian Kuster, CH-8342 Wernetshausen, www.kusti.ch')
+    link(rel='stylesheet', href='/css/style.css')
     if(appFile)
       script(src = appFile)
     block head
@@ -39,5 +40,6 @@ html(lang='de')
       };
     script(src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js")
   body
-      block body
+    block content
+
 
