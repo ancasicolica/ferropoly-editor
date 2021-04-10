@@ -69,6 +69,7 @@
     "serve-favicon": "2.5.0",
     "uuid": "8.3.2",
     "vue": "^2.6.12",
+    "vue-router": "^3.5.1",
     "winston": "3.3.3"
   },
   "devDependencies": {
