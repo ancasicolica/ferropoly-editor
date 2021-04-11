@@ -42,13 +42,14 @@
                 b-button.btn-gameplay(size="sm" v-if="hasPrizelist && isOwner" :href="url.editAdmins") Spielleiter
                   b-icon-person
 
-                b-button.btn-gameplay(size="sm" v-if="isOwner && !isDemo" :href="url.edit") Löschen
+                b-button.btn-gameplay(size="sm" v-if="isOwner && !isDemo" v-on:click="deleteGameplay") Löschen
                   b-icon-trash
 
 
 </template>
 
 <script>
+
 export default {
   name      : "game-card",
   props     : {
@@ -76,7 +77,15 @@ export default {
     };
   },
   model     : {},
-  methods   : {},
+  methods   : {
+    /**
+     * Gameplay shall be deleted: raise an event
+     */
+    deleteGameplay: function() {
+      console.log('deleting');
+      this.$emit('delete-gameplay', this.gameId);
+    }
+  },
   components: {}
 }
 </script>

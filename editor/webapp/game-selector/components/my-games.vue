@@ -5,6 +5,8 @@
 -->
 <template lang="pug">
   div
+    modal-delete-game(ref="delete-confirm" v-on:delete-gameplay-confirmed="deleteGameplayConfirmed")
+    modal-error(title="Fehler" ref='delete-error')
     h1 Meine Spiele
     b-row
       b-col(v-if="gameplays.length === 0")
@@ -14,30 +16,64 @@
         game-card(:gameName="gp.gamename", :gameId="gp.internal.gameId", :game-date="gp.scheduling.gameDate",
           :game-start="gp.scheduling.gameStart", :game-end="gp.scheduling.gameEnd",
           :delete-date="gp.scheduling.deleteTs", :map="gp.internal.map", :is-finalized="gp.internal.finalized",
-          :is-owner="gp.isOwner", :has-prizelist="gp.log.priceListVersion > 0" :is-demo="gp.internal.isDemo")
+          :is-owner="gp.isOwner", :has-prizelist="gp.log.priceListVersion > 0" :is-demo="gp.internal.isDemo"
+          v-on:delete-gameplay="deleteGameplay")
 </template>
 
 <script>
-import {readMyGames} from "../adapter/gameplay";
+import {readMyGames, deleteGameplay} from "../adapter/gameplay";
 import GameCard from './game-card.vue';
+import ModalDeleteGame from "./modal-delete-game.vue";
+import ModalError from '../../common/components/modal-error.vue';
 
 export default {
   name      : "my-games",
   props     : [],
   data      : function () {
     return {
-      gameplays: []
+      gameplays       : [],
+      gameplayToDelete: ''
     };
   },
   model     : {},
   created   : function () {
-    let self = this;
-    readMyGames((err, gameplays) => {
-      self.gameplays = gameplays;
-    });
+    this.updateGameplays();
   },
-  methods   : {},
-  components: {GameCard}
+  methods   : {
+    /**
+     * Event Handler from a card: deleting a gameplay was requested. Show Modal dialog
+     * @param gpId
+     */
+    deleteGameplay: function (gpId) {
+      console.log('DELETING', gpId);
+      this.gameplayToDelete = gpId;
+      this.$refs['delete-confirm'].showModal()
+    },
+    /**
+     * Modal dialog confirms deletion
+     */
+    deleteGameplayConfirmed: function () {
+      console.log('NOW deleting gameplay', this.gameplayToDelete);
+      deleteGameplay(this.gameplayToDelete, err => {
+        if (err) {
+          console.error(err);
+          this.$refs['delete-error'].showError('Fehler', 'Das Spiel konnte nicht gelöscht werden, folgende Meldung wurde gesendet:', err);
+        }
+        this.updateGameplays();
+      })
+    },
+    /**
+     * Update the collection of gameplays
+     */
+    updateGameplays: function () {
+      let self = this;
+      readMyGames((err, gameplays) => {
+        self.gameplays = gameplays;
+        this.$emit('gameplays-changed', gameplays);
+      });
+    }
+  },
+  components: {GameCard, ModalDeleteGame, ModalError}
 }
 </script>
 

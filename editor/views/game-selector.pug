@@ -5,28 +5,5 @@ block head
 
 block content
   #game-selector-app
-    modal-agb()
-    #ferropoly-navbar
-      b-navbar(toggleable='lg' type='dark' variant='dark')
-        b-navbar-brand(href='#') Ferropoly
-        b-navbar-toggle(target='nav-collapse')
-        b-collapse#nav-collapse(is-nav='')
-          b-navbar-nav
-            b-nav-item(href='/newgame') Neues Spiel
-          // Right aligned nav items
-          b-navbar-nav.ml-auto
-            b-nav-item-dropdown(right='')
-              template(#button-content='')
-                em Benutzer
-              b-dropdown-item(href='/account') Mein Account
-              b-dropdown-item(href='/logout') Abmelden
-    welcome-bar
-    .container-fluid
-      .row
-        .col-md-12
-      p.intro Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
-        a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
-        | .
-      .row
-        .col-md-12
-           my-games
+    game-selector
+

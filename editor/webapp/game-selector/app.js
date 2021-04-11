@@ -12,15 +12,11 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import {DateTime} from 'luxon';
 
 // Import components
-import WelcomeBar from './components/welcome-bar.vue'
-import MyGames from './components/my-games.vue'
 import ModalAgb from './components/modal-agb.vue'
-
+import GameSelector from './components/game-selector.vue';
 Vue.use(VueRouter)
 
-Vue.component('welcome-bar', WelcomeBar)
-Vue.component('my-games', MyGames)
-Vue.component('modal-agb', ModalAgb)
+Vue.component('game-selector', GameSelector);
 
 // This is for redirection when declining the AGB
 const routes = [

@@ -1,5 +1,5 @@
 /**
- * Reads all the games of the current user
+ * This is the interface for the Game Plays on the server
  */
 import $ from 'jquery';
 import {DateTime} from 'luxon';
@@ -22,9 +22,24 @@ function readMyGames(callback) {
       console.error(err);
       callback(err);
     })
-    .always(function () {
-
-    });
 }
 
-export {readMyGames}
+/**
+ * Deletes a gameplay
+ * @param id is the ID of the gameplay to delete
+ * @param callback with the error text (if any)
+ */
+function deleteGameplay(id, callback) {
+  $.ajax(`/gameplay/${id}`, {method: 'DELETE',dataType: 'json'})
+    .done(function () {
+      console.log(`deleted ${id}`)
+      callback(null);
+    })
+    .fail(function (resp) {
+      let message = resp.responseJSON.message;
+      console.error(`Error while deleting ${id}`, resp);
+      callback(message);
+    })
+}
+
+export {readMyGames, deleteGameplay}
