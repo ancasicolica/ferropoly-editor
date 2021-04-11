@@ -1,9 +1,9 @@
 <!---
-
+  A single card with infos about a game
 -->
 <template lang="pug">
   div
-    b-card
+    b-card.game-card
       b-card-header.title {{gameName}}
       b-card-body
         b-card-text
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil} from 'bootstrap-vue';
 
 export default {
   name      : "game-card",
@@ -86,7 +87,7 @@ export default {
       this.$emit('delete-gameplay', this.gameId);
     }
   },
-  components: {}
+  components: {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil}
 }
 </script>
 
@@ -104,5 +105,9 @@ export default {
 .id {
   color: rgba(115, 115, 115, 0.73);
   font-size: x-small;
+}
+
+.game-card {
+  margin-bottom: 10px;
 }
 </style>

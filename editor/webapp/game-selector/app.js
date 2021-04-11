@@ -2,7 +2,7 @@
  * Web app for the main page, where games are selected
  */
 import Vue from 'vue'
-import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
+import {BootstrapVue} from 'bootstrap-vue'
 import $ from 'jquery';
 import VueRouter from 'vue-router'
 
@@ -31,8 +31,6 @@ console.log('Webapp initializing');
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
 
 Vue.filter('formatDate', function(value) {
   return DateTime.fromJSDate(value).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);

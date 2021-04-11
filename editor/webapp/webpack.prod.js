@@ -12,7 +12,7 @@ module.exports = merge(common, {
   output : {
     filename     : '[name].min.js',
     chunkFilename: '[name].bundle.js',
-    path         : path.resolve(__dirname, '..', 'js')
+    path    : path.resolve(__dirname, '..', 'public', 'js', 'build')
     //path: path.resolve(__dirname, 'www', 'js')
   },
   stats  : {
