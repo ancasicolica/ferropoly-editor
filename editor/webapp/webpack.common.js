@@ -3,7 +3,8 @@ const {VueLoaderPlugin} = require('vue-loader');
 
 module.exports = {
   entry  : {
-    'game-selector': path.join(__dirname, 'game-selector', 'app.js')
+    'game-selector': path.join(__dirname, 'game-selector', 'app.js'),
+    'pricelist': path.join(__dirname, 'pricelist', 'app.js')
   },
   output : {
     filename: '[name].js',

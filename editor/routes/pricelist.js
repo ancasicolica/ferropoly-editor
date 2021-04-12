@@ -15,19 +15,17 @@ const downloadPricelist  = require('../../common/routes/downloadPricelist');
 const settings           = require('../settings');
 const _                  = require('lodash');
 
-let ngFile = 'pricelistctrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+let appFile = 'pricelist';
+appFile     = settings.minifiedjs ? '/js/' + appFile + '.min.js' : '/js/' + appFile + '.js';
 
 
 /* GET priceslist. */
 router.get('/view/:gameId', function (req, res) {
-  res.render('pricelist/pricelist', {
+  res.render('pricelist', {
     title       : 'Preisliste',
     gameId      : req.params.gameId,
     gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
-    ngController: 'pricelistCtrl',
-    ngApp       : 'pricelistApp',
-    ngFile      : ngFile
+    appFile     : appFile
   });
 });
 

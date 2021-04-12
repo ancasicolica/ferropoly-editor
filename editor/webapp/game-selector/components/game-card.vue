@@ -30,10 +30,10 @@
                 b-button.btn-gameplay(size="sm" v-if="!isFinalized && isOwner" :href="url.edit") Bearbeiten &nbsp;
                   b-icon-pencil
 
-                b-button.btn-gameplay(size="sm" v-if="hasPrizelist") Preisliste &nbsp;
+                b-button.btn-gameplay(size="sm" v-if="hasPrizelist" :href="url.viewPricelist") Preisliste &nbsp;
                   b-icon-eye
 
-                b-button.btn-gameplay(size="sm" v-if="isFinalized" :href="url.viewPricelist") Spielregeln &nbsp;
+                b-button.btn-gameplay(size="sm" v-if="isFinalized") Spielregeln &nbsp;
                   b-icon-pencil
 
                 b-button.btn-gameplay(size="sm" v-if="hasPrizelist && isOwner" :href="url.editPlayer") Spieler &nbsp;

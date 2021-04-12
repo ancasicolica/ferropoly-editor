@@ -6,7 +6,7 @@
 <template lang="pug">
   #game-selector
     modal-agb()
-    menu-bar(v-bind:new-game-enabled="newGameEnabled")
+    menu-bar(:elements="menuElements" show-user-box=true)
     welcome-bar
     .container-fluid
       .row
@@ -23,7 +23,7 @@
 import WelcomeBar from './welcome-bar.vue'
 import MyGames from './my-games.vue'
 import ModalAgb from './modal-agb.vue'
-import MenuBar from './menu-bar.vue'
+import MenuBar from '../../common/components/menu-bar.vue'
 
 
 export default {
@@ -31,8 +31,11 @@ export default {
   props     : [],
   data      : function () {
     return {
-      newGameEnabled: true,
-      gamePlays     : {}
+      gamePlays   : {},
+      menuElements: [
+        {title: 'Neues Spiel', href: '/newgame', hide:false},
+        {title: 'test', href: '#', hide:false}
+      ]
     };
   },
   model     : {},
@@ -42,8 +45,8 @@ export default {
      * @param gps
      */
     gameplaysChanged: function (gps) {
-      this.gamePlays      = gps;
-      this.newGameEnabled = gps.length < 3;
+      this.gamePlays            = gps;
+      this.menuElements[0].hide = gps.length > 2;
     }
   },
   components: {WelcomeBar, MyGames, ModalAgb, MenuBar}

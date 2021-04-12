@@ -40,3 +40,4 @@ editor/views/rules/*.html
 
 # Bower
 editor/public/modules
+/editor/public/js/build/report.html
