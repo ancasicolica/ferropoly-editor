@@ -8,14 +8,14 @@
     modal-agb()
     menu-bar(:elements="menuElements" show-user-box=true)
     welcome-bar
-    .container-fluid
-      .row
-        .col-md-12
-      p.intro Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
-        a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
-        | .
-      .row
-        .col-md-12
+    b-container(fluid=true)
+      b-row
+        b-col
+          p.intro Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
+            a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
+            | .
+      b-row
+        b-col
           my-games(v-on:gameplays-changed="gameplaysChanged")
 </template>
 
