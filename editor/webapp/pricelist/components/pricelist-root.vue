@@ -13,7 +13,7 @@
         :game-start="gameplay.scheduling.gameStart" :game-end="gameplay.scheduling.gameEnd",
         :version="gameplay.log.priceListVersion" :created="gameplay.log.priceListCreated")
     div(v-if="panel==='info'")
-      pricelist-info
+      pricelist-info(:gameplay="gameplay" :game-url="getGameUrl()")
 </template>
 
 <script>
@@ -22,6 +22,7 @@ import Pricelist from './pricelist.vue'
 import PricelistInfo from './pricelist-info.vue'
 import {getAuthToken} from '../../common/adapter/authToken'
 import {getPricelist} from '../../common/adapter/pricelist'
+import {get} from 'lodash'
 
 export default {
   name      : "pricelist-root",
@@ -67,13 +68,12 @@ export default {
     getPricelist(self.gameInfo.gameId, (err, data) => {
       if (err) {
         console.error('Error reading pricelist', err);
-        self.panel='error';
+        self.panel = 'error';
         return;
       }
       self.pricelist = data.pricelist;
       self.gameplay  = data.gameplay;
     })
-
   },
   methods   : {
     /**
@@ -97,6 +97,12 @@ export default {
       console.log('Info!')
       this.menuElements[1].hide = true;
       this.panel                = 'info';
+    },
+    /**
+     * Returns the GameUrl which is part of the PUG File (injected by server)
+     */
+    getGameUrl: function () {
+      return get(this.gameInfo, 'gameUrl', 'none');
     }
   },
   components: {MenuBar, Pricelist, PricelistInfo}
