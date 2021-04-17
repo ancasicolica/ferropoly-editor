@@ -32,10 +32,10 @@ export default {
         {key: 'pricelist.pricePerHouse', label: 'Hauspreis'},
         {key: 'pricelist.rents.noHouse', label: 'Miete'},
         {key: 'pricelist.rents.oneHouse', label: 'Miete 1H'},
-        {key: 'pricelist.rents.twoHouses', label: 'Miete 1H'},
-        {key: 'pricelist.rents.threeHouses', label: 'Miete 1H'},
-        {key: 'pricelist.rents.fourHouses', label: 'Miete 1H'},
-        {key: 'pricelist.rents.hotel', label: 'Miete 1H'},
+        {key: 'pricelist.rents.twoHouses', label: 'Miete 2H'},
+        {key: 'pricelist.rents.threeHouses', label: 'Miete 3H'},
+        {key: 'pricelist.rents.fourHouses', label: 'Miete 4H'},
+        {key: 'pricelist.rents.hotel', label: 'Miete Hotel'},
       ]
     };
   },

@@ -17,6 +17,8 @@
           b-nav-item(:href="el.href" v-on:click="onClick(el.event)") {{el.title}}
         // Right aligned nav items
         b-navbar-nav.ml-auto
+          //b-nav-item(v-if="helpUrl.length > 0" :href="helpUrl" target="_blank")
+            b-icon-question-circle-fill
           b-nav-item-dropdown(right='' v-if="showUserBox")
             template(#button-content='')
               em Benutzer
@@ -25,6 +27,7 @@
 </template>
 
 <script>
+import {BIconQuestionCircleFill} from 'bootstrap-vue';
 
 export default {
   name      : "menu-bar",
@@ -41,6 +44,13 @@ export default {
       type   : Array,
       default: function () {
         return [];
+      }
+    },
+    helpUrl: {
+      // URL to help, shows (?)
+      type: String,
+      default: function() {
+        return '';
       }
     },
     showUserBox: {
@@ -64,7 +74,7 @@ export default {
       }
     }
   },
-  components: {}
+  components: {BIconQuestionCircleFill}
 }
 </script>
 

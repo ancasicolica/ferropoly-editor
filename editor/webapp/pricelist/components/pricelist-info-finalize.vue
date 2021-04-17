@@ -12,11 +12,9 @@
           li Die Spielparameter werden eingefroren und können nicht mehr verändert werden
           li Die Preisliste ist fix - es können keine Orte hinzugefügt, entfernt oder die Reihenfolge verändert werden
           li Der Timer für den Spielbeginn wird gesetzt, das erste Startgeld wird den dann vorhandenen Gruppen automatisch ausbezahlt
+          li Die Preisliste wird für die Spieler sichtbar
         br
-        | Nach diesem Schritt hat man also das endgültige Spiel - und die Spieler können sich darauf verlassen, dass sie mit den korrekten Daten planen.
-        br
-        |  Alles klar? Dann kontrolliere die Daten und finalisiere das Spiel, bevor Du die Preisliste den Teilnehmern verschickst.
-        br
+        | Nach diesem Schritt hat man also das endgültige Spiel und die Preisliste wird den Spielerinnen und Spieler über den "Link zur Preisliste für Teams" angezeigt.
         br
         b-button(variant="primary" @click="onClickFinalize()") Preisliste finalisieren
         //button.btn.btn-primary.btn-lg(type='submit' class="" data-toggle="modal" ng-disabled='finalizing || data.gameplay.internal.priceListPendingChanges' data-target="#finalizeModal") Preisliste finalisieren

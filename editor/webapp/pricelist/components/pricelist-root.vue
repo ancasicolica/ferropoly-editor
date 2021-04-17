@@ -4,7 +4,8 @@
 <template lang="pug">
   #pricelist
     menu-bar(:elements="menuElements" show-user-box=true @pricelist-clicked="onPricelistClicked"
-      @game-info-clicked="onGameInfoClicked" @pricelist-print="onPrintClicked")
+      @game-info-clicked="onGameInfoClicked" @pricelist-print="onPrintClicked"
+      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/preisliste/")
     div(v-if="panel==='error'")
       h1 Hoppla, da gibt es ein Problem
       | Das Spiel wurde entweder nicht gefunden oder Du hast keine Zugriffsrechte dafür.
