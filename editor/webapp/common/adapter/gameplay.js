@@ -30,7 +30,7 @@ function readMyGames(callback) {
  * @param callback with the error text (if any)
  */
 function deleteGameplay(id, callback) {
-  $.ajax(`/gameplay/${id}`, {method: 'DELETE',dataType: 'json'})
+  $.ajax(`/gameplay/${id}`, {method: 'DELETE', dataType: 'json'})
     .done(function () {
       console.log(`deleted ${id}`)
       callback(null);
@@ -42,4 +42,23 @@ function deleteGameplay(id, callback) {
     })
 }
 
-export {readMyGames, deleteGameplay}
+/**
+ * Deletes a gameplay
+ * @param id is the ID of the gameplay to delete
+ * @param authToken is the token for authentication
+ * @param callback with the error text (if any)
+ */
+function finalizeGameplay(id, authToken, callback) {
+  $.post(`/gameplay/finalize`, {gameId: id, authToken})
+    .done(function () {
+      console.log(`finalized ${id}`)
+      callback(null);
+    })
+    .fail(function (resp) {
+      console.error(`Error while finalizing ${id}`, resp);
+      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
+    })
+}
+
+
+export {readMyGames, deleteGameplay, finalizeGameplay}

@@ -3,7 +3,8 @@
 -->
 <template lang="pug">
   #pricelist-info-finalize
-    ModalFinalizeGame(ref="finalize-confirm")
+    ModalFinalizeGame(ref="finalize-confirm" @finalize-gameplay-confirmed="onFinalizeGameplayConfirmed")
+    modal-error(title="Fehler" ref='finalize-error')
     b-card(title="Sind alle Daten richtig?" v-if="finalizationEnabled()")
       b-card-text
         | Wenn die Preisliste den Vorstellungen entspricht und die Spieldaten alle richtig sind, dann muss das Spiel 'finalisiert' werden, erst dann kann das Spiel gespielt werden. Konkret heisst das folgendes:
@@ -25,11 +26,14 @@
 <script>
 import {get} from "lodash";
 import ModalFinalizeGame from './modal-finalize-game.vue'
+import ModalError from '../../common/components/modal-error.vue'
+import {finalizeGameplay} from '../../common/adapter/gameplay'
+import {getAuthToken} from '../../common/adapter/authToken'
 
 export default {
   name      : "pricelist-info-finalize",
   props     : {
-    gameplay: {
+    gameplay : {
       type   : Object,
       default: function () {
         return {};
@@ -37,9 +41,24 @@ export default {
     }
   },
   data      : function () {
-    return {};
+    return {
+      authToken: '',
+      finalizationSucceeded : false
+    };
   },
   model     : {},
+  /**
+   * Called when control is created
+   */
+  created   : function () {
+    let self = this;
+    getAuthToken((err, token) => {
+      if (err) {
+        console.error('Error reading auth token', err);
+      }
+      self.authToken = token;
+    });
+  },
   methods   : {
     /**
      * Checks if finalization is possible
@@ -48,13 +67,31 @@ export default {
     finalizationEnabled() {
       let finalized = get(this.gameplay, 'internal.finalized', true);
       let isOwner   = get(this.gameplay, 'isOwner', false);
-      return (!finalized && isOwner);
+      return ((!finalized && isOwner) && !this.finalizationSucceeded);
     },
+    /**
+     * Handler when finalized button was clicked
+     */
     onClickFinalize() {
       this.$refs['finalize-confirm'].showModal()
+    },
+    /**
+     * Eventhandler: user wants to finalize
+     */
+    onFinalizeGameplayConfirmed() {
+      console.log('Finalizing Gameplay')
+      finalizeGameplay(get(this.gameplay, 'internal.gameId', 'none'), this.authToken, err => {
+        if (err) {
+          console.error(err);
+          this.$refs['finalize-error'].showError('Fehler', 'Das Spiel konnte nicht finalisiert werden, folgende Meldung wurde gesendet:', err);
+          return;
+        }
+        // Hide box now
+        this.finalizationSucceeded = true;
+      });
     }
   },
-  components: {ModalFinalizeGame}
+  components: {ModalFinalizeGame, ModalError}
 }
 </script>
 

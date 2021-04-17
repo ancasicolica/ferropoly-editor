@@ -20,7 +20,7 @@
 import MenuBar from '../../common/components/menu-bar.vue'
 import Pricelist from './pricelist.vue'
 import PricelistInfo from './pricelist-info.vue'
-import {getAuthToken} from '../../common/adapter/authToken'
+
 import {getPricelist} from '../../common/adapter/pricelist'
 import {get} from 'lodash'
 
@@ -59,12 +59,7 @@ export default {
     let self      = this;
     // There is obviously no other way to pass data via pug
     this.gameInfo = JSON.parse(this.gameInfoString);
-    getAuthToken((err, token) => {
-      if (err) {
-        console.error('Error reading auth token', err);
-      }
-      self.token = token;
-    });
+
     getPricelist(self.gameInfo.gameId, (err, data) => {
       if (err) {
         console.error('Error reading pricelist', err);
