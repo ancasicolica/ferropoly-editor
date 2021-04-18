@@ -7,9 +7,7 @@
 const gameplays = require('../../common/models/gameplayModel');
 const users     = require('../../common/models/userModel');
 const locations = require('../../common/models/locationModel');
-const settings = require('../settings.js')
-const async    = require('async');
-
+const async     = require('async');
 
 module.exports = function (callback) {
   let retVal = {};
@@ -31,7 +29,7 @@ module.exports = function (callback) {
           });
         });
         callback();
-      })
+      });
     },
     function (callback) {
       // Get number of registered users
@@ -41,7 +39,7 @@ module.exports = function (callback) {
         }
         retVal.users = {
           nb: nb
-        }
+        };
         callback();
       });
     },
@@ -51,11 +49,11 @@ module.exports = function (callback) {
         if (err) {
           return callback(err);
         }
-        retVal.locations = info
+        retVal.locations = info;
         callback();
       });
     }
   ], function (err) {
     callback(err, retVal);
   });
-}
+};
