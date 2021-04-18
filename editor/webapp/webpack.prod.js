@@ -3,6 +3,19 @@ const common               = require('./webpack.common.js');
 const path                 = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin    = require('html-webpack-plugin');
+const ferropolyApps        = require('./ferropolyApps.js');
+
+// Build the webpack list
+let plugins = [new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'})];
+ferropolyApps.forEach(app => {
+  plugins.push(new HtmlWebpackPlugin(({
+    chunks    : [`${app.name}`],
+    template  : path.join(__dirname, '..', 'html', app.htmlFile),
+    filename  : path.join(__dirname, '..', 'public', 'html', app.htmlFile),
+    publicPath: '/js/build/',
+    minify    : true
+  })));
+})
 
 module.exports = merge(common, {
   mode   : 'production',
@@ -14,7 +27,7 @@ module.exports = merge(common, {
     //path: path.resolve(__dirname, 'www', 'js')
   },
   stats  : {
-    preset: 'normal',
+    preset  : 'normal',
     children: true
   },
 
@@ -40,14 +53,5 @@ module.exports = merge(common, {
       }
     }
   },
-  plugins     : [
-    new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'}),
-    new HtmlWebpackPlugin({
-      chunks  : ['pricelist'],
-      filename  : path.join(__dirname, '..', 'public', 'html', 'pricelist.html'),
-      publicPath: '/js/build/',
-      template  : path.join(__dirname, '..', 'html', 'pricelist.html'),
-      minify  : true
-    })
-  ]
+  plugins     : plugins
 });

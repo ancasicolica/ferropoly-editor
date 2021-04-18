@@ -33,8 +33,7 @@ export default {
     return {
       gamePlays   : {},
       menuElements: [
-        {title: 'Neues Spiel', href: '/newgame', hide:false},
-        {title: 'test', href: '#', hide:false}
+        {title: 'Neues Spiel', href: '/newgame', hide:false}
       ]
     };
   },

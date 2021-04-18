@@ -1,17 +1,21 @@
-const path                 = require('path');
-const {VueLoaderPlugin}    = require('vue-loader');
+const path              = require('path');
+const {VueLoaderPlugin} = require('vue-loader');
+const ferropolyApps     = require('./ferropolyApps.js');
 
-module.exports             = {
-  entry  : {
-    'game-selector': path.join(__dirname, 'game-selector', 'app.js'),
-    'pricelist'    : path.join(__dirname, 'pricelist', 'app.js')
+module.exports          = {
+  entry        : function () {
+    let retVal = {};
+    ferropolyApps.forEach(app => {
+      retVal[app.name] = app.entry;
+    });
+    return retVal;
   },
-  output : {
+  output       : {
     filename: '[name].js',
     path    : path.resolve(__dirname, '..', 'public', 'js', 'test')
   },
-  mode   : 'development',
-  module : {
+  mode         : 'development',
+  module       : {
     rules: [
       {
         test  : /\.vue$/,
@@ -31,12 +35,12 @@ module.exports             = {
       }
     ]
   },
-  resolve: {
+  resolve      : {
     alias: {
       vue: 'vue/dist/vue.js'
     },
   },
-  plugins: [
+  plugins      : [
     new VueLoaderPlugin()
 
   ]
