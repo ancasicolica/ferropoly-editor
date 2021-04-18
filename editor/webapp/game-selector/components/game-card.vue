@@ -3,7 +3,7 @@
 -->
 <template lang="pug">
   div
-    b-card.game-card
+    b-card(no-body).game-card
       b-card-header.title {{gameName}}
       b-card-body
         b-card-text
@@ -20,6 +20,10 @@
             b-row
               b-col Karte
               b-col {{map}}
+            b-row
+              b-col Spielbereit
+              b-col(v-if="isFinalized") Ja
+              b-col(v-if="!isFinalized" :href="url.viewPricelist") Nein (noch nicht finalisiert)
             b-row
               b-col Löschdatum
               b-col {{deleteDate | formatDate}}
