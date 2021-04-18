@@ -40,4 +40,9 @@ editor/views/rules/*.html
 
 # Bower
 editor/public/modules
+
+# Webpack Files
 /editor/public/js/build/report.html
+/editor/public/html/
+/editor/public/js/test/
+/editor/public/js/build/

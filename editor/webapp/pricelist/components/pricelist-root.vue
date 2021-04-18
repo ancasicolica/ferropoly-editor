@@ -14,7 +14,7 @@
         :game-start="gameplay.scheduling.gameStart" :game-end="gameplay.scheduling.gameEnd",
         :version="gameplay.log.priceListVersion" :created="gameplay.log.priceListCreated")
     div(v-if="panel==='info'")
-      pricelist-info(:gameplay="gameplay" :game-url="getGameUrl()")
+      pricelist-info(:gameplay="gameplay" :game-url="gameUrl")
 </template>
 
 <script>
@@ -23,7 +23,7 @@ import Pricelist from './pricelist.vue'
 import PricelistInfo from './pricelist-info.vue'
 
 import {getPricelist} from '../../common/adapter/pricelist'
-import {get} from 'lodash'
+import {get, split, last} from 'lodash'
 
 export default {
   name      : "pricelist-root",
@@ -44,7 +44,8 @@ export default {
         /* 2 */  {title: 'Spiel', href: '#', event: 'game-info-clicked'},
       ],
       panel       : 'list',
-      gameInfo    : {},
+      gameUrl     : '',
+      gameId      : '',
       pricelist   : [],
       gameplay    : {
         scheduling: {
@@ -57,11 +58,13 @@ export default {
   },
   model     : {},
   created   : function () {
-    let self      = this;
-    // There is obviously no other way to pass data via pug
-    this.gameInfo = JSON.parse(this.gameInfoString);
+    let self = this;
 
-    getPricelist(self.gameInfo.gameId, (err, data) => {
+    // Retrieve GameId for this page
+    const elements = split(window.location.pathname, '/');
+    self.gameId    = last(elements);
+
+    getPricelist(self.gameId, (err, data) => {
       if (err) {
         console.error('Error reading pricelist', err);
         self.panel = 'error';
@@ -69,6 +72,7 @@ export default {
       }
       self.pricelist = data.pricelist;
       self.gameplay  = data.gameplay;
+      self.gameUrl   = data.gameUrl;
     })
   },
   methods   : {
@@ -90,7 +94,6 @@ export default {
      * Show the game info
      */
     onGameInfoClicked: function () {
-      console.log('Info!')
       this.menuElements[1].hide = true;
       this.panel                = 'info';
     },

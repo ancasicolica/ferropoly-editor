@@ -14,19 +14,13 @@ const logger             = require('../../common/lib/logger').getLogger('routes:
 const downloadPricelist  = require('../../common/routes/downloadPricelist');
 const settings           = require('../settings');
 const _                  = require('lodash');
+const path               = require('path');
 
-let appFile = 'pricelist';
-appFile     = settings.minifiedjs ? '/js/' + appFile + '.min.js' : '/js/' + appFile + '.js';
-
-
-/* GET priceslist. */
+/**
+ * Send Pricelist HTML Page
+ */
 router.get('/view/:gameId', function (req, res) {
-  res.render('pricelist', {
-    title       : 'Preisliste',
-    gameId      : req.params.gameId,
-    gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
-    appFile     : appFile
-  });
+  res.sendFile(path.join(__dirname, '..', 'public', 'html', 'pricelist.html'));
 });
 
 router.get('/download/:gameId', downloadPricelist.handler);
@@ -71,7 +65,7 @@ router.get('/get/:gameId', function (req, res) {
         logger.error('getPricelist failed', err);
         return res.status(500).send({message: err.message});
       }
-      return res.send({gameplay: gp, pricelist: list});
+      return res.send({gameplay: gp, pricelist: list, gameUrl: settings.mainInstances[0]});
     });
   });
 });

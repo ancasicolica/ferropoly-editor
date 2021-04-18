@@ -3,7 +3,6 @@ const common               = require('./webpack.common.js');
 const path                 = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin    = require('html-webpack-plugin');
-const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin');
 
 module.exports = merge(common, {
   mode   : 'production',
@@ -42,14 +41,13 @@ module.exports = merge(common, {
     }
   },
   plugins     : [
-    new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'})
+    new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'}),
     new HtmlWebpackPlugin({
-      chunks  : ['game-selector'],
-      filename: 'game.pug',
+      chunks  : ['pricelist'],
+      filename  : path.join(__dirname, '..', 'public', 'html', 'pricelist.html'),
       publicPath: '/js/build/',
-      //template: path.join(__dirname, '..', 'views', 'test.pug'),
+      template  : path.join(__dirname, '..', 'html', 'pricelist.html'),
       minify  : true
-    }),
-    new HtmlWebpackPugPlugin()
+    })
   ]
 });
