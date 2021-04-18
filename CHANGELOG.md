@@ -1,7 +1,9 @@
 # Changelog Ferropoly Editor
 
+# V2.6.1 19.12.2020
 * API für Abfragen aus Webseite und Überwachung #41
 * Demo Games haben ein eigenes Flag (internal.isDemo)
+* Dependency Updates
 
 # V2.6.0 16.4.2020
 * Dependency Updates
