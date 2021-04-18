@@ -2,21 +2,21 @@ const {merge}              = require('webpack-merge');
 const common               = require('./webpack.common.js');
 const path                 = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HtmlWebpackPlugin    = require('html-webpack-plugin');
+const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin');
 
 module.exports = merge(common, {
   mode   : 'production',
   devtool: 'source-map',
-  plugins: [
-    new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'})
-  ],
   output : {
     filename     : '[name].min.js',
     chunkFilename: '[name].bundle.js',
-    path    : path.resolve(__dirname, '..', 'public', 'js', 'build')
+    path         : path.resolve(__dirname, '..', 'public', 'js', 'build')
     //path: path.resolve(__dirname, 'www', 'js')
   },
   stats  : {
-    preset: 'normal'
+    preset: 'normal',
+    children: true
   },
 
   optimization: {
@@ -28,12 +28,7 @@ module.exports = merge(common, {
       maxAsyncRequests      : 1,
       maxInitialRequests    : 1,
       automaticNameDelimiter: '-',
-      name(module, chunks, cacheGroupKey) {
-        const moduleFileName = module.identifier().split('/').reduceRight(item => item);
-        const allChunksNames = chunks.map((item) => item.name).join('~');
-        return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
-      },
-      cacheGroups: {
+      cacheGroups           : {
         vendors: {
           test    : /[\\/]node_modules[\\/]/,
           priority: -10
@@ -45,5 +40,16 @@ module.exports = merge(common, {
         }
       }
     }
-  }
+  },
+  plugins     : [
+    new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'})
+    new HtmlWebpackPlugin({
+      chunks  : ['game-selector'],
+      filename: 'game.pug',
+      publicPath: '/js/build/',
+      //template: path.join(__dirname, '..', 'views', 'test.pug'),
+      minify  : true
+    }),
+    new HtmlWebpackPugPlugin()
+  ]
 });
