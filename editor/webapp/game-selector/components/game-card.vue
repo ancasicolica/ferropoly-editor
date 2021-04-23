@@ -4,49 +4,49 @@
 <template lang="pug">
   div
     b-card(no-body).game-card
-      b-card-header.title {{gameName}}
+      b-card-header.title {{getGpProperty('gamename')}}
       b-card-body
         b-card-text
           b-container(fluid="true")
             b-row
               b-col Spieldatum
-              b-col {{gameDate | formatDate}}
+              b-col {{getGpProperty('scheduling.gameDate') | formatDate}}
             b-row
               b-col Start
-              b-col {{gameStart}}
+              b-col {{getGpProperty('scheduling.gameStart')}}
             b-row
               b-col Ende
-              b-col {{gameEnd}}
+              b-col {{getGpProperty('scheduling.gameEnd')}}
             b-row
               b-col Karte
-              b-col {{map}}
+              b-col {{getGpProperty('internal.map')}}
             b-row
               b-col Spielbereit
-              b-col(v-if="isFinalized") Ja
-              b-col(v-if="!isFinalized" :href="url.viewPricelist") Nein (noch nicht finalisiert)
+              b-col(v-if="getGpProperty('internal.finalized')") Ja
+              b-col(v-if="!getGpProperty('internal.finalized')" :href="url.viewPricelist") Nein (noch nicht finalisiert)
             b-row
               b-col Löschdatum
-              b-col {{deleteDate | formatDate}}
+              b-col {{getGpProperty('scheduling.deleteTs') | formatDate}}
             b-row
-              b-col.id Id: {{gameId}}
+              b-col.id Id: {{getGpProperty('internal.gameId')}}
             b-row
               b-col
-                b-button.btn-gameplay(size="sm" v-if="!isFinalized && isOwner" :href="url.edit") Bearbeiten &nbsp;
+                b-button.btn-gameplay(size="sm" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
                   b-icon-pencil
 
-                b-button.btn-gameplay(size="sm" v-if="hasPrizelist" :href="url.viewPricelist") Preisliste &nbsp;
+                b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
                   b-icon-eye
 
-                b-button.btn-gameplay(size="sm" v-if="isFinalized") Spielregeln &nbsp;
+                b-button.btn-gameplay(size="sm" v-if="getGpProperty('internal.finalized')") Spielregeln &nbsp;
                   b-icon-pencil
 
-                b-button.btn-gameplay(size="sm" v-if="hasPrizelist && isOwner" :href="url.editPlayer") Spieler &nbsp;
+                b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editPlayer") Spieler &nbsp;
                   b-icon-people
 
-                b-button.btn-gameplay(size="sm" v-if="hasPrizelist && isOwner" :href="url.editAdmins") Spielleiter
+                b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter
                   b-icon-person
 
-                b-button.btn-gameplay(size="sm" v-if="isOwner && !isDemo" v-on:click="deleteGameplay") Löschen
+                b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')" v-on:click="deleteGameplay") Löschen
                   b-icon-trash
 
 
@@ -54,21 +54,18 @@
 
 <script>
 import {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil} from 'bootstrap-vue';
+import {get} from "lodash";
 
 export default {
   name      : "game-card",
   props     : {
-    gameName    : String,
-    gameId      : String,
-    gameDate    : Date,
-    gameStart   : String,
-    gameEnd     : String,
-    deleteDate  : Date,
-    map         : String,
-    isFinalized : Boolean,
-    isOwner     : Boolean,
-    hasPrizelist: Boolean,
-    isDemo      : Boolean
+    gameplay: {
+      type   : Object,
+      default: function () {
+        return {};
+      }
+    }
+
   },
   data      : function () {
     return {
@@ -86,10 +83,17 @@ export default {
     /**
      * Gameplay shall be deleted: raise an event
      */
-    deleteGameplay: function() {
+    deleteGameplay: function () {
       console.log('deleting');
       this.$emit('delete-gameplay', this.gameId);
-    }
+    },
+    /**
+     * Get the property of the gameplay object
+     * @param id
+     */
+    getGpProperty(id) {
+      return get(this.gameplay, id, '');
+    },
   },
   components: {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil}
 }
