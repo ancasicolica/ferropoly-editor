@@ -2,23 +2,14 @@
  * User Account Info
  * Created by kc on 29.12.15.
  */
-
-const express  = require('express');
-const router   = express.Router();
-const settings = require('../settings');
-
-let ngFile = 'accountctrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
-
+const express = require('express');
+const router  = express.Router();
+const path    = require('path');
+/**
+ * Send Account Homepage
+ */
 router.get('/', function (req, res) {
-  res.render('account', {
-    title       : 'Mein Account',
-    hideLogout  : false,
-    ngFile      : ngFile,
-    ngApp       : 'accountApp',
-    ngController: 'accountCtrl'
-  });
+  res.sendFile(path.join(__dirname, '..', 'public', 'html', 'account.html'));
 });
-
 
 module.exports = router;
