@@ -222,7 +222,7 @@ function getUser(id, callback) {
     }
     callback(null, docs[0]);
   });
-};
+}
 
 /**
  * Returns a user by its facebook profile
@@ -454,7 +454,26 @@ function findOrCreateGoogleUser(profile, callback) {
     }
     if (!user) {
       // The user is not here, try to find him with the email-address
-      let emailAddress = _.isArray(profile.emails) ? profile.emails[0].value : undefined;
+      let emailAddress = '';
+      if (_.isArray(profile.emails)) {
+        emailAddress = profile.emails[0].value;
+      } else if (_.isString(profile.email)) {
+        emailAddress = profile.email;
+      } else {
+        emailAddress = 'error';
+        logger.error('unable to set google email address', profile);
+      }
+      // Avatar: different options
+      let avatar = '';
+      if (_.isArray(profile.photos)) {
+        avatar = profile.photos[0].value;
+      } else if (_.isString(profile.picture)) {
+        avatar = profile.picture;
+      } else {
+        avatar = undefined;
+        logger.info('unable to set google avatar', profile);
+      }
+      logger.info(`Google login with email Address ${emailAddress}`, profile);
 
       function saveNewGoogleUser() {
         let newUser                   = new User();
@@ -465,8 +484,8 @@ function findOrCreateGoogleUser(profile, callback) {
         newUser.login.verifiedEmail   = true; // Google does not need verification
         newUser.personalData.forename = profile.name.givenName;
         newUser.personalData.surname  = profile.name.familyName;
-        newUser.personalData.email    = emailAddress ? emailAddress : profile.id; // using google profile id as email alternative
-        newUser.personalData.avatar   = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
+        newUser.personalData.email    = emailAddress;
+        newUser.personalData.avatar   = avatar;
         newUser.save(function (err, savedUser) {
           if (err) {
             return callback(err);
@@ -490,7 +509,7 @@ function findOrCreateGoogleUser(profile, callback) {
             user.personalData.forename = profile.name.givenName;
             user.personalData.surname  = profile.name.familyName;
             user.login.googleProfileId = profile.id;
-            user.personalData.avatar   = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
+            user.personalData.avatar   = avatar;
             user.save(function (err) {
               if (err) {
                 return callback(err);
