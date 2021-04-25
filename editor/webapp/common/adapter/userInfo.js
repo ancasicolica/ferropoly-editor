@@ -34,7 +34,7 @@ function getUserInfo(callback) {
         },
         facebook    : {
           email : get(info, 'info.facebook.emails[0].value', ''),
-          avatar: get(info, 'info.facebook.photos[0]', ''),
+          avatar: get(info, 'info.facebook.photos[0].value', ''),
           id    : get(info, 'info.facebook.id', ''),
           raw   : get(info, 'info.facebook', {})
         }
