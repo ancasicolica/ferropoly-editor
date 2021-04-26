@@ -19,7 +19,7 @@
               b-col {{getGpProperty('scheduling.gameEnd')}}
             b-row
               b-col Karte
-              b-col {{getGpProperty('internal.map')}}
+              b-col {{getMapName()}}
             b-row
               b-col Spielbereit
               b-col(v-if="getGpProperty('internal.finalized')") Ja
@@ -55,6 +55,7 @@
 <script>
 import {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil} from 'bootstrap-vue';
 import {get} from "lodash";
+import {getMapName} from '../../common/lib/mapTypes'
 
 export default {
   name      : "game-card",
@@ -70,11 +71,11 @@ export default {
   data      : function () {
     return {
       url: {
-        edit         : `/gameplay/edit/${this.gameId}`,
-        viewPricelist: `/pricelist/view/${this.gameId}`,
-        rules        : `/rules/${this.gameId}`,
-        editPlayer   : `/player/edit/${this.gameId}`,
-        editAdmins   : `/admin/edit/${this.gameId}`
+        edit         : `/gameplay/edit/${this.gameplay.internal.gameId}`,
+        viewPricelist: `/pricelist/view/${this.gameplay.internal.gameId}`,
+        rules        : `/rules/${this.gameplay.internal.gameId}`,
+        editPlayer   : `/player/edit/${this.gameplay.internal.gameId}`,
+        editAdmins   : `/admin/edit/${this.gameplay.internal.gameId}`
       }
     };
   },
@@ -94,6 +95,14 @@ export default {
     getGpProperty(id) {
       return get(this.gameplay, id, '');
     },
+    /**
+     * Returns the name of the map
+     * @returns {string|string}
+     */
+    getMapName() {
+      console.log('getMapName', this.getGpProperty('internal.map'), getMapName(this.getGpProperty('internal.map')));
+      return getMapName(this.getGpProperty('internal.map'));
+    }
   },
   components: {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil}
 }

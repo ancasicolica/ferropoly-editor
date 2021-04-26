@@ -1,5 +1,6 @@
 /**
- * Web app for login
+ * Web app for a new game
+ * 26.4.2021 KC
  */
 import Vue from 'vue'
 import {BootstrapVue} from 'bootstrap-vue'
@@ -11,12 +12,11 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Import components
-import Login from '../common/components/login.vue'
+import NewGameRoot from './components/new-game-root.vue'
 
 Vue.use(VueRouter)
 
-Vue.component('login', Login);
-
+Vue.component('new-game-root', NewGameRoot);
 
 console.log('Webapp initializing');
 
@@ -25,25 +25,18 @@ import '../common/style/app.scss'
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)
 
-
 /**
- * Startpoint of the meteo view
+ * Startpoint of the app
  */
 $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
-    el     : '#login-app',
+    el     : '#new-game-app',
     created: function () {
       console.log('created');
     },
     data   : {
-      user   : {
-        name: ''
-      },
-      images : {
-        background: ''
-      },
-      methods: {}
+
     }
   })
 })

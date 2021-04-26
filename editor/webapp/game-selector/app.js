@@ -28,6 +28,8 @@ const router = new VueRouter({
 
 console.log('Webapp initializing');
 
+// Ferropoly Style!
+import '../common/style/app.scss'
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)
 
