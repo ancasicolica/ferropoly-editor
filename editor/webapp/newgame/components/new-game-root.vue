@@ -32,7 +32,7 @@ export default {
   props     : {},
   data      : function () {
     return {
-      currentView     : 'pricelist',
+      currentView     : 'map',
       gameSettings    : {
         name      : 'Ferropoly Spiel',
         map       : getDefaultMap(),
