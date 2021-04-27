@@ -60,5 +60,20 @@ function finalizeGameplay(id, authToken, callback) {
     })
 }
 
+/**
+ * Returns a bunch of proposed Game IDs
+ * @param callback
+ */
+function getProposedGameIds(callback) {
+  $.post(`/gameplay/checkid`, {gameId: ''})
+    .done(function (resp) {
+      console.log('got GameIds', resp);
+      callback(null, resp.ids);
+    })
+    .fail(function (resp) {
+      console.error(`Error while getting GameIds`, resp);
+      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
+    })
+}
 
-export {readMyGames, deleteGameplay, finalizeGameplay}
+export {readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds}

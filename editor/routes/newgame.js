@@ -4,14 +4,11 @@
  */
 const express  = require('express');
 const router   = express.Router();
-const settings = require('../settings');
-
-var ngFile = 'newgamectrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+const path     = require('path');
 
 /* GET page for new gameplay */
 router.get('/', function (req, res) {
-  res.render('newgame/newgame', {title: 'Neues Spiel', ngController: 'newgameCtrl', ngApp: 'newgameApp', ngFile: ngFile});
+  res.sendFile(path.join(__dirname, '..', 'public', 'html', 'newgame.html'));
 });
 
 /**

@@ -35,7 +35,6 @@ function getMapName(id) {
   if (!info) {
     return 'unbekannt !';
   }
-  console.log('gMN', id, info);
   return info.name;
 }
 

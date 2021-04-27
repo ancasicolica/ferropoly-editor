@@ -86,7 +86,7 @@ export default {
      */
     deleteGameplay: function () {
       console.log('deleting');
-      this.$emit('delete-gameplay', this.gameId);
+      this.$emit('delete-gameplay', get(this.gameplay, 'internal.gameId', 'none'));
     },
     /**
      * Get the property of the gameplay object
