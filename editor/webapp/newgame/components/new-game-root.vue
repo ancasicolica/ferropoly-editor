@@ -36,7 +36,7 @@ export default {
       gameSettings    : {
         name      : 'Ferropoly Spiel',
         map       : getDefaultMap(),
-        date      : DateTime.now().plus({days: 7}).toJSDate(),
+        date      : DateTime.now().plus({days: 7}).toISODate(),
         presets   : 'moderate',
         random    : 0,
         selectedId: ''
