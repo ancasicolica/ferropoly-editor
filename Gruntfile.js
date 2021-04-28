@@ -26,17 +26,12 @@ module.exports = function (grunt) {
     uglify: {
       js     : {
         files: {
-          './editor/public/js/min/accountctrl.min.js'     : ['./editor/public/js/src/accountctrl.js'],
           './editor/public/js/min/adminsctrl.min.js'      : ['./editor/public/js/src/adminsctrl.js'],
           './editor/public/js/min/editctrl.min.js'        : ['./editor/public/js/src/editctrl.js'],
-          './editor/public/js/min/newgamectrl.min.js'     : ['./editor/public/js/src/newgamectrl.js'],
           './editor/public/js/min/playerctrl.min.js'      : ['./editor/public/js/src/playerctrl.js'],
-          './editor/public/js/min/pricelistctrl.min.js'   : ['./editor/public/js/src/pricelistctrl.js'],
           './editor/public/js/min/property.min.js'        : ['./editor/public/js/src/property.js'],
           './editor/public/js/min/rulesctrl.min.js'       : ['./editor/public/js/src/rulesctrl.js'],
-          './editor/public/js/min/signupverifyctrl.min.js': ['./editor/public/js/src/signupverifyctrl.js'],
-          './editor/public/js/min/analytics.min.js'       : ['./editor/public/js/src/analytics.js'],
-          './editor/public/js/min/loginctrl.min.js'       : ['./editor/public/js/src/loginctrl.js']
+          './editor/public/js/min/analytics.min.js'       : ['./editor/public/js/src/analytics.js']
         }
       },
       options: {
