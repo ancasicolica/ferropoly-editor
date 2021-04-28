@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   div
-    b-modal#agb(ref="modal-error" :title="title" header-bg-variant="danger" hide-header-close=true ok-only=true)
+    b-modal#agb(header-class="errorHeader" ref="modal-error" :title="title" header-bg-variant="danger" hide-header-close=true ok-only=true)
       .modal-body
       p {{info}}
       p {{message}}
@@ -17,8 +17,8 @@ export default {
   props     : [],
   data      : function () {
     return {
-      title       : '',
-      info        : '',
+      title  : '',
+      info   : '',
       message: ''
     };
   },
@@ -42,5 +42,7 @@ export default {
 </script>
 
 <style scoped>
-
+/deep/ .errorHeader {
+  color: white;
+}
 </style>

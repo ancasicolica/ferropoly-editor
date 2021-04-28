@@ -67,13 +67,55 @@ function finalizeGameplay(id, authToken, callback) {
 function getProposedGameIds(callback) {
   $.post(`/gameplay/checkid`, {gameId: ''})
     .done(function (resp) {
-      console.log('got GameIds', resp);
       callback(null, resp.ids);
     })
     .fail(function (resp) {
-      console.error(`Error while getting GameIds`, resp);
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
     })
 }
 
-export {readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds}
+/**
+ * Checks if the game ID already exists or not
+ * @param gameId
+ * @param callback
+ */
+function checkId(gameId, callback) {
+  $.post(`/gameplay/checkid`, {gameId})
+    .done(function (resp) {
+      console.log('checked ID', resp);
+      callback(null, resp.valid);
+    })
+    .fail(function (resp) {
+      console.error(`Error while validating`, resp);
+      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
+    })
+}
+
+/**
+ * Creates a new game
+ * @param settings
+ * @param authToken
+ * @param callback
+ */
+function createGame(settings, authToken, callback) {
+  $.post(`/gameplay/createnew`,
+    {
+      gamename: settings.name,
+      map: settings.map,
+      gamedate: settings.date,
+      random: settings.random,
+      presets: settings.presets,
+      gameId: settings.selectedId,
+      authToken
+    })
+    .done(function (resp) {
+      console.log('createdGame', resp);
+      callback(null, resp.gameId);
+    })
+    .fail(function (resp) {
+      console.error(`Error while creating`, resp);
+      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
+    })
+}
+
+export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId}

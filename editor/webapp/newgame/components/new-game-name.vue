@@ -3,8 +3,10 @@
 -->
 <template lang="pug">
   #new-game-name
+    modal-error(title="Fehler" ref='name-error')
     p Du hast es beinahe geschafft!
-    p Nun brauchen wir noch eine Spiel-ID, welche das Spiel identifiziert. Du kannst nun aus ein paar Vorschlägen eine Spiel-ID auswählen oder selbst eine erstellen:
+    p Nun brauchen wir noch eine Spiel-ID, welche das Spiel identifiziert. Du kannst nun aus ein paar Vorschlägen eine Spiel-ID auswählen oder selbst eine erstellen.
+      | &nbsp; Tipp: '-' wird bei Verwendung eines Grossbuchstabens automatisch eingefügt.
     b-form-input(v-model="settings.selectedId" maxlength="60" aria-describedby="name-input-live-feedback"
       :state="idState" :formatter="idFormatter"
       ref="input-id")
@@ -15,13 +17,14 @@
     b-row
       b-col
         b-button.mt-2(@click="onBack()") Zurück
-        b-button.mt-2.ml-2(variant="primary" @click="onCreateGame()" :disabled="!validationState") ID prüfen und Spiel anlegen
+        b-button.mt-2.ml-2(variant="primary" @click="onCreateGame()" :disabled="!validationState || gameCreationActive") ID prüfen und Spiel anlegen
 </template>
 
 <script>
 import {getAuthToken} from '../../common/adapter/authToken'
-import {getProposedGameIds} from "../../common/adapter/gameplay";
+import {checkId, createGame, getProposedGameIds} from "../../common/adapter/gameplay";
 import {kebabCase} from "lodash";
+import ModalError from '../../common/components/modal-error.vue';
 
 export default {
   name : "new-game-name",
@@ -31,8 +34,9 @@ export default {
   },
   data : function () {
     return {
-      authToken  : '',
-      proposedIds: []
+      authToken         : '',
+      proposedIds       : [],
+      gameCreationActive: false
     };
   },
   model: {},
@@ -44,7 +48,8 @@ export default {
     // Get Authtoken
     getAuthToken((err, token) => {
       if (err) {
-        console.error(err);
+        console.error('authToken', err);
+        this.$refs['name-error'].showError('Fehler', 'Authentisierungsfehler, bitte logge dich erneut ein und versuche es erneut');
         return;
       }
       self.authToken = token;
@@ -52,10 +57,17 @@ export default {
     // Get proposed GAME IDs
     getProposedGameIds((err, ids) => {
       if (err) {
-        return;
+        console.error('getProposedGameIds failed', err);
+        ids = ['you-aint-see-mee-right', 'somebody-elses-problem'];
       }
-      self.settings.selectedId = ids.shift();
+      self.settings.selectedId = kebabCase(self.settings.name);
       self.proposedIds         = ids;
+      // Check the ID: valid one? Otherwise use proposed
+      checkId(self.settings.selectedId, (err, valid) => {
+        if (!valid) {
+          self.settings.selectedId = self.proposedIds[0];
+        }
+      })
     });
   },
   computed  : {
@@ -69,11 +81,36 @@ export default {
     }
   },
   methods   : {
-    onBack      : function () {
+    onBack: function () {
       this.$emit('change-view', 'pricelist')
     },
+    /**
+     * Create the game: check ID and create it then
+     */
     onCreateGame: function () {
-      // ToDo: Create the game now
+      let self                = this;
+      self.gameCreationActive = true;
+      checkId(self.settings.selectedId, (err, valid) => {
+        if (err) {
+          this.$refs['name-error'].showError('Fehler', 'Das Spiel konnte nicht angelegt werden, folgende Meldung wurde gesendet:', err);
+          self.gameCreationActive = false;
+          return;
+        }
+        if (!valid) {
+          this.$refs['name-error'].showError('Fehler', 'Es existiert bereits ein Spiel mit diesem Namen, bitte wähle einen anderen.');
+          self.gameCreationActive = false;
+          return;
+        }
+        createGame(self.settings, self.authToken, (err, id) => {
+          if (err) {
+            this.$refs['name-error'].showError('Fehler', 'Das Spiel konnte nicht angelegt werden.', err);
+            self.gameCreationActive = false;
+            return;
+          }
+          // immediately move to the edit page
+          window.location.assign(`/gameplay/edit/${id}`);
+        })
+      })
     },
     /**
      * ID Button clicked, set the ID as new one
@@ -92,11 +129,10 @@ export default {
       return kebabCase(text);
     }
   },
-  components: {},
+  components: {ModalError},
   filters   : {}
 }
 </script>
 
 <style scoped>
-
 </style>
