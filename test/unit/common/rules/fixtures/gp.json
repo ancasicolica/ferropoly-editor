@@ -1,0 +1,24 @@
+{
+  "_id": "observant-stamp", "owner": {"organisatorEmail": "demo@ferropoly.ch", "organisatorName": "Heinz Muster"},
+  "admins": {"logins": []}, "scheduling": {
+  "gameDate": {"$date": "2021-04-27T00:00:00.000Z"}, "gameStart": "05:00", "gameEnd": "18:00",
+  "deleteTs": {"$date": "2021-05-27T21:59:00.000Z"}
+}, "gameParams": {
+  "properties": {"lowestPrice": 1000, "highestPrice": 4000, "numberOfPriceLevels": 7, "numberOfPropertiesPerGroup": 2},
+  "rentFactors": {
+    "noHouse": 0.2, "oneHouse": 0.8, "twoHouses": 2.5, "threeHouses": 3.5, "fourHouses": 4, "hotel": 5,
+    "allPropertiesOfGroup": 2
+  }, "chancellery": {
+    "minLottery": 1000, "maxLottery": 5000, "minGambling": 1000, "maxGambling": 50000, "maxJackpotSize": 500000,
+    "probabilityWin": 0.45, "probabilityLoose": 0.45
+  }, "presets": "moderate", "interestInterval": 60, "interest": 4000, "interestCyclesAtEndOfGame": 2,
+  "startCapital": 4000, "debtInterest": 20, "housePrices": 0.5
+}, "mobile": {"level": 5}, "internal": {
+  "finalized": false, "priceListPendingChanges": false, "map": "zvv", "owner": "demo@ferropoly.ch",
+  "gameId": "observant-stamp", "creatingInstance": "editor-app.ferropoly.ch-v2.5.1"
+}, "joining": {"possibleUntil": {"$date": "2021-04-22T18:00:00.000Z"}}, "rules": {"version": -1, "changelog": []},
+  "log": {
+    "priceListVersion": 1, "created": {"$date": "2021-04-17T16:00:35.259Z"},
+    "lastEdited": {"$date": "2021-04-17T16:00:35.259Z"}, "priceListCreated": {"$date": "2021-04-17T16:00:51.340Z"}
+  }, "gamename": "Ferropoly Spiel", "__v": 0
+}
