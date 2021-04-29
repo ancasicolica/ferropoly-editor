@@ -16,7 +16,7 @@
         br
         | Nach diesem Schritt hat man also das endgültige Spiel und die Preisliste wird den Spielerinnen und Spieler über den "Link zur Preisliste für Teams" angezeigt.
         br
-        b-button(variant="primary" @click="onClickFinalize()") Preisliste finalisieren
+        b-button(variant="primary" @click="onClickFinalize()" :disabled="finalizing") Preisliste finalisieren
         //button.btn.btn-primary.btn-lg(type='submit' class="" data-toggle="modal" ng-disabled='finalizing || data.gameplay.internal.priceListPendingChanges' data-target="#finalizeModal") Preisliste finalisieren
 
 </template>
@@ -29,22 +29,23 @@ import {finalizeGameplay} from '../../common/adapter/gameplay'
 import {getAuthToken} from '../../common/adapter/authToken'
 
 export default {
-  name      : "pricelist-info-finalize",
-  props     : {
-    gameplay : {
+  name : "pricelist-info-finalize",
+  props: {
+    gameplay: {
       type   : Object,
       default: function () {
         return {};
       }
     }
   },
-  data      : function () {
+  data : function () {
     return {
-      authToken: '',
-      finalizationSucceeded : false
+      authToken            : '',
+      finalizationSucceeded: false,
+      finalizing           : false
     };
   },
-  model     : {},
+  model: {},
   /**
    * Called when control is created
    */
@@ -77,11 +78,13 @@ export default {
      * Eventhandler: user wants to finalize
      */
     onFinalizeGameplayConfirmed() {
-      console.log('Finalizing Gameplay')
+      console.log('Finalizing Gameplay');
+      this.finalizing = true;
       finalizeGameplay(get(this.gameplay, 'internal.gameId', 'none'), this.authToken, err => {
         if (err) {
           console.error(err);
           this.$refs['finalize-error'].showError('Fehler', 'Das Spiel konnte nicht finalisiert werden, folgende Meldung wurde gesendet:', err);
+          this.finalizing = false;
           return;
         }
         // Hide box now
