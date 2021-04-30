@@ -28,7 +28,7 @@
 
 <script>
 import {get} from 'lodash'
-import {formatDateTime} from '../../common/formatters'
+import {formatDateTime} from '../../common/lib/formatters'
 export default {
   name      : "account-general",
   props     : {info: Object, default: {}},

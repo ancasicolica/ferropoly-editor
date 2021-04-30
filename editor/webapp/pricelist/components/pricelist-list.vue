@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import {formatPrice} from '../../common/formatters';
+import {formatPrice} from '../../common/lib/formatters';
 
 export default {
   name      : "pricelist-list",

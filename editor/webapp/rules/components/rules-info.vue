@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {formatDateTime} from "../../common/formatters";
+import {formatDateTime} from "../../common/lib/formatters";
 
 export default {
   name      : "rules-info",

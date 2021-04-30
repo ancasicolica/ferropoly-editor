@@ -19,7 +19,7 @@
 
 <script>
 import PricelistList from './pricelist-list.vue'
-import {formatGameDate, formatDateTime} from "../../common/formatters";
+import {formatGameDate, formatDateTime} from "../../common/lib/formatters";
 
 export default {
   name      : "pricelist",

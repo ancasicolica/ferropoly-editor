@@ -34,7 +34,7 @@
 <script>
 import {get} from 'lodash'
 import {BIconDownload} from 'bootstrap-vue';
-import {formatGameDate} from '../../common/formatters'
+import {formatGameDate} from '../../common/lib/formatters'
 
 export default {
   name      : "pricelist-info-general",
