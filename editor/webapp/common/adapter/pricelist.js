@@ -17,7 +17,7 @@ function getPricelist(gameId, callback) {
     .fail(function (err) {
       console.error(err);
       callback(err);
-    })
+    });
 }
 
-export {getPricelist}
+export {getPricelist};

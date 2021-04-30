@@ -18,7 +18,7 @@ function getRules(gameId, callback) {
     })
     .fail(function (resp) {
       callback(`Fehler: der Server meldet Status ${resp.status}`, false);
-    })
+    });
 }
 
 /**
@@ -41,8 +41,8 @@ function saveRules(gameId, authToken, changes, text, callback) {
     })
     .fail(function (resp) {
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
-    })
+    });
 }
 
-export {getRules, saveRules}
+export {getRules, saveRules};
 

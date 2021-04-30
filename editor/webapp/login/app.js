@@ -1,19 +1,19 @@
 /**
  * Web app for login
  */
-import Vue from 'vue'
-import {BootstrapVue} from 'bootstrap-vue'
+import Vue from 'vue';
+import {BootstrapVue} from 'bootstrap-vue';
 import $ from 'jquery';
-import VueRouter from 'vue-router'
+import VueRouter from 'vue-router';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 // Import components
-import Login from '../common/components/login/login.vue'
+import Login from '../common/components/login/login.vue';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 Vue.component('login', Login);
 
@@ -21,9 +21,9 @@ Vue.component('login', Login);
 console.log('Webapp initializing');
 
 // Ferropoly Style!
-import '../common/style/app.scss'
+import '../common/style/app.scss';
 // Make BootstrapVue available throughout your project
-Vue.use(BootstrapVue)
+Vue.use(BootstrapVue);
 
 
 /**
@@ -45,5 +45,5 @@ $(document).ready(function () {
       },
       methods: {}
     }
-  })
-})
+  });
+});

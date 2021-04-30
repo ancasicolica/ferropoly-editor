@@ -14,7 +14,7 @@ ferropolyApps.forEach(app => {
     publicPath: '/js/test/',
     minify    : false
   })));
-})
+});
 
 module.exports = merge(common, {
   mode     : 'development',

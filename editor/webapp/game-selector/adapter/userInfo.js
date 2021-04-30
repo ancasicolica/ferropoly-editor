@@ -22,4 +22,4 @@ function readUserInfo(callback) {
     });
 }
 
-export {readUserInfo}
+export {readUserInfo};

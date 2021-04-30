@@ -2,8 +2,8 @@
  * Map types of the Ferropoly
  */
 
-import mapData from '../../../../common/lib/maps.json'
-import {find} from 'lodash'
+import mapData from '../../../../common/lib/maps.json';
+import {find} from 'lodash';
 
 /**
  * Return all map types
@@ -46,4 +46,4 @@ function getDefaultMap() {
   return 'zvv';
 }
 
-export {getDefaultMap, getMapTypes, getMapTypesForUi, getMapName}
+export {getDefaultMap, getMapTypes, getMapTypesForUi, getMapName};

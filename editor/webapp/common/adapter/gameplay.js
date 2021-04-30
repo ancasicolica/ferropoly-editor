@@ -15,13 +15,13 @@ function readMyGames(callback) {
       resp.gameplays.forEach(gp => {
         gp.scheduling.deleteTs = DateTime.fromISO(gp.scheduling.deleteTs).toJSDate();
         gp.scheduling.gameDate = DateTime.fromISO(gp.scheduling.gameDate).toJSDate();
-      })
+      });
       callback(null, resp.gameplays);
     })
     .fail(function (err) {
       console.error(err);
       callback(err);
-    })
+    });
 }
 
 /**
@@ -32,14 +32,14 @@ function readMyGames(callback) {
 function deleteGameplay(id, callback) {
   $.ajax(`/gameplay/${id}`, {method: 'DELETE', dataType: 'json'})
     .done(function () {
-      console.log(`deleted ${id}`)
+      console.log(`deleted ${id}`);
       callback(null);
     })
     .fail(function (resp) {
       let message = resp.responseJSON.message;
       console.error(`Error while deleting ${id}`, resp);
       callback(message);
-    })
+    });
 }
 
 /**
@@ -49,15 +49,15 @@ function deleteGameplay(id, callback) {
  * @param callback with the error text (if any)
  */
 function finalizeGameplay(id, authToken, callback) {
-  $.post(`/gameplay/finalize`, {gameId: id, authToken})
+  $.post('/gameplay/finalize', {gameId: id, authToken})
     .done(function () {
-      console.log(`finalized ${id}`)
+      console.log(`finalized ${id}`);
       callback(null);
     })
     .fail(function (resp) {
       console.error(`Error while finalizing ${id}`, resp);
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
-    })
+    });
 }
 
 /**
@@ -65,13 +65,13 @@ function finalizeGameplay(id, authToken, callback) {
  * @param callback
  */
 function getProposedGameIds(callback) {
-  $.post(`/gameplay/checkid`, {gameId: ''})
+  $.post('/gameplay/checkid', {gameId: ''})
     .done(function (resp) {
       callback(null, resp.ids);
     })
     .fail(function (resp) {
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
-    })
+    });
 }
 
 /**
@@ -80,15 +80,15 @@ function getProposedGameIds(callback) {
  * @param callback
  */
 function checkId(gameId, callback) {
-  $.post(`/gameplay/checkid`, {gameId})
+  $.post('/gameplay/checkid', {gameId})
     .done(function (resp) {
       console.log('checked ID', resp);
       callback(null, resp.valid);
     })
     .fail(function (resp) {
-      console.error(`Error while validating`, resp);
+      console.error('Error while validating', resp);
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
-    })
+    });
 }
 
 /**
@@ -98,7 +98,7 @@ function checkId(gameId, callback) {
  * @param callback
  */
 function createGame(settings, authToken, callback) {
-  $.post(`/gameplay/createnew`,
+  $.post('/gameplay/createnew',
     {
       gamename: settings.name,
       map: settings.map,
@@ -113,9 +113,9 @@ function createGame(settings, authToken, callback) {
       callback(null, resp.gameId);
     })
     .fail(function (resp) {
-      console.error(`Error while creating`, resp);
+      console.error('Error while creating', resp);
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
-    })
+    });
 }
 
-export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId}
+export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId};

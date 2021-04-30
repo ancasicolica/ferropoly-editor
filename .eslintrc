@@ -78,3 +78,6 @@ rules:
   eol-last: 0
   no-trailing-spaces: 0
   indent: 0
+
+parserOptions:
+  sourceType: module

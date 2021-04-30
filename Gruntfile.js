@@ -67,7 +67,8 @@ module.exports = function (grunt) {
         'server.js',
         'editor/app.js',
         'editor/lib/**/*.js',
-        'editor/routes/**/*.js'
+        'editor/routes/**/*.js',
+        'editor/webapp/**/*.js'
       ],
       options: {
         config: './.eslintrc'

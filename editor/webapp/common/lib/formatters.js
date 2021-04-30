@@ -1,5 +1,5 @@
-import {DateTime} from "luxon";
-import {isNumber} from "lodash";
+import {DateTime} from 'luxon';
+import {isNumber} from 'lodash';
 
 
 /**
@@ -44,4 +44,4 @@ function formatPrice(val) {
   return val;
 }
 
-export {formatGameDate, formatDateTime, formatPrice}
+export {formatGameDate, formatDateTime, formatPrice};

@@ -15,7 +15,7 @@ function getAuthToken(callback) {
     })
     .fail(function (err) {
       callback(err);
-    })
+    });
 }
 
-export {getAuthToken}
+export {getAuthToken};

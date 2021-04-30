@@ -4,7 +4,7 @@ const path                  = require('path');
 const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const ferropolyApps         = require('./ferropolyApps.js');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 // Build the webpack list
 let plugins = [
@@ -19,7 +19,7 @@ ferropolyApps.forEach(app => {
     publicPath: '/build/',
     minify    : true
   })));
-})
+});
 
 module.exports = merge(common, {
   mode   : 'production',

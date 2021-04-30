@@ -1,39 +1,47 @@
 /**
  * Web app for the main page, where games are selected
  */
-import Vue from 'vue'
-import {BootstrapVue} from 'bootstrap-vue'
+import Vue from 'vue';
+import {BootstrapVue} from 'bootstrap-vue';
 import $ from 'jquery';
-import VueRouter from 'vue-router'
+import VueRouter from 'vue-router';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 import {DateTime} from 'luxon';
 
 // Import components
-import ModalAgb from './components/modal-agb.vue'
+import ModalAgb from './components/modal-agb.vue';
 import GameSelector from './components/game-selector.vue';
-Vue.use(VueRouter)
+
+Vue.use(VueRouter);
 
 Vue.component('game-selector', GameSelector);
 
 // This is for redirection when declining the AGB
 const routes = [
-  { path: '/login', component: ModalAgb, name:'home', beforeEnter() {location.href = '/login'}},
-]
+  {
+    path     : '/login',
+    component: ModalAgb,
+    name     : 'home',
+    beforeEnter() {
+      location.href = '/login';
+    }
+  },
+];
 const router = new VueRouter({
   routes // short for `routes: routes`
-})
+});
 
 console.log('Webapp initializing');
 
 // Ferropoly Style!
-import '../common/style/app.scss'
+import '../common/style/app.scss';
 // Make BootstrapVue available throughout your project
-Vue.use(BootstrapVue)
+Vue.use(BootstrapVue);
 
-Vue.filter('formatDate', function(value) {
+Vue.filter('formatDate', function (value) {
   return DateTime.fromJSDate(value).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 });
 
@@ -49,15 +57,13 @@ $(document).ready(function () {
       console.log('created');
     },
     data   : {
-      user  : {
+      user   : {
         name: ''
       },
-      images: {
+      images : {
         background: ''
       },
-      methods: {
-
-      }
+      methods: {}
     }
-  })
-})
+  });
+});

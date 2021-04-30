@@ -38,16 +38,16 @@ function getUserInfo(callback) {
           id    : get(info, 'info.facebook.id', ''),
           raw   : get(info, 'info.facebook', {})
         }
-      }
+      };
       retVal.google.valid   = retVal.google.email.length > 0;
       retVal.facebook.valid = retVal.facebook.email.length > 0;
       console.log('userinfo', data, retVal);
       callback(null, retVal);
     })
     .fail(function (err) {
-      let info = {status: err.status, statusText: err.statusText}
+      let info = {status: err.status, statusText: err.statusText};
       callback(info);
-    })
+    });
 }
 
-export {getUserInfo}
+export {getUserInfo};
