@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import MenuBar from '../../common/components/menu-bar.vue'
+import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 import Pricelist from './pricelist.vue'
 import PricelistInfo from './pricelist-info.vue'
 

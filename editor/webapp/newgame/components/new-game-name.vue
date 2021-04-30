@@ -24,7 +24,7 @@
 import {getAuthToken} from '../../common/adapter/authToken'
 import {checkId, createGame, getProposedGameIds} from "../../common/adapter/gameplay";
 import {kebabCase} from "lodash";
-import ModalError from '../../common/components/modal-error.vue';
+import ModalError from '../../common/components/modal-error/modal-error.vue';
 
 export default {
   name : "new-game-name",

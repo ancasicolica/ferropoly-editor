@@ -23,7 +23,7 @@
 import WelcomeBar from './welcome-bar.vue'
 import MyGames from './my-games.vue'
 import ModalAgb from './modal-agb.vue'
-import MenuBar from '../../common/components/menu-bar.vue'
+import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 
 
 export default {

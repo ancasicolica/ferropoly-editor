@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import MenuBar from '../../common/components/menu-bar.vue'
+import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 import AccountGeneral from './account-general.vue'
 import AccountGoogle from './account-google.vue'
 import AccountFacebook from './account-facebook.vue'

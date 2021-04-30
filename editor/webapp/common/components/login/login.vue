@@ -38,7 +38,7 @@
 
 <script>
 import $ from 'jquery'
-import MenuBar from '../../common/components/menu-bar.vue'
+import MenuBar from '../menu-bar/menu-bar.vue'
 
 export default {
   name      : "login",

@@ -11,7 +11,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Import components
-import Login from '../common/components/login.vue'
+import Login from '../common/components/login/login.vue'
 
 Vue.use(VueRouter)
 

@@ -24,7 +24,7 @@
 <script>
 import {get} from "lodash";
 import ModalFinalizeGame from './modal-finalize-game.vue'
-import ModalError from '../../common/components/modal-error.vue'
+import ModalError from '../../common/components/modal-error/modal-error.vue'
 import {finalizeGameplay} from '../../common/adapter/gameplay'
 import {getAuthToken} from '../../common/adapter/authToken'
 

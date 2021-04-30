@@ -22,7 +22,7 @@ import NewGameDate from './new-game-date.vue'
 import NewGameMap from './new-game-map.vue'
 import NewGameName from './new-game-name.vue'
 import NewGamePricelist from './new-game-pricelist.vue'
-import MenuBar from '../../common/components/menu-bar.vue'
+import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 import {getDefaultMap} from '../../common/lib/mapTypes'
 import {DateTime} from "luxon";
 import {forOwn} from "lodash";

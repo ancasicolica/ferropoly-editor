@@ -20,7 +20,7 @@ import {DateTime} from "luxon";
 import {delay} from 'lodash';
 import {saveRules} from "../../common/adapter/rules";
 import {getAuthToken} from "../../common/adapter/authToken";
-import ModalError from '../../common/components/modal-error.vue';
+import ModalError from '../../common/components/modal-error/modal-error.vue';
 import ModalSaveRules from './modal-save-rules.vue';
 
 export default {
