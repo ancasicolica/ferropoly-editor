@@ -48,3 +48,5 @@ editor/public/modules
 /editor/public/js/build/
 /editor/public/build/
 /editor/lib/rulesTemplate.html
+
+yarn.lock
