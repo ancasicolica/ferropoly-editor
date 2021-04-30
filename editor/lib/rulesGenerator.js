@@ -5,7 +5,7 @@
  */
 
 const pug  = require('pug');
-const fs   = require('fs')
+const fs   = require('fs');
 const path = require('path');
 const _    = require('lodash');
 
@@ -24,8 +24,8 @@ const replacements = [
   {e: 'gameParams.chancellery.minLottery', formatter: formatAmount},
   {e: 'gameParams.chancellery.maxLottery', formatter: formatAmount},
   {e: 'gameParams.chancellery.maxGambling', formatter: formatAmount},
-  {e: 'owner.organisatorPhone'},
-]
+  {e: 'owner.organisatorPhone'}
+];
 
 module.exports = function (gp) {
   let template   = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
@@ -33,7 +33,7 @@ module.exports = function (gp) {
     interestCyclesAtEndOfGame: gp.gameParams.interestCyclesAtEndOfGame > 0,
     organisatorPhoneKnown    : gp.owner.organisatorPhone && gp.owner.organisatorPhone.length > 6,
     mobileInfoAccess         : gp.mobile.level > 0
-  }
+  };
   // Parse File with all replacements
   replacements.forEach(r => {
     if (!r.formatter) {
@@ -44,7 +44,7 @@ module.exports = function (gp) {
     template = _.replace(template, `$${r.e}$`, r.formatter(_.get(gp, r.e, '---ERROR!---')));
   });
   // Remove newlines, the editor does not like them
-  let html = pug.render(template, pugOptions)
+  let html = pug.render(template, pugOptions);
   html     = _.replace(html, /\n/g, ' ');
   return html;
-}
+};
