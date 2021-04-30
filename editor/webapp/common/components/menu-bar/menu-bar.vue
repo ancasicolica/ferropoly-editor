@@ -1,7 +1,7 @@
 <!---
-  The menu bar of the game-selector
+  The menu bar for Ferropoly
 
-  Could be a generic bar??
+  Configuration Sample: See test-root.vue in the Editor Project
 
   11.4.21 KC
 -->
@@ -13,12 +13,25 @@
         | &nbsp; Ferropoly
       b-navbar-toggle(target='nav-collapse')
       b-collapse#nav-collapse(is-nav='')
-        b-navbar-nav(v-for="el in elements" :key="el.title" v-if="!el.hide")
-          b-nav-item(:href="el.href" v-on:click="onClick(el.event)") {{el.title}}
+        b-navbar-nav
+          div(v-for="el in elements" :key="el.title" v-if="!el.hide")
+            // Ordinary Navbar Item
+            b-nav-item(v-if="isNavbarItem(el)" :href="el.href" v-on:click="onClick(el.event, el.eventParam)") {{el.title}}
+            // Dropdown Item
+            b-nav-item-dropdown(v-if="isNavbarDropdown(el)"
+              :href="el.href"
+              :text="el.title"
+              v-on:click="onClick(el.event, el.eventParam)")
+              b-dropdown-item(v-for="eld in el.elements"
+                :href="eld.href"
+                v-on:click="onClick(eld.event, eld.eventParam)"
+                :key="eld.title"
+                v-if="!eld.hide") {{eld.title}}
         // Right aligned nav items
         b-navbar-nav.ml-auto
           b-navbar-nav(v-for="el in elementsRight" :key="el.title" v-if="!el.hide")
             b-nav-item(:href="el.href" v-on:click="onClick(el.event)") {{el.title}}
+
           //b-nav-item(v-if="helpUrl.length > 0" :href="helpUrl" target="_blank")
             b-icon-question-circle-fill
           b-nav-item-dropdown(right='' v-if="showUserBox")
@@ -42,7 +55,7 @@ export default {
       }
     },
     elements   : {
-      // Elements of the menu bar
+      // Elements of the menu bar. Contains different types of elements
       type   : Array,
       default: function () {
         return [];
@@ -76,11 +89,34 @@ export default {
     /**
      * Click handler for a menu
      * @param event
+     * @param data
      */
-    onClick: function (event) {
+    onClick: function (event, data) {
       if (event) {
-        this.$emit(event);
+        this.$emit(event, data);
       }
+    },
+    /**
+     * Returns true if the element is an "ordinary" navbar item
+     * @param element
+     * @returns {boolean}
+     */
+    isNavbarItem(element) {
+      if (!element.type) {
+        return true;
+      }
+      return element.type === 'item'
+    },
+    /**
+     * Returns true if the element is a navbar dropdown
+     * @param element
+     * @returns {boolean}
+     */
+    isNavbarDropdown(element) {
+      if (!element.type) {
+        return false;
+      }
+      return element.type === 'dropdown'
     }
   },
   components: {BIconQuestionCircleFill}

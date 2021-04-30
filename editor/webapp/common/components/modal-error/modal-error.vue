@@ -5,16 +5,27 @@
 -->
 <template lang="pug">
   div
-    b-modal#agb(header-class="errorHeader" ref="modal-error" :title="title" header-bg-variant="danger" hide-header-close=true ok-only=true)
+    b-modal#agb(header-class="errorHeader"
+      ref="modal-error"
+      :size="size"
+      :title="title"
+      header-bg-variant="danger"
+      hide-header-close=true
+      ok-only=true)
       .modal-body
-      p {{info}}
-      p {{message}}
+        div(v-html="info")
+        div(v-html="message")
 </template>
 
 <script>
 export default {
   name      : "modal-error",
-  props     : [],
+  props     : {
+    size: {
+      type: String,
+      default: 'md'
+    }
+  },
   data      : function () {
     return {
       title  : '',
@@ -26,15 +37,17 @@ export default {
   methods   : {
     /**
      * Using this function starts the dialog
-     * @param title is shown in the title bar
-     * @param info is the general information (in German): what happened???
-     * @param errorMessage is the error message received by the server, might by cryptic
+     * @param options contains the different elements of the dialog
      */
-    showError: function (title, info, errorMessage) {
-      this.title   = title;
-      this.info    = info;
-      this.message = errorMessage;
+    showDialog: function (options) {
+      this.title   = options.title;
+      this.info    = options.info;
+      this.message = options.message;
       this.$refs['modal-error'].show();
+    },
+    showError(title, info, message) {
+      console.warn('showError is obsolete, use showDialog instead');
+      this.showDialog({title, info, message});
     }
   },
   components: {}

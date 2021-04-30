@@ -43,7 +43,7 @@ const authStrategy = require('../common/lib/authStrategy')(settings, users);
 const demoUsers    = require('./lib/demoUsers');
 const {v4: uuid}   = require('uuid');
 
-var initServer = function (db) {
+let initServer = function () {
   cronjobs.init();
   mailer.init(settings);
 
@@ -113,6 +113,7 @@ var initServer = function (db) {
   app.use('/admins', require('./routes/admins'));
   app.use('/userinfo', require('./routes/userInfo'));
   app.use('/account', require('./routes/account'));
+  app.use('/test', require('./routes/test'));
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
 
@@ -131,7 +132,7 @@ var initServer = function (db) {
   // development error handler
   // will print stacktrace
   if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
+    app.use(function (err, req, res) {
       let status    = err.status || 500;
       let errorPage = 'error';
       res.status(status);
@@ -155,7 +156,7 @@ var initServer = function (db) {
 
   // production error handler
   // no stacktraces leaked to user
-  app.use(function (err, req, res, next) {
+  app.use(function (err, req, res) {
     let status    = err.status || 500;
     let errorPage = 'error';
     res.status(status);
