@@ -14,12 +14,10 @@ import $ from 'jquery';
 function getRules(gameId, callback) {
   $.ajax(`/rules/data/${gameId}`, {dataType: 'json'})
     .done(function (data) {
-      console.log(data);
       callback(null, data);
     })
-    .fail(function (err) {
-      console.error(err);
-      callback(err);
+    .fail(function (resp) {
+      callback(`Fehler: der Server meldet Status ${resp.status}`, false);
     })
 }
 
@@ -32,7 +30,18 @@ function getRules(gameId, callback) {
  * @param callback
  */
 function saveRules(gameId, authToken, changes, text, callback) {
-
+  $.post(`/rules/${gameId}`,
+    {
+      changes,
+      text,
+      authToken
+    })
+    .done(function () {
+      callback(null);
+    })
+    .fail(function (resp) {
+      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
+    })
 }
 
 export {getRules, saveRules}

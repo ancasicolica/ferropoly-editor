@@ -7,33 +7,8 @@ const express       = require('express');
 const router        = express.Router();
 const gameplayModel = require('../../common/models/gameplayModel');
 const logger        = require('../../common/lib/logger').getLogger('routes:rules');
-const settings      = require('../settings');
 const path          = require('path');
 
-let ngFile = 'rulesctrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
-
-
-/* GET Page with rules. */
-router.get('/d/:gameId', function (req, res) {
-
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
-    if (err) {
-      return res.status(500).send({message: err.message});
-    }
-    let rules = gp.toObject().rules;
-
-    res.render('rules/rules', {
-      title       : 'Spielregeln',
-      gameId      : req.params.gameId,
-      ngController: 'rulesCtrl',
-      ngApp       : 'rulesApp',
-      ngFile      : ngFile,
-      rules       : JSON.stringify(rules)
-    });
-  });
-
-});
 /* GET Page with rules. */
 router.get('/:gameId', function (req, res) {
   res.sendFile(path.join(__dirname, '..', 'public', 'html', 'rules.html'));

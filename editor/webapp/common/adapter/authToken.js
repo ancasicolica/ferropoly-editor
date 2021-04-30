@@ -14,7 +14,6 @@ function getAuthToken(callback) {
       callback(null, data.authToken);
     })
     .fail(function (err) {
-      console.error('Failed to read auth-token', err);
       callback(err);
     })
 }
