@@ -7,7 +7,7 @@
   div
     b-modal(ref="modal-info"
       :title="title"
-      size="xl"
+      :size="size"
       header-bg-variant="info"
       hide-header-close=true
       cancel-title="Nein"
@@ -15,9 +15,7 @@
       @cancel="deny",
       @ok="confirm")
       .modal-body
-      p
         div(v-html="info")
-      p
         div(v-html="message")
 </template>
 
@@ -27,9 +25,7 @@ export default {
   props     : {
     size: {
       type   : String,
-      default: function () {
-        return 'xl';
-      }
+      default: 'md'
     }
   },
   data      : function () {
@@ -43,15 +39,23 @@ export default {
   methods   : {
     /**
      * Using this function starts the dialog
+     * @param options contains the different elements of the dialog
+     */
+    showDialog: function (options) {
+      this.title   = options.title;
+      this.info    = options.info;
+      this.message = options.message;
+      this.$refs['modal-info'].show();
+    },
+    /**
+     * Using this function starts the dialog
      * @param title is shown in the title bar
      * @param info is the general information (in German): what happened???
      * @param message is additional info
      */
     showInfo: function (title, info, message) {
-      this.title   = title;
-      this.info    = info;
-      this.message = message;
-      this.$refs['modal-info'].show();
+      console.warn('showError is obsolete, use showDialog instead');
+      this.showDialog({title, info, message});
     },
     deny() {
       this.$emit('no');
