@@ -8,7 +8,7 @@ var newGameControl = angular.module('newgameApp', ['ui.bootstrap', 'pickadate'])
   pickadateI18nProvider.translations = {
     prev: '<i class="icon-chevron-left"></i> früher',
     next: 'später <i class="icon-chevron-right"></i>'
-  }
+  };
 });
 
 newGameControl.directive('convertToNumber', function () {
@@ -37,7 +37,7 @@ newGameControl.directive('createGameId', function () {
 
         var transformedInput = inputValue.toLowerCase().replace(/[^0-9a-z-]/gi, '');
 
-        if (transformedInput != inputValue) {
+        if (transformedInput !== inputValue) {
           modelCtrl.$setViewValue(transformedInput);
           modelCtrl.$render();
         }
