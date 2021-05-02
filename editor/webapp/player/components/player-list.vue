@@ -5,8 +5,9 @@
 -->
 <template lang="pug">
   #player-list
-    div(v-for="p in players" :key="p.uuid")
-      player-info(:player="p" @click="onClick(p)")
+    b-card(:header="header")
+      b-list-group.p-0
+        player-info(v-for="p in players" :key="p.uuid" :player="p" @click="onClick(p)")
 
 </template>
 
@@ -19,6 +20,10 @@ export default {
     players: {
       type: Array,
       default: []
+    },
+    header: {
+      type: String,
+      default: "Teilnehmende Gruppen"
     }
   },
   data      : function () {

@@ -5,16 +5,11 @@
 -->
 <template lang="pug">
   #player-info
-    b-card(:title="player.data.name"
-      :sub-title="getSubTitle"
-      :img-src="player.login.personalData.avatar"
-      img-left
-      img-height="80"
-      img-width="80"
-      bg-variant="light"
-      class="mb-2"
-      style="max-width: 25rem;"
-      @click="onClick")
+    b-list-group-item.d-flex.d-flex-row(@click="onClick" href="#")
+      b-avatar(:src="player.login.personalData.avatar" size="60px")
+      div.pl-2
+        h5 {{player.data.name}}
+        div {{player.data.organization}} ({{player.data.teamLeader.name}})
 
 
 </template>
