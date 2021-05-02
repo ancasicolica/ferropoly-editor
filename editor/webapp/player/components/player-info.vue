@@ -18,7 +18,8 @@
 export default {
   name      : 'player-info',
   props     : {
-    player: Object, default: {
+    player : Object,
+    default: {
       data : {
         confirmed   : false, // They're joining the party!
         name        : '',
@@ -43,11 +44,7 @@ export default {
   created   : function () {
     console.log(this.player);
   },
-  computed  : {
-    getSubTitle() {
-      return `${this.player.data.organization} (${this.player.data.teamLeader.name})`;
-    }
-  },
+  computed  : {},
   methods   : {
     onClick() {
       this.$emit('click', this.player);

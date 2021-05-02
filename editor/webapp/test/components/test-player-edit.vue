@@ -5,23 +5,73 @@
 -->
 <template lang="pug">
   #test-player-edit
-    h1 test-player-edit
+    h1 Teams bearbeiten
+    b-row
+      b-col
+        player-edit(:player="currentPlayer"
+          :email-required="test.emailRequired"
+          @check-email="onCheckEmail"
+          @save.player="savePlayer")
+      b-col
+        b-card(header="Testdaten")
+          b-row.my-1
+            b-col(sm="4")
+              label Team
+            b-col(sm="8")
+              b-form-select(v-model="currentPlayer" :options="test.selectOptions")
+          b-row.my-1
+            b-col(sm="4")
+              label Email notwendig
+            b-col(sm="8")
+              b-form-checkbox(v-model="test.emailRequired" value=true unchecked-value=false switch)
+          b-row.my-1
+            b-col(sm="4")
+              label Email ist registriert
+            b-col(sm="8")
+              b-form-checkbox(v-model="test.emailRegistered" value=false unchecked-value=true switch)
+
 
 </template>
 
 <script>
+import PlayerEdit from '../../player/components/player-edit.vue'
+import {getPlayers} from '../fixtures/players';
+
+let players = getPlayers();
+
 export default {
   name      : 'test-player-edit',
   props     : {},
   data      : function () {
-    return {};
+    return {
+      players      : players,
+      currentPlayer: players[0],
+      test         : {
+        selectOptions  : [],
+        emailRequired  : false,
+        emailRegistered: true
+      }
+    };
   },
   model     : {},
   created   : function () {
+    players.forEach(p => {
+      this.test.selectOptions.push({value: p, text: p.data.name})
+    });
   },
   computed  : {},
-  methods   : {},
-  components: {},
+  methods   : {
+    onCheckEmail(mail) {
+      console.log('check Email', mail);
+    },
+    savePlayer(player) {
+      console.log('save it');
+    },
+    setEditPlayer() {
+
+    }
+  },
+  components: {PlayerEdit},
   filters   : {}
 }
 </script>

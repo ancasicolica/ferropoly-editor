@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   #player-list
-    b-card(:header="header")
+    b-card(:header="title")
       b-list-group.p-0
         player-info(v-for="p in players" :key="p.uuid" :player="p" @click="onClick(p)")
 
@@ -32,7 +32,11 @@ export default {
   model     : {},
   created   : function () {
   },
-  computed  : {},
+  computed  : {
+    title() {
+      return `Teilnehmende Gruppen (${this.players.length} / max 20)`
+    }
+  },
   methods   : {
     onClick(p) {
       console.log('player', p);
