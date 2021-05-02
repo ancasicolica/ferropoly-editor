@@ -16,16 +16,23 @@
       test-menu-bar(v-if="panel==='menuBar'")
       test-modal-error(v-if="panel==='modalError'")
       test-modal-info-yes-no(v-if="panel==='modalInfo'")
+      test-player-info(v-if="panel==='playerInfo'")
+      test-player-list(v-if="panel==='playerList'")
 </template>
 
 <script>
-import MenuBar from "../../common/components/menu-bar/menu-bar.vue";
+import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import TestMenuBar from './test-menu-bar.vue';
 import TestModalError from './test-modal-error.vue';
 import TestModalInfoYesNo from './test-modal-info-yes-no.vue';
+import TestPlayerInfo from './test-player-info.vue';
+import TestPlayerList from './test-player-list.vue';
+
+// EASY START
+const defaultPanel = 'playerList';
 
 export default {
-  name      : "test-root",
+  name      : 'test-root',
   props     : {},
   data      : function () {
     return {
@@ -33,16 +40,22 @@ export default {
         // take care of the Id's as we're accessing them directly
         /* 0 */  {title: 'Hauptfenster', href: '#', event: 'panel-change', eventParam: 'top'},
         /* 1 */  {
-          title   : 'Komponente', href: '#', type: 'dropdown',
+          title   : 'Generics', href: '#', type: 'dropdown',
           elements: [
             {title: 'MenuBar', href: '#', event: 'panel-change', eventParam: 'menuBar'},
             {title: 'Modal Error', href: '#', event: 'panel-change', eventParam: 'modalError'},
             {title: 'Modal Info', href: '#', event: 'panel-change', eventParam: 'modalInfo'}
           ]
         },
-        /* 2 */  {title: 'Test', href: '#', event: 'test-event'},
+        /* 2 */  {
+          title   : 'Editor', href: '#', type: 'dropdown',
+          elements: [
+            {title: 'Spieler Info', href: '#', event: 'panel-change', eventParam: 'playerInfo'},
+            {title: 'Spieler Liste', href: '#', event: 'panel-change', eventParam: 'playerList'},
+          ]
+        },
       ],
-      panel       : 'top',
+      panel       : defaultPanel,
       showUserBox : true
     };
   },
@@ -59,7 +72,7 @@ export default {
       console.log('onTestEvent', data);
     }
   },
-  components: {MenuBar, TestMenuBar, TestModalError, TestModalInfoYesNo},
+  components: {TestPlayerInfo, MenuBar, TestMenuBar, TestModalError, TestModalInfoYesNo, TestPlayerList},
   filters   : {}
 }
 </script>

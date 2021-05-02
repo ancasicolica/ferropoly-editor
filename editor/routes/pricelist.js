@@ -20,7 +20,15 @@ const path               = require('path');
  * Send Pricelist HTML Page
  */
 router.get('/view/:gameId', function (req, res) {
-  res.sendFile(path.join(__dirname, '..', 'public', 'html', 'pricelist.html'));
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
+    if (err) {
+      return res.render('error/403', {
+        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+        error  : {status: 403, stack: {}}
+      });
+    }
+    res.sendFile(path.join(__dirname, '..', 'public', 'html', 'pricelist.html'));
+  });
 });
 
 router.get('/download/:gameId', downloadPricelist.handler);
