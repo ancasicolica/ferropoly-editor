@@ -8,17 +8,18 @@
     h1 Teams bearbeiten
     b-row
       b-col
-        player-edit(:player="currentPlayer"
+        player-edit(ref="edit"
+          :player="currentPlayer"
           :email-required="test.emailRequired"
           @check-email="onCheckEmail"
-          @save.player="savePlayer")
+          @save-player="savePlayer")
       b-col
         b-card(header="Testdaten")
           b-row.my-1
             b-col(sm="4")
               label Team
             b-col(sm="8")
-              b-form-select(v-model="currentPlayer" :options="test.selectOptions")
+              b-form-select(v-model="currentPlayer" :options="test.selectOptions" @change="changeUser")
           b-row.my-1
             b-col(sm="4")
               label Email notwendig
@@ -65,10 +66,13 @@ export default {
       console.log('check Email', mail);
     },
     savePlayer(player) {
-      console.log('save it');
+      console.log('save it', player);
     },
     setEditPlayer() {
 
+    },
+    changeUser() {
+      this.$refs['edit'].setPlayer(this.currentPlayer.data);
     }
   },
   components: {PlayerEdit},
