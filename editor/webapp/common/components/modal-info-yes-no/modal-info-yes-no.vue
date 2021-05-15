@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name      : "modal-info-yes-no",
+  name      : 'modal-info-yes-no',
   props     : {
     size: {
       type   : String,
@@ -30,9 +30,10 @@ export default {
   },
   data      : function () {
     return {
-      title  : '',
-      info   : '',
-      message: ''
+      title   : '',
+      info    : '',
+      message : '',
+      callback: undefined
     };
   },
   model     : {},
@@ -42,9 +43,10 @@ export default {
      * @param options contains the different elements of the dialog
      */
     showDialog: function (options) {
-      this.title   = options.title;
-      this.info    = options.info;
-      this.message = options.message;
+      this.title    = options.title;
+      this.info     = options.info;
+      this.message  = options.message;
+      this.callback = options.callback;
       this.$refs['modal-info'].show();
     },
     /**
@@ -59,9 +61,15 @@ export default {
     },
     deny() {
       this.$emit('no');
+      if (this.callback) {
+        this.callback(false);
+      }
     },
     confirm() {
       this.$emit('yes');
+      if (this.callback) {
+        this.callback(true);
+      }
     }
   },
   components: {}

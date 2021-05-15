@@ -13,7 +13,7 @@
         h1 Modal Info Yes-No Tests
     b-row
       b-col
-        p Zeigt einen Info-Dialog mit HTML, in sm
+        p Zeigt einen Info-Dialog mit HTML, in sm und benutzt Callbacks (-> Console)
       b-col
         b-button(@click="test1") Test 1
     b-row
@@ -53,11 +53,15 @@ export default {
   computed  : {},
   methods   : {
     test1() {
+      let x = 1;
       this.result= 'n/a';
       this.$refs.info1.showDialog({
         title  : 'Titelzeile SM',
         info   : 'Dies ist ein Text mit HTML</br>Dieser Text sollte auf einer neuen Zeile stehen',
-        message: 'Das ist eine <em>zusätzliche</em> Information'
+        message: 'Das ist eine <em>zusätzliche</em> Information',
+        callback: function(val) {
+          console.log(`x is ${x} and val is ${val}`);
+        }
       });
     },
     test2() {
