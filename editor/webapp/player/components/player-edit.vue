@@ -6,6 +6,7 @@
 <template lang="pug">
   #player-edit
     modal-info-yes-no(ref="save-player")
+    modal-info-yes-no(ref="delete-player")
     b-card(header="Gruppe bearbeiten")
       b-row.my-1
         b-col(sm="3")
@@ -89,7 +90,10 @@
       b-row.my-1
         b-col(sm="3")
         b-col
-          b-button(@click="savePlayer()" variant="primary" :disabled="!isSubmitButtonEnabled") Speichern
+          b-button(@click="savePlayer()" variant="primary" :disabled="!isSubmitButtonEnabled") Gruppe speichern&nbsp;
+            b-icon-cloud-upload
+          b-button.ml-2(@click="deletePlayer()"  :disabled="!playerSet") Gruppe löschen&nbsp;
+            b-icon-trash
 
 
 </template>
@@ -97,6 +101,7 @@
 <script>
 import {get, cloneDeep, isEqual} from 'lodash';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue'
+import {BIconTrash, BIconCloudUpload} from 'bootstrap-vue';
 
 export default {
   name      : 'player-edit',
@@ -197,7 +202,6 @@ export default {
      * Enabling the SAVE Button
      */
     isSubmitButtonEnabled() {
-      console.log(this.nameState);
       if (this.nameState && this.leaderNameState && this.organizationState && this.phoneState) {
         if (this.emailRequired) {
           return (this.emailState && this.player.teamLeader.emailChecked);
@@ -243,11 +247,47 @@ export default {
      * Save data: emits a message with the player data
      */
     savePlayer() {
-      console.log('save data', this.player);
       this.$emit('save-player', this.player);
+    },
+    /**
+     * Deletes the current player: emits a request
+     */
+    deletePlayer() {
+      let self = this;
+
+      // Core function for deleting a team
+      function deleteCore() {
+        console.log('deleting team', self.player);
+        self.$emit('delete-player', self.player);
+        self.player       = {
+          confirmed   : false, // They're joining the party!
+          name        : '',
+          organization: '',
+          teamLeader  : {
+            name        : '',
+            phone       : '',
+            email       : '',
+            emailChecked: false
+          },
+          remarks     : '',
+        };
+        self.playerBackup = {};
+        self.playerSet    = false;
+      }
+
+      // Show dialog when player shall be deleted
+      self.$refs['delete-player'].showDialog({
+        title   : 'Ferropoly Editor',
+        info    : 'Soll diese Gruppe wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.',
+        callback: function (confirmed) {
+          if (confirmed) {
+            deleteCore();
+          }
+        }
+      });
     }
   },
-  components: {ModalInfoYesNo},
+  components: {ModalInfoYesNo, BIconTrash, BIconCloudUpload},
   filters   : {}
 }
 </script>

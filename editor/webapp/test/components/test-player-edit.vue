@@ -11,8 +11,8 @@
         player-edit(ref="edit"
           :player="currentPlayer"
           :email-required="test.emailRequired"
-          @check-email="onCheckEmail"
-          @save-player="savePlayer")
+          @save-player="savePlayer"
+          @delete-player="deletePlayer")
       b-col
         b-card(header="Testdaten")
           b-row.my-1
@@ -62,11 +62,21 @@ export default {
   },
   computed  : {},
   methods   : {
+    makeToast(info, variant = null) {
+      this.$bvToast.toast(info, {
+        title: 'Ferropoly Test',
+        variant: variant,
+        solid: true
+      })
+    },
     onCheckEmail(mail) {
       console.log('check Email', mail);
     },
     savePlayer(player) {
-      console.log('save it', player);
+      this.makeToast(`Gruppe ${player.name} gespeichert`, 'success')
+    },
+    deletePlayer(player) {
+      this.makeToast(`Gruppe ${player.name} gelöscht`, 'danger')
     },
     setEditPlayer() {
 
