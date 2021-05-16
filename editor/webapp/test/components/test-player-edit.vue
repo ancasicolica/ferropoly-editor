@@ -82,7 +82,7 @@ export default {
 
     },
     changeUser() {
-      this.$refs['edit'].setPlayer(this.currentPlayer.data);
+      this.$refs['edit'].setPlayer(this.currentPlayer);
     }
   },
   components: {PlayerEdit},

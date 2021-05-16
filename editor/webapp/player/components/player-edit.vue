@@ -13,7 +13,7 @@
           label(for="team-name") Team-Name
         b-col(sm="9")
           b-form-input(id="team-name"
-            v-model="player.name"
+            v-model="player.data.name"
             type="text"
             :state="nameState"
             :disabled="!playerSet"
@@ -25,7 +25,7 @@
           label(for="team-leader") Kontaktperson
         b-col(sm="9")
           b-form-input(id="team-leader"
-            v-model="player.teamLeader.name"
+            v-model="player.data.teamLeader.name"
             type="text"
             :state="leaderNameState"
             :disabled="!playerSet"
@@ -37,7 +37,7 @@
           label(for="organization") Organisation
         b-col(sm="9")
           b-form-input(id="organization"
-            v-model="player.organization"
+            v-model="player.data.organization"
             type="text"
             :state="organizationState"
             :disabled="!playerSet"
@@ -49,7 +49,7 @@
           label(for="phone") Telefon
         b-col(sm="9")
           b-form-input(id="phone"
-            v-model="player.teamLeader.phone"
+            v-model="player.data.teamLeader.phone"
             type="text"
             placeholder="079 555 55 55"
             :state="phoneState"
@@ -63,7 +63,7 @@
         b-col(sm="9")
           b-form-input(id="email"
             v-if="emailRequired"
-            v-model="player.teamLeader.email"
+            v-model="player.data.teamLeader.email"
             type="email"
             placeholder="name@email.ch"
             :state="emailState"
@@ -74,7 +74,7 @@
 
           b-form-input(id="email-opt"
             v-if="!emailRequired"
-            v-model="player.teamLeader.email"
+            v-model="player.data.teamLeader.email"
             :disabled="!playerSet"
             type="email"
             placeholder="name@email.ch")
@@ -83,7 +83,7 @@
           label(for="remarks") Bemerkungen
         b-col(sm="9")
           b-form-textarea(id="remarks"
-            v-model="player.remarks"
+            v-model="player.data.remarks"
             rows="3"
             max-rows="6"
             :disabled="!playerSet")
@@ -116,22 +116,26 @@ export default {
       playerSet   : false,
       playerBackup: {},
       player      : {
-        confirmed   : false, // They're joining the party!
-        name        : '',
-        organization: '',
-        teamLeader  : {
+        data : {
           name        : '',
-          phone       : '',
-          email       : '',
-          emailChecked: false
+          organization: '',
+          teamLeader  : {
+            name : '',
+            email: '',
+            phone: ''
+          },
+          remarks     : ''
         },
-        remarks     : '',
-      },
-      login       : {
-        personalData: {
-          avatar: ''
+        uuid : '',
+        login: {
+          personalData: {
+            forename: '',
+            surname : '',
+            email   : '',
+            avatar  : ''
+          }
         }
-      }
+      },
     };
   },
   model     : {},
@@ -145,7 +149,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.name.length;
+      let l = this.player.data.name.length;
       return ((l > 3) && (l < 60));
     },
     /**
@@ -155,7 +159,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.teamLeader.name.length;
+      let l = this.player.data.teamLeader.name.length;
       return ((l > 3) && (l < 60));
     },
     /**
@@ -165,7 +169,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.organization.length;
+      let l = this.player.data.organization.length;
       return ((l > 3) && (l < 60));
     },
     /**
@@ -175,7 +179,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.teamLeader.phone.length;
+      let l = this.player.data.teamLeader.phone.length;
       return ((l > 10) && (l < 15));
     },
     /**
@@ -189,7 +193,7 @@ export default {
         return null;
       }
       let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      return !this.playerSet || (this.player.teamLeader.email.match(regexEmail) !== null);
+      return !this.playerSet || (this.player.data.teamLeader.email.match(regexEmail) !== null);
     },
     /**
      * Get the property of the gameplay object
@@ -204,7 +208,7 @@ export default {
     isSubmitButtonEnabled() {
       if (this.nameState && this.leaderNameState && this.organizationState && this.phoneState) {
         if (this.emailRequired) {
-          return (this.emailState && this.player.teamLeader.emailChecked);
+          return (this.emailState && this.player.data.teamLeader.emailChecked);
         }
         return true;
       }
@@ -219,7 +223,7 @@ export default {
     setPlayer(player) {
       let self = this;
       let isEq = isEqual(this.player, this.playerBackup);
-      console.log(this.player.name, this.playerBackup.name);
+      console.log(this.player.data.name, this.playerBackup.name);
 
       function setNewPlayer() {
         self.player       = cloneDeep(player);
