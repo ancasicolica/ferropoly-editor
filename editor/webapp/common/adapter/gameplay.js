@@ -25,6 +25,23 @@ function readMyGames(callback) {
 }
 
 /**
+ * Returns data of a specific game
+ * @param gameId
+ * @param callback
+ */
+function getGame(gameId, callback) {
+  $.ajax(`/gameplay/info/${gameId}`, {dataType: 'json'})
+    .done(function (resp) {
+      console.log(resp);
+      callback(null, resp);
+    })
+    .fail(function (err) {
+      console.error(err);
+      callback(err);
+    });
+}
+
+/**
  * Deletes a gameplay
  * @param id is the ID of the gameplay to delete
  * @param callback with the error text (if any)
@@ -118,4 +135,5 @@ function createGame(settings, authToken, callback) {
     });
 }
 
-export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId};
+
+export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId, getGame};

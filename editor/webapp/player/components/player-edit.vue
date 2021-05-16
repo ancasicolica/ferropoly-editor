@@ -103,6 +103,27 @@ import {get, cloneDeep, isEqual} from 'lodash';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue'
 import {BIconTrash, BIconCloudUpload} from 'bootstrap-vue';
 
+const emptyPlayer = {
+  data : {
+    name        : '',
+    organization: '',
+    teamLeader  : {
+      name : '',
+      email: '',
+      phone: ''
+    },
+    remarks     : ''
+  },
+  uuid : '',
+  login: {
+    personalData: {
+      forename: '',
+      surname : '',
+      email   : '',
+      avatar  : ''
+    }
+  }
+};
 export default {
   name      : 'player-edit',
   props     : {
@@ -115,27 +136,7 @@ export default {
     return {
       playerSet   : false,
       playerBackup: {},
-      player      : {
-        data : {
-          name        : '',
-          organization: '',
-          teamLeader  : {
-            name : '',
-            email: '',
-            phone: ''
-          },
-          remarks     : ''
-        },
-        uuid : '',
-        login: {
-          personalData: {
-            forename: '',
-            surname : '',
-            email   : '',
-            avatar  : ''
-          }
-        }
-      },
+      player      : emptyPlayer,
     };
   },
   model     : {},
@@ -208,7 +209,7 @@ export default {
     isSubmitButtonEnabled() {
       if (this.nameState && this.leaderNameState && this.organizationState && this.phoneState) {
         if (this.emailRequired) {
-          return (this.emailState && this.player.data.teamLeader.emailChecked);
+          return (this.emailState);
         }
         return true;
       }
@@ -251,6 +252,7 @@ export default {
      * Save data: emits a message with the player data
      */
     savePlayer() {
+      this.playerBackup = cloneDeep(this.player);
       this.$emit('save-player', this.player);
     },
     /**
@@ -263,18 +265,7 @@ export default {
       function deleteCore() {
         console.log('deleting team', self.player);
         self.$emit('delete-player', self.player);
-        self.player       = {
-          confirmed   : false, // They're joining the party!
-          name        : '',
-          organization: '',
-          teamLeader  : {
-            name        : '',
-            phone       : '',
-            email       : '',
-            emailChecked: false
-          },
-          remarks     : '',
-        };
+        self.player       = emptyPlayer;
         self.playerBackup = {};
         self.playerSet    = false;
       }

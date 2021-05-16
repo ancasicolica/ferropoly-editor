@@ -36,6 +36,16 @@ router.get('/mygames', function (req, res) {
   });
 });
 
+/* GET data of a specific gameplay */
+router.get('/info/:gameId', function (req, res) {
+  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplay) {
+    if (err) {
+      return res.status(500).send({message: 'DB read error: ' + err.message});
+    }
+    return res.send(gameplay);
+  });
+});
+
 /* Post params of a new game */
 router.post('/createnew', function (req, res) {
   try {

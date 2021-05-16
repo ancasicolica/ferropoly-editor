@@ -6,15 +6,18 @@
 <template lang="pug">
   #player-info
     b-list-group-item.d-flex.d-flex-row(@click="onClick" href="#")
-      b-avatar(:src="player.login.personalData.avatar" size="60px")
+      b-avatar(:src="getAdvatar()" size="60px")
       div.pl-2
         h5 {{player.data.name}}
-        div {{player.data.organization}} ({{player.data.teamLeader.name}})
+        div {{player.data.organization}}
+          span(v-if="player.data.teamLeader.name") &nbsp; ({{player.data.teamLeader.name}})
 
 
 </template>
 
 <script>
+import {get} from 'lodash';
+
 export default {
   name      : 'player-info',
   props     : {
@@ -48,6 +51,10 @@ export default {
   methods   : {
     onClick() {
       this.$emit('click', this.player);
+    },
+    getAdvatar() {
+      console.log('player', this.player);
+      return get(this.player, 'login.personalData.avatar', '')
     }
   },
   components: {},

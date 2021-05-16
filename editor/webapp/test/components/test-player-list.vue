@@ -10,7 +10,7 @@
         h1 Spieler Liste Test: player-list
     b-row
       b-col
-        player-list(:players="players")
+        player-list(:players="players" @player-selected="userSelected")
 
 </template>
 
@@ -32,7 +32,11 @@ export default {
   created   : function () {
   },
   computed  : {},
-  methods   : {},
+  methods   : {
+    userSelected(u) {
+      console.log('User selected', u);
+    }
+  },
   components: {PlayerList},
   filters   : {}
 }

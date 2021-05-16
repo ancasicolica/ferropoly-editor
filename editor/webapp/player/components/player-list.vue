@@ -18,12 +18,14 @@ export default {
   name      : 'player-list',
   props     : {
     players: {
-      type: Array,
-      default: []
+      type   : Array,
+      default: function () {
+        return [];
+      }
     },
-    header: {
-      type: String,
-      default: "Teilnehmende Gruppen"
+    header : {
+      type   : String,
+      default: 'Teilnehmende Gruppen'
     }
   },
   data      : function () {
@@ -40,7 +42,7 @@ export default {
   methods   : {
     onClick(p) {
       console.log('player', p);
-      this.$emit('click', p);
+      this.$emit('player-selected', p);
     }
   },
   components: {PlayerInfo},
