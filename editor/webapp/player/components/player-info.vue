@@ -11,13 +11,17 @@
         h5 {{player.data.name}}
         div {{player.data.organization}}
           span(v-if="player.data.teamLeader.name") &nbsp; ({{player.data.teamLeader.name}})
+        div.not-ready(v-if="playerDataInvalid")
+          b-icon-exclamation-triangle
+          span &nbsp;Die Daten sind noch nicht vollständig!
 
 
 </template>
 
 <script>
 import {get} from 'lodash';
-
+import {checkPlayer} from '../../common/lib/playerValidator'
+import {BIconExclamationTriangle} from 'bootstrap-vue';
 export default {
   name      : 'player-info',
   props     : {
@@ -47,7 +51,11 @@ export default {
   created   : function () {
     console.log(this.player);
   },
-  computed  : {},
+  computed  : {
+    playerDataInvalid() {
+      return !checkPlayer(this.player);
+    }
+  },
   methods   : {
     onClick() {
       this.$emit('click', this.player);
@@ -57,11 +65,13 @@ export default {
       return get(this.player, 'login.personalData.avatar', '')
     }
   },
-  components: {},
+  components: {BIconExclamationTriangle},
   filters   : {}
 }
 </script>
 
 <style scoped>
-
+.not-ready {
+  color: red;
+}
 </style>

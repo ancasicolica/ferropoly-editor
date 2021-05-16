@@ -102,6 +102,7 @@
 import {get, cloneDeep, isEqual} from 'lodash';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue'
 import {BIconTrash, BIconCloudUpload} from 'bootstrap-vue';
+import {checkNames, checkPhone, checkEmail, checkPlayer} from '../../common/lib/playerValidator'
 
 const emptyPlayer = {
   data : {
@@ -150,8 +151,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.data.name.length;
-      return ((l > 3) && (l < 60));
+      return checkNames(this.player.data.name);
     },
     /**
      * State of the LEADER NAME input
@@ -160,8 +160,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.data.teamLeader.name.length;
-      return ((l > 3) && (l < 60));
+      return checkNames(this.player.data.teamLeader.name);
     },
     /**
      * State of the ORGANIZATION input
@@ -170,8 +169,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.data.organization.length;
-      return ((l > 3) && (l < 60));
+      return checkNames(this.player.data.organization);
     },
     /**
      * State of the PHONE input
@@ -180,8 +178,7 @@ export default {
       if (!this.playerSet) {
         return null;
       }
-      let l = this.player.data.teamLeader.phone.length;
-      return ((l > 10) && (l < 15));
+      return checkPhone(this.player.data.teamLeader.phone);
     },
     /**
      * State of the EMAIL input
@@ -193,8 +190,7 @@ export default {
       if (!this.emailRequired) {
         return null;
       }
-      let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      return !this.playerSet || (this.player.data.teamLeader.email.match(regexEmail) !== null);
+      return !this.playerSet || checkEmail(this.player.data.teamLeader.email);
     },
     /**
      * Get the property of the gameplay object
@@ -207,13 +203,10 @@ export default {
      * Enabling the SAVE Button
      */
     isSubmitButtonEnabled() {
-      if (this.nameState && this.leaderNameState && this.organizationState && this.phoneState) {
-        if (this.emailRequired) {
-          return (this.emailState);
-        }
-        return true;
+      if (!this.playerSet) {
+        return null;
       }
-      return false;
+      return (checkPlayer(this.player, this.emailRequired));
     }
   },
   methods   : {

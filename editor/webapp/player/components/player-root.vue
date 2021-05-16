@@ -1,15 +1,17 @@
 <!---
+  The root element for editing players
 
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 01.05.21
 -->
 <template lang="pug">
   #player-root
+    modal-error(ref="err1")
     menu-bar(:elements="menuElements" show-user-box=true
       @add-new-team="addNewTeam"
       help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/player/")
     b-container(fluid=true)
-      b-row
+      b-row.mt-1
         b-col(sm="12" md="4" lg="5" xl="6")
           player-list(:players="teams" @player-selected="playerSelected")
         b-col(sm="12" md="8" lg="7" xl="6")
@@ -20,13 +22,13 @@
 </template>
 
 <script>
-
+import ModalError from '../../common/components/modal-error/modal-error.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import PlayerList from './player-list.vue';
 import PlayerEdit from './player-edit.vue';
 import {getTeams, createTeam, storeTeam, deleteTeam} from '../../common/adapter/player';
 import {getGame} from '../../common/adapter/gameplay'
-import {last, split, findIndex} from 'lodash';
+import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
 import {DateTime} from 'luxon';
 import {getAuthToken} from '../../common/adapter/authToken'
@@ -63,30 +65,35 @@ export default {
       getGame(self.gameId, (err, info) => {
         if (err) {
           console.error(err);
+          self.showError(`Das Spiel mit der ID ${self.gameId} konnte nicht gefunden werden`)
           return;
         }
         self.gameplay = info;
         getTeams(self.gameId, (err, teams) => {
           if (err) {
             console.error(err);
+            self.showError('Fehler beim Laden der Spielerdaten:', err);
             return;
           }
-          console.log(teams);
           self.teams = teams;
+          self.updateNewTeamsAllowed();
         });
-        self.updateNewTeamsAllowed();
       });
       getAuthToken((err, token) => {
         if (err) {
           console.error('Error reading auth token', err);
+          self.showError('Fehler beim Laden der Berechtigungen:', err);
         }
         self.authToken = token;
       });
     });
   },
   computed  : {
+    /***
+     * Returns true when an email address is required for the game
+     */
     emailRequired() {
-      return true;
+      return (get(this.gameplay, 'mobile.level', 0) >= 5);
     }
   },
   methods   : {
@@ -94,11 +101,10 @@ export default {
      * Updates the menu bar: new teams allowed?
      */
     updateNewTeamsAllowed() {
-      let now             = DateTime.now().startOf('day');
-      let start           = DateTime.fromISO(this.gameplay.scheduling.gameDate).startOf('day');
-      let isBefore        = now < start;
-      let numberOfTeamsOk = this.teams.length < 20;
-      console.log('ADDING', now, start, isBefore, numberOfTeamsOk);
+      let now                   = DateTime.now().startOf('day');
+      let start                 = DateTime.fromISO(this.gameplay.scheduling.gameDate).startOf('day');
+      let isBefore              = now < start;
+      let numberOfTeamsOk       = this.teams.length < 20;
       this.menuElements[0].hide = !(isBefore && numberOfTeamsOk);
     },
     /**
@@ -110,20 +116,19 @@ export default {
       createTeam(this.gameId, this.authToken, (err, team) => {
         if (err) {
           console.log(err);
+          self.showError('Das Team konnte nicht angelegt werden. Fehlermeldung:', err);
           return;
         }
-        console.log('team push', team);
         self.teams.push(team);
         self.playerSelected(team);
+        this.updateNewTeamsAllowed();
       });
-      this.updateNewTeamsAllowed();
     },
     /**
      * Player was selected for edit, either because new or because clicking on the list
      * @param player
      */
     playerSelected(player) {
-      console.log('player selected', player)
       this.$refs['edit'].setPlayer(player);
     },
     /**
@@ -136,10 +141,10 @@ export default {
       storeTeam(player, this.authToken, (err, team) => {
         if (err) {
           console.error(err);
+          self.showError('Das Team konnte nicht gespeichert werden. Fehlermeldung:', err);
           return;
         }
         let index = findIndex(self.teams, {uuid: team.uuid});
-        console.log(`index is ${index}`);
         self.teams.splice(index, 1, team);
       })
     },
@@ -153,17 +158,28 @@ export default {
       deleteTeam(this.gameId, player.uuid, err => {
         if (err) {
           console.error(err);
+          self.showError('Das Team konnte nicht gelöscht werden. Fehlermeldung:', err);
           return;
         }
         let index = findIndex(self.teams, {uuid: player.uuid});
-        console.log(`index is ${index}`);
         self.teams.splice(index, 1);
+        self.updateNewTeamsAllowed();
+      });
+    },
+    /**
+     * Shows an error dialog
+     * @param info
+     * @param message
+     */
+    showError(info, message) {
+      this.$refs.err1.showDialog({
+        title: 'Ferropoly Editor',
+        info,
+        message
       });
     }
-
-
   },
-  components: {MenuBar, PlayerList, PlayerEdit},
+  components: {MenuBar, PlayerList, PlayerEdit, ModalError},
   filters   : {}
 }
 </script>

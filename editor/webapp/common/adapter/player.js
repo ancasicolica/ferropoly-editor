@@ -17,8 +17,8 @@ function getTeams(gameId, callback) {
     .done(function (data) {
       callback(null, data.teams);
     })
-    .fail(function (err) {
-      callback(err);
+    .fail(function (resp) {
+      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
     });
 }
 
