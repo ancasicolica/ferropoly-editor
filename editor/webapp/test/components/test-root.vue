@@ -29,9 +29,10 @@ import TestModalInfoYesNo from './test-modal-info-yes-no.vue';
 import TestPlayerInfo from './test-player-info.vue';
 import TestPlayerList from './test-player-list.vue';
 import TestPlayerEdit from './test-player-edit.vue';
+import {getItem, setItem} from '../../common/lib/sessionStorage';
 
 // EASY START
-const defaultPanel = 'playerEdit';
+const defaultPanel = getItem('test-panel', 'top');
 
 export default {
   name      : 'test-root',
@@ -70,6 +71,7 @@ export default {
     onPanelChange(panel) {
       console.log('onPanelChange', panel);
       this.panel = panel;
+      setItem('test-panel', panel);
     },
     onTestEvent(data) {
       console.log('onTestEvent', data);

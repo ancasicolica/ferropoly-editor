@@ -11,6 +11,9 @@
         h5 {{player.data.name}}
         div {{player.data.organization}}
           span(v-if="player.data.teamLeader.name") &nbsp; ({{player.data.teamLeader.name}})
+        div.new-team(v-if="playerToBeConfirmed")
+          b-icon-person-plus-fill
+          span &nbsp;Neue Anmeldung, bitte bestätigen
         div.not-ready(v-if="playerDataInvalid")
           b-icon-exclamation-triangle
           span &nbsp;Die Daten sind noch nicht vollständig!
@@ -21,7 +24,7 @@
 <script>
 import {get} from 'lodash';
 import {checkPlayer} from '../../common/lib/playerValidator'
-import {BIconExclamationTriangle} from 'bootstrap-vue';
+import {BIconExclamationTriangle, BIconPersonPlusFill} from 'bootstrap-vue';
 export default {
   name      : 'player-info',
   props     : {
@@ -29,6 +32,7 @@ export default {
     default: {
       data : {
         confirmed   : false, // They're joining the party!
+        onlineRegistration: false,
         name        : '',
         organization: '',
         teamLeader  : {
@@ -54,6 +58,9 @@ export default {
   computed  : {
     playerDataInvalid() {
       return !checkPlayer(this.player);
+    },
+    playerToBeConfirmed() {
+      return this.player.data.onlineRegistration && !this.player.data.confirmed;
     }
   },
   methods   : {
@@ -65,7 +72,7 @@ export default {
       return get(this.player, 'login.personalData.avatar', '')
     }
   },
-  components: {BIconExclamationTriangle},
+  components: {BIconExclamationTriangle, BIconPersonPlusFill},
   filters   : {}
 }
 </script>
@@ -73,5 +80,8 @@ export default {
 <style scoped>
 .not-ready {
   color: red;
+}
+.new-team {
+  color: blue
 }
 </style>

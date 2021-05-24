@@ -87,12 +87,18 @@
             rows="3"
             max-rows="6"
             :disabled="!playerSet")
-      b-row.my-1
+      b-row.my-1(v-if="playerToBeConfirmed")
         b-col(sm="3")
         b-col
-          b-button(@click="savePlayer()" variant="primary" :disabled="!isSubmitButtonEnabled") Gruppe speichern&nbsp;
+          b-alert(:show="playerToBeConfirmed") Dieses Team hat sich online angemeldet. Bestätige die Teilnahme oder lösche das Team. Wenn Du das Team bestätigst, wird der Kontaktperson ein Email mit der Bestätigung gesendet.
+      b-row
+        b-col(sm="3")
+        b-col
+          b-button.my-1(@click="savePlayer()" variant="primary" :disabled="!isSubmitButtonEnabled") Gruppe speichern&nbsp;
             b-icon-cloud-upload
-          b-button.ml-2(@click="deletePlayer()"  :disabled="!playerSet") Gruppe löschen&nbsp;
+          b-button.my-1.ml-2(@click="confirmPlayer()"  v-if="playerToBeConfirmed" :disabled="!isSubmitButtonEnabled") Gruppe bestätigen&nbsp;
+            b-icon-person-check-fill
+          b-button.my-1.ml-2(@click="deletePlayer()" variant="danger" :disabled="!playerSet") Gruppe löschen&nbsp;
             b-icon-trash
 
 
@@ -101,11 +107,12 @@
 <script>
 import {get, cloneDeep, isEqual} from 'lodash';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue'
-import {BIconTrash, BIconCloudUpload} from 'bootstrap-vue';
+import {BIconTrash, BIconCloudUpload, BIconPersonCheckFill} from 'bootstrap-vue';
 import {checkNames, checkPhone, checkEmail, checkPlayer} from '../../common/lib/playerValidator'
 
 const emptyPlayer = {
   data : {
+    confirmed   : true,
     name        : '',
     organization: '',
     teamLeader  : {
@@ -144,6 +151,17 @@ export default {
   created   : function () {
   },
   computed  : {
+    playerToBeConfirmed() {
+      console.log('pc')
+      if (this.player.data.onlineRegistration) {
+        if (this.player.data.confirmed === undefined || !this.player.data.confirmed) {
+          console.log('needs confirmation', this.player);
+          return true;
+        }
+        return false;
+      }
+      return false;
+    },
     /**
      * State of the NAME input
      */
@@ -273,9 +291,16 @@ export default {
           }
         }
       });
+    },
+    /**
+     * Confirms a Player
+     */
+    confirmPlayer() {
+      this.player.data.confirmed = true; // Temporary! Truth lies in the Server DB. Will be reloaded afterwards
+      this.$emit('confirm-player', this.player);
     }
   },
-  components: {ModalInfoYesNo, BIconTrash, BIconCloudUpload},
+  components: {ModalInfoYesNo, BIconTrash, BIconCloudUpload, BIconPersonCheckFill},
   filters   : {}
 }
 </script>

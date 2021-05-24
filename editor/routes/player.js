@@ -287,7 +287,7 @@ router.post('/confirm', function (req, res) {
       team.data.confirmed        = true;
       team.data.confirmationDate = new Date();
 
-      teams.updateTeam(team, function (err) {
+      teams.updateTeam(team, function (err, updatedTeam) {
         if (err) {
           logger.error('updateTeam Error', err);
           res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
@@ -300,7 +300,7 @@ router.post('/confirm', function (req, res) {
             logger.error('Email send error', err);
             mailSent = false;
           }
-          return res.send({mailSent: mailSent});
+          return res.send({mailSent: mailSent, team: updatedTeam});
         });
       });
     });

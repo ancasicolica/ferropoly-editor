@@ -12,7 +12,8 @@
           :player="currentPlayer"
           :email-required="test.emailRequired"
           @save-player="savePlayer"
-          @delete-player="deletePlayer")
+          @delete-player="deletePlayer"
+          @confirm-player="confirmPlayer")
       b-col
         b-card(header="Testdaten")
           b-row.my-1
@@ -73,10 +74,13 @@ export default {
       console.log('check Email', mail);
     },
     savePlayer(player) {
-      this.makeToast(`Gruppe ${player.name} gespeichert`, 'success')
+      this.makeToast(`Gruppe ${player.data.name} gespeichert`, 'success')
     },
     deletePlayer(player) {
-      this.makeToast(`Gruppe ${player.name} gelöscht`, 'danger')
+      this.makeToast(`Gruppe ${player.data.name} gelöscht`, 'danger')
+    },
+    confirmPlayer(player) {
+      this.makeToast(`Gruppe ${player.data.name} bestätigt`, 'success')
     },
     setEditPlayer() {
 

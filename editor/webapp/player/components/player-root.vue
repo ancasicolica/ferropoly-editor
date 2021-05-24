@@ -18,7 +18,8 @@
           player-edit(ref="edit"
             :email-required="emailRequired"
             @save-player="savePlayer",
-            @delete-player="deletePlayer")
+            @delete-player="deletePlayer",
+            @confirm-player="confirmPlayer")
 </template>
 
 <script>
@@ -26,7 +27,7 @@ import ModalError from '../../common/components/modal-error/modal-error.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import PlayerList from './player-list.vue';
 import PlayerEdit from './player-edit.vue';
-import {getTeams, createTeam, storeTeam, deleteTeam} from '../../common/adapter/player';
+import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../common/adapter/player';
 import {getGame} from '../../common/adapter/gameplay'
 import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
@@ -165,6 +166,38 @@ export default {
         self.teams.splice(index, 1);
         self.updateNewTeamsAllowed();
       });
+    },
+    /**
+     * Confirms a player and reloads the editor with the returned data
+     */
+    confirmPlayer(player) {
+      let self = this;
+      confirmTeam(player, self.authToken, (err, info) => {
+        if (err) {
+          console.error(err);
+          self.showError('Das Team konnte nicht bestätigt werden. Fehlermeldung:', err);
+          return;
+        }
+        let index = findIndex(self.teams, {uuid: info.team.uuid});
+        self.teams.splice(index, 1, info.team);
+        self.savePlayer(player);
+        if (info.mailSent) {
+          self.makeToast('Team bestätigt, Email wurde versendet', 'sucess');
+        }
+        else {
+          self.makeToast('Team bestätigt, Email konnte nicht versendet werden', 'warning');
+        }
+      });
+    },
+    /**
+     * Creates a Toast message
+     */
+    makeToast(info, variant = null) {
+      this.$bvToast.toast(info, {
+        title: 'Ferropoly',
+        variant: variant,
+        solid: true
+      })
     },
     /**
      * Shows an error dialog
