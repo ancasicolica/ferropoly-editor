@@ -3,19 +3,14 @@
  * Created by kc on 15.10.15.
  */
 
-
-
 const express   = require('express');
 const router    = express.Router();
 const gameplays = require('../../common/models/gameplayModel');
-const settings  = require('../settings');
 const _         = require('lodash');
 const async     = require('async');
 const logger    = require('../../common/lib/logger').getLogger('routes:admins');
 const users     = require('../../common/models/userModel');
-
-let ngFile = 'adminsctrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
+const path      = require('path');
 
 /**
  * Checks all logins whether they exist in the user database or not
@@ -48,41 +43,18 @@ function checkAdminUsers(logins, callback) {
     });
 }
 
-/* GET player page. */
+/**
+ * Get the home page
+ */
 router.get('/edit/:gameId', function (req, res) {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
     if (err) {
-      res.status(404);
-      res.send('Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung');
-      return;
-    }
-
-    // Default is an array with 3 empty entries. Create it here if needed.
-    let admins    = gp.admins || {};
-    admins.logins = gp.admins.logins || [];
-    for (let i = 0; i < 3; i++) {
-      admins.logins.push('');
-    }
-
-    let gameplay = {
-      admins: gp.admins,
-      gameId: gp.internal.gameId
-    };
-
-    checkAdminUsers(admins.logins, function (err, adminInfo) {
-      if (err) {
-        logger.error('Error while checking admin users', err);
-      }
-      res.render('admins', {
-        title       : 'Spiel-Administratoren',
-        ngController: 'adminsCtrl',
-        ngApp       : 'adminsApp',
-        ngFile      : ngFile,
-        gameId      : req.params.gameId,
-        gameplay    : JSON.stringify(gameplay),
-        adminInfo   : JSON.stringify(adminInfo)
+      return res.render('error/403', {
+        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+        error  : {status: 403, stack: {}}
       });
-    });
+    }
+    res.sendFile(path.join(__dirname, '..', 'public', 'html', 'admins.html'));
   });
 });
 
@@ -93,13 +65,16 @@ router.get('/edit/:gameId', function (req, res) {
 router.post('/:gameId', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(401).send({message:'Kein Zugriff möglich, bitte einloggen'});
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
-  logger.info(req.body);
-  logger.test(req.body.debug);
+  // Create array with email addresses only (as stored in DB)
+  let logins = [];
+  req.body.logins.forEach(login => {
+    logins.push(_.get(login, 'email', undefined));
+  });
 
-  gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(req.body.logins, 0, 3), function (err, gp) {
+  gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(logins, 0, 3), function (err, gp) {
     if (err) {
       logger.error('Can not set admins', err);
       logger.info('gameId', req.params.gameId);
@@ -119,7 +94,7 @@ router.post('/:gameId', function (req, res) {
 });
 
 /**
- * Get the admins
+ * Get the admins, checks if they have a login
  */
 router.get('/:gameId', (req, res) => {
   gameplays.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
@@ -128,7 +103,32 @@ router.get('/:gameId', (req, res) => {
       // "not found" is the most likely error thrown
       return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
     }
-    res.send(_.get(gp, 'admins.logins', []));
+
+    let adminEmails = _.get(gp, 'admins.logins', []);
+    let result      = [];
+    // Iterate through all admins, check if they have an email
+    async.eachSeries(adminEmails,
+      function (admin, cb) {
+        users.getUserByMailAddress(admin, (err, user) => {
+          let r = {email: admin};
+          if (err) {
+            return cb(err);
+          }
+          r.hasLogin = _.isObject(user);
+          result.push(r);
+          cb();
+        });
+      },
+      function (err) {
+        if (err) {
+          return res.status(500).send({message: 'Fehler beim Laden der Admins: ' + err.message});
+        }
+        // result should be always at least 3 entries long
+        while (result.length < 3) {
+          result.push({email: ''});
+        }
+        res.send(result);
+      });
   });
 });
 

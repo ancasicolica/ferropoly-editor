@@ -75,7 +75,7 @@ export default {
         viewPricelist: `/pricelist/view/${this.gameplay.internal.gameId}`,
         rules        : `/rules/${this.gameplay.internal.gameId}`,
         editPlayer   : `/player/edit/${this.gameplay.internal.gameId}`,
-        editAdmins   : `/admin/edit/${this.gameplay.internal.gameId}`
+        editAdmins   : `/admins/edit/${this.gameplay.internal.gameId}`
       }
     };
   },

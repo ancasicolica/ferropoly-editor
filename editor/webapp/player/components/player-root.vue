@@ -182,7 +182,7 @@ export default {
         self.teams.splice(index, 1, info.team);
         self.savePlayer(player);
         if (info.mailSent) {
-          self.makeToast('Team bestätigt, Email wurde versendet', 'sucess');
+          self.makeToast('Team bestätigt, Email wurde versendet', 'success');
         }
         else {
           self.makeToast('Team bestätigt, Email konnte nicht versendet werden', 'warning');

@@ -19,6 +19,7 @@
       test-player-info(v-if="panel==='playerInfo'")
       test-player-list(v-if="panel==='playerList'")
       test-player-edit(v-if="panel==='playerEdit'")
+      test-admin-entry(v-if="panel==='adminEntry'")
 </template>
 
 <script>
@@ -29,6 +30,7 @@ import TestModalInfoYesNo from './test-modal-info-yes-no.vue';
 import TestPlayerInfo from './test-player-info.vue';
 import TestPlayerList from './test-player-list.vue';
 import TestPlayerEdit from './test-player-edit.vue';
+import TestAdminEntry from './test-admin-entry.vue';
 import {getItem, setItem} from '../../common/lib/sessionStorage';
 
 // EASY START
@@ -56,6 +58,7 @@ export default {
             {title: 'Spieler Info', href: '#', event: 'panel-change', eventParam: 'playerInfo'},
             {title: 'Spieler Liste', href: '#', event: 'panel-change', eventParam: 'playerList'},
             {title: 'Spieler Editor', href: '#', event: 'panel-change', eventParam: 'playerEdit'},
+            {title: 'Admin Eintrag', href: '#', event: 'panel-change', eventParam: 'adminEntry'},
           ]
         },
       ],
@@ -77,7 +80,16 @@ export default {
       console.log('onTestEvent', data);
     }
   },
-  components: {TestPlayerInfo, MenuBar, TestMenuBar, TestModalError, TestModalInfoYesNo, TestPlayerList, TestPlayerEdit},
+  components: {
+    TestPlayerInfo,
+    MenuBar,
+    TestMenuBar,
+    TestModalError,
+    TestModalInfoYesNo,
+    TestPlayerList,
+    TestPlayerEdit,
+    TestAdminEntry
+  },
   filters   : {}
 }
 </script>
