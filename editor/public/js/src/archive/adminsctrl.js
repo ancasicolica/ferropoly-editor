@@ -85,7 +85,7 @@ angular.module('adminsApp', []).controller('adminsCtrl', ['$scope', '$http', fun
       },
       function (resp) {
         console.error('/admins/save', resp);
-        if (resp.status == 401) {
+        if (resp.status === 401) {
           genericModals.showError('Fehler', 'Gegenwärtig fehlt die Berechtigung für den Zugriff auf diese Seite.', resp, function () {
             window.location.href = "/";
           });
