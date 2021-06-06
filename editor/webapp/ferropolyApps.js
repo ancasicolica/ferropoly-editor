@@ -40,5 +40,9 @@ module.exports = [
     name    : 'admins',
     entry   : path.join(__dirname, 'admins', 'app.js'),
     htmlFile: 'admins.html'
+  }, {
+    name    : 'editor',
+    entry   : path.join(__dirname, 'editor', 'app.js'),
+    htmlFile: 'editor.html'
   }
 ];

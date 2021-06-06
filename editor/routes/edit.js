@@ -10,6 +10,8 @@ const logger   = require('../../common/lib/logger').getLogger('routes:edit');
 const async    = require('async');
 const router   = express.Router();
 const _        = require('lodash');
+const path     = require('path');
+
 let gameplays;
 let properties;
 
@@ -21,7 +23,7 @@ propertyFile     = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' :
 
 
 /* GET edit page */
-router.get('/edit/:gameId', function (req, res) {
+router.get('/edit-old/:gameId', function (req, res) {
   res.render('edit/edit', {
     title       : 'Spiel bearbeiten',
     hideLogout  : false,
@@ -31,6 +33,18 @@ router.get('/edit/:gameId', function (req, res) {
     ngApp       : 'editApp',
     ngFile      : ngFile,
     propertyFile: propertyFile
+  });
+});
+
+router.get('/edit/:gameId', function (req, res) {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
+    if (err) {
+      return res.render('error/403', {
+        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+        error  : {status: 403, stack: {}}
+      });
+    }
+    res.sendFile(path.join(__dirname, '..', 'public', 'html', 'editor.html'));
   });
 });
 
