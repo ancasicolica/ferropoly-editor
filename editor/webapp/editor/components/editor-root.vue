@@ -8,7 +8,7 @@
     menu-bar(:elements="menuElements"
       show-user-box=true
       @panel-change="onPanelChange"
-      help-url="https://www.ferropoly.ch/")
+      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/editor/")
     modal-error(title="Fehler" ref='editor-error')
     b-container(fluid=true)
       panel-basic(v-if="panel==='panel-basic'")
@@ -37,7 +37,7 @@ import ModalError from '../../common/components/modal-error/modal-error.vue';
 import {getItem, setItem} from '../../common/lib/sessionStorage';
 import {last, split} from 'lodash';
 import {getAuthToken} from '../../common/adapter/authToken';
-import {getGame} from '../../common/adapter/gameplay';
+import {loadGame} from '../../common/adapter/gameplay';
 
 export default {
   name   : 'editor-root',
@@ -62,7 +62,8 @@ export default {
       panel       : 'panel-basic',
       gameId      : 'none',
       authToken   : 'none',
-      gameplay    : {}
+      gameplay    : {},
+      properties  : []
     };
   },
   model  : {},
@@ -75,7 +76,7 @@ export default {
 
     self.panel = getItem(`${this.gameId}-editor-panel`, 'panel-basic');
     // Get Game Data and Authtoken
-    getGame(self.gameId, (err, gameplay) => {
+    loadGame(self.gameId, (err, data) => {
       if (err) {
         console.error('gameplay', err);
         this.$refs['editor-error'].showDialog({
@@ -84,7 +85,8 @@ export default {
         });
         return;
       }
-      self.gameplay = gameplay;
+      self.gameplay   = data.gameplay;
+      self.properties = data.properties;
       getAuthToken((err, token) => {
         if (err) {
           console.error('authToken', err);
@@ -99,8 +101,8 @@ export default {
     });
   },
 
-  computed: {},
-  methods: {
+  computed  : {},
+  methods   : {
     /**
      * Panel change from menu bar / component
      * @param panel

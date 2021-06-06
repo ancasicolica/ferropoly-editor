@@ -28,7 +28,7 @@ import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import PlayerList from './player-list.vue';
 import PlayerEdit from './player-edit.vue';
 import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../common/adapter/player';
-import {getGame} from '../../common/adapter/gameplay'
+import {getGameInfo} from '../../common/adapter/gameplay'
 import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
 import {DateTime} from 'luxon';
@@ -63,7 +63,7 @@ export default {
     const elements = split(window.location.pathname, '/');
     self.gameId    = last(elements);
     $(document).ready(function () {
-      getGame(self.gameId, (err, info) => {
+      getGameInfo(self.gameId, (err, info) => {
         if (err) {
           console.error(err);
           self.showError(`Das Spiel mit der ID ${self.gameId} konnte nicht gefunden werden`)

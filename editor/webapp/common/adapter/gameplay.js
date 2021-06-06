@@ -25,12 +25,29 @@ function readMyGames(callback) {
 }
 
 /**
- * Returns data of a specific game
+ * Returns informational data (basic) of a specific game
  * @param gameId
  * @param callback
  */
-function getGame(gameId, callback) {
+function getGameInfo(gameId, callback) {
   $.ajax(`/gameplay/info/${gameId}`, {dataType: 'json'})
+    .done(function (resp) {
+      console.log(resp);
+      callback(null, resp);
+    })
+    .fail(function (err) {
+      console.error(err);
+      callback(err);
+    });
+}
+
+/**
+ * Returns the complete data of a specific game
+ * @param gameId
+ * @param callback with {gameplay, properties}
+ */
+function loadGame(gameId, callback) {
+  $.ajax(`/gameplay/load/${gameId}`, {dataType: 'json'})
     .done(function (resp) {
       console.log(resp);
       callback(null, resp);
@@ -136,4 +153,4 @@ function createGame(settings, authToken, callback) {
 }
 
 
-export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId, getGame};
+export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId, getGameInfo, loadGame};
