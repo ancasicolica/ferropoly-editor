@@ -50,3 +50,4 @@ editor/public/modules
 /editor/lib/rulesTemplate.html
 
 yarn.lock
+/editor/webapp/webapp_config.json

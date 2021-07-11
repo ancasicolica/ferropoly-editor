@@ -1,4 +1,5 @@
 <!---
+  Test on Root Level, every test has to be added here
 
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 30.04.21
@@ -20,6 +21,7 @@
       test-player-list(v-if="panel==='playerList'")
       test-player-edit(v-if="panel==='playerEdit'")
       test-admin-entry(v-if="panel==='adminEntry'")
+      test-game-board(v-if="panel==='gameBoard'")
 </template>
 
 <script>
@@ -31,6 +33,7 @@ import TestPlayerInfo from './test-player-info.vue';
 import TestPlayerList from './test-player-list.vue';
 import TestPlayerEdit from './test-player-edit.vue';
 import TestAdminEntry from './test-admin-entry.vue';
+import TestGameBoard from './test-game-board.vue';
 import {getItem, setItem} from '../../common/lib/sessionStorage';
 
 // EASY START
@@ -59,6 +62,7 @@ export default {
             {title: 'Spieler Liste', href: '#', event: 'panel-change', eventParam: 'playerList'},
             {title: 'Spieler Editor', href: '#', event: 'panel-change', eventParam: 'playerEdit'},
             {title: 'Admin Eintrag', href: '#', event: 'panel-change', eventParam: 'adminEntry'},
+            {title: 'Karte', href: '#', event: 'panel-change', eventParam: 'gameBoard'},
           ]
         },
       ],
@@ -88,7 +92,8 @@ export default {
     TestModalInfoYesNo,
     TestPlayerList,
     TestPlayerEdit,
-    TestAdminEntry
+    TestAdminEntry,
+    TestGameBoard
   },
   filters   : {}
 }
