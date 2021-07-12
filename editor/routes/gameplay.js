@@ -49,6 +49,11 @@ router.get('/info/:gameId', function (req, res) {
 /* Post params of a new game */
 router.post('/createnew', function (req, res) {
   try {
+    logger.info('createnew', req.body);
+    logger.info('authToken session:', req.session.authToken);
+    let x               = req.session.counter || 1;
+    req.session.counter = x + 1;
+
     if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
       logger.info('Auth token missing, access denied');
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');

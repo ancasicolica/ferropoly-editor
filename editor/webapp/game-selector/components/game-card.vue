@@ -2,52 +2,52 @@
   A single card with infos about a game
 -->
 <template lang="pug">
-  div
-    b-card(no-body).game-card
-      b-card-header.title {{getGpProperty('gamename')}}
-      b-card-body
-        b-card-text
-          b-container(fluid="true")
-            b-row
-              b-col Spieldatum
-              b-col {{getGpProperty('scheduling.gameDate') | formatDate}}
-            b-row
-              b-col Start
-              b-col {{getGpProperty('scheduling.gameStart')}}
-            b-row
-              b-col Ende
-              b-col {{getGpProperty('scheduling.gameEnd')}}
-            b-row
-              b-col Karte
-              b-col {{getMapName()}}
-            b-row
-              b-col Spielbereit
-              b-col(v-if="getGpProperty('internal.finalized')") Ja
-              b-col(v-if="!getGpProperty('internal.finalized')" :href="url.viewPricelist") Nein (noch nicht finalisiert)
-            b-row
-              b-col Löschdatum
-              b-col {{getGpProperty('scheduling.deleteTs') | formatDate}}
-            b-row
-              b-col.id Id: {{getGpProperty('internal.gameId')}}
-            b-row
-              b-col
-                b-button.btn-gameplay(size="sm" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
-                  b-icon-pencil
+div
+  b-card(no-body).game-card
+    b-card-header.title {{getGpProperty('gamename')}}
+    b-card-body
+      b-card-text
+        b-container(fluid="true")
+          b-row
+            b-col Spieldatum
+            b-col {{getGpProperty('scheduling.gameDate') | formatDate}}
+          b-row
+            b-col Start
+            b-col {{getGpProperty('scheduling.gameStart')}}
+          b-row
+            b-col Ende
+            b-col {{getGpProperty('scheduling.gameEnd')}}
+          b-row
+            b-col Karte
+            b-col {{getMapName()}}
+          b-row
+            b-col Spielbereit
+            b-col(v-if="getGpProperty('internal.finalized')") Ja
+            b-col(v-if="!getGpProperty('internal.finalized')" :href="url.viewPricelist") Nein (noch nicht finalisiert)
+          b-row
+            b-col Löschdatum
+            b-col {{getGpProperty('scheduling.deleteTs') | formatDate}}
+          b-row
+            b-col.id Id: {{getGpProperty('internal.gameId')}}
+          b-row
+            b-col
+              b-button.btn-gameplay(size="sm" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
+                b-icon-pencil
 
-                b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
-                  b-icon-eye
+              b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
+                b-icon-eye
 
-                b-button.btn-gameplay(size="sm" v-if="getGpProperty('internal.finalized')" :href="url.rules") Spielregeln &nbsp;
-                  b-icon-pencil
+              b-button.btn-gameplay(size="sm" v-if="getGpProperty('internal.finalized')" :href="url.rules") Spielregeln &nbsp;
+                b-icon-pencil
 
-                b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editPlayer") Spieler &nbsp;
-                  b-icon-people
+              b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editPlayer") Spieler &nbsp;
+                b-icon-people
 
-                b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter
-                  b-icon-person
+              b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter
+                b-icon-person
 
-                b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')" v-on:click="deleteGameplay") Löschen
-                  b-icon-trash
+              b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')" v-on:click="deleteGameplay") Löschen
+                b-icon-trash
 
 
 </template>

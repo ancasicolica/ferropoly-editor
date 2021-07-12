@@ -2,18 +2,18 @@
   Root view for a new game
 -->
 <template lang="pug">
-  #new-game
-    menu-bar(show-user-box=false)
-    b-container(fluid=true)
-      b-row
-        b-col
-          h1 Neues Spiel anlegen
-      new-game-map(v-if="currentView === 'map'" :settings="gameSettings" @change-view="onChangeView"
-        @form-validation="onFormValidation")
-      new-game-date(v-if="currentView === 'date'" :settings="gameSettings" @change-view="onChangeView")
-      new-game-pricelist(v-if="currentView === 'pricelist'" :settings="gameSettings" @change-view="onChangeView")
-      new-game-name(v-if="currentView === 'name'" :settings="gameSettings" :validation-state="validationState"
-        @change-view="onChangeView" @form-validation="onFormValidation")
+#new-game
+  menu-bar(show-user-box=false)
+  b-container(fluid=true)
+    b-row
+      b-col
+        h1 Neues Spiel anlegen
+    new-game-map(v-if="currentView === 'map'" :settings="gameSettings" @change-view="onChangeView"
+      @form-validation="onFormValidation")
+    new-game-date(v-if="currentView === 'date'" :settings="gameSettings" @change-view="onChangeView")
+    new-game-pricelist(v-if="currentView === 'pricelist'" :settings="gameSettings" @change-view="onChangeView")
+    new-game-name(v-if="currentView === 'name'" :settings="gameSettings" :validation-state="validationState"
+      @change-view="onChangeView" @form-validation="onFormValidation")
 </template>
 
 
@@ -24,13 +24,13 @@ import NewGameName from './new-game-name.vue'
 import NewGamePricelist from './new-game-pricelist.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 import {getDefaultMap} from '../../common/lib/mapTypes'
-import {DateTime} from "luxon";
-import {forOwn} from "lodash";
+import {DateTime} from 'luxon';
+import {forOwn} from 'lodash';
 
 export default {
-  name      : "new-game-root",
-  props     : {},
-  data      : function () {
+  name : 'new-game-root',
+  props: {},
+  data : function () {
     return {
       currentView     : 'map',
       gameSettings    : {
@@ -42,10 +42,14 @@ export default {
         selectedId: ''
       },
       validationState : true,
-      validationObject: {}
+      validationObject: {},
+      authToken       : 'none-yet'
     };
   },
-  model     : {},
+  model: {},
+  created: function() {
+
+  },
   methods   : {
     /**
      * Event Handler: a "back" or "next" button was clicked

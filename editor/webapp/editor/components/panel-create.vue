@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-create
-    h1 panel-create
+#panel-create
+  h1 panel-create
 
 
 </template>

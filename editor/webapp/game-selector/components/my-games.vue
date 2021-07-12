@@ -4,16 +4,16 @@
   9.4.2021 KC
 -->
 <template lang="pug">
-  div
-    modal-delete-game(ref="delete-confirm" v-on:delete-gameplay-confirmed="deleteGameplayConfirmed")
-    modal-error(title="Fehler" ref='delete-error')
-    h1 Meine Spiele
-    b-row
-      b-col(v-if="gameplays.length === 0")
-        p  Du hast noch keine Spiele angelegt.&nbsp;
-          a(href='/newgame') Neues Spiel anlegen.
-      b-col(v-for="gp in gameplays" :key="gp.internal.gameId" xs="12" sm="12" md="6" lg="4" xl="4")
-        game-card(:gameplay="gp" v-on:delete-gameplay="deleteGameplay")
+div
+  modal-delete-game(ref="delete-confirm" v-on:delete-gameplay-confirmed="deleteGameplayConfirmed")
+  modal-error(title="Fehler" ref='delete-error')
+  h1 Meine Spiele
+  b-row
+    b-col(v-if="gameplays.length === 0")
+      p  Du hast noch keine Spiele angelegt.&nbsp;
+        a(href='/newgame') Neues Spiel anlegen.
+    b-col(v-for="gp in gameplays" :key="gp.internal.gameId" xs="12" sm="12" md="6" lg="4" xl="4")
+      game-card(:gameplay="gp" v-on:delete-gameplay="deleteGameplay")
 </template>
 
 <script>

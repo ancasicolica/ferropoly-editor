@@ -4,22 +4,22 @@
   10.4.2021 KC
 -->
 <template lang="pug">
-  div
-    b-modal#agb(ref="modal-agb" title="Ferropoly AGB" hide-header-close=true cancel-title="Ablehnen"
-      ok-title="Annehmen" @cancel="declineAgb" @ok="acceptAgb")
-      .modal-body
-        p Für die Benutzung dieser Software muss den Ferropoly AGBs zugestimmt werden. Diese sind unter&nbsp;
-          a(href='http://www.ferropoly.ch/agb/' target='_blank') http://www.ferropoly.ch/agb/
-          | &nbsp; im Detail einsehbar.
-        p Zusammengefasst geht es darin um:
-        ul
-          li Die Verwendung Deiner Daten, welche bei der Benutzung der Software anfallen
-          li Die Verwendung dieser Software für kommerzielle Spiele
-          li Wer die Risiken bei der Benutzung dieser Software trägt
-        p
-        p(v-if="newAgb") Die bereits von Dir akzeptierten AGBs wurden angepasst, deshalb ist eine erneute Bestätigung notwendig.
-        p
-        p Mit "Annehmen" stimmst Du den Bestimmungen der aktuellen Version zu.
+div
+  b-modal#agb(ref="modal-agb" title="Ferropoly AGB" hide-header-close=true cancel-title="Ablehnen"
+    ok-title="Annehmen" @cancel="declineAgb" @ok="acceptAgb")
+    .modal-body
+      p Für die Benutzung dieser Software muss den Ferropoly AGBs zugestimmt werden. Diese sind unter&nbsp;
+        a(href='http://www.ferropoly.ch/agb/' target='_blank') http://www.ferropoly.ch/agb/
+        | &nbsp; im Detail einsehbar.
+      p Zusammengefasst geht es darin um:
+      ul
+        li Die Verwendung Deiner Daten, welche bei der Benutzung der Software anfallen
+        li Die Verwendung dieser Software für kommerzielle Spiele
+        li Wer die Risiken bei der Benutzung dieser Software trägt
+      p
+      p(v-if="newAgb") Die bereits von Dir akzeptierten AGBs wurden angepasst, deshalb ist eine erneute Bestätigung notwendig.
+      p
+      p Mit "Annehmen" stimmst Du den Bestimmungen der aktuellen Version zu.
 </template>
 
 <script>

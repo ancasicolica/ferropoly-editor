@@ -2,17 +2,17 @@
   Googgle Account Info
 -->
 <template lang="pug">
-  #google-info
-    b-card(no-body)
-      b-card-header.title Google
-      b-card-body
-        b-card-text
-          h4 Google Profil ID
-          | {{getElement('id')}}
-          h4 Email-Adresse
-          | {{getElement('email')}}
-          h4 Avatar
-          img.avatar(:src="getElement('avatar')")
+#google-info
+  b-card(no-body)
+    b-card-header.title Google
+    b-card-body
+      b-card-text
+        h4 Google Profil ID
+        | {{getElement('id')}}
+        h4 Email-Adresse
+        | {{getElement('email')}}
+        h4 Avatar
+        img.avatar(:src="getElement('avatar')")
 </template>
 
 <script>

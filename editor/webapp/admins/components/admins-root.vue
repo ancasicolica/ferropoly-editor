@@ -4,17 +4,17 @@
   Created: 05.06.21
 -->
 <template lang="pug">
-  #admins-root
-    menu-bar(show-user-box=true help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/admins/")
-    b-container(fluid=true)
-      b-row
-        b-col
-          h1 Spielleiter
-      b-row
-        b-col
-          admins-editor(:game-id="gameId")
-        b-col
-          admins-info
+#admins-root
+  menu-bar(show-user-box=true help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/admins/")
+  b-container(fluid=true)
+    b-row
+      b-col
+        h1 Spielleiter
+    b-row
+      b-col
+        admins-editor(:game-id="gameId")
+      b-col
+        admins-info
 
 </template>
 

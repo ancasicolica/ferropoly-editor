@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-sorting
-    h1 panel-sorting
+#panel-sorting
+  h1 panel-sorting
 
 </template>
 

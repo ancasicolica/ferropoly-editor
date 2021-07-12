@@ -2,15 +2,15 @@
   Setting the price list
 -->
 <template lang="pug">
-  #new-game-pricelist
-    h2 Preisliste
-    p Wie gut kennt ihr das Spiel schon? Die Gestaltung der Preisliste hat einen grossen Einfluss auf den Spielverlauf. Wähle hier die Variante aus, welche am Besten zu Euch passt, Du kannst später die Einstellungen noch nach Belieben verändern.
-    b-form-radio-group.mb-2(v-model="settings.presets", :options="priceListOptions" stacked)
-    h2 Zufallspreisliste
-    p Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
-    b-form-select(v-model="settings.random", :options="randomPropertyOptions")
-    b-button.mt-2(@click="onBack()") Zurück
-    b-button.mt-2.ml-2(variant="primary" @click="onNext()") Weiter
+#new-game-pricelist
+  h2 Preisliste
+  p Wie gut kennt ihr das Spiel schon? Die Gestaltung der Preisliste hat einen grossen Einfluss auf den Spielverlauf. Wähle hier die Variante aus, welche am Besten zu Euch passt, Du kannst später die Einstellungen noch nach Belieben verändern.
+  b-form-radio-group.mb-2(v-model="settings.presets", :options="priceListOptions" stacked)
+  h2 Zufallspreisliste
+  p Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
+  b-form-select(v-model="settings.random", :options="randomPropertyOptions")
+  b-button.mt-2(@click="onBack()") Zurück
+  b-button.mt-2.ml-2(variant="primary" @click="onNext()") Weiter
 </template>
 
 <script>

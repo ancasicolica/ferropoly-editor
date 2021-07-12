@@ -5,9 +5,9 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #map-root
-    h1 map
-    #map
+#map-root
+  h1 map
+  #map
 
 </template>
 

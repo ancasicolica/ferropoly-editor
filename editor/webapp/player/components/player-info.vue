@@ -4,20 +4,19 @@
   Created: 01.05.21
 -->
 <template lang="pug">
-  #player-info
-    b-list-group-item.d-flex.d-flex-row(@click="onClick" href="#")
-      b-avatar(:src="getAdvatar()" size="60px")
-      div.pl-2
-        h5 {{player.data.name}}
-        div {{player.data.organization}}
-          span(v-if="player.data.teamLeader.name") &nbsp; ({{player.data.teamLeader.name}})
-        div.new-team(v-if="playerToBeConfirmed")
-          b-icon-person-plus-fill
-          span &nbsp;Neue Anmeldung, bitte bestätigen
-        div.not-ready(v-if="playerDataInvalid")
-          b-icon-exclamation-triangle
-          span &nbsp;Die Daten sind noch nicht vollständig!
-
+#player-info
+  b-list-group-item.d-flex.d-flex-row(@click="onClick" href="#")
+    b-avatar(:src="getAdvatar()" size="60px")
+    div.pl-2
+      h5 {{player.data.name}}
+      div {{player.data.organization}}
+        span(v-if="player.data.teamLeader.name") &nbsp; ({{player.data.teamLeader.name}})
+      div.new-team(v-if="playerToBeConfirmed")
+        b-icon-person-plus-fill
+        span &nbsp;Neue Anmeldung, bitte bestätigen
+      div.not-ready(v-if="playerDataInvalid")
+        b-icon-exclamation-triangle
+        span &nbsp;Die Daten sind noch nicht vollständig!
 
 </template>
 

@@ -4,22 +4,22 @@
   Created: 05.06.21
 -->
 <template lang="pug">
-  #admin-entry
-    b-row.my-1
-      b-col(sm="4")
-        label {{title}}
-      b-col(sm="7")
-        b-form-input(type="email"
-          v-model="entry.email"
-          :state="emailState"
-          aria-describedby="input-mail-feedback")
-        b-form-invalid-feedback(id="input-mail-feedback") Eine gültige Email-Adresse ist notwendig
+#admin-entry
+  b-row.my-1
+    b-col(sm="4")
+      label {{title}}
+    b-col(sm="7")
+      b-form-input(type="email"
+        v-model="entry.email"
+        :state="emailState"
+        aria-describedby="input-mail-feedback")
+      b-form-invalid-feedback(id="input-mail-feedback") Eine gültige Email-Adresse ist notwendig
 
-      b-col(sm="1")
-        span.ok(v-if="entry.hasLogin" v-b-tooltip.hover title="Ferropoly Login vorhanden - alles ok")
-          b-icon-check-circle
-        span.error(v-if="entry.hasLogin === false && entry.email.length > 0"  v-b-tooltip.hover  title="Noch kein Ferropoly Login vorhanden")
-          b-icon-exclamation-circle
+    b-col(sm="1")
+      span.ok(v-if="entry.hasLogin" title="Ferropoly Login vorhanden - alles ok" v-b-tooltip.hover)
+        b-icon-check-circle
+      span.error(v-if="entry.hasLogin === false && entry.email.length > 0"  title="Noch kein Ferropoly Login vorhanden" v-b-tooltip.hover)
+        b-icon-exclamation-circle
 
 </template>
 

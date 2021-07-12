@@ -6,39 +6,39 @@
   11.4.21 KC
 -->
 <template lang="pug">
-  #menu
-    b-navbar(toggleable='lg' type='dark' variant='dark')
-      b-navbar-brand(href='/')
-        img(:src='favicon' height="24" width="24")
-        | &nbsp; Ferropoly
-      b-navbar-toggle(target='nav-collapse')
-      b-collapse#nav-collapse(is-nav='')
-        b-navbar-nav
-          div(v-for="el in elements" :key="el.title" v-if="!el.hide")
-            // Ordinary Navbar Item
-            b-nav-item(v-if="isNavbarItem(el)" :href="el.href" v-on:click="onClick(el.event, el.eventParam)") {{el.title}}
-            // Dropdown Item
-            b-nav-item-dropdown(v-if="isNavbarDropdown(el)"
-              :href="el.href"
-              :text="el.title"
-              v-on:click="onClick(el.event, el.eventParam)")
-              b-dropdown-item(v-for="eld in el.elements"
-                :href="eld.href"
-                v-on:click="onClick(eld.event, eld.eventParam)"
-                :key="eld.title"
-                v-if="!eld.hide") {{eld.title}}
-        // Right aligned nav items
-        b-navbar-nav.ml-auto
-          b-navbar-nav(v-for="el in elementsRight" :key="el.title" v-if="!el.hide")
-            b-nav-item(:href="el.href" v-on:click="onClick(el.event)") {{el.title}}
+#menu
+  b-navbar(toggleable='lg' type='dark' variant='dark')
+    b-navbar-brand(href='/')
+      img(:src='favicon' height="24" width="24")
+      | &nbsp; Ferropoly
+    b-navbar-toggle(target='nav-collapse')
+    b-collapse#nav-collapse(is-nav='')
+      b-navbar-nav
+        div(v-for="el in elements" :key="el.title" v-if="!el.hide")
+          // Ordinary Navbar Item
+          b-nav-item(v-if="isNavbarItem(el)" :href="el.href" v-on:click="onClick(el.event, el.eventParam)") {{el.title}}
+          // Dropdown Item
+          b-nav-item-dropdown(v-if="isNavbarDropdown(el)"
+            :href="el.href"
+            :text="el.title"
+            v-on:click="onClick(el.event, el.eventParam)")
+            b-dropdown-item(v-for="eld in el.elements"
+              :href="eld.href"
+              v-on:click="onClick(eld.event, eld.eventParam)"
+              :key="eld.title"
+              v-if="!eld.hide") {{eld.title}}
+      // Right aligned nav items
+      b-navbar-nav.ml-auto
+        b-navbar-nav(v-for="el in elementsRight" :key="el.title" v-if="!el.hide")
+          b-nav-item(:href="el.href" v-on:click="onClick(el.event)") {{el.title}}
 
-          //b-nav-item(v-if="helpUrl.length > 0" :href="helpUrl" target="_blank")
-            b-icon-question-circle-fill
-          b-nav-item-dropdown(right='' v-if="showUserBox")
-            template(#button-content='')
-              em Benutzer
-            b-dropdown-item(href='/account') Mein Account
-            b-dropdown-item(href='/logout') Abmelden
+        //b-nav-item(v-if="helpUrl.length > 0" :href="helpUrl" target="_blank")
+          b-icon-question-circle-fill
+        b-nav-item-dropdown(right='' v-if="showUserBox")
+          template(#button-content='')
+            em Benutzer
+          b-dropdown-item(href='/account') Mein Account
+          b-dropdown-item(href='/logout') Abmelden
 </template>
 
 <script>

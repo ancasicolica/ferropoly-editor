@@ -4,17 +4,17 @@
   11.4.2021 KC
 -->
 <template lang="pug">
-  div
-    b-modal#agb(header-class="errorHeader"
-      ref="modal-error"
-      :size="size"
-      :title="title"
-      header-bg-variant="danger"
-      hide-header-close=true
-      ok-only=true)
-      .modal-body
-        div(v-html="info")
-        div(v-html="message")
+div
+  b-modal#agb(header-class="errorHeader"
+    ref="modal-error"
+    :size="size"
+    :title="title"
+    header-bg-variant="danger"
+    hide-header-close=true
+    ok-only=true)
+    .modal-body
+      div(v-html="info")
+      div(v-html="message")
 </template>
 
 <script>

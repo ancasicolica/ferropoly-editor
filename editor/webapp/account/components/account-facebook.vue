@@ -2,17 +2,17 @@
   Facebook Account Info
 -->
 <template lang="pug">
-  #facebook-info
-    b-card(no-body)
-      b-card-header.title Facebook
-      b-card-body
-        b-card-text
-          h4 Facebook Profil ID
-          | {{getElement('id')}}
-          h4 Email-Adresse
-          | {{getElement('email')}}
-          h4 Avatar
-          img.avatar(:src="getElement('avatar')")
+#facebook-info
+  b-card(no-body)
+    b-card-header.title Facebook
+    b-card-body
+      b-card-text
+        h4 Facebook Profil ID
+        | {{getElement('id')}}
+        h4 Email-Adresse
+        | {{getElement('email')}}
+        h4 Avatar
+        img.avatar(:src="getElement('avatar')")
 </template>
 
 <script>

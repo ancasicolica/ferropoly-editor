@@ -17,15 +17,15 @@ ferropolyApps.forEach(app => {
 });
 
 module.exports = merge(common, {
-  mode     : 'development',
-  devtool  : 'inline-source-map',
-  devServer: {
+  mode        : 'development',
+  devtool     : 'inline-source-map',
+  devServer   : {
     contentBase: './dist'
   },
-  resolve  : {
+  resolve     : {
     alias: {
       vue: 'vue/dist/vue.js'
     },
   },
-  plugins  : plugins
+  plugins     : plugins
 });

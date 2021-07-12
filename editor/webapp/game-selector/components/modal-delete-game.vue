@@ -4,13 +4,13 @@
   11.4.2021 KC
 -->
 <template lang="pug">
-  div
-    b-modal#agb(ref="modal-delete-dialog" title="Spiel löschen?" hide-header-close=true cancel-title="Abbrechen"
-      ok-title="Lösche mein Spiel!" @ok="deleteGame")
-      .modal-body
-        p Diese Aktion löscht das Spiel mit sämtlichen Daten. Diese Aktion KANN NICHT RÜCKGÄNGIG GEMACHT werden!
-        p
-        p Möchtest Du fortfahren?
+div
+  b-modal#agb(ref="modal-delete-dialog" title="Spiel löschen?" hide-header-close=true cancel-title="Abbrechen"
+    ok-title="Lösche mein Spiel!" @ok="deleteGame")
+    .modal-body
+      p Diese Aktion löscht das Spiel mit sämtlichen Daten. Diese Aktion KANN NICHT RÜCKGÄNGIG GEMACHT werden!
+      p
+      p Möchtest Du fortfahren?
 
 </template>
 

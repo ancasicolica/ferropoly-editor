@@ -4,104 +4,102 @@
   Created: 01.05.21
 -->
 <template lang="pug">
-  #player-edit
-    modal-info-yes-no(ref="save-player")
-    modal-info-yes-no(ref="delete-player")
-    b-card(header="Gruppe bearbeiten")
-      b-row.my-1
-        b-col(sm="3")
-          label(for="team-name") Team-Name
-        b-col(sm="9")
-          b-form-input(id="team-name"
-            v-model="player.data.name"
-            type="text"
-            :state="nameState"
-            :disabled="!playerSet"
-            aria-describedby="input-team-name-feedback"
-            required)
-          b-form-invalid-feedback(id="input-team-name-feedback") Der Name muss zwischen 4 und 60 Zeichen lang sein
-      b-row.my-1
-        b-col(sm="3")
-          label(for="team-leader") Kontaktperson
-        b-col(sm="9")
-          b-form-input(id="team-leader"
-            v-model="player.data.teamLeader.name"
-            type="text"
-            :state="leaderNameState"
-            :disabled="!playerSet"
-            aria-describedby="input-team-leader-feedback"
-            required)
-          b-form-invalid-feedback(id="input-team-leader-feedback") Der Name muss zwischen 4 und 60 Zeichen lang sein
-      b-row.my-1
-        b-col(sm="3")
-          label(for="organization") Organisation
-        b-col(sm="9")
-          b-form-input(id="organization"
-            v-model="player.data.organization"
-            type="text"
-            :state="organizationState"
-            :disabled="!playerSet"
-            aria-describedby="input-org-feedback"
-            required)
-          b-form-invalid-feedback(id="input-org-feedback") Der Name muss zwischen 4 und 60 Zeichen lang sein
-      b-row.my-1
-        b-col(sm="3")
-          label(for="phone") Telefon
-        b-col(sm="9")
-          b-form-input(id="phone"
-            v-model="player.data.teamLeader.phone"
-            type="text"
-            placeholder="079 555 55 55"
-            :state="phoneState"
-            :disabled="!playerSet"
-            aria-describedby="input-tel-feedback"
-            required)
-          b-form-invalid-feedback(id="input-tel-feedback") Die Telefonnummer muss zwischen 10 und 15 Zeichen lang sein
-      b-row.my-1
-        b-col(sm="3")
-          label(for="email") E-Mail
-        b-col(sm="9")
-          b-form-input(id="email"
-            v-if="emailRequired"
-            v-model="player.data.teamLeader.email"
-            type="email"
-            placeholder="name@email.ch"
-            :state="emailState"
-            :disabled="!playerSet"
-            aria-describedby="input-mail-feedback"
-          )
-          b-form-invalid-feedback(id="input-mail-feedback" v-if="emailRequired") Die Spielsettings erfordern eine gültige Email-Adresse
+#player-edit
+  modal-info-yes-no(ref="save-player")
+  modal-info-yes-no(ref="delete-player")
+  b-card(header="Gruppe bearbeiten")
+    b-row.my-1
+      b-col(sm="3")
+        label(for="team-name") Team-Name
+      b-col(sm="9")
+        b-form-input(id="team-name"
+          v-model="player.data.name"
+          type="text"
+          :state="nameState"
+          :disabled="!playerSet"
+          aria-describedby="input-team-name-feedback"
+          required)
+        b-form-invalid-feedback(id="input-team-name-feedback") Der Name muss zwischen 4 und 60 Zeichen lang sein
+    b-row.my-1
+      b-col(sm="3")
+        label(for="team-leader") Kontaktperson
+      b-col(sm="9")
+        b-form-input(id="team-leader"
+          v-model="player.data.teamLeader.name"
+          type="text"
+          :state="leaderNameState"
+          :disabled="!playerSet"
+          aria-describedby="input-team-leader-feedback"
+          required)
+        b-form-invalid-feedback(id="input-team-leader-feedback") Der Name muss zwischen 4 und 60 Zeichen lang sein
+    b-row.my-1
+      b-col(sm="3")
+        label(for="organization") Organisation
+      b-col(sm="9")
+        b-form-input(id="organization"
+          v-model="player.data.organization"
+          type="text"
+          :state="organizationState"
+          :disabled="!playerSet"
+          aria-describedby="input-org-feedback"
+          required)
+        b-form-invalid-feedback(id="input-org-feedback") Der Name muss zwischen 4 und 60 Zeichen lang sein
+    b-row.my-1
+      b-col(sm="3")
+        label(for="phone") Telefon
+      b-col(sm="9")
+        b-form-input(id="phone"
+          v-model="player.data.teamLeader.phone"
+          type="text"
+          placeholder="079 555 55 55"
+          :state="phoneState"
+          :disabled="!playerSet"
+          aria-describedby="input-tel-feedback"
+          required)
+        b-form-invalid-feedback(id="input-tel-feedback") Die Telefonnummer muss zwischen 10 und 15 Zeichen lang sein
+    b-row.my-1
+      b-col(sm="3")
+        label(for="email") E-Mail
+      b-col(sm="9")
+        b-form-input(id="email"
+          v-if="emailRequired"
+          v-model="player.data.teamLeader.email"
+          type="email"
+          placeholder="name@email.ch"
+          :state="emailState"
+          :disabled="!playerSet"
+          aria-describedby="input-mail-feedback"
+        )
+        b-form-invalid-feedback(id="input-mail-feedback" v-if="emailRequired") Die Spielsettings erfordern eine gültige Email-Adresse
 
-          b-form-input(id="email-opt"
-            v-if="!emailRequired"
-            v-model="player.data.teamLeader.email"
-            :disabled="!playerSet"
-            type="email"
-            placeholder="name@email.ch")
-      b-row.my-1
-        b-col(sm="3")
-          label(for="remarks") Bemerkungen
-        b-col(sm="9")
-          b-form-textarea(id="remarks"
-            v-model="player.data.remarks"
-            rows="3"
-            max-rows="6"
-            :disabled="!playerSet")
-      b-row.my-1(v-if="playerToBeConfirmed")
-        b-col(sm="3")
-        b-col
-          b-alert(:show="playerToBeConfirmed") Dieses Team hat sich online angemeldet. Bestätige die Teilnahme oder lösche das Team. Wenn Du das Team bestätigst, wird der Kontaktperson ein Email mit der Bestätigung gesendet.
-      b-row
-        b-col(sm="3")
-        b-col
-          b-button.my-1(@click="savePlayer()" variant="primary" :disabled="!isSubmitButtonEnabled") Gruppe speichern&nbsp;
-            b-icon-cloud-upload
-          b-button.my-1.ml-2(@click="confirmPlayer()"  v-if="playerToBeConfirmed" :disabled="!isSubmitButtonEnabled") Gruppe bestätigen&nbsp;
-            b-icon-person-check-fill
-          b-button.my-1.ml-2(@click="deletePlayer()" variant="danger" :disabled="!playerSet") Gruppe löschen&nbsp;
-            b-icon-trash
-
-
+        b-form-input(id="email-opt"
+          v-if="!emailRequired"
+          v-model="player.data.teamLeader.email"
+          :disabled="!playerSet"
+          type="email"
+          placeholder="name@email.ch")
+    b-row.my-1
+      b-col(sm="3")
+        label(for="remarks") Bemerkungen
+      b-col(sm="9")
+        b-form-textarea(id="remarks"
+          v-model="player.data.remarks"
+          rows="3"
+          max-rows="6"
+          :disabled="!playerSet")
+    b-row.my-1(v-if="playerToBeConfirmed")
+      b-col(sm="3")
+      b-col
+        b-alert(:show="playerToBeConfirmed") Dieses Team hat sich online angemeldet. Bestätige die Teilnahme oder lösche das Team. Wenn Du das Team bestätigst, wird der Kontaktperson ein Email mit der Bestätigung gesendet.
+    b-row
+      b-col(sm="3")
+      b-col
+        b-button.my-1(@click="savePlayer()" variant="primary" :disabled="!isSubmitButtonEnabled") Gruppe speichern&nbsp;
+          b-icon-cloud-upload
+        b-button.my-1.ml-2(@click="confirmPlayer()"  v-if="playerToBeConfirmed" :disabled="!isSubmitButtonEnabled") Gruppe bestätigen&nbsp;
+          b-icon-person-check-fill
+        b-button.my-1.ml-2(@click="deletePlayer()" variant="danger" :disabled="!playerSet") Gruppe löschen&nbsp;
+          b-icon-trash
 </template>
 
 <script>

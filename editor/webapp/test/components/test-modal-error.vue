@@ -4,28 +4,27 @@
   Created: 30.04.21
 -->
 <template lang="pug">
-  #test-modal-error
-    modal-error(ref="err1")
-    modal-error(ref="err2" size="xl")
-    b-row
-      b-col
-        h1 Modal Error Tests
-    b-row
-      b-col
-        p Zeigt einen Error-Dialog mit HTML
-      b-col
-        b-button(@click="test1") Test 1
-    b-row
-      b-col
-        p Zeigt einen Error-Dialog ohne message
-      b-col
-        b-button(@click="test2") Test 2
-    b-row
-      b-col
-        p Zeigt einen Error-Dialog in XL Format
-      b-col
-        b-button(@click="test3") Test 3
-
+#test-modal-error
+  modal-error(ref="err1")
+  modal-error(ref="err2" size="xl")
+  b-row
+    b-col
+      h1 Modal Error Tests
+  b-row
+    b-col
+      p Zeigt einen Error-Dialog mit HTML
+    b-col
+      b-button(@click="test1") Test 1
+  b-row
+    b-col
+      p Zeigt einen Error-Dialog ohne message
+    b-col
+      b-button(@click="test2") Test 2
+  b-row
+    b-col
+      p Zeigt einen Error-Dialog in XL Format
+    b-col
+      b-button(@click="test3") Test 3
 </template>
 
 <script>

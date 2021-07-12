@@ -2,19 +2,19 @@
   The Pricelist root tag
 -->
 <template lang="pug">
-  #pricelist
-    menu-bar(:elements="menuElements" show-user-box=true @pricelist-clicked="onPricelistClicked"
-      @game-info-clicked="onGameInfoClicked" @pricelist-print="onPrintClicked"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/preisliste/")
-    div(v-if="panel==='error'")
-      h1 Hoppla, da gibt es ein Problem
-      | Das Spiel wurde entweder nicht gefunden oder Du hast keine Zugriffsrechte dafür.
-    div(v-if="panel==='list'")
-      pricelist(:pricelist="pricelist" :game-name="gameplay.gamename" :game-date="gameplay.scheduling.gameDate"
-        :game-start="gameplay.scheduling.gameStart" :game-end="gameplay.scheduling.gameEnd",
-        :version="gameplay.log.priceListVersion" :created="gameplay.log.priceListCreated")
-    div(v-if="panel==='info'")
-      pricelist-info(:gameplay="gameplay" :game-url="gameUrl")
+#pricelist
+  menu-bar(:elements="menuElements" show-user-box=true @pricelist-clicked="onPricelistClicked"
+    @game-info-clicked="onGameInfoClicked" @pricelist-print="onPrintClicked"
+    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/preisliste/")
+  div(v-if="panel==='error'")
+    h1 Hoppla, da gibt es ein Problem
+    | Das Spiel wurde entweder nicht gefunden oder Du hast keine Zugriffsrechte dafür.
+  div(v-if="panel==='list'")
+    pricelist(:pricelist="pricelist" :game-name="gameplay.gamename" :game-date="gameplay.scheduling.gameDate"
+      :game-start="gameplay.scheduling.gameStart" :game-end="gameplay.scheduling.gameEnd",
+      :version="gameplay.log.priceListVersion" :created="gameplay.log.priceListCreated")
+  div(v-if="panel==='info'")
+    pricelist-info(:gameplay="gameplay" :game-url="gameUrl")
 </template>
 
 <script>

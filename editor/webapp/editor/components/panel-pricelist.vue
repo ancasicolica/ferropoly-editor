@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-pricelist
-    h1 panel-pricelist
+#panel-pricelist
+  h1 panel-pricelist
 
 </template>
 

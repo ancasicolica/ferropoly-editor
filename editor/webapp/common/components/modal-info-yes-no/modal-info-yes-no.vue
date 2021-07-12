@@ -4,19 +4,19 @@
   29.4.2021 KC
 -->
 <template lang="pug">
-  div
-    b-modal(ref="modal-info"
-      :title="title"
-      :size="size"
-      header-bg-variant="info"
-      hide-header-close=true
-      cancel-title="Nein"
-      ok-title="Ja"
-      @cancel="deny",
-      @ok="confirm")
-      .modal-body
-        div(v-html="info")
-        div(v-html="message")
+div
+  b-modal(ref="modal-info"
+    :title="title"
+    :size="size"
+    header-bg-variant="info"
+    hide-header-close=true
+    cancel-title="Nein"
+    ok-title="Ja"
+    @cancel="deny",
+    @ok="confirm")
+    .modal-body
+      div(v-html="info")
+      div(v-html="message")
 </template>
 
 <script>

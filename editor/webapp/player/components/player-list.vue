@@ -4,10 +4,10 @@
   Created: 01.05.21
 -->
 <template lang="pug">
-  #player-list
-    b-card(:header="title")
-      b-list-group.p-0
-        player-info(v-for="p in players" :key="p.uuid" :player="p" @click="onClick(p)")
+#player-list
+  b-card(:header="title")
+    b-list-group.p-0
+      player-info(v-for="p in players" :key="p.uuid" :player="p" @click="onClick(p)")
 
 </template>
 

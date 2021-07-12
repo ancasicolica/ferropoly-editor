@@ -82,6 +82,7 @@ let initServer = function () {
     secret           : 'ferropolyIsAGameWithAVeryLargePlayground',
     resave           : true,
     saveUninitialized: false,
+    httpOnly         : false,
     cookie           : {
       secure: 'auto'
     },

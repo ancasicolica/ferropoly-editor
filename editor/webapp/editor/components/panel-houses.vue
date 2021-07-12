@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-houses
-    h1 panel-houses
+#panel-houses
+  h1 panel-houses
 
 </template>
 

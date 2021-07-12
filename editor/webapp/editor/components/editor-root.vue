@@ -4,21 +4,21 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #editor-root
-    menu-bar(:elements="menuElements"
-      show-user-box=true
-      @panel-change="onPanelChange"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/editor/")
-    modal-error(title="Fehler" ref='editor-error')
-    b-container(fluid=true)
-      panel-basic(v-if="panel==='panel-basic'")
-      panel-create(v-if="panel==='panel-create'")
-      panel-houses(v-if="panel==='panel-houses'")
-      panel-player(v-if="panel==='panel-player'")
-      panel-pricelist(v-if="panel==='panel-pricelist'")
-      panel-properties(v-if="panel==='panel-properties'")
-      panel-rent(v-if="panel==='panel-rent'")
-      panel-sorting(v-if="panel==='panel-sorting'")
+#editor-root
+  menu-bar(:elements="menuElements"
+    show-user-box=true
+    @panel-change="onPanelChange"
+    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/editor/")
+  modal-error(title="Fehler" ref='editor-error')
+  b-container(fluid=true)
+    panel-basic(v-if="panel==='panel-basic'")
+    panel-create(v-if="panel==='panel-create'")
+    panel-houses(v-if="panel==='panel-houses'")
+    panel-player(v-if="panel==='panel-player'")
+    panel-pricelist(v-if="panel==='panel-pricelist'")
+    panel-properties(v-if="panel==='panel-properties'")
+    panel-rent(v-if="panel==='panel-rent'")
+    panel-sorting(v-if="panel==='panel-sorting'")
 
 </template>
 

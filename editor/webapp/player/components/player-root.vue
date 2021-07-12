@@ -5,21 +5,21 @@
   Created: 01.05.21
 -->
 <template lang="pug">
-  #player-root
-    modal-error(ref="err1")
-    menu-bar(:elements="menuElements" show-user-box=true
-      @add-new-team="addNewTeam"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/player/")
-    b-container(fluid=true)
-      b-row.mt-1
-        b-col(sm="12" md="4" lg="5" xl="6")
-          player-list(:players="teams" @player-selected="playerSelected")
-        b-col(sm="12" md="8" lg="7" xl="6")
-          player-edit(ref="edit"
-            :email-required="emailRequired"
-            @save-player="savePlayer",
-            @delete-player="deletePlayer",
-            @confirm-player="confirmPlayer")
+#player-root
+  modal-error(ref="err1")
+  menu-bar(:elements="menuElements" show-user-box=true
+    @add-new-team="addNewTeam"
+    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/player/")
+  b-container(fluid=true)
+    b-row.mt-1
+      b-col(sm="12" md="4" lg="5" xl="6")
+        player-list(:players="teams" @player-selected="playerSelected")
+      b-col(sm="12" md="8" lg="7" xl="6")
+        player-edit(ref="edit"
+          :email-required="emailRequired"
+          @save-player="savePlayer",
+          @delete-player="deletePlayer",
+          @confirm-player="confirmPlayer")
 </template>
 
 <script>

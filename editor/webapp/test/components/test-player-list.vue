@@ -4,13 +4,13 @@
   Created: 02.05.21
 -->
 <template lang="pug">
-  #test-player-list
-    b-row
-      b-col
-        h1 Spieler Liste Test: player-list
-    b-row
-      b-col
-        player-list(:players="players" @player-selected="userSelected")
+#test-player-list
+  b-row
+    b-col
+      h1 Spieler Liste Test: player-list
+  b-row
+    b-col
+      player-list(:players="players" @player-selected="userSelected")
 
 </template>
 

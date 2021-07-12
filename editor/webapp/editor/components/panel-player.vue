@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-player
-    h1 panel-player
+#panel-player
+  h1 panel-player
 
 </template>
 

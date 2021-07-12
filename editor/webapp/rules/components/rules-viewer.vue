@@ -4,9 +4,9 @@
   Created: 28.04.21
 -->
 <template lang="pug">
-  #rules-viewer
-    b-col(sm="12")
-      div(v-html="rules.text")
+#rules-viewer
+  b-col(sm="12")
+    div(v-html="rules.text")
 
 </template>
 

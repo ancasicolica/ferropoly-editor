@@ -2,31 +2,31 @@
 
 -->
 <template lang="pug">
-  #pricelist-info-game
-    table.table.table-sm
-      tr
-        td Guthaben zu Beginn des Spieles
-        td {{getGpProperty('gameParams.startCapital') | formatPrice}}
-      tr
-        td Startgeld pro Spielrunde
-        td {{getGpProperty('gameParams.interest') | formatPrice}}
-      tr
-        td Dauer einer Spielrunde
-        td {{getGpProperty('gameParams.interestInterval')}} min
-      tr
-        td Anzahl Zinsrunden vor Spielende
-        td {{getGpProperty('gameParams.interestCyclesAtEndOfGame')}}
-      tr
-        td Strafzins bei negativem Vermögen
-        td {{getGpProperty('gameParams.debtInterest')}} %
-      tr
-        td Link zur Preisliste für Teams
-        td
-          a(:href='getPriceListUrl()' target='_blank') {{getPriceListUrl()}}
-      tr
-        td Link zur Online-Anmeldung
-        td
-          a(:href='getJoinUrl()' target='_blank') {{getJoinUrl()}}
+#pricelist-info-game
+  table.table.table-sm
+    tr
+      td Guthaben zu Beginn des Spieles
+      td {{getGpProperty('gameParams.startCapital') | formatPrice}}
+    tr
+      td Startgeld pro Spielrunde
+      td {{getGpProperty('gameParams.interest') | formatPrice}}
+    tr
+      td Dauer einer Spielrunde
+      td {{getGpProperty('gameParams.interestInterval')}} min
+    tr
+      td Anzahl Zinsrunden vor Spielende
+      td {{getGpProperty('gameParams.interestCyclesAtEndOfGame')}}
+    tr
+      td Strafzins bei negativem Vermögen
+      td {{getGpProperty('gameParams.debtInterest')}} %
+    tr
+      td Link zur Preisliste für Teams
+      td
+        a(:href='getPriceListUrl()' target='_blank') {{getPriceListUrl()}}
+    tr
+      td Link zur Online-Anmeldung
+      td
+        a(:href='getJoinUrl()' target='_blank') {{getJoinUrl()}}
 </template>
 
 

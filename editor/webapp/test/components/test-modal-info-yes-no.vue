@@ -4,35 +4,34 @@
   Created: 30.04.21
 -->
 <template lang="pug">
-  #test-modal-info-yes-no
-    modal-info-yes-no(ref="info1" size="sm" @yes="onAccept" @no="onDeny")
-    modal-info-yes-no(ref="info2" @yes="onAccept" @no="onDeny")
-    modal-info-yes-no(ref="info3" size="xl" @yes="onAccept" @no="onDeny")
-    b-row
-      b-col
-        h1 Modal Info Yes-No Tests
-    b-row
-      b-col
-        p Zeigt einen Info-Dialog mit HTML, in sm und benutzt Callbacks (-> Console)
-      b-col
-        b-button(@click="test1") Test 1
-    b-row
-      b-col
-        p Zeigt einen Info-Dialog ohne message (default: md)
-      b-col
-        b-button(@click="test2") Test 2
-    b-row
-      b-col
-        p Zeigt einen Info-Dialog in XL Format
-      b-col
-        b-button(@click="test3") Test 3
-    b-row
-      b-col
-        h3 Resultat
-    b-row
-      b-col
-        p {{result}}
-
+#test-modal-info-yes-no
+  modal-info-yes-no(ref="info1" size="sm" @yes="onAccept" @no="onDeny")
+  modal-info-yes-no(ref="info2" @yes="onAccept" @no="onDeny")
+  modal-info-yes-no(ref="info3" size="xl" @yes="onAccept" @no="onDeny")
+  b-row
+    b-col
+      h1 Modal Info Yes-No Tests
+  b-row
+    b-col
+      p Zeigt einen Info-Dialog mit HTML, in sm und benutzt Callbacks (-> Console)
+    b-col
+      b-button(@click="test1") Test 1
+  b-row
+    b-col
+      p Zeigt einen Info-Dialog ohne message (default: md)
+    b-col
+      b-button(@click="test2") Test 2
+  b-row
+    b-col
+      p Zeigt einen Info-Dialog in XL Format
+    b-col
+      b-button(@click="test3") Test 3
+  b-row
+    b-col
+      h3 Resultat
+  b-row
+    b-col
+      p {{result}}
 </template>
 
 <script>

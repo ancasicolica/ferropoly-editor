@@ -5,23 +5,23 @@
   Created: 30.04.21
 -->
 <template lang="pug">
-  #test-root
-    menu-bar(:elements="menuElements"
-      :show-user-box="showUserBox"
-      @panel-change="onPanelChange"
-      @test-event="onTestEvent"
-      help-url="https://www.ferropoly.ch/")
-    b-container(fluid=true)
-      div(v-if="panel==='top'")
-        h1 Ferropoly Component Tests
-      test-menu-bar(v-if="panel==='menuBar'")
-      test-modal-error(v-if="panel==='modalError'")
-      test-modal-info-yes-no(v-if="panel==='modalInfo'")
-      test-player-info(v-if="panel==='playerInfo'")
-      test-player-list(v-if="panel==='playerList'")
-      test-player-edit(v-if="panel==='playerEdit'")
-      test-admin-entry(v-if="panel==='adminEntry'")
-      test-game-board(v-if="panel==='gameBoard'")
+#test-root
+  menu-bar(:elements="menuElements"
+    :show-user-box="showUserBox"
+    @panel-change="onPanelChange"
+    @test-event="onTestEvent"
+    help-url="https://www.ferropoly.ch/")
+  b-container(fluid=true)
+    div(v-if="panel==='top'")
+      h1 Ferropoly Component Tests
+    test-menu-bar(v-if="panel==='menuBar'")
+    test-modal-error(v-if="panel==='modalError'")
+    test-modal-info-yes-no(v-if="panel==='modalInfo'")
+    test-player-info(v-if="panel==='playerInfo'")
+    test-player-list(v-if="panel==='playerList'")
+    test-player-edit(v-if="panel==='playerEdit'")
+    test-admin-entry(v-if="panel==='adminEntry'")
+    test-game-board(v-if="panel==='gameBoard'")
 </template>
 
 <script>

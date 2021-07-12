@@ -5,22 +5,22 @@
   Created: 28.04.21
 -->
 <template lang="pug">
-  #rules
-    modal-error(title="Fehler" ref='error')
-    modal-info-yes-no(title="Info" ref="info" size="xl" @yes="loadLocallyStoredData" @no="discardLocallyStoredData")
-    menu-bar(:elements="menuElements" show-user-box=true
-      @rules-view="showRules"
-      @rules-editor="showEditor"
-      @rules-info="showInfo"
-      @rules-print="printRules"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/spielregeln/")
-    b-container(fluid=true)
-      b-row
-        rules-viewer(v-if="currentView === 'view'" :rules="rules")
-        rules-editor(v-if="currentView === 'editor'"
-          :rules="rules" :game-id="gameId"
-          @reload-rules="loadRules")
-        rules-info(v-if="currentView === 'info'" :rules="rules")
+#rules
+  modal-error(title="Fehler" ref='error')
+  modal-info-yes-no(title="Info" ref="info" size="xl" @yes="loadLocallyStoredData" @no="discardLocallyStoredData")
+  menu-bar(:elements="menuElements" show-user-box=true
+    @rules-view="showRules"
+    @rules-editor="showEditor"
+    @rules-info="showInfo"
+    @rules-print="printRules"
+    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/spielregeln/")
+  b-container(fluid=true)
+    b-row
+      rules-viewer(v-if="currentView === 'view'" :rules="rules")
+      rules-editor(v-if="currentView === 'editor'"
+        :rules="rules" :game-id="gameId"
+        @reload-rules="loadRules")
+      rules-info(v-if="currentView === 'info'" :rules="rules")
 
 </template>
 

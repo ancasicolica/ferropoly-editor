@@ -4,9 +4,9 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #test-map
-    h1 test-map
-    game-board
+#test-map
+  h1 test-map
+  game-board
 
 </template>
 

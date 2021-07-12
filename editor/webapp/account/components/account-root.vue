@@ -2,23 +2,23 @@
   Account Info
 -->
 <template lang="pug">
-  #account
-    menu-bar(show-user-box=true
-      help-url="https://www.ferropoly.ch/hilfe/general/account")
-    b-container(fluid=true v-if="dataValid")
-      b-row
-        b-col
-          h1 Account Daten von {{getElement('personalData.forename')}} {{getElement('personalData.surname')}}
-      b-row
-        b-col(xs="12" sm="12" md="6" lg="4" xl="4")
-          account-general(:info="getElement('personalData', {})")
-        b-col(xs="12" sm="12" md="6" lg="4" xl="4" v-if="userInfo.google.valid")
-          account-google(:info="getElement('google', {})")
-        b-col(xs="12" sm="12" md="6" lg="4" xl="4" v-if="userInfo.facebook.valid")
-          account-facebook(:info="getElement('facebook', {})")
-    b-jumbotron(v-if="!dataValid" header="Fehler" lead="Benutzerdaten konnten nicht geladen werden:")
-      p {{errorMessage}}
-      b-button(href="/" variant="primary") Zurück zur Hauptseite
+#account
+  menu-bar(show-user-box=true
+    help-url="https://www.ferropoly.ch/hilfe/general/account")
+  b-container(fluid=true v-if="dataValid")
+    b-row
+      b-col
+        h1 Account Daten von {{getElement('personalData.forename')}} {{getElement('personalData.surname')}}
+    b-row
+      b-col(xs="12" sm="12" md="6" lg="4" xl="4")
+        account-general(:info="getElement('personalData', {})")
+      b-col(xs="12" sm="12" md="6" lg="4" xl="4" v-if="userInfo.google.valid")
+        account-google(:info="getElement('google', {})")
+      b-col(xs="12" sm="12" md="6" lg="4" xl="4" v-if="userInfo.facebook.valid")
+        account-facebook(:info="getElement('facebook', {})")
+  b-jumbotron(v-if="!dataValid" header="Fehler" lead="Benutzerdaten konnten nicht geladen werden:")
+    p {{errorMessage}}
+    b-button(href="/" variant="primary") Zurück zur Hauptseite
 
 </template>
 

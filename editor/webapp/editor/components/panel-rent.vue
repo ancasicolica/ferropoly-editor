@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-rent
-    h1 panel-rent
+#panel-rent
+  h1 panel-rent
 
 </template>
 

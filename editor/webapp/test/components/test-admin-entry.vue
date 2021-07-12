@@ -4,12 +4,12 @@
   Created: 05.06.21
 -->
 <template lang="pug">
-  #test-admin-entry
-    h1 Admin Eintrag Editor
-    admin-entry(title="Admin 1" :entry="admins[0]")
-    admin-entry(title="Admin 2" :entry="admins[1]")
-    admin-entry(title="Admin 3" :entry="admins[2]")
-    admin-entry(title="Admin 3" :entry="admins[3]")
+#test-admin-entry
+  h1 Admin Eintrag Editor
+  admin-entry(title="Admin 1" :entry="admins[0]")
+  admin-entry(title="Admin 2" :entry="admins[1]")
+  admin-entry(title="Admin 3" :entry="admins[2]")
+  admin-entry(title="Admin 3" :entry="admins[3]")
 
 </template>
 

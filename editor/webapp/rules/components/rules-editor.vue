@@ -5,6 +5,7 @@
   Created: 28.04.21
 -->
 <template lang="pug">
+#rules-editor
   b-col(sm="12" md="12" lg="12" xl="12")
     modal-save-rules(ref="save-rules" @save-rules-confirmed="saveRulesConfimed")
     modal-error(title="Fehler" ref='error')

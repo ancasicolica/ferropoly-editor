@@ -4,8 +4,8 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-  #panel-properties
-    h1 panel-properties
+#panel-properties
+  h1 panel-properties
 
 </template>
 

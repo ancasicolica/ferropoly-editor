@@ -2,10 +2,10 @@
  The welcome bar
 -->
 <template lang="pug">
-  div
-    #info-header(v-bind:style="{backgroundImage: backgroundImage}")
-      #info-welcome
-        h1.info-header {{welcomeText}}
+div
+  #info-header(v-bind:style="{backgroundImage: backgroundImage}")
+    #info-welcome
+      h1.info-header {{welcomeText}}
 </template>
 
 <script>
