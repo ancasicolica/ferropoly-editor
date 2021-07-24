@@ -12,8 +12,9 @@
 
 <script>
 import {Loader} from '@googlemaps/js-api-loader';
-import { WmsMapType } from '@googlemaps/ogc';
+import {WmsMapType} from '@googlemaps/ogc';
 import $ from 'jquery';
+
 
 // Hell, yes, this is the API Key in code, git and everywhere... So far I was not able
 // to find a better solution, have to check this out. But don't be too happy about finding
@@ -29,11 +30,10 @@ const loader = new Loader({
 
 const mapOptionsDefaults = {
   center: {
-    lat: 46.85742146786182,
-    lng: 8.248587563195557
+    lat: 47.35195,
+    lng: 7.90781
   },
   zoom  : 8,
-
 };
 
 export default {
@@ -48,10 +48,14 @@ export default {
   },
   data : function () {
     return {
-      mapElement: undefined
+      mapElement: undefined,
+      map       : undefined
     };
   },
   model: {},
+  /**
+   * When Map was mounted
+   */
   async mounted() {
     let self = this;
     loader.loadCallback(e => {
@@ -61,28 +65,34 @@ export default {
         this.mapOptions.mapTypeControlOptions = {
           mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
         };
-        let m = new google.maps.Map(document.getElementById('map'), this.mapOptions);
-        console.log('Google Map Initialized', m);
+
+        if (!this.mapOptions.center) {
+          this.mapOptions.center = mapOptionsDefaults.center;
+        }
+
+        self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
         let swissMap = WmsMapType({
-          url: "https://wms.geo.admin.ch",
-           layers: "ch.swisstopo.pixelkarte-farbe",
-          name: "Swiss Topo",
-          alt: "swiss_top",
-          version: '1.1.1',
+          url        : 'https://wms.geo.admin.ch',
+          layers     : 'ch.swisstopo.pixelkarte-farbe',
+          name       : 'Swiss Topo',
+          alt        : 'swiss_topo',
+          version    : '1.1.1',
           transparent: false,
-          maxZoom: 55,
-          format: 'image/jpeg'
+          maxZoom    : 55,
+          format     : 'image/jpeg'
         });
 
-        m.mapTypes.set("swisstopo", swissMap);
-        m.setMapTypeId("swisstopo");
-        //m.overlayMapTypes.push(swissMap);
+        self.map.mapTypes.set('swisstopo', swissMap);
+        self.map.setMapTypeId('swisstopo');
         self.resizeHandler();
+        console.log('Google Map Initialized');
       }
     });
   },
+  /**
+   * When Map was Created
+   */
   created() {
-
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler(null);
   },
@@ -91,6 +101,9 @@ export default {
   },
   computed  : {},
   methods   : {
+    /**
+     * Creates the maximum Size
+     */
     resizeHandler() {
       this.mapElement = $('#map');
       let parentWidth = this.mapElement.parent().width();
@@ -99,8 +112,13 @@ export default {
       let offsetMap = this.mapElement.offset();
       console.log(hDoc, offsetMap);
 
-      this.mapElement.height(hDoc - offsetMap.top);
-      this.mapElement.width(parentWidth);
+      if (this.mapElement && offsetMap) {
+        this.mapElement.height(hDoc - offsetMap.top);
+        this.mapElement.width(parentWidth);
+      } else {
+        console.log('Map not ready yet');
+      }
+
 
     }
 
@@ -114,6 +132,6 @@ export default {
 #map {
   width: 400px;
   height: 400px;
-  background-color: red;
+  background-color: lightgrey;
 }
 </style>
