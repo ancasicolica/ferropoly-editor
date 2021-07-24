@@ -70,6 +70,7 @@
     "winston": "3.3.3"
   },
   "devDependencies": {
+    "@googlemaps/ogc": "1.0.0",
     "@googlemaps/js-api-loader": "1.12.1",
     "css-loader": "5.2.6",
     "eslint": "7.30.0",

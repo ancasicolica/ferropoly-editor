@@ -6,19 +6,31 @@
 <template lang="pug">
 #test-map
   h1 test-map
-  game-board
+  b-row
+    b-col(sm="12" md="6" lg="8" xl="8")
+      ferropoly-map
+    b-col
+      h3 test
+      p dasdsad
+      p dasdasdf
+      p awrfdsdf
+      p wewe
 
 </template>
 
 <script>
 
-import GameBoard from '../../common/components/game-board/game-board.vue';
+import FerropolyMap from '../../common/components/ferropoly-map/ferropoly-map.vue';
 
 export default {
-  name      : 'test-game-board',
+  name      : 'test-ferropoly-map',
   props     : {},
   data      : function () {
-    return {};
+    return {
+      mapSettings: {
+
+      }
+    };
   },
   model     : {},
   created   : function () {
@@ -26,7 +38,7 @@ export default {
   },
   computed  : {},
   methods   : {},
-  components: {GameBoard},
+  components: {FerropolyMap},
   filters   : {}
 }
 </script>
