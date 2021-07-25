@@ -3,6 +3,7 @@
  * 1.5.2021 KC
  */
 import Vue from 'vue';
+import Vuex from 'vuex';
 import {BootstrapVue} from 'bootstrap-vue';
 import $ from 'jquery';
 import VueRouter from 'vue-router';
@@ -10,11 +11,12 @@ import VueRouter from 'vue-router';
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-
+import storeEditor from './store/index.js';
 // Import components
 import EditorRoot from './components/editor-root.vue';
 
 Vue.use(VueRouter);
+Vue.use(Vuex);
 
 Vue.component('editor-root', EditorRoot);
 
@@ -35,7 +37,7 @@ $(document).ready(function () {
     created: function () {
       console.log('created');
     },
-    data   : {
-    }
+    store  : storeEditor,
+    data   : {}
   });
 });
