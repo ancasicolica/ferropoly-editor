@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   #contact-info
-    b-card(title="Allgemeines")
+    ferro-card(title="Allgemeines")
       label(for="input-game-name") Spielname
       b-form-input(
         id="input-game-name"
@@ -39,6 +39,7 @@
 
 <script>
 import { mapFields } from 'vuex-map-fields';
+import FerroCard from '../../../common/components/ferro-card/ferro-card.vue';
 
 export default {
   name      : 'contact-info',
@@ -59,7 +60,7 @@ export default {
     ])
   },
   methods   : {},
-  components: {},
+  components: {FerroCard},
   filters   : {}
 }
 </script>

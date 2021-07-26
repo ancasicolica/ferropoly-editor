@@ -7,17 +7,13 @@
   #panel-basic
     h1 Spieldaten
     b-row
-      b-col
+      b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         contact-info
-      b-col
+      b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         game-timing
-      b-col
+      b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         game-info
-      b-col
-        b-form-input(v-model="organisatorName")
-        b-form-input(v-model="organisation")
-        p {{organisatorName}}
-        p {{organisation}}
+        b-button(variant="primary" v-on:click="saveAndContinue") Speichern und weiter
 </template>
 
 <script>
@@ -34,28 +30,16 @@ export default {
   },
   model     : {},
   created   : function () {
-    console.log(this.$store.state.gameplay.owner);
-    this.$store.dispatch({type: 'fetchData', gameId: 'roomy-patch'});
+
   },
   computed  : {
-    organisatorName: {
-      get() {
-        return this.$store.state.gameplay.owner.organisatorName;
-      },
-      set(val) {
-        this.$store.commit('updateOrganisatorName', val);
-      }
-    },
-    organisation   : {
-      get() {
-        return this.$store.state.gameplay.owner.organisation;
-      },
-      set(val) {
-        this.$store.commit('updateOrganisation', val);
-      }
+  },
+  methods   : {
+    saveAndContinue() {
+      console.log('save and continue');
+      this.$emit('panel-change', 'panel-player');
     }
   },
-  methods   : {},
   components: {ContactInfo, GameInfo, GameTiming},
   filters   : {}
 }

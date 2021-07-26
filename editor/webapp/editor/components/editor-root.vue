@@ -1,5 +1,5 @@
 <!---
-
+  Root Element of the Editor
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 06.06.21
 -->
@@ -11,14 +11,17 @@
     help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/editor/")
   modal-error(title="Fehler" ref='editor-error')
   b-container(fluid=true)
-    panel-basic(v-if="panel==='panel-basic'")
-    panel-create(v-if="panel==='panel-create'")
-    panel-houses(v-if="panel==='panel-houses'")
-    panel-player(v-if="panel==='panel-player'")
-    panel-pricelist(v-if="panel==='panel-pricelist'")
-    panel-properties(v-if="panel==='panel-properties'")
-    panel-rent(v-if="panel==='panel-rent'")
-    panel-sorting(v-if="panel==='panel-sorting'")
+    div(v-if="!dataLoaded")
+      keep-waiting
+    div(v-if="dataLoaded")
+      panel-basic(v-if="panel==='panel-basic'" @panel-change="onPanelChange")
+      panel-create(v-if="panel==='panel-create'")
+      panel-houses(v-if="panel==='panel-houses'")
+      panel-player(v-if="panel==='panel-player'")
+      panel-pricelist(v-if="panel==='panel-pricelist'")
+      panel-properties(v-if="panel==='panel-properties'")
+      panel-rent(v-if="panel==='panel-rent'")
+      panel-sorting(v-if="panel==='panel-sorting'")
 
 </template>
 
@@ -33,11 +36,11 @@ import PanelProperties from './panel-properties.vue';
 import PanelRent from './panel-rent.vue';
 import PanelSorting from './panel-sorting.vue';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
+import KeepWaiting from '../../common/components/keep-waiting/keep-waiting.vue';
 
 import {getItem, setItem} from '../../common/lib/sessionStorage';
 import {last, split} from 'lodash';
 import {getAuthToken} from '../../common/adapter/authToken';
-import {loadGame} from '../../common/adapter/gameplay';
 
 export default {
   name   : 'editor-root',
@@ -61,9 +64,7 @@ export default {
       ],
       panel       : 'panel-basic',
       gameId      : 'none',
-      authToken   : 'none',
-      gameplay    : {},
-      properties  : []
+      authToken   : 'none'
     };
   },
   model  : {},
@@ -75,33 +76,28 @@ export default {
     self.gameId    = last(elements);
 
     self.panel = getItem(`${this.gameId}-editor-panel`, 'panel-basic');
-    // Get Game Data and Authtoken
-    loadGame(self.gameId, (err, data) => {
+    // Get Authtoken
+    getAuthToken((err, token) => {
       if (err) {
-        console.error('gameplay', err);
+        console.error('authToken', err);
         this.$refs['editor-error'].showDialog({
           title: 'Fehler',
           info : 'Authentisierungsfehler, bitte logge dich erneut ein und versuche es erneut'
         });
         return;
       }
-      self.gameplay   = data.gameplay;
-      self.properties = data.properties;
-      getAuthToken((err, token) => {
-        if (err) {
-          console.error('authToken', err);
-          this.$refs['editor-error'].showDialog({
-            title: 'Fehler',
-            info : 'Authentisierungsfehler, bitte logge dich erneut ein und versuche es erneut'
-          });
-          return;
-        }
-        self.authToken = token;
-      });
+      self.authToken = token;
     });
   },
 
-  computed  : {},
+  computed  : {
+
+    dataLoaded: {
+      get() {
+        return this.$store.state.apiCallsRemaining === 0;
+      }
+    }
+  },
   methods   : {
     /**
      * Panel change from menu bar / component
@@ -123,10 +119,10 @@ export default {
     PanelProperties,
     PanelRent,
     PanelSorting,
-    ModalError
-  }
-  ,
-  filters: {}
+    ModalError,
+    KeepWaiting
+  },
+  filters   : {}
 }
 </script>
 

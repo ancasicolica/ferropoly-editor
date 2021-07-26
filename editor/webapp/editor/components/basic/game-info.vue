@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   #game-info
-
+   h1 game info
 
 </template>
 
