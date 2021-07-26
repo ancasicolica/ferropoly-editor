@@ -6,6 +6,7 @@
 
 import {loadGame} from '../../../common/adapter/gameplay.js';
 import {get, set} from 'lodash';
+import { getField, updateField } from 'vuex-map-fields';
 
 /**
  * Sets a property in the state, structure of the property must be the same as in the provided object
@@ -33,34 +34,10 @@ const gameplay = {
     }
   }),
   getters  : {
-    organisatorName: state => {
-      return state.owner.organisatorName;
-    },
-    organisation   : state => {
-      return state.owner.organisation;
-    }
+    getField,
   },
   mutations: {
-    updateOrganisatorName(state, n) {
-      console.log('updateOrganisatorName', n);
-      state.owner.organisatorName = n;
-    },
-    UpdateOrganisation(state, n) {
-      console.log('updateOrganisation', n);
-      state.owner.organisation = n;
-    },
-    updateGamename(state, n) {
-      console.log('updateGamename', n);
-      state.gamename = n;
-    },
-    updateOrganisatorEmail(state, n) {
-      console.log('updateOrganisatorEmail', n);
-      state.owner.organisatorEmail = n;
-    },
-    updateOrganisatorPhone(state, n) {
-      console.log('updateOrganisatorPhone', n);
-      state.owner.organisatorPhone = n;
-    }
+    updateField,
   },
   actions  : {
     /**

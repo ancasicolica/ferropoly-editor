@@ -1,5 +1,5 @@
 <!---
-
+  Input for the basics
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 26.07.21
 -->
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import { mapFields } from 'vuex-map-fields';
+
 export default {
   name      : 'contact-info',
   props     : {},
@@ -48,46 +50,13 @@ export default {
   created   : function () {
   },
   computed  : {
-    gamename: {
-      get() {
-        return this.$store.state.gameplay.gamename;
-      },
-      set(val) {
-        this.$store.commit('updateGamename', val);
-      }
-    },
-    organisatorName: {
-      get() {
-        return this.$store.state.gameplay.owner.organisatorName;
-      },
-      set(val) {
-        this.$store.commit('updateOrganisatorName', val);
-      }
-    },
-    organisation: {
-      get() {
-        return this.$store.state.gameplay.owner.organisation;
-      },
-      set(val) {
-        this.$store.commit('UpdateOrganisation', val);
-      }
-    },
-    organisatorEmail: {
-      get() {
-        return this.$store.state.gameplay.owner.organisatorEmail;
-      },
-      set(val) {
-        this.$store.commit('updateOrganisatorEmail', val);
-      }
-    },
-    organisatorPhone: {
-      get() {
-        return this.$store.state.gameplay.owner.organisatorPhone;
-      },
-      set(val) {
-        this.$store.commit('updateOrganisatorPhone', val);
-      }
-    }
+    ...mapFields([
+        'gamename',
+        'owner.organisatorName',
+        'owner.organisation',
+        'owner.organisatorEmail',
+        'owner.organisatorPhone'
+    ])
   },
   methods   : {},
   components: {},
