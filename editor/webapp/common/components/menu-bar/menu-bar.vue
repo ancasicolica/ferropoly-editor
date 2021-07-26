@@ -36,13 +36,13 @@
           b-icon-question-circle-fill
         b-nav-item-dropdown(right='' v-if="showUserBox")
           template(#button-content='')
-            em Benutzer
+            b-icon-person-circle
           b-dropdown-item(href='/account') Mein Account
           b-dropdown-item(href='/logout') Abmelden
 </template>
 
 <script>
-import {BIconQuestionCircleFill} from 'bootstrap-vue';
+import {BIconQuestionCircleFill, BIconPersonCircle} from 'bootstrap-vue';
 
 export default {
   name      : "menu-bar",
@@ -119,7 +119,7 @@ export default {
       return element.type === 'dropdown'
     }
   },
-  components: {BIconQuestionCircleFill}
+  components: {BIconQuestionCircleFill, BIconPersonCircle}
 }
 </script>
 
