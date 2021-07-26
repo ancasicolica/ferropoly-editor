@@ -14,36 +14,55 @@ import {get, set} from 'lodash';
  * @param name Path to the variable
  * @param def Default value (empty string if not provided)
  */
-function setProp(state, obj, name,  def='') {
+function setProp(state, obj, name, def = '') {
   set(state, name, get(obj, name, def));
 }
 
 const gameplay = {
-  state: () => ({
+  state    : () => ({
+    gamename  : '',
     owner     : {
-      organisatorName: 'nobody',
-      organisation   : 'xx'
+      organisatorName : '',
+      organisation    : '',
+      organisatorEmail: '',
+      organisatorPhone: ''
     },
     gameParams: {
       interestInterval: 0,
       interest        : 0
     }
   }),
-  getters: {
-    organisatorName: state => { return state.owner.organisatorName; },
-    organisation: state => { return state.owner.organisation;}
+  getters  : {
+    organisatorName: state => {
+      return state.owner.organisatorName;
+    },
+    organisation   : state => {
+      return state.owner.organisation;
+    }
   },
   mutations: {
     updateOrganisatorName(state, n) {
       console.log('updateOrganisatorName', n);
       state.owner.organisatorName = n;
     },
-    updateOrganisation(state, n) {
+    UpdateOrganisation(state, n) {
       console.log('updateOrganisation', n);
       state.owner.organisation = n;
+    },
+    updateGamename(state, n) {
+      console.log('updateGamename', n);
+      state.gamename = n;
+    },
+    updateOrganisatorEmail(state, n) {
+      console.log('updateOrganisatorEmail', n);
+      state.owner.organisatorEmail = n;
+    },
+    updateOrganisatorPhone(state, n) {
+      console.log('updateOrganisatorPhone', n);
+      state.owner.organisatorPhone = n;
     }
   },
-  actions: {
+  actions  : {
     /**
      * Fetches the data from the server, must be called for updating the data with the DB (after initializing)
      * @param state
@@ -56,7 +75,9 @@ const gameplay = {
         console.log(err, 'loaded');
         setProp(state, res.gameplay, 'owner.organisatorName');
         setProp(state, res.gameplay, 'owner.organisation');
-
+        setProp(state, res.gameplay, 'owner.organisatorEmail');
+        setProp(state, res.gameplay, 'owner.organisatorPhone');
+        setProp(state, res.gameplay, 'gamename');
       });
     }
   }

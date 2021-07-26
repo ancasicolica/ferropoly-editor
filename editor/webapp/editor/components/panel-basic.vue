@@ -5,14 +5,26 @@
 -->
 <template lang="pug">
   #panel-basic
-    h1 panel-basic
-    b-form-input(v-model="organisatorName")
-    b-form-input(v-model="organisation")
-    p {{organisatorName}}
-    p {{organisation}}
+    h1 Spieldaten
+    b-row
+      b-col
+        contact-info
+      b-col
+        game-timing
+      b-col
+        game-info
+      b-col
+        b-form-input(v-model="organisatorName")
+        b-form-input(v-model="organisation")
+        p {{organisatorName}}
+        p {{organisation}}
 </template>
 
 <script>
+
+import ContactInfo from './basic/contact-info.vue';
+import GameInfo from './basic/game-info.vue';
+import GameTiming from './basic/game-timing.vue';
 
 export default {
   name      : 'panel-basic',
@@ -34,7 +46,7 @@ export default {
         this.$store.commit('updateOrganisatorName', val);
       }
     },
-    organisation: {
+    organisation   : {
       get() {
         return this.$store.state.gameplay.owner.organisation;
       },
@@ -43,10 +55,8 @@ export default {
       }
     }
   },
-  methods   : {
-
-  },
-  components: {},
+  methods   : {},
+  components: {ContactInfo, GameInfo, GameTiming},
   filters   : {}
 }
 </script>
