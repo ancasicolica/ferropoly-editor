@@ -44,4 +44,61 @@ function formatPrice(val) {
   return val;
 }
 
-export {formatGameDate, formatDateTime, formatPrice};
+/**
+ * Formatter for "how can a property be accessed?"
+ * @param val
+ * @returns {string}
+ */
+function formatAccessibility(val) {
+  switch (val) {
+    case 'train':
+      return 'Bahn';
+
+    case 'bus':
+      return 'Bus';
+
+    case 'boat':
+      return 'Schiff';
+
+    case 'cablecar':
+      return 'Seilbahn / Standseilbahn';
+
+    default:
+      return 'Andere (Tram, U-Bahn,...)';
+  }
+}
+
+/**
+ * Formats the price range of a property
+ * @param val
+ * @returns {string}
+ */
+function formatPriceRange(val) {
+  switch (val) {
+    case -1:
+      return 'unbenutzt';
+
+    case 0:
+      return 'sehr billig';
+
+    case 1:
+      return 'billig';
+
+    case 2:
+      return 'unt. Mittelf.';
+
+    case 3:
+      return 'ob. Mittelf.';
+
+    case 4:
+      return 'teuer';
+
+    case 5:
+      return 'sehr teuer';
+
+    default:
+      return '?';
+  }
+}
+
+export {formatGameDate, formatDateTime, formatPrice, formatAccessibility, formatPriceRange};
