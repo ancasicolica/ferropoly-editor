@@ -10,6 +10,8 @@
 </template>
 
 <script>
+
+
 export default {
   name      : 'panel-sorting',
   props     : {},

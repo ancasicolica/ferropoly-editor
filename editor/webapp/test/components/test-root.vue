@@ -22,6 +22,7 @@
     test-player-edit(v-if="panel==='playerEdit'")
     test-admin-entry(v-if="panel==='adminEntry'")
     test-ferropoly-map(v-if="panel==='ferropolyMap'")
+    test-property-sorting(v-if="panel==='propertySorting'")
 </template>
 
 <script>
@@ -35,6 +36,7 @@ import TestPlayerEdit from './test-player-edit.vue';
 import TestAdminEntry from './test-admin-entry.vue';
 import {getItem, setItem} from '../../common/lib/sessionStorage';
 import TestFerropolyMap from './test-ferropoly-map.vue';
+import TestPropertySorting from './test-property-sorting.vue';
 
 // EASY START
 const defaultPanel = getItem('test-panel', 'top');
@@ -63,6 +65,7 @@ export default {
             {title: 'Spieler Editor', href: '#', event: 'panel-change', eventParam: 'playerEdit'},
             {title: 'Admin Eintrag', href: '#', event: 'panel-change', eventParam: 'adminEntry'},
             {title: 'Karte', href: '#', event: 'panel-change', eventParam: 'ferropolyMap'},
+            {title: 'Orte sortieren', href: '#', event: 'panel-change', eventParam: 'propertySorting'},
           ]
         },
       ],
@@ -93,7 +96,8 @@ export default {
     TestModalInfoYesNo,
     TestPlayerList,
     TestPlayerEdit,
-    TestAdminEntry
+    TestAdminEntry,
+    TestPropertySorting
   },
   filters   : {}
 }
