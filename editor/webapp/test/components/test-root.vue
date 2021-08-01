@@ -24,6 +24,7 @@
     test-ferropoly-map(v-if="panel==='ferropolyMap'")
     test-property-sorting(v-if="panel==='propertySorting'")
     test-property-list(v-if="panel==='propertyList'")
+    test-input(v-if="panel==='input'")
 </template>
 
 <script>
@@ -39,6 +40,7 @@ import {getItem, setItem} from '../../common/lib/sessionStorage';
 import TestFerropolyMap from './test-ferropoly-map.vue';
 import TestPropertySorting from './test-property-sorting.vue';
 import TestPropertyList from './test-property-list.vue';
+import TestInput from './test-input.vue';
 
 // EASY START
 const defaultPanel = getItem('test-panel', 'top');
@@ -56,7 +58,8 @@ export default {
           elements: [
             {title: 'MenuBar', href: '#', event: 'panel-change', eventParam: 'menuBar'},
             {title: 'Modal Error', href: '#', event: 'panel-change', eventParam: 'modalError'},
-            {title: 'Modal Info', href: '#', event: 'panel-change', eventParam: 'modalInfo'}
+            {title: 'Modal Info', href: '#', event: 'panel-change', eventParam: 'modalInfo'},
+            {title: 'Inputs', href:'#', event:'panel-change', eventParam: 'input'}
           ]
         },
         /* 2 */  {
@@ -101,7 +104,8 @@ export default {
     TestPlayerEdit,
     TestAdminEntry,
     TestPropertySorting,
-    TestPropertyList
+    TestPropertyList,
+    TestInput
   },
   filters   : {}
 }
