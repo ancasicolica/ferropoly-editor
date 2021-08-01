@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import InputMixin from './inputMixin.js'
 export default {
   name      : 'input-numeric',
   props     : {
@@ -39,24 +40,6 @@ export default {
       default: () => {
         return '10';
       }
-    },
-    label   : {
-      type   : String,
-      default: () => {
-        return null;
-      }
-    },
-    help    : {
-      type   : String,
-      default: () => {
-        return null;
-      }
-    },
-    feedback: {
-      type   : String,
-      default: () => {
-        return null;
-      }
     }
   },
   data      : function () {
@@ -68,7 +51,7 @@ export default {
   computed  : {
     state() {
       let s = (this.minimum <= this.value) && (this.value <= this.maximum);
-      this.$emit('state', s);
+      this.$emit('state', {id: this._uid, state: s});
       return s;
     },
     minimum() {
@@ -85,7 +68,8 @@ export default {
     }
   },
   components: {},
-  filters   : {}
+  filters   : {},
+  mixins: [InputMixin]
 }
 </script>
 

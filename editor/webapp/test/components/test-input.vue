@@ -12,30 +12,34 @@
           label="Eingabe Test Nr. 1"
           help="Gib einen vernünftigen Wert ein"
           feedback="Wert muss zwischen 1 und 10 sein"
+          @state="onState"
           min="1",
           max="10")
         p Wert: {{v1}}
       b-col
-  
+
 </template>
 
 <script>
 import InputNumeric from '../../common/components/input/input-numeric.vue'
+import FormValidatorMixin from '../../common/components/input/formValidatorMixin';
+
 export default {
-  name: "test-input",
-  props: {},
-  data: function() {
+  name      : 'test-input',
+  props     : {},
+  data      : function () {
     return {
       v1: 5
     };
   },
-  model: {},
-  created: function() {
+  model     : {},
+  created   : function () {
   },
-  computed: {},
-  methods: {},
+  computed  : {},
+  methods   : {},
   components: {InputNumeric},
-  filters: {}
+  filters   : {},
+  mixins    : [FormValidatorMixin]
 }
 </script>
 
