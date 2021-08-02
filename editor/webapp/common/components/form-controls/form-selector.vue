@@ -1,49 +1,40 @@
 <!---
-  A date input for Ferropoly
+  Ferropoly Selector control
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
-  Created: 01.08.21
+  Created: 02.08.21
 -->
 <template lang="pug">
-  #input-date
+  #form-selector
     label#input-label(for="input" v-if="label") {{label}}
-    b-form-datepicker#input(
-      :value="value"
+    b-form-select#input(
+      v-model="value.selected"
+      :options="options"
       :state="state"
-      :min="min"
-      :max="max"
-      locale="de"
       @input="update"
       aria-describedby="input-help input-feedback"
     )
     b-form-invalid-feedback#input-feedback(v-if="feedback") {{feedback}}
     b-form-text#input-help(v-if="help") {{help}}
+
 </template>
 
 <script>
-import {DateTime} from 'luxon';
 import InputMixin from './inputMixin';
 
 export default {
-  name      : 'input-date',
+  name      : 'form-selector',
   props     : {
-    value: {
-      type   : String,
+    value  : {
       default: () => {
-        return ('2021-01-01');
+        return ({selected: -1});
       }
     },
-    min  : {
-      type   : String,
+    options: {
+      type   : Array,
       default: () => {
-        return ('2021-01-01');
+        return ([]);
       }
     },
-    max  : {
-      type   : String,
-      default: () => {
-        return ('2023-01-01');
-      }
-    }
   },
   data      : function () {
     return {};
@@ -53,21 +44,22 @@ export default {
   },
   computed  : {
     state() {
-      let val = DateTime.fromISO(this.value);
-      let s   = (this.minimum <= val) && (val <= this.maximum);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
-    },
-    minimum() {
-      return DateTime.fromISO(this.min);
-    },
-    maximum() {
-      return DateTime.fromISO(this.max);
+      return this.calculateState();
     }
   },
   methods   : {
     update(e) {
-      this.$emit('input', e);
+      this.$emit('input', {selected: e});
+      this.calculateState();
+    },
+    /**
+     * Calculates the current state
+     * @returns {boolean}
+     */
+    calculateState() {
+      let s = (this.value.selected !== null);
+      this.$emit('state', {id: this._uid, state: s});
+      return s;
     }
   },
   components: {},

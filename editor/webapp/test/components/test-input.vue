@@ -40,7 +40,8 @@
         p Wert: {{v3}}
     b-row
       b-col
-        input-date(v-model="v4"
+        input-date(
+          v-model="v4"
           label="Eingabe Test Nr. 3"
           help="Gib einen vernünftigen Wert ein"
           feedback="Wert muss vor dem Ende sein sein"
@@ -48,17 +49,38 @@
           :min="dateMin",
           :max="dateMax")
         p Wert: {{v4}}
-
+    b-row
+      b-col
+        form-selector(
+          v-model="vselector"
+          :options="selectOptions"
+          label="Selection"
+          help="Wähle eine Option"
+          feedback="Keine Option gewählt"
+          @state="onState"
+        )
+        p {{vselector}}
+      b-col
+        b-form-select(
+          v-model="vselector.selected"
+          :options="selectOptions")
 </template>
 
 <script>
 import InputNumeric from '../../common/components/form-controls/input-numeric.vue'
 import InputTime from '../../common/components/form-controls/input-time.vue'
 import InputDate from '../../common/components/form-controls/input-date.vue'
+import FormSelector from '../../common/components/form-controls/form-selector.vue'
 
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import {DateTime} from 'luxon';
 
+const selectorOptions = [
+  {value: null, text: 'Bitte auswählen'},
+  {value: 1, text: 'Option 1'},
+  {value: 2, text: 'Option 2'},
+  {value: 3, text: 'Option 3'},
+];
 export default {
   name      : 'test-input',
   props     : {},
@@ -68,9 +90,10 @@ export default {
       v2            : '05:05:00',
       v3            : '20:05:00',
       v4            : DateTime.now().toISODate(),
-      dateMin:    DateTime.now().minus({days: 1}).toISODate(),
-      dateMax:    DateTime.now().plus({month: 5}).toISODate(),
-
+      dateMin       : DateTime.now().minus({days: 1}).toISODate(),
+      dateMax       : DateTime.now().plus({month: 5}).toISODate(),
+      vselector     : {selected: null},
+      selectOptions : selectorOptions,
       startTimeValid: true,
       endTimeValid  : true
     };
@@ -89,7 +112,7 @@ export default {
       console.log(this.startTimeValid, this.endTimeValid);
     }
   },
-  components: {InputNumeric, InputTime, InputDate},
+  components: {InputNumeric, InputTime, InputDate, FormSelector},
   filters   : {},
   mixins    : [FormValidatorMixin]
 }
