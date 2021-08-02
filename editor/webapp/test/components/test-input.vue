@@ -52,11 +52,11 @@
 </template>
 
 <script>
-import InputNumeric from '../../common/components/input/input-numeric.vue'
-import InputTime from '../../common/components/input/input-time.vue'
-import InputDate from '../../common/components/input/input-date.vue'
+import InputNumeric from '../../common/components/form-controls/input-numeric.vue'
+import InputTime from '../../common/components/form-controls/input-time.vue'
+import InputDate from '../../common/components/form-controls/input-date.vue'
 
-import FormValidatorMixin from '../../common/components/input/formValidatorMixin';
+import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import {DateTime} from 'luxon';
 
 export default {

@@ -1,14 +1,16 @@
 <!---
-  A time input for Ferropoly
+  A date input for Ferropoly
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 01.08.21
 -->
 <template lang="pug">
-  #input-time
+  #input-date
     label#input-label(for="input" v-if="label") {{label}}
-    b-form-timepicker#input(
+    b-form-datepicker#input(
       :value="value"
       :state="state"
+      :min="min"
+      :max="max"
       locale="de"
       @input="update"
       aria-describedby="input-help input-feedback"
@@ -18,20 +20,29 @@
 </template>
 
 <script>
+import {DateTime} from 'luxon';
 import InputMixin from './inputMixin';
 
 export default {
-  name      : 'input-time',
+  name      : 'input-date',
   props     : {
     value: {
       type   : String,
       default: () => {
-        return ('05:00:00');
+        return ('2021-01-01');
       }
     },
-    validTime: Boolean,
-    default: () => {
-      return true;
+    min  : {
+      type   : String,
+      default: () => {
+        return ('2021-01-01');
+      }
+    },
+    max  : {
+      type   : String,
+      default: () => {
+        return ('2023-01-01');
+      }
     }
   },
   data      : function () {
@@ -42,14 +53,21 @@ export default {
   },
   computed  : {
     state() {
-      let s = this.validTime;
+      let val = DateTime.fromISO(this.value);
+      let s   = (this.minimum <= val) && (val <= this.maximum);
       this.$emit('state', {id: this._uid, state: s});
       return s;
+
+    },
+    minimum() {
+      return DateTime.fromISO(this.min);
+    },
+    maximum() {
+      return DateTime.fromISO(this.max);
     }
   },
   methods   : {
     update(e) {
-      console.log(e);
       this.$emit('input', e);
     }
   },
@@ -62,4 +80,3 @@ export default {
 <style lang="scss" scoped>
 @import 'inputStyle.scss';
 </style>
-
