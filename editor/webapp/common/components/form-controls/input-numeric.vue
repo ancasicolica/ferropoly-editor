@@ -11,6 +11,7 @@
       :min="min.toString()"
       :max="max.toString()"
       :state="state"
+      :step="step"
       @input="update"
       aria-describedby="input-help input-feedback"
     )
@@ -26,19 +27,24 @@ export default {
     value   : {
       type   : Number,
       default: () => {
-        return 0;
+        return 0.0;
       }
     },
     min     : {
       type   : String,
       default: () => {
-        return '0';
+        return '0.0';
       }
     },
     max     : {
       type   : String,
       default: () => {
-        return '10';
+        return '10.0';
+      }
+    },
+    step: {
+      default: () => {
+        return 1
       }
     }
   },

@@ -13,7 +13,8 @@
           help="Gib einen vernünftigen Wert ein"
           feedback="Wert muss zwischen 1 und 10 sein"
           @state="onState"
-          min="1",
+          step="0.25"
+          min="1"
           max="10")
         p Wert: {{v1}}
       b-col
@@ -25,7 +26,7 @@
           feedback="Wert muss vor dem Ende sein sein"
           @state="onTimeState"
           :validTime="startTimeValid"
-          min="1",
+          min="1"
           max="10")
         p Wert: {{v2}}
       b-col
