@@ -8,19 +8,24 @@
     h1 Spieldaten
     b-row
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
-        contact-info
+        contact-info(@state="onStateLocal")
+        p {{formDataIsValid}} - {{!formDataIsValid}} - {{basicFormIsValid}}
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         game-timing
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         game-info
-        b-button(variant="primary" v-on:click="saveAndContinue") Speichern und weiter
+        b-button(
+          variant="primary"
+          :disabled="!basicFormIsValid"
+          v-on:click="saveAndContinue") Speichern und weiter
 </template>
 
 <script>
-
+import {mapFields} from 'vuex-map-fields';
 import ContactInfo from './basic/contact-info.vue';
 import GameInfo from './basic/game-info.vue';
 import GameTiming from './basic/game-timing.vue';
+import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 
 export default {
   name      : 'panel-basic',
@@ -33,15 +38,26 @@ export default {
 
   },
   computed  : {
+    ...mapFields([
+      'formValid.basic'
+    ]),
+    basicFormIsValid() {
+      return this.$store.getters.basicFormIsValid;
+    }
   },
   methods   : {
     saveAndContinue() {
       console.log('save and continue');
       this.$emit('panel-change', 'panel-player');
+    },
+    onStateLocal(e) {
+      this.onState(e)
+      this.$store.commit('setBasicFormValid', this.isFormValid());
     }
   },
   components: {ContactInfo, GameInfo, GameTiming},
-  filters   : {}
+  filters   : {},
+  mixins    : [FormValidatorMixin]
 }
 </script>
 

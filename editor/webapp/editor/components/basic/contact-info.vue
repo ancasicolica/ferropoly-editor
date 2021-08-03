@@ -6,40 +6,55 @@
 <template lang="pug">
   #contact-info
     ferro-card(title="Allgemeines")
-      label(for="input-game-name") Spielname
-      b-form-input(
-        id="input-game-name"
+      input-text(
         v-model="gamename"
-        trim)
-      label(for="input-organisator-name") Name Organisator*in
-      b-form-input(
-        id="input-organisator-name"
+        label="Spielname"
+        feedback="Die Eingabe muss zwischen 3 und 60 Zeichen lang sein."
+        min="3"
+        max="60"
+        @state="onState"
+      )
+      input-text(
         v-model="organisatorName"
-        trim)
-      b-form-text Dieser Name erscheint auf der Preisliste
-      label(for="input-organisation") Organisation
-      b-form-input(
-        id="input-organisation"
+        label="Name Organisator*in"
+        help="Dieser Name erscheint auf der Preisliste"
+        feedback="Die Eingabe muss zwischen 3 und 60 Zeichen lang sein."
+        min="3"
+        max="60"
+        @state="onState"
+      )
+      input-text(
         v-model="organisation"
-        trim)
-      b-form-text Der Name der Organisation erscheint auf der Preisliste und ist optional.
-      label(for="input-organisator-email") Email-Adresse für das Spiel
-      b-form-input(
-        id="input-organisator-email"
+        label="Veranstaltende Organisation"
+        help="Der Name der Organisation erscheint auf der Preisliste und ist optional."
+        feedback="Maximal 60 Zeichen sind möglich."
+        min="0"
+        max="60"
+        @state="onState"
+      )
+      input-email(
         v-model="organisatorEmail"
-        trim)
-      b-form-text Gib die Email-Adresse an, unter welcher die Teams Infos zum Spiel erhalten können
-      label(for="input-organisator-phone") Telefonnummer während dem Spiel
-      b-form-input(
-        id="input-organisator-phone"
+        label="Email-Adresse"
+        help="Gib die Email-Adresse an, unter welcher die Teams Infos zum Spiel erhalten können"
+        feedback="Bitte gib eine gültige Email-Adresse an"
+        @state="onState"
+      )
+      input-phone(
         v-model="organisatorPhone"
-        trim)
-
+        label="Telefonnummer während dem Spiel"
+        help="Unter dieser Nummer erreichen die Teams während dem Spiel die Zentrale"
+        feedback="Bitte gib eine gültige Telefonnummer an"
+        @state="onState"
+      )
 </template>
 
 <script>
-import { mapFields } from 'vuex-map-fields';
+import {mapFields} from 'vuex-map-fields';
 import FerroCard from '../../../common/components/ferro-card/ferro-card.vue';
+import InputText from '../../../common/components/form-controls/input-text.vue';
+import InputEmail from '../../../common/components/form-controls/input-email.vue';
+import InputPhone from '../../../common/components/form-controls/input-phone.vue';
+import FormValidatorMixin from '../../../common/components/form-controls/formValidatorMixin';
 
 export default {
   name      : 'contact-info',
@@ -52,16 +67,17 @@ export default {
   },
   computed  : {
     ...mapFields([
-        'gamename',
-        'owner.organisatorName',
-        'owner.organisation',
-        'owner.organisatorEmail',
-        'owner.organisatorPhone'
+      'gamename',
+      'owner.organisatorName',
+      'owner.organisation',
+      'owner.organisatorEmail',
+      'owner.organisatorPhone'
     ])
   },
   methods   : {},
-  components: {FerroCard},
-  filters   : {}
+  components: {FerroCard, InputText, InputEmail, InputPhone},
+  filters   : {},
+  mixins    : [FormValidatorMixin]
 }
 </script>
 

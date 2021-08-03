@@ -8,6 +8,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import gameplay from './modules/gameplay.js';
 import properties from './modules/properties.js';
+import editor from './modules/editor.js';
 import {loadGame} from '../../common/adapter/gameplay';
 import {get, set} from 'lodash';
 
@@ -32,7 +33,8 @@ const storeEditor = new Vuex.Store({
   },
   modules  : {
     gameplay,
-    properties
+    properties,
+    editor
   },
   mutations: {},
   actions  : {
