@@ -9,9 +9,8 @@
     b-row
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         contact-info(@state="onStateLocal")
-        p {{formDataIsValid}} - {{!formDataIsValid}} - {{basicFormIsValid}}
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
-        game-timing
+        game-timing(@state="onStateLocal")
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         game-info
         b-button(

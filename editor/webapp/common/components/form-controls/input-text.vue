@@ -4,13 +4,14 @@
   Created: 02.08.21
 -->
 <template lang="pug">
-  div
+  div.form-input-start
     label.input-label(:for="id" v-if="label") {{label}}
     b-form-input(
       type="text"
       :id="id"
       :value="value"
       :state="state"
+      :disabled="disabled"
       @input="update"
       trim=true
       aria-describedby="input-help input-feedback"
@@ -43,6 +44,12 @@ export default {
         return '100';
       }
     },
+    disabled: {
+      type: Boolean,
+      default: () => {
+        return false;
+      }
+    }
   },
   data      : function () {
     return {};
@@ -52,6 +59,9 @@ export default {
   },
   computed  : {
     state() {
+      if (this.disabled) {
+        return undefined;
+      }
       let s = (this.value.length >= this.minimum) && (this.value.length <= this.maximum);
       this.$emit('state', {id: this._uid, state: s});
       return s;

@@ -4,7 +4,7 @@
   Created: 01.08.21
 -->
 <template lang="pug">
-  div
+  div.form-input-start
     label.input-label(:for="id" v-if="label") {{label}}
     b-form-input(
       type="number"

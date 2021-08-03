@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
-import {isNumber} from 'lodash';
-
+import {isNumber, find, toUpper} from 'lodash';
+import {maps} from '../../../../common/lib/maps.json';
 
 /**
  * Formatter for the Game Date (when we play):
@@ -14,7 +14,7 @@ function formatGameDate(value) {
   if (!value) {
     return '';
   }
-  return DateTime.fromISO(value).toLocaleString(DateTime.DATE_HUGE);
+  return DateTime.fromISO(value).setLocale('de').toLocaleString(DateTime.DATE_HUGE);
 }
 
 /**
@@ -29,7 +29,7 @@ function formatDateTime(value) {
   if (!value) {
     return '';
   }
-  return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_MED);
+  return DateTime.fromISO(value).setLocale('de').toLocaleString(DateTime.DATETIME_MED);
 }
 
 /**
@@ -101,4 +101,17 @@ function formatPriceRange(val) {
   }
 }
 
-export {formatGameDate, formatDateTime, formatPrice, formatAccessibility, formatPriceRange};
+/**
+ * Formats the map name
+ * @param map
+ * @returns {string|*}
+ */
+function formatMap(map) {
+  let m = find(maps, {map: map});
+  if (!m) {
+    return toUpper(map);
+  }
+  return (m.name);
+}
+
+export {formatMap, formatGameDate, formatDateTime, formatPrice, formatAccessibility, formatPriceRange};

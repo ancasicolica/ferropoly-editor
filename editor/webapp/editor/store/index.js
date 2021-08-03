@@ -58,6 +58,14 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.owner.organisatorEmail');
         setProp(state, res, 'gameplay.owner.organisatorPhone');
         setProp(state, res, 'gameplay.gamename');
+        setProp(state, res, 'gameplay.scheduling.gameDate');
+        setProp(state, res, 'gameplay.scheduling.gameStart');
+        setProp(state, res, 'gameplay.scheduling.gameEnd');
+        setProp(state, res, 'gameplay.scheduling.deleteTs');
+        setProp(state, res, 'gameplay.log.created');
+        setProp(state, res, 'gameplay.log.lastEdited');
+        setProp(state, res, 'gameplay.internal.gameId');
+        setProp(state, res, 'gameplay.internal.map');
       });
     },
     saveData({state, commit, rootState}) {

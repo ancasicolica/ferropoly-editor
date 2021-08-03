@@ -4,7 +4,8 @@
  * Created: 25.07.21
  **/
 
-import { getField, updateField } from 'vuex-map-fields';
+import {getField, updateField} from 'vuex-map-fields';
+import {DateTime} from 'luxon';
 
 const gameplay = {
   state    : () => ({
@@ -15,9 +16,23 @@ const gameplay = {
       organisatorEmail: '',
       organisatorPhone: ''
     },
+    scheduling: {
+      gameDate : DateTime.now(),
+      gameStart: '',
+      gameEnd  : '',
+      deleteTs : ''
+    },
     gameParams: {
       interestInterval: 0,
       interest        : 0
+    },
+    log: {
+      created: '',
+      lastEdited: ''
+    },
+    internal: {
+      gameId: '',
+      map: ''
     }
   }),
   getters  : {

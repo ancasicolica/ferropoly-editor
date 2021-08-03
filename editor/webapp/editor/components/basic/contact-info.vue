@@ -4,7 +4,7 @@
   Created: 26.07.21
 -->
 <template lang="pug">
-  #contact-info
+  div
     ferro-card(title="Allgemeines")
       input-text(
         v-model="gamename"
