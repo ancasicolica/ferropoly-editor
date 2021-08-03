@@ -65,6 +65,43 @@
         b-form-select(
           v-model="vselector.selected"
           :options="selectOptions")
+    b-row
+      b-col
+        input-text(
+          v-model="vText"
+          label="Text Input"
+          help="Gib einen Text ein"
+          feedback="Muss zwischen 4 und 10 Zeichen sein"
+          min="4"
+          max="10"
+          @state="onState"
+        )
+      b-col
+        p Wert: {{vText}}
+    b-row
+      b-col
+        input-email(
+          v-model="vEmail"
+          label="Email Input"
+          help="Deine Email bitte"
+          feedback="Bitte gültige Email-Adresse eingeben"
+          @state="onState"
+        )
+      b-col
+        p Wert: {{vEmail}}
+    b-row
+      b-col
+        input-phone(
+          v-model="vPhone"
+          label="Phone Input"
+          help="Deine Telefonnummer bitte"
+          feedback="Bitte gültigeTelefonnummer eingeben"
+          @state="onState"
+        )
+      b-col
+        p Wert: {{vEmail}}
+
+
 </template>
 
 <script>
@@ -72,7 +109,9 @@ import InputNumeric from '../../common/components/form-controls/input-numeric.vu
 import InputTime from '../../common/components/form-controls/input-time.vue'
 import InputDate from '../../common/components/form-controls/input-date.vue'
 import FormSelector from '../../common/components/form-controls/form-selector.vue'
-
+import InputText from '../../common/components/form-controls/input-text.vue'
+import InputEmail from '../../common/components/form-controls/input-email.vue'
+import InputPhone from '../../common/components/form-controls/input-phone.vue'
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import {DateTime} from 'luxon';
 
@@ -94,6 +133,9 @@ export default {
       dateMin       : DateTime.now().minus({days: 1}).toISODate(),
       dateMax       : DateTime.now().plus({month: 5}).toISODate(),
       vselector     : {selected: null},
+      vText         : 'abc',
+      vEmail        : 'demo@ferropoly.ch',
+      vPhone        : '077 444 33 33',
       selectOptions : selectorOptions,
       startTimeValid: true,
       endTimeValid  : true
@@ -113,7 +155,7 @@ export default {
       console.log(this.startTimeValid, this.endTimeValid);
     }
   },
-  components: {InputNumeric, InputTime, InputDate, FormSelector},
+  components: {InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector},
   filters   : {},
   mixins    : [FormValidatorMixin]
 }

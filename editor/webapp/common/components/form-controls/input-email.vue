@@ -1,17 +1,18 @@
 <!---
-  Ferropoly Selector control
+  An email input for Ferropoly
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 02.08.21
 -->
 <template lang="pug">
   div
     label.input-label(:for="id" v-if="label") {{label}}
-    b-form-select(
+    b-form-input(
       :id="id"
-      v-model="value.selected"
-      :options="options"
+      type="email"
+      :value="value"
       :state="state"
       @input="update"
+      trim=true
       aria-describedby="input-help input-feedback"
     )
     b-form-invalid-feedback(v-if="feedback") {{feedback}}
@@ -20,22 +21,17 @@
 </template>
 
 <script>
-import InputMixin from './inputMixin';
+import InputMixin from './inputMixin.js'
 
 export default {
-  name      : 'form-selector',
+  name      : 'input-email',
   props     : {
-    value  : {
+    value: {
+      type   : String,
       default: () => {
-        return ({selected: -1});
+        return '';
       }
-    },
-    options: {
-      type   : Array,
-      default: () => {
-        return ([]);
-      }
-    },
+    }
   },
   data      : function () {
     return {};
@@ -45,22 +41,15 @@ export default {
   },
   computed  : {
     state() {
-      return this.calculateState();
+      let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      let s          = (this.value.match(regexEmail) !== null);
+      this.$emit('state', {id: this._uid, state: s});
+      return s;
     }
   },
   methods   : {
     update(e) {
-      this.$emit('input', {selected: e});
-      this.calculateState();
-    },
-    /**
-     * Calculates the current state
-     * @returns {boolean}
-     */
-    calculateState() {
-      let s = (this.value.selected !== null);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
+      this.$emit('input', e);
     }
   },
   components: {},

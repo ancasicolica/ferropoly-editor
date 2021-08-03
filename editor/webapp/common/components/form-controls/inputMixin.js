@@ -24,5 +24,14 @@ export default {
         return null;
       }
     }
+  },
+  computed: {
+    /**
+     * Generates a unique ID of the control
+     * @returns {string}
+     */
+    id() {
+      return `ferro-${this._uid}`;
+    }
   }
 };

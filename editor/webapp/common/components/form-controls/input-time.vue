@@ -4,17 +4,18 @@
   Created: 01.08.21
 -->
 <template lang="pug">
-  #input-time
-    label#input-label(for="input" v-if="label") {{label}}
-    b-form-timepicker#input(
+  div
+    label.input-label(:for="id" v-if="label") {{label}}
+    b-form-timepicker(
+      :id="id"
       :value="value"
       :state="state"
       locale="de"
       @input="update"
       aria-describedby="input-help input-feedback"
     )
-    b-form-invalid-feedback#input-feedback(v-if="feedback") {{feedback}}
-    b-form-text#input-help(v-if="help") {{help}}
+    b-form-invalid-feedback(v-if="feedback") {{feedback}}
+    b-form-text(v-if="help") {{help}}
 </template>
 
 <script>

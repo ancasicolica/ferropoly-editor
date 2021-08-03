@@ -1,17 +1,18 @@
 <!---
-  Ferropoly Selector control
+  A text input for Ferropoly
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 02.08.21
 -->
 <template lang="pug">
   div
     label.input-label(:for="id" v-if="label") {{label}}
-    b-form-select(
+    b-form-input(
+      type="text"
       :id="id"
-      v-model="value.selected"
-      :options="options"
+      :value="value"
       :state="state"
       @input="update"
+      trim=true
       aria-describedby="input-help input-feedback"
     )
     b-form-invalid-feedback(v-if="feedback") {{feedback}}
@@ -20,20 +21,26 @@
 </template>
 
 <script>
-import InputMixin from './inputMixin';
+import InputMixin from './inputMixin.js'
 
 export default {
-  name      : 'form-selector',
+  name      : 'input-text',
   props     : {
-    value  : {
+    value : {
+      type   : String,
       default: () => {
-        return ({selected: -1});
+        return '';
+      }
+    }, min: {
+      type   : String,
+      default: () => {
+        return '0';
       }
     },
-    options: {
-      type   : Array,
+    max   : {
+      type   : String,
       default: () => {
-        return ([]);
+        return '100';
       }
     },
   },
@@ -45,22 +52,20 @@ export default {
   },
   computed  : {
     state() {
-      return this.calculateState();
+      let s = (this.value.length >= this.minimum) && (this.value.length <= this.maximum);
+      this.$emit('state', {id: this._uid, state: s});
+      return s;
+    },
+    minimum() {
+      return parseInt(this.min);
+    },
+    maximum() {
+      return parseInt(this.max);
     }
   },
   methods   : {
     update(e) {
-      this.$emit('input', {selected: e});
-      this.calculateState();
-    },
-    /**
-     * Calculates the current state
-     * @returns {boolean}
-     */
-    calculateState() {
-      let s = (this.value.selected !== null);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
+      this.$emit('input', e);
     }
   },
   components: {},

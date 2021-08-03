@@ -4,9 +4,10 @@
   Created: 01.08.21
 -->
 <template lang="pug">
-  #input-date
-    label#input-label(for="input" v-if="label") {{label}}
-    b-form-datepicker#input(
+  div
+    label.input-label(:for="id" v-if="label") {{label}}
+    b-form-datepicker(
+      :id="id"
       :value="value"
       :state="state"
       :min="min"
@@ -15,8 +16,8 @@
       @input="update"
       aria-describedby="input-help input-feedback"
     )
-    b-form-invalid-feedback#input-feedback(v-if="feedback") {{feedback}}
-    b-form-text#input-help(v-if="help") {{help}}
+    b-form-invalid-feedback(v-if="feedback") {{feedback}}
+    b-form-text(v-if="help") {{help}}
 </template>
 
 <script>

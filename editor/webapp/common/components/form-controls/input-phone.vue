@@ -1,17 +1,18 @@
 <!---
-  Ferropoly Selector control
+  A phone input for Ferropoly
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 02.08.21
 -->
 <template lang="pug">
   div
     label.input-label(:for="id" v-if="label") {{label}}
-    b-form-select(
+    b-form-input(
       :id="id"
-      v-model="value.selected"
-      :options="options"
+      type="tel"
+      :value="value"
       :state="state"
       @input="update"
+      trim=true
       aria-describedby="input-help input-feedback"
     )
     b-form-invalid-feedback(v-if="feedback") {{feedback}}
@@ -20,22 +21,17 @@
 </template>
 
 <script>
-import InputMixin from './inputMixin';
+import InputMixin from './inputMixin.js'
 
 export default {
-  name      : 'form-selector',
+  name      : 'input-phone',
   props     : {
-    value  : {
+    value: {
+      type   : String,
       default: () => {
-        return ({selected: -1});
+        return '';
       }
-    },
-    options: {
-      type   : Array,
-      default: () => {
-        return ([]);
-      }
-    },
+    }
   },
   data      : function () {
     return {};
@@ -45,22 +41,15 @@ export default {
   },
   computed  : {
     state() {
-      return this.calculateState();
+      let phoneRegex = /(\b(0041|0)|\B\+41)(\s?\(0\))?(\s)?[1-9]{2}(\s)?[0-9]{3}(\s)?[0-9]{2}(\s)?[0-9]{2}\b/
+      let s          = (this.value.match(phoneRegex) !== null);
+      this.$emit('state', {id: this._uid, state: s});
+      return s;
     }
   },
   methods   : {
     update(e) {
-      this.$emit('input', {selected: e});
-      this.calculateState();
-    },
-    /**
-     * Calculates the current state
-     * @returns {boolean}
-     */
-    calculateState() {
-      let s = (this.value.selected !== null);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
+      this.$emit('input', e);
     }
   },
   components: {},

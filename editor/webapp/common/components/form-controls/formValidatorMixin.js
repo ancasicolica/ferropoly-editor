@@ -7,10 +7,10 @@
 import FormValidator from './formValidator';
 
 export default {
-  data: function() {
+  data    : function () {
     this._formValidator = new FormValidator();
   },
-  methods: {
+  methods : {
     /**
      * This is the event handler for the @state event
      * @param e
