@@ -28,7 +28,14 @@ import FormValidatorMixin from '../../common/components/form-controls/formValida
 
 export default {
   name      : 'panel-basic',
-  props     : {},
+  props     : {
+    authToken: {
+      type   : String,
+      default: () => {
+        return 'none';
+      }
+    }
+  },
   data      : function () {
     return {};
   },
@@ -47,6 +54,8 @@ export default {
   methods   : {
     saveAndContinue() {
       console.log('save and continue');
+      this.$store.dispatch({type: 'saveData', authToken: this.authToken});
+
       this.$emit('panel-change', 'panel-player');
     },
     onStateLocal(e) {

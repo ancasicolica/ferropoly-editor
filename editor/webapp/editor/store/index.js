@@ -9,7 +9,7 @@ import Vuex from 'vuex';
 import gameplay from './modules/gameplay.js';
 import properties from './modules/properties.js';
 import editor from './modules/editor.js';
-import {loadGame} from '../../common/adapter/gameplay';
+import {loadGame, saveGameplay} from '../../common/adapter/gameplay';
 import {get, set} from 'lodash';
 
 Vue.use(Vuex);
@@ -65,11 +65,24 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.log.created');
         setProp(state, res, 'gameplay.log.lastEdited');
         setProp(state, res, 'gameplay.internal.gameId');
+        setProp(state, res, 'gameplay.internal.owner');
         setProp(state, res, 'gameplay.internal.map');
       });
     },
-    saveData({state, commit, rootState}) {
-
+    /**
+     * Save Data back to the Gameplay
+     * @param state
+     * @param commit
+     * @param rootState
+     * @param options
+     */
+    saveData({state, commit, rootState}, options) {
+      saveGameplay(state.gameplay, options.authToken, (err => {
+        if (err) {
+          console.error(err);
+          // ToDo: Error Handling
+        }
+      }));
     }
   }
 });

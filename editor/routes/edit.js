@@ -100,7 +100,7 @@ router.post('/save/:gameId', function (req, res) {
   }
 
   logger.info('Save game ' + req.params.gameId);
-  gameplays.updateGameplay(req.body.gameplay, function (err, gameplay) {
+  gameplays.updateGameplayPartial(req.body.gameplay, function (err, gameplay) {
     if (err) {
       logger.error('updateGameplay failed', err);
       return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});

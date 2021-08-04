@@ -3,6 +3,7 @@
  */
 import $ from 'jquery';
 import {DateTime} from 'luxon';
+import axios from 'axios';
 
 /**
  * Returns all games of this user  in the callback
@@ -77,8 +78,8 @@ function deleteGameplay(id, callback) {
 }
 
 /**
- * Deletes a gameplay
- * @param id is the ID of the gameplay to delete
+ * finalizes a gameplay
+ * @param id is the ID of the gameplay to finalize
  * @param authToken is the token for authentication
  * @param callback with the error text (if any)
  */
@@ -91,6 +92,29 @@ function finalizeGameplay(id, authToken, callback) {
     .fail(function (resp) {
       console.error(`Error while finalizing ${id}`, resp);
       callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
+    });
+}
+
+/**
+ * saves a gameplay
+ * @param gp is the gameplay object
+ * @param authToken is the token for authentication
+ * @param callback with the error text (if any)
+ */
+function saveGameplay(gp, authToken, callback) {
+  console.log(gp, authToken);
+  axios.post(`/gameplay/save/${gp.internal.gameId}`,
+    {
+      gameplay: gp,
+      authToken
+    })
+    .then(function (response) {
+      console.log(response);
+      callback(null);
+    })
+    .catch(function (error) {
+      console.log(error);
+      callback(error);
     });
 }
 
@@ -135,11 +159,11 @@ function createGame(settings, authToken, callback) {
   $.post('/gameplay/createnew',
     {
       gamename: settings.name,
-      map: settings.map,
+      map     : settings.map,
       gamedate: settings.date,
-      random: settings.random,
-      presets: settings.presets,
-      gameId: settings.selectedId,
+      random  : settings.random,
+      presets : settings.presets,
+      gameId  : settings.selectedId,
       authToken
     })
     .done(function (resp) {
@@ -153,4 +177,14 @@ function createGame(settings, authToken, callback) {
 }
 
 
-export {createGame, readMyGames, deleteGameplay, finalizeGameplay, getProposedGameIds, checkId, getGameInfo, loadGame};
+export {
+  saveGameplay,
+  createGame,
+  readMyGames,
+  deleteGameplay,
+  finalizeGameplay,
+  getProposedGameIds,
+  checkId,
+  getGameInfo,
+  loadGame
+};

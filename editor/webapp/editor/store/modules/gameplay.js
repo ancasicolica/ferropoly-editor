@@ -26,13 +26,14 @@ const gameplay = {
       interestInterval: 0,
       interest        : 0
     },
-    log: {
-      created: '',
+    log       : {
+      created   : '',
       lastEdited: ''
     },
-    internal: {
+    internal  : {
       gameId: '',
-      map: ''
+      map   : '',
+      owner : ''
     }
   }),
   getters  : {
