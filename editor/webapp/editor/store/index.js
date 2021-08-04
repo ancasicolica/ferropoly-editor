@@ -25,7 +25,6 @@ function setProp(state, obj, name, def = '') {
   set(state, name, get(obj, name, def));
 }
 
-
 const storeEditor = new Vuex.Store({
   state    : {
     apiCallsRemaining: 1, // Number of files to read
@@ -77,10 +76,19 @@ const storeEditor = new Vuex.Store({
      * @param options
      */
     saveData({state, commit, rootState}, options) {
+      state.editor.api.requestPending = true;
       saveGameplay(state.gameplay, options.authToken, (err => {
+        state.editor.api.requestPending = false;
         if (err) {
           console.error(err);
-          // ToDo: Error Handling
+          state.editor.api.error.message  = err.message;
+          state.editor.api.error.infoText = 'Es gab einen Fehler beim Speichern der Spieldaten:';
+          state.editor.api.error.active   = true;
+          return;
+        }
+        // Switch to new panel if successful
+        if (options.targetPanel) {
+          state.editor.panel.current = options.targetPanel;
         }
       }));
     }

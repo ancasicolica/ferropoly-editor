@@ -10,6 +10,13 @@
       @panel-change="onPanelChange"
       help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/editor/")
     modal-error(title="Fehler" ref='editor-error')
+    modal-error(
+      :visible="apiErrorActive"
+      title="Fehler"
+      :info="apiErrorText"
+      :message="apiErrorMessage"
+      @close="apiErrorActive=false"
+    )
     b-container(fluid=true)
       div(v-if="!dataLoaded")
         keep-waiting
@@ -38,7 +45,6 @@ import PanelSorting from './panel-sorting.vue';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 import KeepWaiting from '../../common/components/keep-waiting/keep-waiting.vue';
 
-import {getItem, setItem} from '../../common/lib/sessionStorage';
 import {last, split} from 'lodash';
 import {getAuthToken} from '../../common/adapter/authToken';
 
@@ -62,7 +68,6 @@ export default {
         /* 2 */ {title: 'Reihenfolge', href: '#', event: 'panel-change', eventParam: 'panel-sorting'},
         /* 3 */ {title: 'Preisliste erstellen', href: '#', event: 'panel-change', eventParam: 'panel-create'},
       ],
-      panel       : 'panel-basic',
       gameId      : 'none',
       authToken   : 'none'
     };
@@ -75,7 +80,6 @@ export default {
     const elements = split(window.location.pathname, '/');
     self.gameId    = last(elements);
 
-    self.panel = getItem(`${this.gameId}-editor-panel`, 'panel-basic');
     // Get Authtoken
     getAuthToken((err, token) => {
       if (err) {
@@ -92,9 +96,32 @@ export default {
 
   computed  : {
 
-    dataLoaded: {
+    dataLoaded     : {
       get() {
         return this.$store.state.apiCallsRemaining === 0;
+      }
+    },
+    apiErrorActive : {
+      get() {
+        return this.$store.getters.apiError.active;
+      },
+      set() {
+        this.$store.commit('resetApiError');
+      }
+    },
+    apiErrorText   : {
+      get() {
+        return this.$store.getters.apiError.infoText;
+      }
+    },
+    apiErrorMessage: {
+      get() {
+        return this.$store.getters.apiError.message;
+      }
+    },
+    panel          : {
+      get() {
+        return this.$store.getters.currentPanel;
       }
     }
   },
@@ -105,8 +132,7 @@ export default {
      */
     onPanelChange(panel) {
       console.log('onPanelChange', panel);
-      setItem(`${this.gameId}-editor-panel`, panel);
-      this.panel = panel;
+      this.$store.commit('setPanel', panel);
     }
   },
   components: {

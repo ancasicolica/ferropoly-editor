@@ -79,7 +79,6 @@ export default {
         return this.visible || this.showDialogX;
       },
       set: function (e) {
-        console.log(e);
         this.showDialogX = false;
         if (!e) {
           this.$emit('close');

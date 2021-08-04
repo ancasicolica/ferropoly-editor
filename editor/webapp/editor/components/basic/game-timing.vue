@@ -60,7 +60,6 @@ export default {
       let end             = DateTime.fromISO(this.gameEnd);
       this.startTimeValid = start < end;
       this.endTimeValid   = start < end;
-      console.log(this.startTimeValid, this.endTimeValid);
     }
   },
   components: {FerroCard, InputTime},

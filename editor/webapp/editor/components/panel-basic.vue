@@ -15,7 +15,7 @@
         game-info
         b-button(
           variant="primary"
-          :disabled="!basicFormIsValid"
+          :disabled="!basicFormIsValid || requestPending"
           v-on:click="saveAndContinue") Speichern und weiter
 </template>
 
@@ -45,18 +45,22 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'formValid.basic'
+      'formValid.basic',
+      'api.requestPending'
     ]),
     basicFormIsValid() {
       return this.$store.getters.basicFormIsValid;
+    },
+    requestPending() {
+      return this.$store.getters.requestPending;
     }
   },
   methods   : {
     saveAndContinue() {
       console.log('save and continue');
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken});
+      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel:'panel-player'});
 
-      this.$emit('panel-change', 'panel-player');
+     // this.$emit('panel-change', 'panel-player');
     },
     onStateLocal(e) {
       this.onState(e)
