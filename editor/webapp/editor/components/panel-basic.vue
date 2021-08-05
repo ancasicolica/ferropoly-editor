@@ -1,5 +1,5 @@
 <!---
-
+  Panel in the editor with basic data
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 06.06.21
 -->
@@ -57,10 +57,7 @@ export default {
   },
   methods   : {
     saveAndContinue() {
-      console.log('save and continue');
       this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel:'panel-player'});
-
-     // this.$emit('panel-change', 'panel-player');
     },
     onStateLocal(e) {
       this.onState(e)

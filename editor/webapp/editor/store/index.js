@@ -66,6 +66,10 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.internal.gameId');
         setProp(state, res, 'gameplay.internal.owner');
         setProp(state, res, 'gameplay.internal.map');
+        setProp(state, res, 'gameplay.gameParams.properties.lowestPrice');
+        setProp(state, res, 'gameplay.gameParams.properties.highestPrice');
+        setProp(state, res, 'gameplay.gameParams.properties.numberOfPriceLevels');
+        setProp(state, res, 'gameplay.gameParams.properties.numberOfPropertiesPerGroup');
       });
     },
     /**
@@ -77,20 +81,21 @@ const storeEditor = new Vuex.Store({
      */
     saveData({state, commit, rootState}, options) {
       state.editor.api.requestPending = true;
-      saveGameplay(state.gameplay, options.authToken, (err => {
+      saveGameplay(state.gameplay, options.authToken, (err,resp) => {
         state.editor.api.requestPending = false;
         if (err) {
-          console.error(err);
+          console.error(err,resp);
           state.editor.api.error.message  = err.message;
           state.editor.api.error.infoText = 'Es gab einen Fehler beim Speichern der Spieldaten:';
           state.editor.api.error.active   = true;
           return;
         }
+        console.log(`saved game ${state.gameplay.internal.gameId}`);
         // Switch to new panel if successful
         if (options.targetPanel) {
           state.editor.panel.current = options.targetPanel;
         }
-      }));
+      });
     }
   }
 });

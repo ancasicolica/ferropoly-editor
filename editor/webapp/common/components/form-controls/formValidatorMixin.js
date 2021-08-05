@@ -32,6 +32,13 @@ export default {
      */
     isFormValid() {
       return this._formValidator.isValid();
+    },
+    /**
+     * Returns true if the form is invalid
+     * @returns {boolean}
+     */
+    isFormInvalid() {
+      return !this._formValidator.isValid();
     }
   }
 };

@@ -12,7 +12,6 @@ import axios from 'axios';
 function readMyGames(callback) {
   $.ajax('/gameplay/mygames', {dataType: 'json'})
     .done(function (resp) {
-      console.log(resp);
       resp.gameplays.forEach(gp => {
         gp.scheduling.deleteTs = DateTime.fromISO(gp.scheduling.deleteTs).toJSDate();
         gp.scheduling.gameDate = DateTime.fromISO(gp.scheduling.gameDate).toJSDate();
@@ -33,7 +32,6 @@ function readMyGames(callback) {
 function getGameInfo(gameId, callback) {
   $.ajax(`/gameplay/info/${gameId}`, {dataType: 'json'})
     .done(function (resp) {
-      console.log(resp);
       callback(null, resp);
     })
     .fail(function (err) {
@@ -50,7 +48,6 @@ function getGameInfo(gameId, callback) {
 function loadGame(gameId, callback) {
   $.ajax(`/gameplay/load/${gameId}`, {dataType: 'json'})
     .done(function (resp) {
-      console.log(resp);
       callback(null, resp);
     })
     .fail(function (err) {
@@ -102,14 +99,12 @@ function finalizeGameplay(id, authToken, callback) {
  * @param callback with the error text (if any)
  */
 function saveGameplay(gp, authToken, callback) {
-  console.log(gp, authToken);
   axios.post(`/gameplay/save/${gp.internal.gameId}`,
     {
       gameplay: gp,
       authToken
     })
-    .then(function (response) {
-      console.log(response);
+    .then(function () {
       callback(null);
     })
     .catch(function (error) {
@@ -140,7 +135,6 @@ function getProposedGameIds(callback) {
 function checkId(gameId, callback) {
   $.post('/gameplay/checkid', {gameId})
     .done(function (resp) {
-      console.log('checked ID', resp);
       callback(null, resp.valid);
     })
     .fail(function (resp) {
@@ -167,7 +161,7 @@ function createGame(settings, authToken, callback) {
       authToken
     })
     .done(function (resp) {
-      console.log('createdGame', resp);
+      console.log('createdGame');
       callback(null, resp.gameId);
     })
     .fail(function (resp) {

@@ -24,7 +24,13 @@ const gameplay = {
     },
     gameParams: {
       interestInterval: 0,
-      interest        : 0
+      interest        : 0,
+      properties      : {
+        lowestPrice               : 0,
+        highestPrice              : 0,
+        numberOfPriceLevels       : 0,
+        numberOfPropertiesPerGroup: 0
+      }
     },
     log       : {
       created   : '',

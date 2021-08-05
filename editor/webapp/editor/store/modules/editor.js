@@ -7,7 +7,8 @@
 const editor = {
   state    : () => ({
     formValid: {
-      basicData: false
+      basicData: false,
+      pricelist: false
     },
     api      : {
       error         : {
@@ -18,20 +19,23 @@ const editor = {
       requestPending: false
     },
     panel    : {
-      current: 'panel-basic'
+      current: 'panel-pricelist'
     }
   }),
   getters  : {
-    basicFormIsValid: state => {
+    basicFormIsValid    : state => {
       return state.formValid.basicData;
     },
-    apiError        : state => {
+    pricelistFormIsValid: state => {
+      return state.formValid.pricelist;
+    },
+    apiError            : state => {
       return state.api.error;
     },
-    requestPending  : state => {
+    requestPending      : state => {
       return state.api.requestPending;
     },
-    currentPanel    : state => {
+    currentPanel        : state => {
       return state.panel.current;
     }
   },
@@ -43,6 +47,14 @@ const editor = {
      */
     setBasicFormValid(state, n) {
       state.formValid.basicData = n;
+    },
+    /**
+     * Sets the validation of the pricelist form
+     * @param state
+     * @param n
+     */
+    setPricelistFormValid(state, n) {
+      state.formValid.pricelist = n;
     },
     /**
      * Resets the API error from the last call, used when closing the modal dialog

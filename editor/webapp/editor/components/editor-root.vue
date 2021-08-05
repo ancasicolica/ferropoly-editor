@@ -22,13 +22,13 @@
         keep-waiting
       div(v-if="dataLoaded")
         panel-basic(v-if="panel==='panel-basic'" @panel-change="onPanelChange" :authToken="authToken")
-        panel-create(v-if="panel==='panel-create'")
-        panel-houses(v-if="panel==='panel-houses'")
-        panel-player(v-if="panel==='panel-player'")
-        panel-pricelist(v-if="panel==='panel-pricelist'")
-        panel-properties(v-if="panel==='panel-properties'")
-        panel-rent(v-if="panel==='panel-rent'")
-        panel-sorting(v-if="panel==='panel-sorting'")
+        panel-create(v-if="panel==='panel-create'" :authToken="authToken")
+        panel-houses(v-if="panel==='panel-houses'" :authToken="authToken")
+        panel-player(v-if="panel==='panel-player'" :authToken="authToken")
+        panel-pricelist(v-if="panel==='panel-pricelist'" :authToken="authToken")
+        panel-properties(v-if="panel==='panel-properties'" :authToken="authToken")
+        panel-rent(v-if="panel==='panel-rent'" :authToken="authToken")
+        panel-sorting(v-if="panel==='panel-sorting'" :authToken="authToken")
 
 </template>
 

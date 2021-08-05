@@ -23,30 +23,46 @@
 
 <script>
 import InputMixin from './inputMixin.js'
+import {isFunction, isFinite, round} from 'lodash';
+
 export default {
   name      : 'input-numeric',
   props     : {
-    value   : {
+    value    : {
       type   : Number,
       default: () => {
         return 0.0;
       }
     },
-    min     : {
+    min      : {
       type   : String,
       default: () => {
         return '0.0';
       }
     },
-    max     : {
+    max      : {
       type   : String,
       default: () => {
         return '10.0';
       }
     },
-    step: {
+    step     : {
       default: () => {
         return 1
+      }
+    },
+    validator: {
+      // External validator function, if needed
+      type: Function,
+      default: () => {
+        return null;
+      }
+    },
+    integerOnly: {
+      // By default, we only accept integers
+      type: Boolean,
+      default: () => {
+        return true;
       }
     }
   },
@@ -58,6 +74,21 @@ export default {
   },
   computed  : {
     state() {
+      if (isFunction(this.validator)) {
+        // Run first any external validator function. This function
+        // has the priority to set the state, if it returns null (not
+        // a valid state value) then the built-in functionality takes
+        // over
+        let res = this.validator();
+        if (res !== null) {
+          this.$emit('state', {id: this._uid, state: res});
+          return res;
+        }
+      }
+      if (!isFinite(this.value)) {
+        // Not a number? Not valid!
+        return false;
+      }
       let s = (this.minimum <= this.value) && (this.value <= this.maximum);
       this.$emit('state', {id: this._uid, state: s});
       return s;
@@ -71,13 +102,16 @@ export default {
   },
   methods   : {
     update(e) {
-      let val = parseInt(e);
+      let val = parseFloat(e);
+      if (this.integerOnly) {
+        val = round(e);
+      }
       this.$emit('input', val);
     }
   },
   components: {},
   filters   : {},
-  mixins: [InputMixin]
+  mixins    : [InputMixin]
 }
 </script>
 
