@@ -8,10 +8,11 @@
     label.input-label(:for="id" v-if="label") {{label}}
     b-form-select(
       :id="id"
-      v-model="value.selected"
+      v-model="valueC"
       :options="options"
       :state="state"
-      @input="update"
+      @inputw="update"
+      @change="update"
       aria-describedby="input-help input-feedback"
     )
     b-form-invalid-feedback(v-if="feedback") {{feedback}}
@@ -27,7 +28,7 @@ export default {
   props     : {
     value  : {
       default: () => {
-        return ({selected: -1});
+        return -1;
       }
     },
     options: {
@@ -46,11 +47,20 @@ export default {
   computed  : {
     state() {
       return this.calculateState();
+    },
+    valueC: {
+      get() {
+        return this.value;
+      },
+      set(e) {
+        this.$emit('input', e);
+      }
     }
   },
   methods   : {
     update(e) {
-      this.$emit('input', {selected: e});
+      console.log('update', e);
+      this.$emit('input', e);
       this.calculateState();
     },
     /**
@@ -58,7 +68,7 @@ export default {
      * @returns {boolean}
      */
     calculateState() {
-      let s = (this.value.selected !== null);
+      let s = (this.value !== null);
       this.$emit('state', {id: this._uid, state: s});
       return s;
     }

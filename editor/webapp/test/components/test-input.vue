@@ -63,7 +63,7 @@
         p {{vselector}}
       b-col
         b-form-select(
-          v-model="vselector.selected"
+          v-model="vselector"
           :options="selectOptions")
     b-row
       b-col
@@ -116,7 +116,7 @@ import FormValidatorMixin from '../../common/components/form-controls/formValida
 import {DateTime} from 'luxon';
 
 const selectorOptions = [
-  {value: null, text: 'Bitte auswählen'},
+  {value: -1, text: 'Bitte auswählen'},
   {value: 1, text: 'Option 1'},
   {value: 2, text: 'Option 2'},
   {value: 3, text: 'Option 3'},
@@ -132,7 +132,7 @@ export default {
       v4            : DateTime.now().toISODate(),
       dateMin       : DateTime.now().minus({days: 1}).toISODate(),
       dateMax       : DateTime.now().plus({month: 5}).toISODate(),
-      vselector     : {selected: null},
+      vselector     : -1,
       vText         : 'abc',
       vEmail        : 'demo@ferropoly.ch',
       vPhone        : '077 444 33 33',
