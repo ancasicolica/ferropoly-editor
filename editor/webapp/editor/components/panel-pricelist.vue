@@ -6,7 +6,7 @@
 <template lang="pug">
   div
     b-row
-      b-col
+      b-col(sm="12" md="12" lg="8" xl="8")
         ferro-card(title="Preisliste")
           input-numeric(
             v-model="lowestPrice"

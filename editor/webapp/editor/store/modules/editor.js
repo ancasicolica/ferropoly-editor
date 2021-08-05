@@ -8,7 +8,8 @@ const editor = {
   state    : () => ({
     formValid: {
       basicData: false,
-      pricelist: false
+      pricelist: false,
+      rent     : false
     },
     api      : {
       error         : {
@@ -19,7 +20,7 @@ const editor = {
       requestPending: false
     },
     panel    : {
-      current: 'panel-pricelist'
+      current: 'panel-rent'
     }
   }),
   getters  : {
@@ -28,6 +29,9 @@ const editor = {
     },
     pricelistFormIsValid: state => {
       return state.formValid.pricelist;
+    },
+    rentFormIsValid: state => {
+      return state.formValid.rent;
     },
     apiError            : state => {
       return state.api.error;
@@ -55,6 +59,14 @@ const editor = {
      */
     setPricelistFormValid(state, n) {
       state.formValid.pricelist = n;
+    },
+    /**
+     * Sets the validation of the rent form
+     * @param state
+     * @param n
+     */
+    setRentFormValid(state, n) {
+      state.formValid.rent = n;
     },
     /**
      * Resets the API error from the last call, used when closing the modal dialog

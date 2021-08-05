@@ -23,14 +23,17 @@ const gameplay = {
       deleteTs : ''
     },
     gameParams: {
-      interestInterval: 0,
-      interest        : 0,
-      properties      : {
+      startCapital             : 0,
+      interestInterval         : 0,
+      interest                 : 0,
+      interestCyclesAtEndOfGame: 0,
+      debtInterest             : 0,
+      properties               : {
         lowestPrice               : 0,
         highestPrice              : 0,
         numberOfPriceLevels       : 0,
         numberOfPropertiesPerGroup: 0
-      }
+      },
     },
     log       : {
       created   : '',
@@ -47,6 +50,9 @@ const gameplay = {
   },
   mutations: {
     updateField,
+    test(state, n) {
+      state.gameParams.interestInterval = n;
+    },
   }
 
 };

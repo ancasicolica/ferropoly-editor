@@ -70,6 +70,11 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.gameParams.properties.highestPrice');
         setProp(state, res, 'gameplay.gameParams.properties.numberOfPriceLevels');
         setProp(state, res, 'gameplay.gameParams.properties.numberOfPropertiesPerGroup');
+        setProp(state, res, 'gameplay.gameParams.startCapital');
+        setProp(state, res, 'gameplay.gameParams.interestInterval');
+        setProp(state, res, 'gameplay.gameParams.interest');
+        setProp(state, res, 'gameplay.gameParams.interestCyclesAtEndOfGame');
+        setProp(state, res, 'gameplay.gameParams.debtInterest');
       });
     },
     /**
