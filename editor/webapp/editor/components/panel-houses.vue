@@ -95,7 +95,7 @@ export default {
   },
   methods   : {
     saveAndContinue() {
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-properties'});
+      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-chance'});
     },
   },
   components: {InputRange, FerroCard},

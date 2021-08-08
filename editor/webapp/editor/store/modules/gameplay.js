@@ -43,6 +43,10 @@ const gameplay = {
         fourHouses          : 0,
         hotel               : 0,
         allPropertiesOfGroup: 0
+      },
+      chancellery: {
+        minLottery: 0,
+        maxLottery: 0
       }
     },
     log       : {

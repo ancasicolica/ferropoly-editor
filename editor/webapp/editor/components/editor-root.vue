@@ -38,6 +38,7 @@ import PanelBasic from './panel-basic.vue';
 import PanelCreate from './panel-create.vue';
 import PanelHouses from './panel-houses.vue';
 import PanelPlayer from './panel-player.vue';
+import PanelChance from './panel-chance.vue';
 import PanelPricelist from './panel-pricelist.vue';
 import PanelProperties from './panel-properties.vue';
 import PanelRent from './panel-rent.vue';
@@ -62,6 +63,7 @@ export default {
             {title: 'Preisliste', href: '#', event: 'panel-change', eventParam: 'panel-pricelist'},
             {title: 'Startgeld & Zins', href: '#', event: 'panel-change', eventParam: 'panel-rent'},
             {title: 'Häuser & Hotel', href: '#', event: 'panel-change', eventParam: 'panel-houses'},
+            {title: 'Chance & Kanzlei', href: '#', event: 'panel-change', eventParam: 'panel-chance'},
           ]
         },
         /* 1 */ {title: 'Ortauswahl', href: '#', event: 'panel-change', eventParam: 'panel-properties'},
@@ -146,7 +148,8 @@ export default {
     PanelRent,
     PanelSorting,
     ModalError,
-    KeepWaiting
+    KeepWaiting,
+    PanelChance
   },
   filters   : {}
 }
