@@ -18,6 +18,14 @@
           max="10")
         p Wert: {{v1}}
       b-col
+        input-range(v-model="vRange"
+          label="Eingabe Range-Test"
+          help="Gib einen vernünftigen Wert ein"
+          @state="onState"
+          step="0.25"
+          min="1"
+          max="10")
+        p Wert: {{vRange}}
     b-row
       b-col
         input-time(v-model="v2"
@@ -106,6 +114,7 @@
 
 <script>
 import InputNumeric from '../../common/components/form-controls/input-numeric.vue'
+import InputRange from '../../common/components/form-controls/input-range.vue'
 import InputTime from '../../common/components/form-controls/input-time.vue'
 import InputDate from '../../common/components/form-controls/input-date.vue'
 import FormSelector from '../../common/components/form-controls/form-selector.vue'
@@ -130,6 +139,7 @@ export default {
       v2            : '05:05:00',
       v3            : '20:05:00',
       v4            : DateTime.now().toISODate(),
+      vRange        : 1.75,
       dateMin       : DateTime.now().minus({days: 1}).toISODate(),
       dateMax       : DateTime.now().plus({month: 5}).toISODate(),
       vselector     : -1,
@@ -155,7 +165,7 @@ export default {
       console.log(this.startTimeValid, this.endTimeValid);
     }
   },
-  components: {InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector},
+  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector},
   filters   : {},
   mixins    : [FormValidatorMixin]
 }
