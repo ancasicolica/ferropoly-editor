@@ -44,9 +44,12 @@ const gameplay = {
         hotel               : 0,
         allPropertiesOfGroup: 0
       },
-      chancellery: {
-        minLottery: 0,
-        maxLottery: 0
+      chancellery              : {
+        minLottery      : 0,
+        maxLottery      : 0,
+        maxJackpotSize  : 0,
+        probabilityWin  : 0,
+        probabilityLoose: 0
       }
     },
     log       : {

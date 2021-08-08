@@ -16,18 +16,18 @@
       @input="update"
       aria-describedby="input-help input-feedback"
     )
-    div.value {{value}}
+    div.value {{val}}
     b-form-invalid-feedback(v-if="feedback") {{feedback}}
     b-form-text(v-if="help") {{help}}
-  
+
 </template>
 
 <script>
 import InputMixin from './inputMixin.js'
 
 export default {
-  name: "input-range",
-  props: {
+  name      : 'input-range',
+  props     : {
     value    : {
       type   : Number,
       default: () => {
@@ -50,23 +50,34 @@ export default {
       default: () => {
         return 1
       }
+    },
+    formatter: {
+      type   : Function,
+      default: function (s) {
+        return s;
+      }
+
     }
   },
-  data: function() {
+  data      : function () {
     return {};
   },
-  model: {},
-  created: function() {
+  model     : {},
+  created   : function () {
   },
-  computed: {},
-  methods: {
+  computed  : {
+    val() {
+      return this.formatter(this.value);
+    }
+  },
+  methods   : {
     update(e) {
       this.$emit('input', parseFloat(e));
     }
   },
   components: {},
-  filters: {},
-  mixins: [InputMixin]
+  filters   : {},
+  mixins    : [InputMixin]
 }
 </script>
 

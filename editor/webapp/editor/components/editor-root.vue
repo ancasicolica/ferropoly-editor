@@ -24,6 +24,7 @@
         panel-basic(v-if="panel==='panel-basic'" @panel-change="onPanelChange" :authToken="authToken")
         panel-create(v-if="panel==='panel-create'" :authToken="authToken")
         panel-houses(v-if="panel==='panel-houses'" :authToken="authToken")
+        panel-chance(v-if="panel==='panel-chance'" :authToken="authToken")
         panel-player(v-if="panel==='panel-player'" :authToken="authToken")
         panel-pricelist(v-if="panel==='panel-pricelist'" :authToken="authToken")
         panel-properties(v-if="panel==='panel-properties'" :authToken="authToken")
