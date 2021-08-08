@@ -103,7 +103,6 @@ export default {
   },
   methods   : {
     saveAndContinue() {
-      console.log('save and continue');
       this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-rent'});
     },
     validatePrices() {

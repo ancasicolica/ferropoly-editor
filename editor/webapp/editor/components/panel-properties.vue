@@ -4,23 +4,32 @@
   Created: 06.06.21
 -->
 <template lang="pug">
-#panel-properties
-  h1 panel-properties
-
+  #panel-properties
+    h1 map
 </template>
 
 <script>
+
 export default {
   name      : 'panel-properties',
-  props     : {},
+  props     : {
+    authToken: {
+      type   : String,
+      default: () => {
+        return 'none';
+      }
+    }
+  },
   data      : function () {
     return {};
   },
   model     : {},
   created   : function () {
   },
-  computed  : {},
-  methods   : {},
+  computed  : {
+
+  },
+  methods   : {   },
   components: {},
   filters   : {}
 }

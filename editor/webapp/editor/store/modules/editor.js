@@ -20,7 +20,7 @@ const editor = {
       requestPending: false
     },
     panel    : {
-      current: 'panel-rent'
+      current: 'panel-houses'
     }
   }),
   getters  : {

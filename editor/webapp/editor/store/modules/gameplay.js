@@ -28,12 +28,22 @@ const gameplay = {
       interest                 : 0,
       interestCyclesAtEndOfGame: 0,
       debtInterest             : 0,
+      housePrices              : 0,
       properties               : {
         lowestPrice               : 0,
         highestPrice              : 0,
         numberOfPriceLevels       : 0,
         numberOfPropertiesPerGroup: 0
       },
+      rentFactors              : {
+        noHouse             : 0,
+        oneHouse            : 0,
+        twoHouses           : 0,
+        threeHouses         : 0,
+        fourHouses          : 0,
+        hotel               : 0,
+        allPropertiesOfGroup: 0
+      }
     },
     log       : {
       created   : '',

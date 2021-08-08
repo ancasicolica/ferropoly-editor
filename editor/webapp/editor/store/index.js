@@ -75,6 +75,14 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.gameParams.interest');
         setProp(state, res, 'gameplay.gameParams.interestCyclesAtEndOfGame');
         setProp(state, res, 'gameplay.gameParams.debtInterest');
+        setProp(state, res, 'gameplay.gameParams.housePrices');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.noHouse');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.oneHouse');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.twoHouses');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.threeHouses');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.fourHouses');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.hotel');
+        setProp(state, res, 'gameplay.gameParams.rentFactors.allPropertiesOfGroup');
       });
     },
     /**
