@@ -3,6 +3,7 @@
 * Umstellung User Interface von Angular.js auf vue.js
 * Swiss Topo Landeskarte
 * Neuer Editor für Spielregeln
+* Neue Einstellungen für Chance/Kanzlei möglich
 
 # V2.6.1 19.12.2020
 * API für Abfragen aus Webseite und Überwachung #41
