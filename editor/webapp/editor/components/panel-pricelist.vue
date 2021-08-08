@@ -40,6 +40,13 @@
             max="32"
             @state="onStateLocal"
           )
+          form-selector(
+            v-model="numberOfPropertiesPerGroup"
+            :options="selectorNumberOfProperties"
+            label="Grösse der Liegenschaftsgruppen"
+            help="Bei einem Wert grösser 1 werden die in der Preisliste beieinander liegenden Orte zu Gruppen zusammengefasst. Besitzt eine Spielergruppe alle Orte einer Ortsgruppe, dann verdoppeln sich die Einnahmen. Empfohlen sind 2."
+            @state="onStateLocal"
+          )
       b-col
         b-button(
           variant="primary"
@@ -48,11 +55,13 @@
 
 </template>
 
+
 <script>
 import {mapFields} from 'vuex-map-fields';
 import FerroCard from '../../common/components/ferro-card/ferro-card.vue';
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import InputNumeric from '../../common/components/form-controls/input-numeric.vue';
+import FormSelector from '../../common/components/form-controls/form-selector.vue';
 
 export default {
   name      : 'panel-pricelist',
@@ -83,6 +92,14 @@ export default {
     pricelistFormIsValid() {
       return this.$store.getters.pricelistFormIsValid;
     },
+    selectorNumberOfProperties() {
+      return [
+        {value: 1, text: '1'},
+        {value: 2, text: '2'},
+        {value: 3, text: '3'},
+        {value: 4, text: '4'}
+      ]
+    }
   },
   methods   : {
     saveAndContinue() {
@@ -100,7 +117,7 @@ export default {
       this.$store.commit('setPricelistFormValid', this.isFormValid());
     }
   },
-  components: {InputNumeric, FerroCard},
+  components: {InputNumeric, FerroCard, FormSelector},
   filters   : {},
   mixins    : [FormValidatorMixin]
 }
