@@ -48,6 +48,7 @@ function getGameInfo(gameId, callback) {
 function loadGame(gameId, callback) {
   $.ajax(`/gameplay/load/${gameId}`, {dataType: 'json'})
     .done(function (resp) {
+      console.log(resp);
       callback(null, resp);
     })
     .fail(function (err) {

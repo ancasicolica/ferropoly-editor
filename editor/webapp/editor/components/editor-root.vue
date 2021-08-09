@@ -46,7 +46,7 @@ import PanelRent from './panel-rent.vue';
 import PanelSorting from './panel-sorting.vue';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 import KeepWaiting from '../../common/components/keep-waiting/keep-waiting.vue';
-
+import {mapFields} from 'vuex-map-fields';
 import {last, split} from 'lodash';
 import {getAuthToken} from '../../common/adapter/authToken';
 
@@ -70,9 +70,7 @@ export default {
         /* 1 */ {title: 'Ortauswahl', href: '#', event: 'panel-change', eventParam: 'panel-properties'},
         /* 2 */ {title: 'Reihenfolge', href: '#', event: 'panel-change', eventParam: 'panel-sorting'},
         /* 3 */ {title: 'Preisliste erstellen', href: '#', event: 'panel-change', eventParam: 'panel-create'},
-      ],
-      gameId      : 'none',
-      authToken   : 'none'
+      ]
     };
   },
   model  : {},
@@ -81,7 +79,7 @@ export default {
 
     // Retrieve GameId for this page
     const elements = split(window.location.pathname, '/');
-    self.gameId    = last(elements);
+    this.gameId    = last(elements);
 
     // Get Authtoken
     getAuthToken((err, token) => {
@@ -98,7 +96,10 @@ export default {
   },
 
   computed  : {
-
+    ...mapFields([
+      'gameId',
+      'authToken'
+    ]),
     dataLoaded     : {
       get() {
         return this.$store.state.apiCallsRemaining === 0;

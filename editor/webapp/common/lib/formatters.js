@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
 import {isNumber, find, toUpper} from 'lodash';
-import {maps} from '../../../../common/lib/maps.json';
+import maps from '../../../../common/lib/maps.json';
 
 /**
  * Formatter for the Game Date (when we play):

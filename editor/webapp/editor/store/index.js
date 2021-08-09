@@ -11,6 +11,7 @@ import properties from './modules/properties.js';
 import editor from './modules/editor.js';
 import {loadGame, saveGameplay} from '../../common/adapter/gameplay';
 import {get, set} from 'lodash';
+import {getField, updateField} from 'vuex-map-fields';
 
 Vue.use(Vuex);
 
@@ -28,14 +29,20 @@ function setProp(state, obj, name, def = '') {
 const storeEditor = new Vuex.Store({
   state    : {
     apiCallsRemaining: 1, // Number of files to read
-    gameId           : 'none'
+    gameId           : 'n',
+    gameHost         : 'n',
+    gameHostPort     : 442,
+    authToken        : 'n'
   },
   modules  : {
     gameplay,
     properties,
     editor
   },
-  mutations: {},
+  getters  : {
+    getField
+  },
+  mutations: {updateField},
   actions  : {
     /**
      * Fetches the data from the server, must be called for updating the data with the DB (after initializing)
@@ -51,7 +58,10 @@ const storeEditor = new Vuex.Store({
           return;
         }
         this.state.apiCallsRemaining--;
-        this.state.gameId = options.gameId;
+        this.state.gameId       = options.gameId;
+        this.state.gameHost     = get(res, 'settings.publicServer.host', 'nada');
+        this.state.gameHostPort = get(res, 'settings.publicServer.port', 443);
+
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');
         setProp(state, res, 'gameplay.owner.organisatorEmail');
@@ -88,6 +98,7 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.gameParams.chancellery.maxJackpotSize');
         setProp(state, res, 'gameplay.gameParams.chancellery.probabilityWin');
         setProp(state, res, 'gameplay.gameParams.chancellery.probabilityLoose');
+        setProp(state, res, 'gameplay.joining.possibleUntil');
       });
     },
     /**
@@ -99,16 +110,16 @@ const storeEditor = new Vuex.Store({
      */
     saveData({state, commit, rootState}, options) {
       state.editor.api.requestPending = true;
-      saveGameplay(state.gameplay, options.authToken, (err,resp) => {
+      saveGameplay(state.gameplay, options.authToken, (err, resp) => {
         state.editor.api.requestPending = false;
         if (err) {
-          console.error(err,resp);
+          console.error(err, resp);
           state.editor.api.error.message  = err.message;
           state.editor.api.error.infoText = 'Es gab einen Fehler beim Speichern der Spieldaten:';
           state.editor.api.error.active   = true;
           return;
         }
-        console.log(`saved game ${state.gameplay.internal.gameId}`);
+        console.log(`saved game ${state.gameId}`);
         // Switch to new panel if successful
         if (options.targetPanel) {
           state.editor.panel.current = options.targetPanel;

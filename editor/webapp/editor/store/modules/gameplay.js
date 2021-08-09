@@ -3,8 +3,13 @@
  * Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
  * Created: 25.07.21
  **/
+import {createHelpers} from 'vuex-map-fields';
 
-import {getField, updateField} from 'vuex-map-fields';
+const {getGameplayField, updateGameplayField} = createHelpers({
+  getterType  : 'getGameplayField',
+  mutationType: 'updateGameplayField'
+});
+
 import {DateTime} from 'luxon';
 
 const gameplay = {
@@ -60,13 +65,16 @@ const gameplay = {
       gameId: '',
       map   : '',
       owner : ''
+    },
+    joining   : {
+      possibleUntil: ''
     }
   }),
   getters  : {
-    getField,
+    getGameplayField,
   },
   mutations: {
-    updateField,
+    updateGameplayField,
     test(state, n) {
       state.gameParams.interestInterval = n;
     },
