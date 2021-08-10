@@ -46,10 +46,10 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'log.created',
-      'log.lastEdited',
-      'internal.gameId',
-      'internal.map',
+      'gameplay.log.created',
+      'gameplay.log.lastEdited',
+      'gameplay.internal.gameId',
+      'gameplay.internal.map',
     ]),
     gameStartFormatted() {
       return formatDateTime(this.created);

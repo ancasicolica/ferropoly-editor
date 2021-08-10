@@ -67,11 +67,11 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'gamename',
-      'owner.organisatorName',
-      'owner.organisation',
-      'owner.organisatorEmail',
-      'owner.organisatorPhone'
+      'gameplay.gamename',
+      'gameplay.owner.organisatorName',
+      'gameplay.owner.organisation',
+      'gameplay.owner.organisatorEmail',
+      'gameplay.owner.organisatorPhone'
     ])
   },
   methods   : {},

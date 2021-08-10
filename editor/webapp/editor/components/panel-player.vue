@@ -1,5 +1,5 @@
 <!---
-
+  Player settings (joining and type of the game)
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 06.06.21
 -->
@@ -19,9 +19,22 @@
               label="Anmeldeschluss"
               :max="latestJoiningDate"
             )
+            p Infotext für die anmeldenen Personen:
+            vue-editor#editor(
+              v-model="infotext"
+              :editorToolbar="toolbar"
+            )
         b-col(sm="12" md="12" lg="4" xl="4")
           ferro-card(title="Spielform")
             p Bla bla
+          b-button(
+            :disabled="requestPending"
+            v-on:click="saveData") Speichern
+          b-button.ml-1(
+            variant="primary"
+            :disabled="requestPending"
+            v-on:click="saveAndContinue") Speichern und weiter
+
 </template>
 
 <script>
@@ -30,12 +43,16 @@ import InputDateTime from '../../common/components/form-controls/input-date-time
 import {mapFields} from 'vuex-map-fields';
 import {BIconBoxArrowUpRight} from 'bootstrap-vue'
 import {DateTime} from 'luxon';
+import {VueEditor} from 'vue2-editor';
+import editorToolbar from '../lib/editorToolbar';
 
 export default {
   name      : 'panel-player',
   props     : {},
   data      : function () {
-    return {};
+    return {
+      toolbar: editorToolbar
+    };
   },
   model     : {},
   created   : function () {
@@ -48,17 +65,29 @@ export default {
       'apiCallsRemaining',
       'authToken',
       'gameplay.joining.possibleUntil',
+      'gameplay.joining.infotext',
       'gameplay.scheduling.gameDate'
     ]),
+    requestPending() {
+      return this.$store.getters.requestPending;
+    },
     gameUrl() {
       return `http://${this.gameHost}:${this.gameHostPort}/anmelden/${this.gameId}`
     },
     latestJoiningDate() {
       return DateTime.fromISO(this.gameDate).minus({day: 1}).toISO();
-    }
+    },
+
   },
-  methods   : {},
-  components: {FerroCard, BIconBoxArrowUpRight, InputDateTime},
+  methods   : {
+    saveData() {
+      this.$store.dispatch({type: 'saveData', authToken: this.authToken});
+    },
+    saveAndContinue() {
+      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-rent'});
+    },
+  },
+  components: {FerroCard, BIconBoxArrowUpRight, InputDateTime, VueEditor},
   filters   : {}
 }
 </script>

@@ -67,7 +67,8 @@ const gameplay = {
       owner : ''
     },
     joining   : {
-      possibleUntil: ''
+      possibleUntil: '',
+      infotext: ''
     }
   }),
   getters  : {

@@ -81,13 +81,13 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'gameParams.rentFactors.noHouse',
-      'gameParams.rentFactors.oneHouse',
-      'gameParams.rentFactors.twoHouses',
-      'gameParams.rentFactors.threeHouses',
-      'gameParams.rentFactors.fourHouses',
-      'gameParams.rentFactors.hotel',
-      'gameParams.housePrices',
+      'gameplay.gameParams.rentFactors.noHouse',
+      'gameplay.gameParams.rentFactors.oneHouse',
+      'gameplay.gameParams.rentFactors.twoHouses',
+      'gameplay.gameParams.rentFactors.threeHouses',
+      'gameplay.gameParams.rentFactors.fourHouses',
+      'gameplay.gameParams.rentFactors.hotel',
+      'gameplay.gameParams.housePrices',
     ]),
     requestPending() {
       return this.$store.getters.requestPending;

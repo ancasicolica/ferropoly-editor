@@ -71,11 +71,11 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'gameParams.chancellery.minLottery',
-      'gameParams.chancellery.maxLottery',
-      'gameParams.chancellery.maxJackpotSize',
-      'gameParams.chancellery.probabilityWin',
-      'gameParams.chancellery.probabilityLoose',
+      'gameplay.gameParams.chancellery.minLottery',
+      'gameplay.gameParams.chancellery.maxLottery',
+      'gameplay.gameParams.chancellery.maxJackpotSize',
+      'gameplay.gameParams.chancellery.probabilityWin',
+      'gameplay.gameParams.chancellery.probabilityLoose',
     ]),
     minMaxLottery() {
       let s = this.minLottery + 1000;

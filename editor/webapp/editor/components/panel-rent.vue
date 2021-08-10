@@ -82,11 +82,11 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'gameParams.startCapital',
-      'gameParams.interestInterval',
-      'gameParams.interest',
-      'gameParams.interestCyclesAtEndOfGame',
-      'gameParams.debtInterest',
+      'gameplay.gameParams.startCapital',
+      'gameplay.gameParams.interestInterval',
+      'gameplay.gameParams.interest',
+      'gameplay.gameParams.interestCyclesAtEndOfGame',
+      'gameplay.gameParams.debtInterest',
     ]),
     requestPending() {
       return this.$store.getters.requestPending;

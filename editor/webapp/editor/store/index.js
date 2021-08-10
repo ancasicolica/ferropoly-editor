@@ -99,6 +99,7 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.gameParams.chancellery.probabilityWin');
         setProp(state, res, 'gameplay.gameParams.chancellery.probabilityLoose');
         setProp(state, res, 'gameplay.joining.possibleUntil');
+        setProp(state, res, 'gameplay.joining.infotext');
       });
     },
     /**

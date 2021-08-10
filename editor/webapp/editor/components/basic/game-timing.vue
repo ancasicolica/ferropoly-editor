@@ -47,10 +47,10 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'scheduling.gameDate',
-      'scheduling.gameStart',
-      'scheduling.gameEnd',
-      'scheduling.deleteTs',
+      'gameplay.scheduling.gameDate',
+      'gameplay.scheduling.gameStart',
+      'gameplay.scheduling.gameEnd',
+      'gameplay.scheduling.deleteTs',
     ]),
   },
   methods   : {

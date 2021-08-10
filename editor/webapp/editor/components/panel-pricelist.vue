@@ -81,10 +81,10 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'gameParams.properties.lowestPrice',
-      'gameParams.properties.highestPrice',
-      'gameParams.properties.numberOfPriceLevels',
-      'gameParams.properties.numberOfPropertiesPerGroup',
+      'gameplay.gameParams.properties.lowestPrice',
+      'gameplay.gameParams.properties.highestPrice',
+      'gameplay.gameParams.properties.numberOfPriceLevels',
+      'gameplay.gameParams.properties.numberOfPropertiesPerGroup',
     ]),
     requestPending() {
       return this.$store.getters.requestPending;
