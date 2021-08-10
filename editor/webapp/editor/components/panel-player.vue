@@ -26,7 +26,12 @@
             )
         b-col(sm="12" md="12" lg="4" xl="4")
           ferro-card(title="Spielform")
-            p Bla bla
+            b-form-radio(v-model="level" value="0")
+              b Zentrale ohne Mobile-Unterstützung: &nbsp;
+              span Die Spieler können die Preisliste ohne Login einsehen, während dem Spiel bleibt das Smartphone aber ausgeschaltet. Für alle Aktionen muss die Zentrale angerufen werden.
+            b-form-radio(v-model="level" value="5")
+              b Zentrale, Zugriff auf eigene Daten zulassen: &nbsp;
+              span Die Teams haben per Smartphone Zugriff auf ihre eigenen Informationen, können aber so weder Orte noch Häuser kaufen. Dies erfolgt telefonisch über die Zentrale.
           b-button(
             :disabled="requestPending"
             v-on:click="saveData") Speichern
@@ -66,7 +71,8 @@ export default {
       'authToken',
       'gameplay.joining.possibleUntil',
       'gameplay.joining.infotext',
-      'gameplay.scheduling.gameDate'
+      'gameplay.scheduling.gameDate',
+      'gameplay.mobile.level'
     ]),
     requestPending() {
       return this.$store.getters.requestPending;

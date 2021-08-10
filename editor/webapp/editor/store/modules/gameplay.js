@@ -68,7 +68,10 @@ const gameplay = {
     },
     joining   : {
       possibleUntil: '',
-      infotext: ''
+      infotext     : ''
+    },
+    mobile    : {
+      level: 0
     }
   }),
   getters  : {
