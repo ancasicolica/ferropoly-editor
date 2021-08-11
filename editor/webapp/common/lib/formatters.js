@@ -85,10 +85,10 @@ function formatPriceRange(val) {
       return 'billig';
 
     case 2:
-      return 'unt. Mittelf.';
+      return 'unteres Mittelfeld';
 
     case 3:
-      return 'ob. Mittelf.';
+      return 'oberes Mittelfeld';
 
     case 4:
       return 'teuer';

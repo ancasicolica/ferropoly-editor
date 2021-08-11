@@ -21,19 +21,19 @@ import $ from 'jquery';
 export default {
   name   : 'property-list',
   props  : {
-    properties: {
+    properties    : {
       type   : Array,
       default: function () {
         return [];
       }
     },
-    filter    : {
+    filter        : {
       type   : String,
       default: function () {
         return '';
       }
     },
-    filterType: {
+    filterType    : {
       type   : String,
       default: function () {
         return null;
@@ -80,6 +80,9 @@ export default {
           return row.location.accessibility === filter;
         }
         if (this.filterType === 'priceRange') {
+          if (filter ==='allInList') {
+            return row.pricelist.priceRange >= 0;
+          }
           return row.pricelist.priceRange.toString() === filter;
         }
         if (this.filterType === 'location') {
