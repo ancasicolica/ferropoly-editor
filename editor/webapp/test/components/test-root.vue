@@ -22,6 +22,7 @@
     test-player-edit(v-if="panel==='playerEdit'")
     test-admin-entry(v-if="panel==='adminEntry'")
     test-ferropoly-map(v-if="panel==='ferropolyMap'")
+    test-ferro-card(v-if="panel==='ferroCard'")
     test-property-sorting(v-if="panel==='propertySorting'")
     test-property-list(v-if="panel==='propertyList'")
     test-input(v-if="panel==='input'")
@@ -40,6 +41,7 @@ import {getItem, setItem} from '../../common/lib/sessionStorage';
 import TestFerropolyMap from './test-ferropoly-map.vue';
 import TestPropertySorting from './test-property-sorting.vue';
 import TestPropertyList from './test-property-list.vue';
+import TestFerroCard from './test-ferro-card.vue';
 import TestInput from './test-input.vue';
 
 // EASY START
@@ -59,7 +61,8 @@ export default {
             {title: 'MenuBar', href: '#', event: 'panel-change', eventParam: 'menuBar'},
             {title: 'Modal Error', href: '#', event: 'panel-change', eventParam: 'modalError'},
             {title: 'Modal Info', href: '#', event: 'panel-change', eventParam: 'modalInfo'},
-            {title: 'Inputs', href:'#', event:'panel-change', eventParam: 'input'}
+            {title: 'Inputs', href:'#', event:'panel-change', eventParam: 'input'},
+            {title: 'Ferropoly Cards', href:'#', event:'panel-change', eventParam: 'ferroCard'},
           ]
         },
         /* 2 */  {
@@ -105,7 +108,8 @@ export default {
     TestAdminEntry,
     TestPropertySorting,
     TestPropertyList,
-    TestInput
+    TestInput,
+    TestFerroCard
   },
   filters   : {}
 }
