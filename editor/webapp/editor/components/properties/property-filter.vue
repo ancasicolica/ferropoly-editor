@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   div
-    ferro-card(title="Ortfilter")
+    ferro-card(title="Ortfilter" size="sm")
       b-form-select(
         size="sm"
         v-model="filterType"

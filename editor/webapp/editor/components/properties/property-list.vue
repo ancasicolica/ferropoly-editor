@@ -21,19 +21,19 @@ import $ from 'jquery';
 export default {
   name   : 'property-list',
   props  : {
-    properties    : {
+    properties: {
       type   : Array,
       default: function () {
         return [];
       }
     },
-    filter        : {
+    filter    : {
       type   : String,
       default: function () {
         return '';
       }
     },
-    filterType    : {
+    filterType: {
       type   : String,
       default: function () {
         return null;
@@ -50,9 +50,12 @@ export default {
     };
   },
   model  : {},
+  mounted: function() {
+    this.resizeHandler();
+  },
   created: function () {
     window.addEventListener('resize', this.resizeHandler);
-    this.resizeHandler(null);
+    this.resizeHandler();
   },
   destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
@@ -80,7 +83,7 @@ export default {
           return row.location.accessibility === filter;
         }
         if (this.filterType === 'priceRange') {
-          if (filter ==='allInList') {
+          if (filter === 'allInList') {
             return row.pricelist.priceRange >= 0;
           }
           return row.pricelist.priceRange.toString() === filter;
@@ -98,6 +101,7 @@ export default {
       let element       = $('#property-list');
       let hDoc          = $(window).height();
       let offsetElement = element.offset();
+      console.log('rh', hDoc, offsetElement);
       if (offsetElement) {
         element.height(hDoc - offsetElement.top);
       }
@@ -112,5 +116,6 @@ export default {
 #property-list {
   overflow: auto;
   font-size: 12px;
+  height: 200px;
 }
 </style>

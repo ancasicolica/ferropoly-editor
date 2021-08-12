@@ -20,6 +20,13 @@ const properties = {
   },
   mutations: {
     updatePropertiesField,
+  },
+  actions: {
+    applyFilter({state, commit, rootState}, options) {
+      state.list.forEach(p => {
+        p.setMap( rootState.editor.map);
+      });
+    }
   }
 };
 

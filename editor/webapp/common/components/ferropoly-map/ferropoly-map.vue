@@ -11,22 +11,10 @@
 </template>
 
 <script>
-import {Loader} from '@googlemaps/js-api-loader';
+
 import {WmsMapType} from '@googlemaps/ogc';
 import $ from 'jquery';
-
-
-// Hell, yes, this is the API Key in code, git and everywhere... So far I was not able
-// to find a better solution, have to check this out. But don't be too happy about finding
-// a 'free' API key, it is restricted to the ferropoly infrastructure, consider it as
-// useless...
-const API_KEY = 'AIzaSyBUF_iMSAIZ4VG6rjpGvTntep-_x2zuAqw'
-
-const loader = new Loader({
-  apiKey   : API_KEY,
-  version  : 'weekly',
-  libraries: ['places']
-});
+import gl from './googleLoader.js';
 
 const mapOptionsDefaults = {
   center: {
@@ -57,37 +45,35 @@ export default {
    * When Map was mounted
    */
   async mounted() {
-    let self = this;
-    loader.loadCallback(e => {
-      if (e) {
-        console.log(e);
-      } else {
-        this.mapOptions.mapTypeControlOptions = {
-          mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
-        };
+    let self   = this;
+    let google = gl.google;
 
-        if (!this.mapOptions.center) {
-          this.mapOptions.center = mapOptionsDefaults.center;
-        }
+    this.mapOptions.mapTypeControlOptions = {
+      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
+    };
 
-        self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
-        let swissMap = WmsMapType({
-          url        : 'https://wms.geo.admin.ch',
-          layers     : 'ch.swisstopo.pixelkarte-farbe',
-          name       : 'Swiss Topo',
-          alt        : 'swiss_topo',
-          version    : '1.1.1',
-          transparent: false,
-          maxZoom    : 55,
-          format     : 'image/jpeg'
-        });
+    if (!this.mapOptions.center) {
+      this.mapOptions.center = mapOptionsDefaults.center;
+    }
 
-        self.map.mapTypes.set('swisstopo', swissMap);
-        self.map.setMapTypeId('swisstopo');
-        self.resizeHandler();
-        console.log('Google Map Initialized');
-      }
+    self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
+    let swissMap = WmsMapType({
+      url        : 'https://wms.geo.admin.ch',
+      layers     : 'ch.swisstopo.pixelkarte-farbe',
+      name       : 'Swiss Topo',
+      alt        : 'swiss_topo',
+      version    : '1.1.1',
+      transparent: false,
+      maxZoom    : 55,
+      format     : 'image/jpeg'
     });
+
+    self.map.mapTypes.set('swisstopo', swissMap);
+    self.map.setMapTypeId('swisstopo');
+    self.resizeHandler();
+    console.log('Google Map Initialized');
+    self.$emit('map', self.map);
+
   },
   /**
    * When Map was Created
@@ -99,8 +85,8 @@ export default {
   destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
   },
-  computed  : {},
-  methods   : {
+  computed: {},
+  methods: {
     /**
      * Creates the maximum Size
      */
@@ -118,13 +104,10 @@ export default {
       } else {
         console.log('Map not ready yet');
       }
-
-
     }
-
   },
   components: {},
-  filters   : {}
+  filters: {}
 }
 </script>
 

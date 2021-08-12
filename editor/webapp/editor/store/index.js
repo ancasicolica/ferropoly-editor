@@ -12,6 +12,7 @@ import editor from './modules/editor.js';
 import {loadGame, saveGameplay} from '../../common/adapter/gameplay';
 import {get, set} from 'lodash';
 import {getField, updateField} from 'vuex-map-fields';
+import Property from '../lib/property';
 
 Vue.use(Vuex);
 
@@ -58,10 +59,13 @@ const storeEditor = new Vuex.Store({
           return;
         }
         this.state.apiCallsRemaining--;
-        this.state.gameId       = options.gameId;
-        this.state.gameHost     = get(res, 'settings.publicServer.host', 'nada');
-        this.state.gameHostPort = get(res, 'settings.publicServer.port', 443);
-
+        this.state.gameId          = options.gameId;
+        this.state.gameHost        = get(res, 'settings.publicServer.host', 'nada');
+        this.state.gameHostPort    = get(res, 'settings.publicServer.port', 443);
+        this.state.properties.list = [];
+        res.properties.forEach(p => {
+          this.state.properties.list.push(new Property(p));
+        });
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');
         setProp(state, res, 'gameplay.owner.organisatorEmail');

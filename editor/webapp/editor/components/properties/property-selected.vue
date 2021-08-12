@@ -6,7 +6,7 @@
 -->
 <template lang="pug">
   div
-    ferro-card(title="Ausgewähltes Ort")
+    ferro-card(title="Ausgewähltes Ort" size="sm")
       div#property-name {{propertyName}}
       div#accessibility Erreichbarkeit: {{propertyAccess}}
       div#usage Verwendung:

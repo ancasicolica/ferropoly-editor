@@ -20,8 +20,9 @@ const editor = {
       requestPending: false
     },
     panel    : {
-      current: 'panel-basic'
-    }
+      current: 'panel-properties'
+    },
+    map: null
   }),
   getters  : {
     basicFormIsValid    : state => {
