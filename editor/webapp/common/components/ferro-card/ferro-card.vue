@@ -6,8 +6,8 @@
 <template lang="pug">
   #ferro-card
     b-card(no-body).ferro-card
-      b-card-header.title {{title}}
-      b-card-body
+      b-card-header.title(:class="{'sm-title': isSm}") {{title}}
+      b-card-body(:class="{'sm-card-body': isSm}")
         b-card-text
           b-container(fluid="true")
             slot
@@ -23,6 +23,12 @@ export default {
       default: function () {
         return 'Ferropoly';
       }
+    },
+    size : {
+      type   : String,
+      default: function () {
+        return 'md';
+      }
     }
   },
   data      : function () {
@@ -31,16 +37,39 @@ export default {
   model     : {},
   created   : function () {
   },
-  computed  : {},
+  computed  : {
+    isMd() {
+      return this.size === 'md';
+    },
+    isSm() {
+      return this.size === 'sm';
+    }
+  },
   methods   : {},
   components: {},
   filters   : {}
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .title {
   font-weight: bold;
+}
+
+// Small Title
+.sm-title {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+// Small Card Body
+.sm-card-body {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .ferro-card {
