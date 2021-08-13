@@ -8,6 +8,7 @@
     b-row
       b-col
         ferropoly-map(
+          ref="map"
           :map-options="mapOptions"
           @map="onNewMap"
         )
@@ -43,9 +44,7 @@ export default {
     }
   },
   data      : function () {
-    return {
-      selectedProperty: null
-    };
+    return {};
   },
   model     : {},
   created   : function () {
@@ -54,6 +53,7 @@ export default {
   computed  : {
     ...mapFields([
       'properties.propertyList',
+      'properties.selectedProperty',
       'editor.map'
     ]),
     properties() {
@@ -73,7 +73,7 @@ export default {
       this.$store.dispatch({type: 'applyFilter', gameId: this.gameId});
     },
     onUsageChanged(info) {
-      console.log('new usage for ', info)
+      console.log('new usage for ', info);
       this.$store.commit('usageChanged', {
         property: info.property,
         data    : {
@@ -84,7 +84,8 @@ export default {
       });
     },
     propertySelected(p) {
-      this.selectedProperty = p;
+      this.$store.dispatch({type: 'selectProperty', property: p});
+      this.$refs.map.setFocusOnProperty(p);
     }
 
   },

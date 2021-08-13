@@ -85,8 +85,19 @@ export default {
   destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
   },
-  computed: {},
-  methods: {
+  computed  : {},
+  methods   : {
+    /**
+     * Sets the focus on the property: if the property
+     * is in the current viewport, nothing is done. Otherwise
+     * it is centered to the map
+     */
+    setFocusOnProperty(property) {
+      let pos = property.marker.getPosition();
+      if (!this.map.getBounds().contains(pos)) {
+        this.map.setCenter(pos);
+      }
+    },
     /**
      * Creates the maximum Size
      */
@@ -107,7 +118,7 @@ export default {
     }
   },
   components: {},
-  filters: {}
+  filters   : {}
 }
 </script>
 

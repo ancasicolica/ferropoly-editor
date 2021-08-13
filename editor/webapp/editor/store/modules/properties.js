@@ -16,7 +16,8 @@ const {getPropertiesField, updatePropertiesField} = createHelpers({
 
 const properties = {
   state    : () => ({
-    propertyList: propertyList
+    propertyList    : propertyList,
+    selectedProperty: null
   }),
   getters  : {
     getPropertiesField,
@@ -26,13 +27,19 @@ const properties = {
     usageChanged(state, info) {
       state.propertyList.updateProperty(info.property, info.data);
     }
-
   },
   actions  : {
-    applyFilter({state, commit, rootState}, options) {
+    applyFilter({state, commit, rootState}) {
       state.propertyList.getProperties().forEach(p => {
         p.setMap(rootState.editor.map);
       });
+    },
+    selectProperty({state, commit, rootState}, options) {
+      if (state.selectedProperty) {
+        state.selectedProperty.setMarkerIcon(false);
+      }
+      state.selectedProperty = options.property;
+      state.selectedProperty.setMarkerIcon(true);
     }
   }
 };
