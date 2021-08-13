@@ -5,6 +5,9 @@
  **/
 
 import {createHelpers} from 'vuex-map-fields';
+import PropertyList from '../../lib/propertyList.js';
+
+const propertyList = new PropertyList();
 
 const {getPropertiesField, updatePropertiesField} = createHelpers({
   getterType  : 'getPropertiesField',
@@ -13,18 +16,22 @@ const {getPropertiesField, updatePropertiesField} = createHelpers({
 
 const properties = {
   state    : () => ({
-    list: []
+    propertyList: propertyList
   }),
   getters  : {
     getPropertiesField,
   },
   mutations: {
     updatePropertiesField,
+    usageChanged(state, info) {
+      state.propertyList.updateProperty(info.property, info.data);
+    }
+
   },
-  actions: {
+  actions  : {
     applyFilter({state, commit, rootState}, options) {
-      state.list.forEach(p => {
-        p.setMap( rootState.editor.map);
+      state.propertyList.getProperties().forEach(p => {
+        p.setMap(rootState.editor.map);
       });
     }
   }

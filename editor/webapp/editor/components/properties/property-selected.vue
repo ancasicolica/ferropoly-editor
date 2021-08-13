@@ -14,6 +14,7 @@
           size="sm"
           :value="propertyUsage"
           :options="usageOptions"
+          @change="onUsageChange"
         )
 
 </template>
@@ -57,8 +58,6 @@ export default {
     propertyUsage: {
       get() {
         return get(this.property, 'pricelist.priceRange');
-      },
-      set() {
       }
     },
     usageOptions() {
@@ -73,7 +72,11 @@ export default {
       ]);
     }
   },
-  methods   : {},
+  methods   : {
+    onUsageChange(u) {
+      this.$emit('usage-changed', {property: this.property, usage: u});
+    }
+  },
   components: {FerroCard},
   filters   : {},
   mixins    : []

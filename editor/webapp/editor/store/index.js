@@ -62,9 +62,8 @@ const storeEditor = new Vuex.Store({
         this.state.gameId          = options.gameId;
         this.state.gameHost        = get(res, 'settings.publicServer.host', 'nada');
         this.state.gameHostPort    = get(res, 'settings.publicServer.port', 443);
-        this.state.properties.list = [];
         res.properties.forEach(p => {
-          this.state.properties.list.push(new Property(p));
+          this.state.properties.propertyList.addProperty(new Property(p));
         });
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');

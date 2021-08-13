@@ -12,10 +12,14 @@
           @map="onNewMap"
         )
       b-col
-        property-selected
+        property-selected(
+          :property="selectedProperty"
+          @usage-changed="onUsageChanged"
+        )
         property-filter
         property-list(
-          :properties="list"
+          :properties="properties"
+          @property-selected="propertySelected"
         )
 
 </template>
@@ -39,16 +43,22 @@ export default {
     }
   },
   data      : function () {
-    return {};
+    return {
+      selectedProperty: null
+    };
   },
   model     : {},
   created   : function () {
+    this.propertyList.on('property-selected', this.propertySelected);
   },
   computed  : {
     ...mapFields([
-      'properties.list',
+      'properties.propertyList',
       'editor.map'
     ]),
+    properties() {
+      return this.propertyList.getProperties();
+    },
     mapOptions() {
       return {
         center: geograph.getLastLocation(),
@@ -61,8 +71,22 @@ export default {
       console.log('new Map!', map);
       this.map = map;
       this.$store.dispatch({type: 'applyFilter', gameId: this.gameId});
-
+    },
+    onUsageChanged(info) {
+      console.log('new usage for ', info)
+      this.$store.commit('usageChanged', {
+        property: info.property,
+        data    : {
+          pricelist: {
+            priceRange: info.usage
+          }
+        }
+      });
+    },
+    propertySelected(p) {
+      this.selectedProperty = p;
     }
+
   },
   components: {FerropolyMap, PropertyFilter, PropertyList, PropertySelected},
   filters   : {}

@@ -8,13 +8,15 @@
  **/
 
 import {merge} from 'lodash';
+import EventEmitter from '../../common/lib/eventEmitter';
 
-class Property {
+class Property extends EventEmitter {
   /**
    * Constructor
    * @param p is the property as in the Property Model, is merged with the object
    */
   constructor(p) {
+    super();
     merge(this, p);
     this.marker = null;
   }
@@ -34,6 +36,9 @@ class Property {
         },
         map     : null,
         title   : this.location.name,
+      });
+      this.marker.addListener('click', ()=> {
+        this.emit('property-selected', this);
       });
     }
   }
