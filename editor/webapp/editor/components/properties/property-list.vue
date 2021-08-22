@@ -5,7 +5,17 @@
 -->
 <template lang="pug">
   #property-list
-    b-table(striped small :items="properties" :fields="fields" responsive="sm" :filter="filter" :filter-function="filterFunction")
+    b-table(
+      striped
+      small
+      :items="properties"
+      :fields="fields"
+      responsive="sm"
+      sort-by="location.name"
+      :filter="filter"
+      :filter-function="filterFunction"
+      @filtered="onFiltered"
+    )
       template(#cell(location.name)="data")
         a(href='#' @click="onLocationClick(data.item)") {{data.item.location.name}}
       template(#cell(location.accessibility)="data") {{data.item.location.accessibility | formatAccessibility}}
@@ -50,7 +60,7 @@ export default {
     };
   },
   model  : {},
-  mounted: function() {
+  mounted: function () {
     this.resizeHandler();
   },
   created: function () {
@@ -105,6 +115,13 @@ export default {
       if (offsetElement) {
         element.height(hDoc - offsetElement.top);
       }
+    },
+    /**
+     * Only forwarding the internal 'filtered' event
+     * @param f
+     */
+    onFiltered(f) {
+      this.$emit('filtered', f);
     }
   },
   components: {},

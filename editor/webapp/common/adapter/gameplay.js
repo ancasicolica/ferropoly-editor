@@ -4,6 +4,7 @@
 import $ from 'jquery';
 import {DateTime} from 'luxon';
 import axios from 'axios';
+import {pick, get} from 'lodash';
 
 /**
  * Returns all games of this user  in the callback
@@ -109,8 +110,30 @@ function saveGameplay(gp, authToken, callback) {
       callback(null);
     })
     .catch(function (error) {
-      console.log(error);
-      callback(error);
+      let message = get(error, 'response.data.message', error);
+      callback({message});
+    });
+}
+
+/**
+ * Saves data of a property
+ * @param property
+ * @param gameId
+ * @param authToken
+ * @param callback
+ */
+function saveProperty(property, gameId, authToken, callback) {
+  axios.post(`/gameplay/saveProperty/${gameId}`,
+    {
+      property: pick(property, ['gameId', 'uuid', 'location', 'pricelist']),
+      authToken
+    })
+    .then(function () {
+      callback(null);
+    })
+    .catch(function (error) {
+      let message = get(error, 'response.data.message', error);
+      callback({message});
     });
 }
 
@@ -181,5 +204,6 @@ export {
   getProposedGameIds,
   checkId,
   getGameInfo,
-  loadGame
+  loadGame,
+  saveProperty
 };

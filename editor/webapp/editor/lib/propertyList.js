@@ -8,11 +8,18 @@ import EventEmitter from '../../common/lib/eventEmitter';
 import {find, merge} from 'lodash';
 
 class PropertyList extends EventEmitter {
+  /**
+   * Constructor
+   */
   constructor() {
     super();
     this.properties = [];
   }
 
+  /**
+   * Adds a property to the list
+   * @param property
+   */
   addProperty(property) {
     this.properties.push(property);
 
@@ -21,10 +28,19 @@ class PropertyList extends EventEmitter {
     });
   }
 
+  /**
+   * Returns the list of properties
+   * @returns {[]}
+   */
   getProperties() {
     return this.properties;
   }
 
+  /**
+   * Updates a property
+   * @param property
+   * @param data
+   */
   updateProperty(property, data) {
     let p = find(this.properties, {uuid: property.uuid});
     if (!p) {
@@ -32,6 +48,36 @@ class PropertyList extends EventEmitter {
     }
     merge(p, data);
     console.log('Updated', property);
+  }
+
+  /**
+   * Applies the filter over all properties. See property-filter.vue for details
+   * @param f
+   */
+  applyFilter(f) {
+    if (f.filterType === 'all') {
+      this.properties.forEach(p => {
+        p.applyFilter(true);
+      });
+    } else if (f.filterType === 'accessibility') {
+      this.properties.forEach(p => {
+        p.applyFilter(p.location.accessibility === f.filter);
+      });
+    } else if (f.filterType === 'location') {
+      this.properties.forEach(p => {
+        p.applyFilter(p.location.name.toLowerCase().includes(f.filter));
+      });
+    } else if (f.filterType === 'priceRange') {
+      if (f.filter === 'allInList') {
+        this.properties.forEach(p => {
+          p.applyFilter(true);
+        });
+      } else {
+        this.properties.forEach(p => {
+          p.applyFilter(p.pricelist.priceRange.toString() === f.filter);
+        });
+      }
+    }
   }
 }
 

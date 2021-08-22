@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   div
-    ferro-card(title="Ortfilter" size="sm")
+    ferro-card(:title="title" size="sm")
       b-form-select(
         size="sm"
         v-model="filterType"
@@ -47,7 +47,10 @@ import {formatPriceRange, formatAccessibility} from '../../../common/lib/formatt
 
 export default {
   name      : 'property-filter',
-  props     : {},
+  props     : {
+    nbSelected: 0,
+    nbTotal   : 0
+  },
   data      : function () {
     return {
       locationFilter     : '',
@@ -60,6 +63,16 @@ export default {
   created   : function () {
   },
   computed  : {
+    /**
+     * Title containing some additional information
+     */
+    title() {
+      return `Ortfilter (${this.nbSelected} / ${this.nbTotal})`;
+    },
+    /**
+     * Options for the combo
+     * @returns {[{text: string, value: string}, {text: string, value: string}, {text: string, value: string}, {text: string, value: string}]}
+     */
     filterOptions() {
       return ([
         {text: 'alle Orte anzeigen', value: 'all'},
@@ -80,6 +93,10 @@ export default {
     priceRangeFilterActive() {
       return (this.filterType === 'priceRange');
     },
+    /**
+     * Options for the usage
+     * @returns {[{text: string, value: string}, {text: string, value: string}, {text: string, value: string}, {text: string, value: string}, {text: string, value: string}, null, null, null]}
+     */
     usageOptions() {
       return ([
         {text: formatPriceRange(-1), value: '-1'},
@@ -92,6 +109,10 @@ export default {
         {text: formatPriceRange(5), value: '5'},
       ]);
     },
+    /**
+     * Options for the access
+     * @returns {[{text: string, value: string}, {text: string, value: string}, {text: string, value: string}, {text: string, value: string}, {text: string, value: string}]}
+     */
     accessOptions() {
       return ([
         {text: formatAccessibility('train'), value: 'train'},
@@ -103,6 +124,10 @@ export default {
     }
   },
   methods   : {
+    /**
+     * Event when filter is updated
+     * @returns {}
+     */
     filterTypeUpdated() {
       if (this.filterType === 'accessibility') {
         return this.accessibilityFilterUpdated();

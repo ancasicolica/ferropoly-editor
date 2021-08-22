@@ -33,7 +33,8 @@ class Property extends EventEmitter {
   constructor(p) {
     super();
     merge(this, p);
-    this.marker = null;
+    this.marker          = null;
+    this.isVisibleInList = true; // Flag indicating if the property is in the list or not
   }
 
   /**
@@ -71,7 +72,23 @@ class Property extends EventEmitter {
   setMap(map) {
     this.createMarker();
     this.marker.setMap(map);
+    this.map = map;
   }
+
+  /**
+   * Applies the filter (showing or map or not)
+   * @param show
+   */
+  applyFilter(show) {
+    if (show && !this.isVisibleInList) {
+      this.marker.setMap(this.map);
+      this.isVisibleInList = true;
+    } else if (!show && this.isVisibleInList) {
+      this.marker.setMap(null);
+      this.isVisibleInList = false;
+    }
+  }
+
 
   /**
    * Set the icon for this location in the map

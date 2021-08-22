@@ -8,12 +8,14 @@
   div
     ferro-card(title="Ausgewähltes Ort" size="sm")
       div#property-name {{propertyName}}
-      div#accessibility Erreichbarkeit: {{propertyAccess}}
+      div#accessibility(v-if="property") Erreichbarkeit: {{propertyAccess}}
+      div(v-if="!property") &nbsp;
       div#usage Verwendung:
         b-form-select(
           size="sm"
           :value="propertyUsage"
           :options="usageOptions"
+          :disabled="changeDisabled || !property"
           @change="onUsageChange"
         )
 
@@ -39,6 +41,12 @@ export default {
             priceRange: -1
           }
         }
+      }
+    },
+    changeDisabled: {
+      type: Boolean,
+      default: () => {
+        return false;
       }
     }
   },
