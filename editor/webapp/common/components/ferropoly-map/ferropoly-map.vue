@@ -45,6 +45,7 @@ export default {
    * When Map was mounted
    */
   async mounted() {
+    console.log('mounted');
     let self   = this;
     let google = gl.google;
 
@@ -95,6 +96,7 @@ export default {
      * it is centered to the map
      */
     setFocusOnProperty(property) {
+      console.log('setFocusOnProperty');
       let pos = property.marker.getPosition();
       if (!this.map.getBounds().contains(pos)) {
         this.map.setCenter(pos);
@@ -104,6 +106,7 @@ export default {
      * Creates the maximum Size
      */
     resizeHandler() {
+      console.log('resize');
       this.mapElement = $('#map');
       let parentWidth = this.mapElement.parent().width();
 

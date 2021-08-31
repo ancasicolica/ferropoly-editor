@@ -27,7 +27,7 @@
         panel-chance(v-if="panel==='panel-chance'" :authToken="authToken")
         panel-player(v-if="panel==='panel-player'" :authToken="authToken")
         panel-pricelist(v-if="panel==='panel-pricelist'" :authToken="authToken")
-        panel-properties(v-if="panel==='panel-properties'" :authToken="authToken")
+        panel-properties(v-show="panel==='panel-properties'" :authToken="authToken")
         panel-rent(v-if="panel==='panel-rent'" :authToken="authToken")
         panel-sorting(v-if="panel==='panel-sorting'" :authToken="authToken")
 

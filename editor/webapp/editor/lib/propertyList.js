@@ -69,9 +69,9 @@ class PropertyList extends EventEmitter {
       });
     } else if (f.filterType === 'priceRange') {
       if (f.filter === 'allInList') {
-        this.properties.forEach(p => {
-          p.applyFilter(true);
-        });
+          this.properties.forEach(p => {
+            p.applyFilter(p.pricelist.priceRange >= 0);
+          });
       } else {
         this.properties.forEach(p => {
           p.applyFilter(p.pricelist.priceRange.toString() === f.filter);
