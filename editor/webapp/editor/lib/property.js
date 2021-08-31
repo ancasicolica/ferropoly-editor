@@ -35,6 +35,7 @@ class Property extends EventEmitter {
     merge(this, p);
     this.marker          = null;
     this.isVisibleInList = true; // Flag indicating if the property is in the list or not
+    this.positionInPriceRangeChanged = false; // flag for "save list"
   }
 
   /**
@@ -89,6 +90,30 @@ class Property extends EventEmitter {
     }
   }
 
+  /**
+   * Sets the position in the price range. Always use this function to set it, as only this triggers
+   * the save process!
+   * @param pos
+   */
+  setPositionInPriceRange(pos) {
+    this.positionInPriceRangeChanged = (this.pricelist.positionInPriceRange !== pos);
+    this.pricelist.positionInPriceRange = pos;
+  }
+
+  /**
+   * Returns the set of the position for the priceslist, null if it didn't change
+   * @returns {*}
+   */
+  getPricelistPositionSaveSet() {
+    if (!this.positionInPriceRangeChanged) {
+      return null;
+    }
+
+    return {
+      uuid: this.uuid,
+      positionInPriceRange: this.pricelist.positionInPriceRange
+    };
+  };
 
   /**
    * Set the icon for this location in the map

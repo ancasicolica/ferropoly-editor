@@ -48,14 +48,6 @@ export default {
     let self   = this;
     let google = gl.google;
 
-    this.mapOptions.mapTypeControlOptions = {
-      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
-    };
-
-    if (!this.mapOptions.center) {
-      this.mapOptions.center = mapOptionsDefaults.center;
-    }
-
     self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
     let swissMap = WmsMapType({
       url        : 'https://wms.geo.admin.ch',
@@ -79,10 +71,20 @@ export default {
    * When Map was Created
    */
   created() {
+    console.log('created');
+    this.mapOptions.mapTypeControlOptions = {
+      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
+    };
+
+    if (!this.mapOptions.center) {
+      this.mapOptions.center = mapOptionsDefaults.center;
+    }
+
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler(null);
   },
   destroyed() {
+    console.log('fuck, destroyed')
     window.removeEventListener('resize', this.resizeHandler);
   },
   computed  : {},

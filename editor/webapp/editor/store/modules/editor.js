@@ -20,7 +20,7 @@ const editor = {
       requestPending: false
     },
     panel    : {
-      current: 'panel-properties'
+      current: 'panel-sorting'
     },
     map: null
   }),

@@ -15,27 +15,6 @@ const path     = require('path');
 let gameplays;
 let properties;
 
-let ngFile = 'editctrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
-
-let propertyFile = 'property';
-propertyFile     = settings.minifiedjs ? '/js/min/' + propertyFile + '.min.js' : '/js/src/' + propertyFile + '.js';
-
-
-/* GET edit page */
-router.get('/edit-old/:gameId', function (req, res) {
-  res.render('edit/edit', {
-    title       : 'Spiel bearbeiten',
-    hideLogout  : false,
-    gameId      : req.params.gameId,
-    gameUrl     : settings.mainInstances[0], // main instance with index 0 has highest prio
-    ngController: 'editCtrl',
-    ngApp       : 'editApp',
-    ngFile      : ngFile,
-    propertyFile: propertyFile
-  });
-});
-
 router.get('/edit/:gameId', function (req, res) {
   gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
     if (err) {

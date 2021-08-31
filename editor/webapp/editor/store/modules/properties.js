@@ -6,7 +6,7 @@
 
 import {createHelpers} from 'vuex-map-fields';
 import PropertyList from '../../lib/propertyList.js';
-import {saveProperty} from '../../../common/adapter/gameplay';
+import {savePositionInPricelist, saveProperty} from '../../../common/adapter/gameplay';
 
 const propertyList = new PropertyList();
 
@@ -59,6 +59,38 @@ const properties = {
           rootState.editor.api.error.active   = true;
         }
       });
+    },
+    /**
+     * Updates the position of a property in the price range
+     * @param state
+     * @param commit
+     * @param rootState
+     * @param options
+     */
+    updatePositionInPricelist({state, commit, rootState}, options) {
+      let saveList = [];
+      options.properties.forEach(p => {
+        let saveSet = p.getPricelistPositionSaveSet();
+        if (saveSet) {
+          state.propertyList.updateProperty({uuid: saveSet.uuid}, {
+            pricelist: {
+              positionInPriceRange: saveSet.positionInPriceRange
+            }
+          });
+          saveList.push(saveSet);
+        }
+      });
+
+      if (saveList.length > 0) {
+        savePositionInPricelist(saveList, rootState.gameId, rootState.authToken, err => {
+          if (err) {
+            console.error(err);
+            rootState.editor.api.error.message  = err.message;
+            rootState.editor.api.error.infoText = 'Es gab einen Fehler beim Speichern des Ortes:';
+            rootState.editor.api.error.active   = true;
+          }
+        });
+      }
     }
   }
 };

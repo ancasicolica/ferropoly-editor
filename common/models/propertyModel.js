@@ -185,7 +185,8 @@ const updatePositionInPriceList = function (gameId, propertyId, position, callba
     }
     docs[0].pricelist.positionInPriceRange = position;
     docs[0].save(function (err, savedProperty) {
-      logger.info(savedProperty.location.name + ' updated');
+      logger.info(savedProperty.location.name + ' updated' + ` v: ${savedProperty.pricelist.positionInPriceRange}` );
+
       callback(err, savedProperty);
     });
   });

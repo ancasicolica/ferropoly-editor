@@ -137,6 +137,21 @@ function saveProperty(property, gameId, authToken, callback) {
     });
 }
 
+function savePositionInPricelist(saveSet, gameId, authToken, callback) {
+  axios.post(`/gameplay/savePositionInPricelist/${gameId}`,
+    {
+      properties: saveSet,
+      authToken
+    })
+    .then(function () {
+      callback(null);
+    })
+    .catch(function (error) {
+      let message = get(error, 'response.data.message', error);
+      callback({message});
+    });
+}
+
 /**
  * Returns a bunch of proposed Game IDs
  * @param callback
@@ -205,5 +220,6 @@ export {
   checkId,
   getGameInfo,
   loadGame,
-  saveProperty
+  saveProperty,
+  savePositionInPricelist
 };

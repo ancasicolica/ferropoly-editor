@@ -112,7 +112,8 @@ export default {
         property: info.property,
         data    : {
           pricelist: {
-            priceRange: info.usage
+            priceRange          : info.usage,
+            positionInPriceRange: -1
           }
         }
       });

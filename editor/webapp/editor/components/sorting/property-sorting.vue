@@ -5,7 +5,6 @@
 -->
 <template lang="pug">
   #property-sorting
-    h1 Property Sorting
     property-list(
       v-model="items"
       axis="xy"
@@ -56,7 +55,7 @@ export default {
     listUpdated(arr) {
       let i = 0;
       arr.forEach(a => {
-        a.pricelist.positionInPriceRange = i++;
+        a.setPositionInPriceRange(i++);
       })
       this.$emit('update', arr);
     }
