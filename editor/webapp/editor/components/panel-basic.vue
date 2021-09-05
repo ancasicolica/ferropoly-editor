@@ -8,14 +8,14 @@
     h1 Spieldaten
     b-row
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
-        contact-info(@state="onStateLocal")
+        contact-info
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
-        game-timing(@state="onStateLocal")
+        game-timing
       b-col(xs="12" sm="12" md="6" lg="4" xl="4")
         game-info
         b-button(
           variant="primary"
-          :disabled="!basicFormIsValid || requestPending"
+          :disabled="!$store.getters.basicFormValid"
           v-on:click="saveAndContinue") Speichern und weiter
 </template>
 
@@ -48,21 +48,13 @@ export default {
       'formValid.basic',
       'api.requestPending'
     ]),
-    basicFormIsValid() {
-      return this.$store.getters.basicFormIsValid;
-    },
     requestPending() {
       return this.$store.getters.requestPending;
     }
   },
   methods   : {
     saveAndContinue() {
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel:'panel-player'});
-    },
-    onStateLocal(e) {
-      this.onState(e)
-      console.log('panel basic valid', this.isFormValid())
-      this.$store.commit('setBasicFormValid', this.isFormValid());
+      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-player'});
     }
   },
   components: {ContactInfo, GameInfo, GameTiming},

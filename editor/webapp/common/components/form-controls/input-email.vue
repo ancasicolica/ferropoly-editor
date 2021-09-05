@@ -31,6 +31,12 @@ export default {
       default: () => {
         return '';
       }
+    },
+    state: {
+      type   : Boolean,
+      default: () => {
+        return undefined;
+      }
     }
   },
   data      : function () {
@@ -39,14 +45,7 @@ export default {
   model     : {},
   created   : function () {
   },
-  computed  : {
-    state() {
-      let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      let s          = (this.value.match(regexEmail) !== null);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
-    }
-  },
+  computed  : {},
   methods   : {
     update(e) {
       this.$emit('input', e);

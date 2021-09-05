@@ -31,6 +31,12 @@ export default {
       default: () => {
         return '';
       }
+    },
+    state: {
+      type   : Boolean,
+      default: () => {
+        return undefined;
+      }
     }
   },
   data      : function () {
@@ -39,14 +45,7 @@ export default {
   model     : {},
   created   : function () {
   },
-  computed  : {
-    state() {
-      let phoneRegex = /(\b(0041|0)|\B\+41)(\s?\(0\))?(\s)?[1-9]{2}(\s)?[0-9]{3}(\s)?[0-9]{2}(\s)?[0-9]{2}\b/
-      let s          = (this.value.match(phoneRegex) !== null);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
-    }
-  },
+  computed  : {},
   methods   : {
     update(e) {
       this.$emit('input', e);

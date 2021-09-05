@@ -13,9 +13,8 @@ function checkNames(name) {
 }
 
 function checkPhone(phone) {
-  phone = phone || '';
-  let l = phone.length;
-  return ((l > 10) && (l < 15));
+  let phoneRegex = /(\b(0041|0)|\B\+41)(\s?\(0\))?(\s)?[1-9]{2}(\s)?[0-9]{3}(\s)?[0-9]{2}(\s)?[0-9]{2}\b/
+  return (phone.match(phoneRegex) !== null);
 }
 
 function checkEmail(mail) {

@@ -11,6 +11,7 @@ const {getGameplayField, updateGameplayField} = createHelpers({
 });
 
 import {DateTime} from 'luxon';
+import {checkEmail, checkPhone} from '../../../common/lib/playerValidator';
 
 const gameplay = {
   state    : () => ({
@@ -76,6 +77,36 @@ const gameplay = {
   }),
   getters  : {
     getGameplayField,
+
+    gamenameValid        : state => {
+      let len = state.gamename.length;
+      return ((len > 3) && (len < 60));
+    },
+    organisatorNameValid : state => {
+      let len = state.owner.organisatorName.length;
+      return ((len > 3) && (len < 60));
+    },
+    organisationValid    : state => {
+      let len = state.owner.organisation.length;
+      return (len < 60);
+    },
+    organisatorEmailValid: state => {
+      return checkEmail(state.owner.organisatorEmail);
+    },
+    organisatorPhoneValid: state => {
+      return checkPhone(state.owner.organisatorPhone);
+    },
+    gameDurationValid    : state => {
+      let start = DateTime.fromISO(state.scheduling.gameStart);
+      let end   = DateTime.fromISO(state.scheduling.gameEnd);
+      let diff  = end.diff(start, 'minutes');
+      console.log('diff', diff.minutes);
+      return diff.minutes >= 4 * 60;
+    },
+    basicFormValid       : (state, getters) => {
+      return (getters.gamenameValid && getters.organisatorNameValid && getters.organisationValid &&
+        getters.organisatorEmailValid && getters.organisatorPhoneValid && getters.gameDurationValid);
+    }
   },
   mutations: {
     updateGameplayField,

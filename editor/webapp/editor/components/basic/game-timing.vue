@@ -10,14 +10,14 @@
       input-time(
         label="Startzeit"
         v-model="gameStart"
-        @state="onTimeState"
-        :validTime="startTimeValid")
+        :state="$store.getters.gameDurationValid"
+      )
       input-time(
         label="Spielende"
         v-model="gameEnd"
-        feedback="Wert muss nach dem Start sein"
-        @state="onTimeState"
-        :validTime="endTimeValid")
+        feedback="Wert muss nach dem Start sein, ein Spiel dauert mindestens 4 Stunden"
+        :state="$store.getters.gameDurationValid"
+      )
 
       p &nbsp;
       p Sämtliche Spieldaten werden automatisch am {{deleteTs | formatGameDate}} gelöscht.
@@ -30,7 +30,6 @@ import {mapFields} from 'vuex-map-fields';
 import FormValidatorMixin from '../../../common/components/form-controls/formValidatorMixin';
 import FerroCard from '../../../common/components/ferro-card/ferro-card.vue';
 import InputTime from '../../../common/components/form-controls/input-time.vue';
-import {DateTime} from 'luxon';
 import {formatGameDate} from '../../../common/lib/formatters'
 
 export default {
@@ -53,15 +52,7 @@ export default {
       'gameplay.scheduling.deleteTs',
     ]),
   },
-  methods   : {
-    onTimeState(s) {
-      this.onState(s);
-      let start           = DateTime.fromISO(this.gameStart);
-      let end             = DateTime.fromISO(this.gameEnd);
-      this.startTimeValid = start < end;
-      this.endTimeValid   = start < end;
-    }
-  },
+  methods   : {},
   components: {FerroCard, InputTime},
   filters   : {formatGameDate},
   mixins    : [FormValidatorMixin]

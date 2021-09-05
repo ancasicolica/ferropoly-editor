@@ -30,9 +30,11 @@ export default {
         return ('05:00:00');
       }
     },
-    validTime: Boolean,
-    default: () => {
-      return true;
+    state: {
+      type   : Boolean,
+      default: () => {
+        return undefined;
+      }
     }
   },
   data      : function () {
@@ -41,13 +43,7 @@ export default {
   model     : {},
   created   : function () {
   },
-  computed  : {
-    state() {
-      let s = this.validTime;
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
-    }
-  },
+  computed  : {},
   methods   : {
     update(e) {
       this.$emit('input', e);

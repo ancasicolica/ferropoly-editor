@@ -10,41 +10,35 @@
         v-model="gamename"
         label="Spielname"
         feedback="Die Eingabe muss zwischen 3 und 60 Zeichen lang sein."
-        min="3"
-        max="60"
-        @state="onState"
+        :state="$store.getters.gamenameValid"
       )
       input-text(
         v-model="organisatorName"
         label="Name Organisator*in"
         help="Dieser Name erscheint auf der Preisliste"
         feedback="Die Eingabe muss zwischen 3 und 60 Zeichen lang sein."
-        min="3"
-        max="60"
-        @state="onState"
+        :state="$store.getters.organisatorNameValid"
       )
       input-text(
         v-model="organisation"
         label="Veranstaltende Organisation"
         help="Der Name der Organisation erscheint auf der Preisliste und ist optional."
         feedback="Maximal 60 Zeichen sind möglich."
-        min="0"
-        max="60"
-        @state="onState"
+        :state="$store.getters.organisationValid"
       )
       input-email(
         v-model="organisatorEmail"
         label="Email-Adresse"
         help="Gib die Email-Adresse an, unter welcher die Teams Infos zum Spiel erhalten können"
         feedback="Bitte gib eine gültige Email-Adresse an"
-        @state="onState"
+        :state="$store.getters.organisatorEmailValid"
       )
       input-phone(
         v-model="organisatorPhone"
         label="Telefonnummer während dem Spiel"
         help="Unter dieser Nummer erreichen die Teams während dem Spiel die Zentrale"
         feedback="Bitte gib eine gültige Telefonnummer an"
-        @state="onState"
+        :state="$store.getters.organisatorPhoneValid"
       )
 </template>
 

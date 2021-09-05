@@ -27,27 +27,33 @@ import InputMixin from './inputMixin.js'
 export default {
   name      : 'input-text',
   props     : {
-    value : {
+    value   : {
       type   : String,
       default: () => {
         return '';
       }
-    }, min: {
+    }, min  : {
       type   : String,
       default: () => {
         return '0';
       }
     },
-    max   : {
+    max     : {
       type   : String,
       default: () => {
         return '100';
       }
     },
     disabled: {
-      type: Boolean,
+      type   : Boolean,
       default: () => {
         return false;
+      }
+    },
+    state   : {
+      type   : Boolean,
+      default: () => {
+        return undefined;
       }
     }
   },
@@ -57,22 +63,7 @@ export default {
   model     : {},
   created   : function () {
   },
-  computed  : {
-    state() {
-      if (this.disabled) {
-        return undefined;
-      }
-      let s = (this.value.length >= this.minimum) && (this.value.length <= this.maximum);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
-    },
-    minimum() {
-      return parseInt(this.min);
-    },
-    maximum() {
-      return parseInt(this.max);
-    }
-  },
+  computed  : {},
   methods   : {
     update(e) {
       this.$emit('input', e);
