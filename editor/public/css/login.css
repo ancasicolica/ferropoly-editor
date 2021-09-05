@@ -1,34 +1,6 @@
-body {
-    /* background-image: url("/images/ferropoly_background01.jpg");*/
-    background-clip : border-box;
-    background-size : cover;
-}
-
-/* Wrapper for page content to push down footer */
-#login {
-    min-height: 100%;
-    height: auto;
-    /* Negative indent footer by its height */
-    margin: 0 auto -20px;
-    /* Pad bottom by footer height */
-    padding: 0 0 20px;
-}
-
-/* Set the fixed height of the footer here */
-#footer {
-    height: 20px;
-    background-color: black;
-    color: white;
-    z-index: 100;
-}
-
-#footer-time {
-    text-align: right;
-}
-
 
 .bg1 {
-    background : url("/images/ferropoly_background01.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background01.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -36,7 +8,7 @@ body {
 }
 
 .bg2 {
-    background : url("/images/ferropoly_background02.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background02.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -44,7 +16,7 @@ body {
 }
 
 .bg3 {
-    background : url("/images/ferropoly_background03.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background03.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -52,7 +24,7 @@ body {
 }
 
 .bg4 {
-    background : url("/images/ferropoly_background04.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background04.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -60,7 +32,7 @@ body {
 }
 
 .bg5 {
-    background : url("/images/ferropoly_background05.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background05.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -68,7 +40,7 @@ body {
 }
 
 .bg6 {
-    background : url("/images/ferropoly_background06.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background06.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -76,7 +48,7 @@ body {
 }
 
 .bg7 {
-    background : url("/images/ferropoly_background07.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background07.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -84,72 +56,25 @@ body {
 }
 
 .bg8 {
-    background : url("/images/ferropoly_background08.jpg") no-repeat center center fixed;
+    background: url("/images/ferropoly_background08.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
 }
 
-.login-box {
-    max-width : 330px;
+.bg9 {
+    background: url("/images/ferropoly_background09.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
-.signup-box {
-    max-width : 600px;
-}
-
-.agb-box {
-    max-width : 80%;
-    overflow  : auto;
-
-}
-
-.agb-contents {
-    height         : inherit;
-    margin-bottom  : 10px;
-    padding-bottom : 20px;
-}
-
-.ls-box-shape {
-    padding          : 15px;
-    margin           : 0 auto;
-    background-color : rgba(255, 255, 255, 0.8);
-    border-radius    : 5px;
-    margin-top       : 30px;
-}
-
-.form-signin .form-signin-heading,
-.form-signin .checkbox {
-    margin-bottom : 10px;
-}
-
-.form-signin .checkbox {
-    font-weight : normal;
-}
-
-.form-signin .form-control {
-    position           : relative;
-    height             : auto;
-    -webkit-box-sizing : border-box;
-    -moz-box-sizing    : border-box;
-    box-sizing         : border-box;
-    padding            : 10px;
-    font-size          : 16px;
-}
-
-.form-signin .form-control:focus {
-    z-index : 2;
-}
-
-.form-signin input[type="email"] {
-    margin-bottom              : -1px;
-    border-bottom-right-radius : 0;
-    border-bottom-left-radius  : 0;
-}
-
-.form-signin input[type="password"] {
-    margin-bottom           : 10px;
-    border-top-left-radius  : 0;
-    border-top-right-radius : 0;
+.bg10 {
+    background: url("/images/ferropoly_background10.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
