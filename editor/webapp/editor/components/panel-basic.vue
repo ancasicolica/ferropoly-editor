@@ -61,6 +61,7 @@ export default {
     },
     onStateLocal(e) {
       this.onState(e)
+      console.log('panel basic valid', this.isFormValid())
       this.$store.commit('setBasicFormValid', this.isFormValid());
     }
   },

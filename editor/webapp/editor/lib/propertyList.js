@@ -5,7 +5,7 @@
  **/
 
 import EventEmitter from '../../common/lib/eventEmitter';
-import {find, merge} from 'lodash';
+import {find, merge, filter} from 'lodash';
 
 class PropertyList extends EventEmitter {
   /**
@@ -34,6 +34,17 @@ class PropertyList extends EventEmitter {
    */
   getProperties() {
     return this.properties;
+  }
+
+  /**
+   * Returns the number of properties used in the price list
+   * @returns {[]}
+   */
+  usedPropertyNb() {
+    let used = filter(this.properties, p => {
+      return p.pricelist.priceRange >= 0;
+    });
+    return used.length;
   }
 
   /**
@@ -69,9 +80,9 @@ class PropertyList extends EventEmitter {
       });
     } else if (f.filterType === 'priceRange') {
       if (f.filter === 'allInList') {
-          this.properties.forEach(p => {
-            p.applyFilter(p.pricelist.priceRange >= 0);
-          });
+        this.properties.forEach(p => {
+          p.applyFilter(p.pricelist.priceRange >= 0);
+        });
       } else {
         this.properties.forEach(p => {
           p.applyFilter(p.pricelist.priceRange.toString() === f.filter);

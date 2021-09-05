@@ -21,7 +21,7 @@
       div(v-if="!dataLoaded")
         keep-waiting
       div(v-if="dataLoaded")
-        panel-basic(v-if="panel==='panel-basic'" @panel-change="onPanelChange" :authToken="authToken")
+        panel-basic(v-show="panel==='panel-basic'" @panel-change="onPanelChange" :authToken="authToken")
         panel-create(v-if="panel==='panel-create'" :authToken="authToken")
         panel-houses(v-if="panel==='panel-houses'" :authToken="authToken")
         panel-chance(v-if="panel==='panel-chance'" :authToken="authToken")
