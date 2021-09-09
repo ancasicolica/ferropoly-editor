@@ -56,12 +56,6 @@ import {mapFields} from 'vuex-map-fields';
 export default {
   name      : 'panel-chance',
   props     : {
-    authToken: {
-      type   : String,
-      default: () => {
-        return 'none';
-      }
-    }
   },
   data      : function () {
     return {};
@@ -114,7 +108,7 @@ export default {
   methods   : {
     saveAndContinue() {
       console.log('save and continue');
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-properties'});
+      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-properties'});
     },
     percentFormatter(s) {
       let f = parseFloat(s) * 100;

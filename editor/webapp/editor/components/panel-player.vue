@@ -68,7 +68,6 @@ export default {
       'gameHostPort',
       'gameId',
       'apiCallsRemaining',
-      'authToken',
       'gameplay.joining.possibleUntil',
       'gameplay.joining.infotext',
       'gameplay.scheduling.gameDate',
@@ -87,10 +86,10 @@ export default {
   },
   methods   : {
     saveData() {
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken});
+      this.$store.dispatch({type: 'saveData'});
     },
     saveAndContinue() {
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-rent'});
+      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-rent'});
     },
   },
   components: {FerroCard, BIconBoxArrowUpRight, InputDateTime, VueEditor},

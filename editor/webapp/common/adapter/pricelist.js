@@ -3,6 +3,8 @@
  * 13.4.21 KC
  */
 import $ from 'jquery';
+import axios from 'axios';
+import {get} from 'lodash';
 
 /**
  * Returns the pricelist for a game play
@@ -20,4 +22,19 @@ function getPricelist(gameId, callback) {
     });
 }
 
-export {getPricelist};
+function createPricelist(gameId, authToken, callback) {
+  axios.post('/pricelist/create',
+    {
+      gameId,
+      authToken
+    })
+    .then(function () {
+      callback(null);
+    })
+    .catch(function (error) {
+      let message = get(error, 'response.data.message', error);
+      callback({message});
+    });
+}
+
+export {getPricelist, createPricelist};

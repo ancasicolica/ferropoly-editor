@@ -5,20 +5,25 @@
 -->
 <template lang="pug">
   #panel-create
-    h1 Preisliste berechnen
+    h1 Preisliste erstellen
     p Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
     p Um ein versehentliches Bearbeiten zu verhindern, kann eine kontrollierte und für gut befundene Preisliste finalisiert werden. Dann sind keine Änderungen mehr möglich.
 
     div(v-if="invalidNumberOfProperties")
       b-alert(show variant="danger") Es sind zu wenige Orte in der Preisliste ({{numberOfProperties}}), mindestens 20 sind nötig. Bitte füge weitere Orte hinzu.
 
-    div(v-if="!gameplayValid")
+    div(v-if="!$store.getters.gameplayFormsAreValid")
       b-alert(show variant="danger") Bei den Spielparameter gibt es noch ungültige Werte. Bitte prüfe, ob alle Felder gültig sind und korrigiere die fehlerhaften Werte.
 
     div(v-if="!propertyGroupsValid")
       b-alert(show variant="danger") Die Zahl der Orte in der Preisliste ({{numberOfProperties}}), ist nicht durch die Gruppengrösse teilbar ({{numberOfPropertiesPerGroup}}). Lösung:
         | Entweder Orte hinzufügen/entfernen oder die Gruppengrösse anpassen.
 
+    div(v-if="$store.getters.gameplayFormsAreValid")
+      b-alert(show variant="success") Super! Die Spieldaten sind soweit gültig, die Preisliste kann berechnet werden.
+      b-button(variant="primary"
+        :disabled="requestPending"
+        v-on:click="createPricelist") Preisliste erstellen
 
 </template>
 
@@ -56,12 +61,17 @@ export default {
       console.log('valid', pNb, valid, this.numberOfPropertiesPerGroup);
       return valid;
     },
-    gameplayValid() {
-      console.log('gameplayValid', this.basicData, this.pricelist, this.rent);
-      return !(this.basicData && this.pricelist && this.rent);
+    requestPending() {
+      return this.$store.getters.requestPending;
+    },
+  },
+  methods   : {
+    createPricelist() {
+      console.log('create pricelist');
+      this.$store.dispatch({type: 'createPricelist'});
+
     }
   },
-  methods   : {},
   components: {},
   filters   : {}
 }

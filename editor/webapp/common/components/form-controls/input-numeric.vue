@@ -23,39 +23,38 @@
 
 <script>
 import InputMixin from './inputMixin.js'
-import {isFunction, isFinite, round} from 'lodash';
+import {round} from 'lodash';
 
 export default {
-  name      : 'input-numeric',
-  props     : {
-    value    : {
-      type   : Number,
+  name: 'input-numeric',
+  props: {
+    value: {
+      type: Number,
       default: () => {
         return 0.0;
       }
     },
-    min      : {
-      type   : String,
+    min: {
+      type: String,
       default: () => {
         return '0.0';
       }
     },
-    max      : {
-      type   : String,
+    max: {
+      type: String,
       default: () => {
         return '10.0';
       }
     },
-    step     : {
+    step: {
       default: () => {
         return 1
       }
     },
-    validator: {
-      // External validator function, if needed
-      type: Function,
+    state: {
+      type: Boolean,
       default: () => {
-        return null;
+        return undefined;
       }
     },
     integerOnly: {
@@ -66,41 +65,14 @@ export default {
       }
     }
   },
-  data      : function () {
+  data: function () {
     return {};
   },
-  model     : {},
-  created   : function () {
+  model: {},
+  created: function () {
   },
-  computed  : {
-    state() {
-      if (isFunction(this.validator)) {
-        // Run first any external validator function. This function
-        // has the priority to set the state, if it returns null (not
-        // a valid state value) then the built-in functionality takes
-        // over
-        let res = this.validator();
-        if (res !== null) {
-          this.$emit('state', {id: this._uid, state: res});
-          return res;
-        }
-      }
-      if (!isFinite(this.value)) {
-        // Not a number? Not valid!
-        return false;
-      }
-      let s = (this.minimum <= this.value) && (this.value <= this.maximum);
-      this.$emit('state', {id: this._uid, state: s});
-      return s;
-    },
-    minimum() {
-      return parseInt(this.min);
-    },
-    maximum() {
-      return parseInt(this.max);
-    }
-  },
-  methods   : {
+  computed: {},
+  methods: {
     update(e) {
       let val = parseFloat(e);
       if (this.integerOnly) {
@@ -110,8 +82,8 @@ export default {
     }
   },
   components: {},
-  filters   : {},
-  mixins    : [InputMixin]
+  filters: {},
+  mixins: [InputMixin]
 }
 </script>
 

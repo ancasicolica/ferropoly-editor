@@ -20,20 +20,11 @@ const editor = {
       requestPending: false
     },
     panel    : {
-      current: 'panel-create'
+      current: 'panel-basic'
     },
     map: null
   }),
   getters  : {
-    basicFormIsValid    : state => {
-      return state.formValid.basicData;
-    },
-    pricelistFormIsValid: state => {
-      return state.formValid.pricelist;
-    },
-    rentFormIsValid: state => {
-      return state.formValid.rent;
-    },
     apiError            : state => {
       return state.api.error;
     },

@@ -22,14 +22,14 @@
         keep-waiting
       div(v-if="dataLoaded")
         panel-basic(v-show="panel==='panel-basic'" @panel-change="onPanelChange" :authToken="authToken")
-        panel-create(v-if="panel==='panel-create'" :authToken="authToken")
-        panel-houses(v-if="panel==='panel-houses'" :authToken="authToken")
-        panel-chance(v-if="panel==='panel-chance'" :authToken="authToken")
-        panel-player(v-if="panel==='panel-player'" :authToken="authToken")
-        panel-pricelist(v-if="panel==='panel-pricelist'" :authToken="authToken")
-        panel-properties(v-show="panel==='panel-properties'" :authToken="authToken")
-        panel-rent(v-if="panel==='panel-rent'" :authToken="authToken")
-        panel-sorting(v-if="panel==='panel-sorting'" :authToken="authToken")
+        panel-create(v-if="panel==='panel-create'")
+        panel-houses(v-if="panel==='panel-houses'")
+        panel-chance(v-if="panel==='panel-chance'")
+        panel-player(v-if="panel==='panel-player'")
+        panel-pricelist(v-if="panel==='panel-pricelist'")
+        panel-properties(v-show="panel==='panel-properties'")
+        panel-rent(v-if="panel==='panel-rent'")
+        panel-sorting(v-if="panel==='panel-sorting'")
 
 </template>
 
@@ -92,6 +92,7 @@ export default {
         return;
       }
       self.authToken = token;
+      console.log('Auth-Token loaded', token);
     });
   },
 

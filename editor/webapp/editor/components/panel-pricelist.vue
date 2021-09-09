@@ -16,8 +16,7 @@
             step="100"
             min="100"
             max="4000"
-            :validator="validatePrices"
-            @state="onStateLocal"
+            :state="$store.getters.lowestPriceValid"
           )
           input-numeric(
             v-model="highestPrice"
@@ -27,8 +26,7 @@
             step="100"
             min="100"
             max="10000"
-            :validator="validatePrices"
-            @state="onStateLocal"
+            :state="$store.getters.highestPriceValid"
           )
           input-numeric(
             v-model="numberOfPriceLevels"
@@ -38,14 +36,14 @@
             step="1"
             min="1"
             max="32"
-            @state="onStateLocal"
+            :state="$store.getters.priceLevelsValid"
           )
           form-selector(
             v-model="numberOfPropertiesPerGroup"
             :options="selectorNumberOfProperties"
             label="Grösse der Liegenschaftsgruppen"
             help="Bei einem Wert grösser 1 werden die in der Preisliste beieinander liegenden Orte zu Gruppen zusammengefasst. Besitzt eine Spielergruppe alle Orte einer Ortsgruppe, dann verdoppeln sich die Einnahmen. Empfohlen sind 2."
-            @state="onStateLocal"
+            :state="$store.getters.propertiesPerGroupValid"
           )
       b-col
         b-button(
@@ -66,12 +64,6 @@ import FormSelector from '../../common/components/form-controls/form-selector.vu
 export default {
   name      : 'panel-pricelist',
   props     : {
-    authToken: {
-      type   : String,
-      default: () => {
-        return 'none';
-      }
-    }
   },
   data      : function () {
     return {};
@@ -90,7 +82,7 @@ export default {
       return this.$store.getters.requestPending;
     },
     pricelistFormIsValid() {
-      return this.$store.getters.pricelistFormIsValid;
+      return this.$store.getters.pricelistFormValid;
     },
     selectorNumberOfProperties() {
       return [
@@ -103,7 +95,7 @@ export default {
   },
   methods   : {
     saveAndContinue() {
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-rent'});
+      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-rent'});
     },
     validatePrices() {
       if (this.lowestPrice >= this.highestPrice) {

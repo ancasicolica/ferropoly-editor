@@ -16,7 +16,7 @@
             step="1000"
             min="0"
             max="50000"
-            @state="onStateLocal"
+            :state="$store.getters.startCapitalValid"
           )
           input-numeric(
             v-model="interest"
@@ -26,28 +26,28 @@
             step="1000"
             min="1000"
             max="10000"
-            @state="onStateLocal"
+            :state="$store.getters.interestValid"
           )
           form-selector(
             v-model="interestInterval"
             :options="selectorInterestInterval"
             label="Dauer einer Spielrunde"
             help="Bei ganztägigen Spielen sind 60 Minuten empfohlen, bei halbtägigen Spielen (z.B. auf Gebiet ZVV) 30 Minuten."
-            @state="onStateLocal"
+            :state="$store.getters.interestIntervalValid"
           )
           form-selector(
             v-model="interestCyclesAtEndOfGame"
             :options="selectorInterestCyclesAtEndOfGame"
             label="Anzahl Zinsrunden am Spielende"
             help="Wenn am Ende des Spieles nochmals Zins ausbezahlt wird, dann lohnt es sich für die Teams länger zu kaufen und bauen. Empfohlen: 2."
-            @state="onStateLocal"
+            :state="$store.getters.interestCyclesAtEndOfGameValid"
           )
           form-selector(
             v-model="debtInterest"
             :options="selectorDebtInterest"
             label="Strafzinssatz"
             help="Zinsatz in Prozent, welcher auf ein negatives Vermögen am Ende einer Spielrunde zu Gunsten des Parkplatzes erhoben wird."
-            @state="onStateLocal"
+            :state="$store.getters.debtInterestValid"
           )
       b-col
         b-button(
@@ -67,12 +67,6 @@ import FormSelector from '../../common/components/form-controls/form-selector.vu
 export default {
   name      : 'panel-rent',
   props     : {
-    authToken: {
-      type   : String,
-      default: () => {
-        return 'none';
-      }
-    }
   },
   data      : function () {
     return {};
@@ -92,7 +86,7 @@ export default {
       return this.$store.getters.requestPending;
     },
     rentFormIsValid() {
-      return this.$store.getters.rentFormIsValid;
+      return this.$store.getters.rentFormValid;
     },
     interestIntervalSelected: {
       get() {
@@ -134,7 +128,7 @@ export default {
   methods   : {
     saveAndContinue() {
       console.log('save and continue');
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-houses'});
+      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-houses'});
     },
     onStateLocal(e) {
       this.onState(e)

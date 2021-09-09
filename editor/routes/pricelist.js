@@ -37,7 +37,6 @@ router.get('/download/:gameId', downloadPricelist.handler);
  * Create a pricelist
  */
 router.post('/create', function (req, res) {
-  logger.test(_.get(req, 'body.debug'));
 
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
@@ -45,8 +44,10 @@ router.post('/create', function (req, res) {
   }
   pricelistLib.create(req.body.gameId, req.session.passport.user, function (err) {
     if (err) {
+      res.status(500);
       return res.send({success: false, message: err.message});
     }
+    logger.info(`Pricelist for ${req.body.gameId} created`);
     return res.send({success: true, gameId: req.body.gameId});
   });
 });

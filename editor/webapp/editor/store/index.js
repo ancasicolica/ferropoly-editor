@@ -10,6 +10,7 @@ import gameplay from './modules/gameplay.js';
 import properties from './modules/properties.js';
 import editor from './modules/editor.js';
 import {loadGame, saveGameplay} from '../../common/adapter/gameplay';
+import {createPricelist} from '../../common/adapter/pricelist';
 import {get, set} from 'lodash';
 import {getField, updateField} from 'vuex-map-fields';
 import Property from '../lib/property';
@@ -59,9 +60,9 @@ const storeEditor = new Vuex.Store({
           return;
         }
         this.state.apiCallsRemaining--;
-        this.state.gameId          = options.gameId;
-        this.state.gameHost        = get(res, 'settings.publicServer.host', 'nada');
-        this.state.gameHostPort    = get(res, 'settings.publicServer.port', 443);
+        this.state.gameId       = options.gameId;
+        this.state.gameHost     = get(res, 'settings.publicServer.host', 'nada');
+        this.state.gameHostPort = get(res, 'settings.publicServer.port', 443);
         res.properties.forEach(p => {
           this.state.properties.propertyList.addProperty(new Property(p));
         });
@@ -115,7 +116,7 @@ const storeEditor = new Vuex.Store({
      */
     saveData({state, commit, rootState}, options) {
       state.editor.api.requestPending = true;
-      saveGameplay(state.gameplay, options.authToken, (err, resp) => {
+      saveGameplay(state.gameplay, state.authToken, (err, resp) => {
         state.editor.api.requestPending = false;
         if (err) {
           console.error(err, resp);
@@ -129,6 +130,29 @@ const storeEditor = new Vuex.Store({
         if (options.targetPanel) {
           state.editor.panel.current = options.targetPanel;
         }
+      });
+    },
+    /**
+     * Creates the pricelist
+     * @param state
+     * @param commit
+     * @param rootState
+     * @param options
+     */
+    createPricelist({state, commit, rootState}, options) {
+      state.editor.api.requestPending = true;
+      createPricelist(state.gameId, state.authToken, (err, resp) => {
+        state.editor.api.requestPending = false;
+        if (err) {
+          console.error(err, resp);
+          state.editor.api.error.message  = err.message;
+          state.editor.api.error.infoText = 'Es gab einen Fehler beim Erstellen der Preisliste:';
+          state.editor.api.error.active   = true;
+          return;
+        }
+        console.log(`Created pricelist for ${state.gameId}`);
+        // Switch to new pricelist if successful
+        self.location = '/pricelist/view/' + state.gameId;
       });
     }
   }

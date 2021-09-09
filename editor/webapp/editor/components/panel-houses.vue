@@ -66,12 +66,6 @@ import {mapFields} from 'vuex-map-fields';
 export default {
   name      : 'panel-houses',
   props     : {
-    authToken: {
-      type   : String,
-      default: () => {
-        return 'none';
-      }
-    }
   },
   data      : function () {
     return {};
@@ -95,7 +89,7 @@ export default {
   },
   methods   : {
     saveAndContinue() {
-      this.$store.dispatch({type: 'saveData', authToken: this.authToken, targetPanel: 'panel-chance'});
+      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-chance'});
     },
   },
   components: {InputRange, FerroCard},

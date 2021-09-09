@@ -22,21 +22,28 @@ function createPriceList(gameId, ownerEmail, callback) {
   // Collect the information
   gameplays.getGameplay(gameId, ownerEmail, function (err, gp) {
     if (err) {
+      logger.error('getGameplay failed', err);
       return callback(err);
     }
     properties.getPropertiesForGameplay(gameId, null, function (err, props) {
       if (err) {
+        logger.error('getPropertiesForGameplay failed', err);
         return callback(err);
       }
       createPriceListInternal(gp, props, function (err, pricelist) {
         if (err) {
+          logger.error('createPriceListInternal failed', err);
           return callback(err);
         }
         properties.updateProperties(pricelist, function (err) {
           if (err) {
+            logger.error('updateProperties failed', err);
             return callback(err);
           }
           gameplays.saveNewPriceListRevision(gp, function (err) {
+            if (err) {
+              logger.error('saveNewPriceListRevision failed', err);
+            }
             return callback(err);
           });
         });

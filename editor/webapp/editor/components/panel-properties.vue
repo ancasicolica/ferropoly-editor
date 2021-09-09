@@ -44,12 +44,6 @@ import {filter} from 'lodash';
 export default {
   name      : 'panel-properties',
   props     : {
-    authToken: {
-      type   : String,
-      default: () => {
-        return 'none';
-      }
-    }
   },
   data      : function () {
     return {
