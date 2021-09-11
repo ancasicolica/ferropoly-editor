@@ -29,7 +29,7 @@ export default {
     let self             = this;
 
     // Define Background
-    let index            = DateTime.now().hour % 8;
+    let index            = DateTime.now().minute % 10;
     this.backgroundImage = `url("/images/ferropoly_header_0${index}.jpg")`;
 
     // Be kind and say hello

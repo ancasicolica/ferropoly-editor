@@ -54,7 +54,8 @@ export default {
   model     : {},
   created   : function () {
     // Set background randomly
-    let i = (new Date().getSeconds() % 10) + 1;
+    let i = Math.floor(((new Date().getMilliseconds() / 10) % 14) + 1);
+    console.log('Background', i);
     $('body').addClass('bg' + i);
   },
   methods   : {
