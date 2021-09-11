@@ -31,16 +31,6 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
 node_modules
 
-# Generated HTML
-editor/views/*.html
-editor/views/edit/*.html
-editor/views/pricelist/*.html
-editor/views/signup/*.html
-editor/views/rules/*.html
-
-# Bower
-editor/public/modules
-
 # Webpack Files
 /editor/public/js/build/report.html
 /editor/public/html/
@@ -51,3 +41,4 @@ editor/public/modules
 
 yarn.lock
 /editor/webapp/webapp_config.json
+/editor/views/error/*.html
