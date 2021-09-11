@@ -8,13 +8,12 @@
     h1 test-map
     b-row
       b-col(sm="12" md="6" lg="8" xl="8")
-        ferropoly-map(:map-options="mapOptions")
+        div(v-if="showMap")
+          ferropoly-map(:map-options="mapOptions")
+        div(v-if="!showMap") Karte versteckt
       b-col
-        h3 test
-        p dasdsad
-        p dasdasdf
-        p awrfdsdf
-        p wewe
+        h3 Karten Test
+        b-form-checkbox(v-model="showMap") Karte anzeigen
 
 </template>
 
@@ -31,7 +30,8 @@ export default {
       mapOptions: {
         center: geograph.getLastLocation(),
         zoom  : 10
-      }
+      },
+      showMap: false
     };
   },
   model     : {},

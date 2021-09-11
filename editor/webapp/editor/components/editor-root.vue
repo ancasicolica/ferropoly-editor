@@ -27,7 +27,7 @@
         panel-chance(v-if="panel==='panel-chance'")
         panel-player(v-if="panel==='panel-player'")
         panel-pricelist(v-if="panel==='panel-pricelist'")
-        panel-properties(v-show="panel==='panel-properties'")
+        panel-properties(v-if="panel==='panel-properties'")
         panel-rent(v-if="panel==='panel-rent'")
         panel-sorting(v-if="panel==='panel-sorting'")
 

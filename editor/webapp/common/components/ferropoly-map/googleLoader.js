@@ -20,16 +20,26 @@ const loader = new Loader({
 
 class GoogleLoader {
   constructor() {
+    this.google = null;
+  }
+
+  load(callback)  {
     loader
       .load()
       .then((google) => {
         console.log('Google APIs loaded');
         this.google = google;
+        callback(null, this.google);
       })
       .catch(e => {
-        console.error(e);
+        console.error('Error while loading Google API', e);
         this.google = null;
+        callback(e);
       });
+  }
+
+  getGoogleInstance() {
+    return this.google;
   }
 }
 

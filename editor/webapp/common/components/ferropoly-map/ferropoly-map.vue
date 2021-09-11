@@ -47,39 +47,45 @@ export default {
   async mounted() {
     console.log('mounted');
     let self   = this;
-    let google = gl.google;
+    gl.load((err, google) => {
+      if (err) {
+        console.error('Cannot display map');
+        return;
+      }
+      console.log('Google API loaded, creating map...');
 
-    self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
-    let swissMap = WmsMapType({
-      url        : 'https://wms.geo.admin.ch',
-      layers     : 'ch.swisstopo.pixelkarte-farbe',
-      name       : 'Swiss Topo',
-      alt        : 'swiss_topo',
-      version    : '1.1.1',
-      transparent: false,
-      maxZoom    : 55,
-      format     : 'image/jpeg'
+      this.mapOptions.mapTypeControlOptions = {
+        mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
+      };
+
+      if (!this.mapOptions.center) {
+        this.mapOptions.center = mapOptionsDefaults.center;
+      }
+      console.log('mapOptions', this.mapOptions);
+      self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
+      let swissMap = WmsMapType({
+        url        : 'https://wms.geo.admin.ch',
+        layers     : 'ch.swisstopo.pixelkarte-farbe',
+        name       : 'Swiss Topo',
+        alt        : 'swiss_topo',
+        version    : '1.1.1',
+        transparent: false,
+        maxZoom    : 55,
+        format     : 'image/jpeg'
+      });
+
+      self.map.mapTypes.set('swisstopo', swissMap);
+      self.map.setMapTypeId('swisstopo');
+      self.resizeHandler();
+      console.log('Google Map Initialized');
+      self.$emit('map', self.map);
     });
-
-    self.map.mapTypes.set('swisstopo', swissMap);
-    self.map.setMapTypeId('swisstopo');
-    self.resizeHandler();
-    console.log('Google Map Initialized');
-    self.$emit('map', self.map);
-
   },
   /**
    * When Map was Created
    */
   created() {
     console.log('created');
-    this.mapOptions.mapTypeControlOptions = {
-      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
-    };
-
-    if (!this.mapOptions.center) {
-      this.mapOptions.center = mapOptionsDefaults.center;
-    }
 
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler(null);

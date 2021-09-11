@@ -38,13 +38,11 @@ import PropertyFilter from './properties/property-filter.vue';
 import PropertyList from './properties/property-list.vue';
 import PropertySelected from './properties/property-selected.vue';
 import {mapFields} from 'vuex-map-fields';
-import geograph from '../../common/lib/geograph';
 import {filter} from 'lodash';
 
 export default {
   name      : 'panel-properties',
-  props     : {
-  },
+  props     : {},
   data      : function () {
     return {
       filterType: 'all',  // currently active filter
@@ -68,10 +66,13 @@ export default {
       return this.propertyList.getProperties();
     },
     mapOptions() {
-      return {
-        center: geograph.getLastLocation(),
-        zoom  : 10
+      let opts = {
+        zoom: 10
       }
+      if (this.selectedProperty) {
+        opts.center = this.selectedProperty.getGoogleMapsLocation();
+      }
+      return opts;
     },
     /**
      * Number of all properties in the map. Should be pretty static...

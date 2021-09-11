@@ -7,7 +7,7 @@
  * Created: 12.08.21
  **/
 
-import {merge} from 'lodash';
+import {merge, get} from 'lodash';
 import EventEmitter from '../../common/lib/eventEmitter';
 
 const ICON_EDIT_LOCATION     = 'https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png';
@@ -88,6 +88,19 @@ class Property extends EventEmitter {
       this.marker.setMap(null);
       this.isVisibleInList = false;
     }
+  }
+
+  /**
+   * Returns the location of the property in google maps lat/lng-format
+   * @returns {{lng: number, lat: number}}
+   */
+  getGoogleMapsLocation() {
+    let lat = get(this, 'location.position.lat', '47.1');
+    let lng = get(this, 'location.position.lng', '8.8');
+    return {
+      lat: parseFloat(lat),
+      lng: parseFloat(lng)
+    };
   }
 
   /**
