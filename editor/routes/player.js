@@ -10,7 +10,6 @@ const router    = express.Router();
 const teams     = require('../../common/models/teamModel');
 const gameplays = require('../../common/models/gameplayModel');
 const users     = require('../../common/models/userModel');
-const settings  = require('../settings');
 const logger    = require('../../common/lib/logger').getLogger('routes:player');
 const moment    = require('moment');
 const async     = require('async');
@@ -21,8 +20,6 @@ const path      = require('path');
 
 const MAX_NB_TEAMS = 20;
 
-let ngFile = 'playerctrl';
-ngFile     = settings.minifiedjs ? '/js/min/' + ngFile + '.min.js' : '/js/src/' + ngFile + '.js';
 
 /**
  * Get the home page
@@ -35,34 +32,10 @@ router.get('/edit/:gameId', function (req, res) {
         error  : {status: 403, stack: {}}
       });
     }
-    res.sendFile(path.join(__dirname, '..', 'public', 'html', 'player.html'));
-  });
-});
-
-/* GET player page. */
-router.get('/edit-old/:gameId', function (req, res) {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
-    if (err) {
-      return res.render('error/404', {
-        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error  : {status: 401, stack: {}}
-      });
-    }
-    let gameplay = {
-      scheduling: gp.scheduling,
-      mobile    : gp.mobile
-    };
 
     // Only the owner is allowed to edit the game, not the team mates!
     if (_.get(gp, 'internal.owner', 'none') === req.session.passport.user) {
-      res.render('player', {
-        title       : 'Spieler',
-        ngController: 'playerCtrl',
-        ngApp       : 'playerApp',
-        ngFile      : ngFile,
-        gameId      : req.params.gameId,
-        gameplay    : JSON.stringify(gameplay)
-      });
+      res.sendFile(path.join(__dirname, '..', 'public', 'html', 'player.html'));
     } else {
       res.render('error/401', {
         message: 'Zugriff nicht erlaubt',
@@ -70,7 +43,6 @@ router.get('/edit-old/:gameId', function (req, res) {
       });
     }
   });
-
 });
 
 /**
