@@ -117,6 +117,7 @@ let initServer = function () {
   app.use('/test', require('./routes/test'));
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
+  app.use('/dashboard', require('./routes/dashboard'));
 
 
   var server = require('http').Server(app);
@@ -146,6 +147,9 @@ let initServer = function () {
           break;
         case 404:
           errorPage = 'error/404';
+          break;
+        case 500:
+          errorPage = 'error/500';
           break;
       }
       res.render(errorPage, {

@@ -44,5 +44,9 @@ module.exports = [
     name    : 'editor',
     entry   : path.join(__dirname, 'editor', 'app.js'),
     htmlFile: 'editor.html'
+  }, {
+    name    : 'dashboard',
+    entry   : path.join(__dirname, 'dashboard', 'app.js'),
+    htmlFile: 'dashboard.html'
   }
 ];

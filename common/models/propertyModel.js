@@ -185,7 +185,7 @@ const updatePositionInPriceList = function (gameId, propertyId, position, callba
     }
     docs[0].pricelist.positionInPriceRange = position;
     docs[0].save(function (err, savedProperty) {
-      logger.info(savedProperty.location.name + ' updated' + ` v: ${savedProperty.pricelist.positionInPriceRange}` );
+      logger.info(savedProperty.location.name + ' updated' + ` v: ${savedProperty.pricelist.positionInPriceRange}`);
 
       callback(err, savedProperty);
     });
@@ -389,6 +389,19 @@ const allowBuilding = function (gameId, callback) {
 };
 
 /**
+ * Count the properties of a given game
+ * @param gameId
+ * @param callback
+ * @returns {*}
+ */
+function countProperties(gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  Property.countDocuments({gameId: gameId}, callback);
+}
+
+/**
  * The Exports
  * @type {{Model: (*|Model)}}
  */
@@ -406,5 +419,6 @@ module.exports = {
   updateProperties               : updateProperties,
   finalizeProperties             : finalizeProperties,
   allowBuilding                  : allowBuilding,
-  getPropertiesIdsForTeam        : getPropertiesIdsForTeam
+  getPropertiesIdsForTeam        : getPropertiesIdsForTeam,
+  countProperties                : countProperties
 };
