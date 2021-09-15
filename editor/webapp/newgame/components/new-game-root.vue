@@ -3,7 +3,7 @@
 -->
 <template lang="pug">
 #new-game
-  menu-bar(show-user-box=false)
+  menu-bar(show-user-box=false help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/" )
   b-container(fluid=true)
     b-row
       b-col

@@ -8,7 +8,7 @@
     menu-bar(:elements="menuElements"
       show-user-box=true
       @panel-change="onPanelChange"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/editor/")
+      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/")
     modal-error(title="Fehler" ref='editor-error')
     modal-error(
       :visible="apiErrorActive"

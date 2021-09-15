@@ -9,7 +9,7 @@
   modal-error(ref="err1")
   menu-bar(:elements="menuElements" show-user-box=true
     @add-new-team="addNewTeam"
-    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/player/")
+    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/player/")
   b-container(fluid=true)
     b-row.mt-1
       b-col(sm="12" md="4" lg="5" xl="6")

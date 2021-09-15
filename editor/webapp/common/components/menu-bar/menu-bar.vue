@@ -32,7 +32,7 @@
         b-navbar-nav(v-for="el in elementsRight" :key="el.title" v-if="!el.hide")
           b-nav-item(:href="el.href" v-on:click="onClick(el.event)") {{el.title}}
 
-        //b-nav-item(v-if="helpUrl.length > 0" :href="helpUrl" target="_blank")
+        b-nav-item(v-if="helpUrl.length > 0" :href="helpUrl" target="_blank")
           b-icon-question-circle-fill
         b-nav-item-dropdown(right='' v-if="showUserBox")
           template(#button-content='')

@@ -5,7 +5,8 @@
 -->
 <template lang="pug">
 #admins-root
-  menu-bar(show-user-box=true help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/admins/")
+  menu-bar(show-user-box=true
+    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/admins/")
   b-container(fluid=true)
     b-row
       b-col

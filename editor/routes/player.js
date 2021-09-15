@@ -25,7 +25,7 @@ const MAX_NB_TEAMS = 20;
  * Get the home page
  */
 router.get('/edit/:gameId', function (req, res) {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
     if (err) {
       return res.render('error/403', {
         message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
