@@ -8,7 +8,7 @@
     menu-bar(:elements="menuElements"
       show-user-box=true
       @panel-change="onPanelChange"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/")
+      :help-url="helpUrl")
     modal-error(title="Fehler" ref='editor-error')
     modal-error(
       :visible="apiErrorActive"
@@ -70,7 +70,18 @@ export default {
         /* 1 */ {title: 'Ortauswahl', href: '#', event: 'panel-change', eventParam: 'panel-properties'},
         /* 2 */ {title: 'Reihenfolge', href: '#', event: 'panel-change', eventParam: 'panel-sorting'},
         /* 3 */ {title: 'Preisliste erstellen', href: '#', event: 'panel-change', eventParam: 'panel-create'},
-      ]
+      ],
+      helpUrls    : {
+        'panel-basic'     : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor',
+        'panel-create'    : null,
+        'panel-houses'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/houses',
+        'panel-chance'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/chance',
+        'panel-player'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/player',
+        'panel-pricelist' : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/pricelist',
+        'panel-rent'      : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/rent',
+        'panel-sorting'   : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/sorting',
+        'panel-properties': 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/properties',
+      }
     };
   },
   model  : {},
@@ -127,6 +138,11 @@ export default {
     panel          : {
       get() {
         return this.$store.getters.currentPanel;
+      }
+    },
+    helpUrl        : {
+      get() {
+        return this.helpUrls[this.$store.getters.currentPanel];
       }
     }
   },
