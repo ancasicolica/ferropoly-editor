@@ -48,7 +48,7 @@ export default {
     // Get the User Info
     readUserInfo((err, info) => {
       if (!err) {
-        self.userName = info.personalData.forename + ' ' + info.personalData.surname;
+        self.userName = info.personalData.forename // + ' ' + info.personalData.surname;
         self.isAdmin = info.roles.admin;
         self.menuElements[1].hide = !self.isAdmin;
       }
