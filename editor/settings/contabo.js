@@ -20,7 +20,7 @@ module.exports = function (settings) {
 
   settings.locationDbSettings = {
     mongoDbUrl: 'mongodb://localhost/ferropoly',
-    poolSize: 4
+    poolSize: 5
   };
 
 
