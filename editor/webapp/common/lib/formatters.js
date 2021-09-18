@@ -17,6 +17,22 @@ function formatGameDate(value) {
   return DateTime.fromISO(value).setLocale('de').toLocaleString(DateTime.DATE_HUGE);
 }
 
+
+/**
+ * Formatter for the Game start and end time:
+ *
+ * 8:00
+ *
+ * @param value
+ * @returns {string}
+ */
+function formatGameTime(value) {
+  if (!value) {
+    return '';
+  }
+  return DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE);
+}
+
 /**
  * Formatter for the Date and time when the price list was created:
  *
@@ -114,4 +130,4 @@ function formatMap(map) {
   return (m.name);
 }
 
-export {formatMap, formatGameDate, formatDateTime, formatPrice, formatAccessibility, formatPriceRange};
+export {formatMap, formatGameTime, formatGameDate, formatDateTime, formatPrice, formatAccessibility, formatPriceRange};

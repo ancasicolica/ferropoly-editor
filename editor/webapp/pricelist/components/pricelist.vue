@@ -2,27 +2,27 @@
   Info section with the price list, including base info
 -->
 <template lang="pug">
-#pricelist
-  b-container(fluid=true)
-    b-row
-      b-col
-        h1 {{gameName}}
-        p {{gameDate | formatGameDate}}, {{gameStart}}-{{gameEnd}}
-    b-row
-      b-col
-        pricelist-list(:pricelist="pricelist")
-    b-row
-      b-col
-        p Version {{version}}, Stand: {{created | formatDateTime}}
+  #pricelist
+    b-container(fluid=true)
+      b-row
+        b-col
+          h1 {{gameName}}
+          p {{gameDate | formatGameDate}}, {{gameStart | formatGameTime}} - {{gameEnd | formatGameTime}}
+      b-row
+        b-col
+          pricelist-list(:pricelist="pricelist")
+      b-row
+        b-col
+          p Version {{version}}, Stand: {{created | formatDateTime}}
 
 </template>
 
 <script>
 import PricelistList from './pricelist-list.vue'
-import {formatGameDate, formatDateTime} from "../../common/lib/formatters";
+import {formatGameDate, formatDateTime, formatGameTime} from '../../common/lib/formatters';
 
 export default {
-  name      : "pricelist",
+  name      : 'pricelist',
   props     : {
     pricelist: {
       type   : Array,
@@ -46,8 +46,7 @@ export default {
   methods   : {},
   components: {PricelistList},
   filters   : {
-    formatGameDate, formatDateTime
-
+    formatGameDate, formatDateTime, formatGameTime
   }
 }
 </script>

@@ -72,7 +72,7 @@ export default {
         /* 3 */ {title: 'Preisliste erstellen', href: '#', event: 'panel-change', eventParam: 'panel-create'},
       ],
       helpUrls    : {
-        'panel-basic'     : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/basic',
+        'panel-basic'     : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/basiclo',
         'panel-create'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/create',
         'panel-houses'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/houses',
         'panel-chance'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/chance',
