@@ -1,12 +1,14 @@
 # Changelog Ferropoly Editor
 
-* Umstellung User Interface von Angular.js auf vue.js
+# V3.0.0 19.9.2021
+* Neubau aller Frontend-User-Interfaces: Umstellung User Interface von Angular.js auf vue.js
 * Swiss Topo Landeskarte
-* Neuer Editor für Spielregeln
-* Login mit Microsoft Account möglich
-* Neue Einstellungen für Chance/Kanzlei möglich
+* Neuer Editor für Spielregeln mit mehr formatierungsmöglichkeiten
+* Login mit Microsoft Account 
+* Neue Einstellungen für Chance/Kanzlei 
 * Neue Bilder für Login und Startseite
 * Dashboard für Admins
+* Bower entfernt
 
 # V2.6.1 19.12.2020
 * API für Abfragen aus Webseite und Überwachung #41

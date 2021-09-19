@@ -23,28 +23,6 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    uglify: {
-      js     : {
-        files: {
-          './editor/public/js/min/adminsctrl.min.js'      : ['./editor/public/js/src/adminsctrl.js'],
-          './editor/public/js/min/editctrl.min.js'        : ['./editor/public/js/src/editctrl.js'],
-          './editor/public/js/min/playerctrl.min.js'      : ['./editor/public/js/src/playerctrl.js'],
-          './editor/public/js/min/property.min.js'        : ['./editor/public/js/src/property.js'],
-          './editor/public/js/min/rulesctrl.min.js'       : ['./editor/public/js/src/rulesctrl.js'],
-          './editor/public/js/min/analytics.min.js'       : ['./editor/public/js/src/analytics.js']
-        }
-      },
-      options: {
-        unused    : false,
-        dead_code : true,
-        properties: false,
-        beautify  : false,
-        compress  : false,
-        mangle    : false, // do not rename variables
-        banner    : '/*! <%= pkg.name %> V<%= pkg.version %> <%= grunt.template.today("dd-mm-yyyy") %>, (c) Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch> */\n'
-
-      }
-    },
     bump  : {
       options: {
         files             : ['package.json'],
@@ -89,17 +67,11 @@ module.exports = function (grunt) {
     }
 
   });
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-processhtml');
-  grunt.loadNpmTasks('grunt-contrib-copy');
+
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-bump');
   grunt.registerTask('default', ['eslint']);
-  grunt.registerTask('minify', ['uglify:js']);
   grunt.registerTask('v:patch', ['bump-only:patch']);
   grunt.registerTask('v:minor', ['bump-only:minor']);
   grunt.registerTask('v:major', ['bump-only:major']);
