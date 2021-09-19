@@ -32,18 +32,22 @@ import {formatDateTime} from '../../common/lib/formatters'
 
 export default {
   name      : 'account-general',
-  props     : {info: Object, default: {}},
+  props     : {
+    info: {
+      type: Object,
+      default: {}
+    },
+    avatarUrl: {
+      type: String,
+      default: ''
+    }
+  },
   data      : function () {
     return {};
   },
   model     : {},
   computed  : {
-    avatarUrl() {
-      let url = this.getElement('avatar');
-      if (url.length === 0) {
-        return this.getElement('generatedAvatar');
-      }
-    }
+
   },
   methods   : {
     getElement: function (e) {

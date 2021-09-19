@@ -11,7 +11,7 @@
           h1 Account Daten von {{getElement('personalData.forename')}} {{getElement('personalData.surname')}}
       b-row
         b-col(xs="12" sm="12" md="6" lg="4" xl="4")
-          account-general(:info="getElement('personalData', {})")
+          account-general(:info="getElement('personalData', {})" :avatar-url="avatarUrl")
         b-col(xs="12" sm="12" md="6" lg="4" xl="4" v-if="showGoogle")
           account-google(:info="getElement('google', {})")
         b-col(xs="12" sm="12" md="6" lg="4" xl="4" v-if="showFacebook")
@@ -39,6 +39,7 @@ export default {
   data      : function () {
     return {
       userInfo    : {},
+      avatarUrl   : '',
       dataValid   : true,
       errorMessage: ''
     };
@@ -52,6 +53,12 @@ export default {
         this.dataValid    = false;
         return;
       }
+      this.avatarUrl = get(info, 'personalData.avatar', '');
+      console.log('avatar', this.avatarUrl, info);
+      if (this.avatarUrl.length === 0) {
+        this.avatarUrl = get(info, 'personalData.generatedAvatar', '');
+      }
+
       this.userInfo = info;
       console.log(info);
     })
