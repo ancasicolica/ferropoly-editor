@@ -34,7 +34,7 @@ if (process.env.OPENSHIFT_NODEJS_IP) {
 }
 // Avoid "unable to verify the first certificate"
 // https://stackoverflow.com/questions/10888610/ignore-invalid-self-signed-ssl-certificate-in-node-js-with-https-request
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 let settings = {
   name   : pkg.name,
@@ -66,6 +66,12 @@ let settings = {
       consumerKey   : process.env.FERROPOLY_TWITTER_CONSUMER_KEY || 'none',
       consumerSecret: process.env.FERROPOLY_TWITTER_CONSUMER_SECRET || 'no_secret',
       callbackURL   : 'none' // is set in settings file for environment
+    },
+
+    microsoft: {
+      clientId    : process.env.FERROPOLY_MICROSOFT_CLIENT_ID || 'none',
+      clientSecret: process.env.FERROPOLY_MICROSOFT_CLIENT_SECRET || 'no_secret',
+      callbackURL : 'none' // is set in settings file for environment
     }
   }
 };
@@ -87,6 +93,7 @@ if (debug) {
 }
 
 console.log('DEPLOY_TYPE: ' + deployType);
+console.log(settings);
 
 if (deployType && fs.existsSync(path.join(__dirname, 'settings/' + deployType + '.js'))) {
   module.exports = require('./settings/' + deployType + '.js')(settings);

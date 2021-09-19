@@ -12,11 +12,12 @@ import {get, isObject} from 'lodash';
 function getUserInfo(callback) {
   $.ajax('/userinfo', {dataType: 'json'})
     .done(function (data) {
-      let info               = get(data, 'info', {});
-      let hasGoogleAccount   = isObject(get(info, 'info.google', null));
-      let hasFacebookAccount = isObject(get(info, 'info.facebook', null));
-      console.log(hasFacebookAccount, hasGoogleAccount);
-      let retVal            = {
+      let info                = get(data, 'info', {});
+      let hasGoogleAccount    = isObject(get(info, 'info.google', null));
+      let hasFacebookAccount  = isObject(get(info, 'info.facebook', null));
+      let hasMicrosoftAccount = isObject(get(info, 'info.microsoft', null));
+      console.log(hasFacebookAccount, hasGoogleAccount, hasMicrosoftAccount);
+      let retVal             = {
         personalData: {
           forename         : get(info, 'personalData.forename', ''),
           surname          : get(info, 'personalData.surname', ''),
@@ -24,7 +25,7 @@ function getUserInfo(callback) {
           avatar           : get(info, 'personalData.avatar', ''),
           generatedAvatar  : get(info, 'info.generatedAvatar', ''),
           registrationDate : get(info, 'info.registrationDate', ''),
-          socialMediaActive: hasGoogleAccount || hasFacebookAccount
+          socialMediaActive: hasGoogleAccount || hasFacebookAccount || hasMicrosoftAccount
         },
         google      : {
           email : get(info, 'info.google.emails[0].value', ''),
@@ -37,10 +38,17 @@ function getUserInfo(callback) {
           avatar: get(info, 'info.facebook.photos[0].value', ''),
           id    : get(info, 'info.facebook.id', ''),
           raw   : get(info, 'info.facebook', {})
+        },
+        microsoft   : {
+          email : get(info, 'info.microsoft.emails[0].value', ''),
+          avatar: get(info, 'info.microsoft.photos[0].value', ''),
+          id    : get(info, 'info.microsoft.id', ''),
+          raw   : get(info, 'info.microsoft', {})
         }
       };
-      retVal.google.valid   = retVal.google.email.length > 0;
-      retVal.facebook.valid = retVal.facebook.email.length > 0;
+      retVal.google.valid    = retVal.google.email.length > 0;
+      retVal.facebook.valid  = retVal.facebook.email.length > 0;
+      retVal.microsoft.valid = retVal.microsoft.email.length > 0;
       console.log('userinfo', data, retVal);
       callback(null, retVal);
     })

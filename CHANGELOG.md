@@ -3,6 +3,7 @@
 * Umstellung User Interface von Angular.js auf vue.js
 * Swiss Topo Landeskarte
 * Neuer Editor für Spielregeln
+* Login mit Microsoft Account möglich
 * Neue Einstellungen für Chance/Kanzlei möglich
 * Neue Bilder für Login und Startseite
 * Dashboard für Admins

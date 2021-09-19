@@ -35,8 +35,9 @@ module.exports = function (settings) {
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
   // Twitter settings
-  settings.oAuth.twitter.callbackURL  = '\'https://editor.ferropoly.ch/auth/twitter/callback';
-
+  settings.oAuth.twitter.callbackURL  = 'https://editor.ferropoly.ch/auth/twitter/callback';
+  // Microsoft settings
+  settings.oAuth.microsoft.callbackURL  = 'https://editor.ferropoly.ch/auth/microsoft/callback';
 
   settings.demoGameplay = {
     addDays: 0

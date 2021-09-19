@@ -19,15 +19,17 @@
           button.btn.btn-xs.btn-default.btn-block(@click='enableSocialMediaLogin')
             | Login mit Social Networks
         #login-with-social-networks(v-if='!passwordLogin')
-          a#button-google.btn.btn-lg.btn-danger.btn-block(href='/auth/google')
-            i.fa.fa-google-plus
+          b-button(href='/auth/google' block large variant="danger")
+            b-icon-google
             | &nbsp;Login mit Google
           //a#button-dropbox.btn.btn-lg.btn-primary.btn-block(href='/auth/dropbox')
             i.fa.fa-dropbox
             | &nbsp;Login mit Dropbox
-          a#button-facebook.btn.btn-lg.btn-primary.btn-block(href='/auth/facebook')
-            i.fa.fa-facebook-official
+          b-button(href='/auth/facebook' block large variant="primary")
+            b-icon-facebook
             | &nbsp;Login mit Facebook
+          b-button(href='/auth/microsoft' block large variant="success")
+            | Login mit Microsoft
           //a#button-twitter.btn.btn-lg.btn-primary.btn-block(href='/auth/twitter')
             i.fa.fa-twitter
             | &nbsp;Login mit Twitter
@@ -39,7 +41,7 @@
 <script>
 import $ from 'jquery'
 import MenuBar from '../menu-bar/menu-bar.vue'
-
+import {BIconGoogle, BIconFacebook} from 'bootstrap-vue';
 export default {
   name      : 'login',
   props     : {},
@@ -66,7 +68,7 @@ export default {
       this.passwordLogin = false;
     }
   },
-  components: {MenuBar},
+  components: {MenuBar, BIconGoogle, BIconFacebook},
   filters   : {}
 }
 </script>
