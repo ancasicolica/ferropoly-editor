@@ -30,7 +30,7 @@ import AccountGeneral from './account-general.vue'
 import AccountGoogle from './account-google.vue'
 import AccountFacebook from './account-facebook.vue'
 import AccountMicrosoft from './account-microsoft.vue'
-import {getUserInfo} from '../../common/adapter/userInfo'
+import {getUserInfo} from '../../adapters/userInfo'
 import {get} from 'lodash';
 
 export default {

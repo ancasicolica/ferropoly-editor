@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import {getAdmins, saveAdmins} from '../../common/adapter/admins';
-import {getAuthToken} from '../../common/adapter/authToken';
+import {getAdmins, saveAdmins} from '../../adapters/admins';
+import {getAuthToken} from '../../adapters/authToken';
 import AdminEntry from './admin-entry.vue';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 

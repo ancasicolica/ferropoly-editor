@@ -25,8 +25,8 @@
 import {get} from "lodash";
 import ModalFinalizeGame from './modal-finalize-game.vue'
 import ModalError from '../../common/components/modal-error/modal-error.vue'
-import {finalizeGameplay} from '../../common/adapter/gameplay'
-import {getAuthToken} from '../../common/adapter/authToken'
+import {finalizeGameplay} from '../../adapters/gameplay'
+import {getAuthToken} from '../../adapters/authToken'
 
 export default {
   name : "pricelist-info-finalize",

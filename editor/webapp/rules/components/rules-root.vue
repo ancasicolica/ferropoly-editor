@@ -29,7 +29,7 @@ import MenuBar from "../../common/components/menu-bar/menu-bar.vue";
 import RulesEditor from './rules-editor.vue';
 import RulesInfo from './rules-info.vue';
 import RulesViewer from './rules-viewer.vue';
-import {getRules} from "../../common/adapter/rules";
+import {getRules} from "../../adapters/rules";
 import {last, split} from "lodash";
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue';

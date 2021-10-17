@@ -27,12 +27,12 @@ import ModalError from '../../common/components/modal-error/modal-error.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import PlayerList from './player-list.vue';
 import PlayerEdit from './player-edit.vue';
-import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../common/adapter/player';
-import {getGameInfo} from '../../common/adapter/gameplay'
+import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../adapters/player';
+import {getGameInfo} from '../../adapters/gameplay'
 import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
 import {DateTime} from 'luxon';
-import {getAuthToken} from '../../common/adapter/authToken'
+import {getAuthToken} from '../../adapters/authToken'
 
 export default {
   name : 'player-root',

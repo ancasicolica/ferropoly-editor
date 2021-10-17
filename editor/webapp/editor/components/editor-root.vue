@@ -48,7 +48,7 @@ import ModalError from '../../common/components/modal-error/modal-error.vue';
 import KeepWaiting from '../../common/components/keep-waiting/keep-waiting.vue';
 import {mapFields} from 'vuex-map-fields';
 import {last, split} from 'lodash';
-import {getAuthToken} from '../../common/adapter/authToken';
+import {getAuthToken} from '../../adapters/authToken';
 
 export default {
   name   : 'editor-root',

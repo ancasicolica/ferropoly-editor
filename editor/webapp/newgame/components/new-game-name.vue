@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import {getAuthToken} from '../../common/adapter/authToken'
-import {checkId, createGame, getProposedGameIds} from "../../common/adapter/gameplay";
+import {getAuthToken} from '../../adapters/authToken'
+import {checkId, createGame, getProposedGameIds} from "../../adapters/gameplay";
 import {kebabCase} from "lodash";
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 

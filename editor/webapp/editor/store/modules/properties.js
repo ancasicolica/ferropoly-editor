@@ -6,7 +6,7 @@
 
 import {createHelpers} from 'vuex-map-fields';
 import PropertyList from '../../lib/propertyList.js';
-import {savePositionInPricelist, saveProperty} from '../../../common/adapter/gameplay';
+import {savePositionInPricelist, saveProperty} from '../../../adapters/gameplay';
 
 const propertyList = new PropertyList();
 
