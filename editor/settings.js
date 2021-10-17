@@ -42,6 +42,7 @@ let settings = {
   version: pkg.version,
   debug  : (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
   preview: preview,
+  appPath: 'editor', // folder where the app resides
 
   oAuth: {
     facebook: {

@@ -6,7 +6,7 @@
     #wrap
       menu-bar(show-user-box=false :elements-right="menuElementsRight")
       .login-box.ls-box-shape
-        h3 Ferropoly Editor Login
+        h3 {{appName}} &nbsp; Login
         #login-with-password(v-if='passwordLogin')
           form(action='login' method='post')
             label(for='inputUserName' class='sr-only') Benutzername
@@ -42,9 +42,17 @@
 import $ from 'jquery'
 import MenuBar from '../menu-bar/menu-bar.vue'
 import {BIconGoogle, BIconFacebook} from 'bootstrap-vue';
+
 export default {
   name      : 'login',
-  props     : {},
+  props     : {
+    appName: {
+      type   : String,
+      default: function () {
+        return 'Ferropoly Editor';
+      }
+    }
+  },
   data      : function () {
     return {
       menuElementsRight: [
