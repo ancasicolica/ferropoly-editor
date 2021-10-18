@@ -85,7 +85,7 @@ export default {
       saveRules(self.gameId, changes, self.rules.text, err => {
         if (err) {
           console.error(err);
-          this.$refs['error'].showError('Fehler', 'Die Regeln konnten nicht gespeichert werden, folgende Meldung wurde gesendet:', err);
+          this.$refs['error'].showError('Fehler', 'Die Regeln konnten nicht gespeichert werden, folgende Meldung wurde gesendet:', err.message);
           return;
         }
         console.log('saved', self.gameId, changes, self.rules.text);

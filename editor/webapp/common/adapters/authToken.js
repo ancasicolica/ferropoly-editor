@@ -13,8 +13,8 @@ function getAuthToken(callback) {
     .done(function (data) {
       callback(null, data.authToken);
     })
-    .fail(function (err) {
-      callback(err);
+    .fail(function () {
+      callback({message:'Fehler 401: Du scheinst nicht eingeloggt zu sein, bitte lade die Seite neu.'});
     });
 }
 
