@@ -27,12 +27,11 @@ import ModalError from '../../common/components/modal-error/modal-error.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import PlayerList from './player-list.vue';
 import PlayerEdit from './player-edit.vue';
-import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../adapters/player';
-import {getGameInfo} from '../../adapters/gameplay'
+import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../lib/adapters/player';
+import {getGameInfo} from '../../lib/adapters/gameplay'
 import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
 import {DateTime} from 'luxon';
-import {getAuthToken} from '../../adapters/authToken'
 
 export default {
   name : 'player-root',
@@ -44,7 +43,6 @@ export default {
         /* 0 */  {title: 'Gruppe hinzufügen', href: '#', event: 'add-new-team', hide: true}
       ],
       gameId      : 'none',
-      authToken   : '',
       gameplay    : {
         scheduling: {
           gameDate: DateTime.now()
@@ -80,13 +78,6 @@ export default {
           self.updateNewTeamsAllowed();
         });
       });
-      getAuthToken((err, token) => {
-        if (err) {
-          console.error('Error reading auth token', err);
-          self.showError('Fehler beim Laden der Berechtigungen:', err);
-        }
-        self.authToken = token;
-      });
     });
   },
   computed  : {
@@ -114,7 +105,7 @@ export default {
     addNewTeam() {
       let self = this;
       console.log('add new team');
-      createTeam(this.gameId, this.authToken, (err, team) => {
+      createTeam(this.gameId, (err, team) => {
         if (err) {
           console.log(err);
           self.showError('Das Team konnte nicht angelegt werden. Fehlermeldung:', err);
@@ -139,7 +130,7 @@ export default {
     savePlayer(player) {
       let self = this;
       console.log('saving player', player);
-      storeTeam(player, this.authToken, (err, team) => {
+      storeTeam(player, (err, team) => {
         if (err) {
           console.error(err);
           self.showError('Das Team konnte nicht gespeichert werden. Fehlermeldung:', err);
@@ -172,7 +163,7 @@ export default {
      */
     confirmPlayer(player) {
       let self = this;
-      confirmTeam(player, self.authToken, (err, info) => {
+      confirmTeam(player,  (err, info) => {
         if (err) {
           console.error(err);
           self.showError('Das Team konnte nicht bestätigt werden. Fehlermeldung:', err);

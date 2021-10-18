@@ -2,74 +2,64 @@
   Choosing a name for the game (the gameId)
 -->
 <template lang="pug">
-#new-game-name
-  modal-error(title="Fehler" ref='name-error')
-  p Du hast es beinahe geschafft!
-  p Nun brauchen wir noch eine Spiel-ID, welche das Spiel identifiziert. Du kannst nun aus ein paar Vorschlägen eine Spiel-ID auswählen oder selbst eine erstellen.
-    | &nbsp; Tipp: '-' wird bei Verwendung eines Grossbuchstabens automatisch eingefügt.
-  b-form-input(v-model="settings.selectedId" maxlength="60" aria-describedby="name-input-live-feedback"
-    :state="idState" :formatter="idFormatter"
-    ref="input-id")
-  b-form-invalid-feedback(id="name-input-live-feedback") Der Name muss mindestens 5 Zeichen lang sein.
-  b-row
-    b-col
-      b-button.mt-1.ml-1(v-for="b in proposedIds" :key="b" @click="onSelectId(b)" variant="dark") {{b}}
-  b-row
-    b-col
-      b-button.mt-2(@click="onBack()") Zurück
-      b-button.mt-2.ml-2(variant="primary" @click="onCreateGame()" :disabled="!validationState || gameCreationActive") ID prüfen und Spiel anlegen
+  #new-game-name
+    modal-error(title="Fehler" ref='name-error')
+    p Du hast es beinahe geschafft!
+    p Nun brauchen wir noch eine Spiel-ID, welche das Spiel identifiziert. Du kannst nun aus ein paar Vorschlägen eine Spiel-ID auswählen oder selbst eine erstellen.
+      | &nbsp; Tipp: '-' wird bei Verwendung eines Grossbuchstabens automatisch eingefügt.
+    b-form-input(v-model="settings.selectedId" maxlength="60" aria-describedby="name-input-live-feedback"
+      :state="idState" :formatter="idFormatter"
+      ref="input-id")
+    b-form-invalid-feedback(id="name-input-live-feedback") Der Name muss mindestens 5 Zeichen lang sein.
+    b-row
+      b-col
+        b-button.mt-1.ml-1(v-for="b in proposedIds" :key="b" @click="onSelectId(b)" variant="dark") {{b}}
+    b-row
+      b-col
+        b-button.mt-2(@click="onBack()") Zurück
+        b-button.mt-2.ml-2(variant="primary" @click="onCreateGame()" :disabled="!validationState || gameCreationActive") ID prüfen und Spiel anlegen
 </template>
 
 <script>
-import {getAuthToken} from '../../adapters/authToken'
-import {checkId, createGame, getProposedGameIds} from "../../adapters/gameplay";
-import {kebabCase} from "lodash";
+import {checkId, createGame, getProposedGameIds} from '../../lib/adapters/gameplay';
+import {kebabCase} from 'lodash';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 
 export default {
-  name : "new-game-name",
+  name : 'new-game-name',
   props: {
     settings       : Object,
     validationState: Boolean
   },
   data : function () {
     return {
-      authToken         : '',
       proposedIds       : [],
       gameCreationActive: false
     };
   },
   model: {},
   /**
-   * Creation of the control: get Auth Token and some IDs
+   * Creation of the control: get some IDs
    */
   created   : function () {
     let self = this;
-    // Get Authtoken
-    getAuthToken((err, token) => {
-      if (err) {
-        console.error('authToken error', err);
-        this.$refs['name-error'].showError('Fehler', 'Authentisierungsfehler, bitte logge dich erneut ein und versuche es erneut');
-        return;
-      }
-      self.authToken = token;
 
-      // Get proposed GAME IDs. Do NOT do this in parallel, session gets overwritten
-      getProposedGameIds((err, ids) => {
-        if (err) {
-          console.error('getProposedGameIds failed', err);
-          ids = ['you-aint-see-mee-right', 'somebody-elses-problem'];
+    // Get proposed GAME IDs. Do NOT do this in parallel, session gets overwritten
+    getProposedGameIds((err, ids) => {
+      if (err) {
+        console.error('getProposedGameIds failed', err);
+        ids = ['you-aint-see-mee-right', 'somebody-elses-problem'];
+      }
+      self.settings.selectedId = kebabCase(self.settings.name);
+      self.proposedIds         = ids;
+      // Check the ID: valid one? Otherwise use proposed
+      checkId(self.settings.selectedId, (err, valid) => {
+        if (!valid) {
+          self.settings.selectedId = self.proposedIds[0];
         }
-        self.settings.selectedId = kebabCase(self.settings.name);
-        self.proposedIds         = ids;
-        // Check the ID: valid one? Otherwise use proposed
-        checkId(self.settings.selectedId, (err, valid) => {
-          if (!valid) {
-            self.settings.selectedId = self.proposedIds[0];
-          }
-        })
-      });
+      })
     });
+
   },
   computed  : {
     /**
@@ -102,7 +92,7 @@ export default {
           self.gameCreationActive = false;
           return;
         }
-        createGame(self.settings, self.authToken, (err, id) => {
+        createGame(self.settings, (err, id) => {
           if (err) {
             this.$refs['name-error'].showError('Fehler', 'Das Spiel konnte nicht angelegt werden.', err);
             self.gameCreationActive = false;

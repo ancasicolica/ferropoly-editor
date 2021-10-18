@@ -26,7 +26,7 @@ import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 import Pricelist from './pricelist.vue'
 import PricelistInfo from './pricelist-info.vue'
 
-import {getPricelist} from '../../adapters/pricelist'
+import {getPricelist} from '../../lib/adapters/pricelist'
 import {get, split, last} from 'lodash'
 
 export default {

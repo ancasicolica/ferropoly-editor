@@ -42,8 +42,7 @@ export default {
         selectedId: ''
       },
       validationState : true,
-      validationObject: {},
-      authToken       : 'none-yet'
+      validationObject: {}
     };
   },
   model: {},

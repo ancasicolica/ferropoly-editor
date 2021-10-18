@@ -38,9 +38,7 @@ export default {
     created  : String
   },
   data      : function () {
-    return {
-      authToken: ''
-    };
+    return {};
   },
   model     : {},
   methods   : {},

@@ -25,8 +25,7 @@
 import {get} from "lodash";
 import ModalFinalizeGame from './modal-finalize-game.vue'
 import ModalError from '../../common/components/modal-error/modal-error.vue'
-import {finalizeGameplay} from '../../adapters/gameplay'
-import {getAuthToken} from '../../adapters/authToken'
+import {finalizeGameplay} from '../../lib/adapters/gameplay'
 
 export default {
   name : "pricelist-info-finalize",
@@ -40,7 +39,6 @@ export default {
   },
   data : function () {
     return {
-      authToken            : '',
       finalizationSucceeded: false,
       finalizing           : false
     };
@@ -50,13 +48,6 @@ export default {
    * Called when control is created
    */
   created   : function () {
-    let self = this;
-    getAuthToken((err, token) => {
-      if (err) {
-        console.error('Error reading auth token', err);
-      }
-      self.authToken = token;
-    });
   },
   methods   : {
     /**
@@ -80,7 +71,7 @@ export default {
     onFinalizeGameplayConfirmed() {
       console.log('Finalizing Gameplay');
       this.finalizing = true;
-      finalizeGameplay(get(this.gameplay, 'internal.gameId', 'none'), this.authToken, err => {
+      finalizeGameplay(get(this.gameplay, 'internal.gameId', 'none'),  err => {
         if (err) {
           console.error(err);
           this.$refs['finalize-error'].showError('Fehler', 'Das Spiel konnte nicht finalisiert werden, folgende Meldung wurde gesendet:', err);

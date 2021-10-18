@@ -6,7 +6,7 @@
 
 import {createHelpers} from 'vuex-map-fields';
 import PropertyList from '../../lib/propertyList.js';
-import {savePositionInPricelist, saveProperty} from '../../../adapters/gameplay';
+import {savePositionInPricelist, saveProperty} from '../../../lib/adapters/gameplay';
 
 const propertyList = new PropertyList();
 
@@ -50,7 +50,7 @@ const properties = {
       rootState.editor.api.requestPending = true;
       state.propertyList.updateProperty(options.property, options.data);
 
-      saveProperty(options.property, rootState.gameId, rootState.authToken, err => {
+      saveProperty(options.property, rootState.gameId, err => {
         rootState.editor.api.requestPending = false;
         if (err) {
           console.error(err);
@@ -82,7 +82,7 @@ const properties = {
       });
 
       if (saveList.length > 0) {
-        savePositionInPricelist(saveList, rootState.gameId, rootState.authToken, err => {
+        savePositionInPricelist(saveList, rootState.gameId,  err => {
           if (err) {
             console.error(err);
             rootState.editor.api.error.message  = err.message;

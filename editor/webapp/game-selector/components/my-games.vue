@@ -17,7 +17,7 @@ div
 </template>
 
 <script>
-import {readMyGames, deleteGameplay} from "../../adapters/gameplay";
+import {readMyGames, deleteGameplay} from "../../lib/adapters/gameplay";
 import GameCard from './game-card.vue';
 import ModalDeleteGame from "./modal-delete-game.vue";
 import ModalError from '../../common/components/modal-error/modal-error.vue';

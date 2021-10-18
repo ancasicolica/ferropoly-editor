@@ -9,8 +9,8 @@ import Vuex from 'vuex';
 import gameplay from './modules/gameplay.js';
 import properties from './modules/properties.js';
 import editor from './modules/editor.js';
-import {loadGame, saveGameplay} from '../../adapters/gameplay';
-import {createPricelist} from '../../adapters/pricelist';
+import {loadGame, saveGameplay} from '../../lib/adapters/gameplay';
+import {createPricelist} from '../../lib/adapters/pricelist';
 import {get, set} from 'lodash';
 import {getField, updateField} from 'vuex-map-fields';
 import Property from '../lib/property';
@@ -33,8 +33,7 @@ const storeEditor = new Vuex.Store({
     apiCallsRemaining: 1, // Number of files to read
     gameId           : 'n',
     gameHost         : 'n',
-    gameHostPort     : 442,
-    authToken        : 'n'
+    gameHostPort     : 442
   },
   modules  : {
     gameplay,
@@ -116,7 +115,7 @@ const storeEditor = new Vuex.Store({
      */
     saveData({state, commit, rootState}, options) {
       state.editor.api.requestPending = true;
-      saveGameplay(state.gameplay, state.authToken, (err, resp) => {
+      saveGameplay(state.gameplay, (err, resp) => {
         state.editor.api.requestPending = false;
         if (err) {
           console.error(err, resp);
@@ -141,7 +140,7 @@ const storeEditor = new Vuex.Store({
      */
     createPricelist({state, commit, rootState}, options) {
       state.editor.api.requestPending = true;
-      createPricelist(state.gameId, state.authToken, (err, resp) => {
+      createPricelist(state.gameId, (err, resp) => {
         state.editor.api.requestPending = false;
         if (err) {
           console.error(err, resp);

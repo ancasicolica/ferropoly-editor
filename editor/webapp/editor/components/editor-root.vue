@@ -21,7 +21,7 @@
       div(v-if="!dataLoaded")
         keep-waiting
       div(v-if="dataLoaded")
-        panel-basic(v-show="panel==='panel-basic'" @panel-change="onPanelChange" :authToken="authToken")
+        panel-basic(v-show="panel==='panel-basic'" @panel-change="onPanelChange")
         panel-create(v-if="panel==='panel-create'")
         panel-houses(v-if="panel==='panel-houses'")
         panel-chance(v-if="panel==='panel-chance'")
@@ -48,7 +48,6 @@ import ModalError from '../../common/components/modal-error/modal-error.vue';
 import KeepWaiting from '../../common/components/keep-waiting/keep-waiting.vue';
 import {mapFields} from 'vuex-map-fields';
 import {last, split} from 'lodash';
-import {getAuthToken} from '../../adapters/authToken';
 
 export default {
   name   : 'editor-root',
@@ -86,31 +85,14 @@ export default {
   },
   model  : {},
   created: function () {
-    let self = this;
-
     // Retrieve GameId for this page
     const elements = split(window.location.pathname, '/');
     this.gameId    = last(elements);
-
-    // Get Authtoken
-    getAuthToken((err, token) => {
-      if (err) {
-        console.error('authToken', err);
-        this.$refs['editor-error'].showDialog({
-          title: 'Fehler',
-          info : 'Authentisierungsfehler, bitte logge dich erneut ein und versuche es erneut'
-        });
-        return;
-      }
-      self.authToken = token;
-      console.log('Auth-Token loaded', token);
-    });
   },
 
   computed  : {
     ...mapFields([
-      'gameId',
-      'authToken'
+      'gameId'
     ]),
     dataLoaded     : {
       get() {

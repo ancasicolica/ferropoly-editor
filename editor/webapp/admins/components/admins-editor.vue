@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import {getAdmins, saveAdmins} from '../../adapters/admins';
-import {getAuthToken} from '../../adapters/authToken';
+import {getAdmins, saveAdmins} from '../../lib/adapters/admins';
 import AdminEntry from './admin-entry.vue';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 
@@ -37,25 +36,11 @@ export default {
         {email: ''},
         {email: ''}
       ],
-      authToken                : 'nono',
       showNotAllHaveLoginsAlert: false
     };
   },
   model     : {},
   created   : function () {
-    let self = this;
-    // Get Authtoken
-    getAuthToken((err, token) => {
-      if (err) {
-        console.error('authToken', err);
-        this.$refs['admin-error'].showDialog({
-          title: 'Fehler',
-          info : 'Authentisierungsfehler, bitte logge dich erneut ein und versuche es erneut'
-        });
-        return;
-      }
-      self.authToken = token;
-    });
     this.getAdmins();
   },
   computed  : {},
@@ -75,7 +60,7 @@ export default {
      */
     saveAdmins() {
       let self = this;
-      saveAdmins(self.gameId, self.admins, self.authToken, err => {
+      saveAdmins(self.gameId, self.admins, err => {
         if (err) {
           console.error('saveAdmins', err);
           this.$refs['admin-error'].showDialog({

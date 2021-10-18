@@ -5,6 +5,7 @@
  **/
 
 import $ from 'jquery';
+import {getAuthToken} from '../../common/adapters/authToken';
 
 /***
  * Get the rules of a game
@@ -24,24 +25,28 @@ function getRules(gameId, callback) {
 /**
  * Save the rules
  * @param gameId
- * @param authToken
  * @param changes String with the last changes
  * @param text String, html formatted text of the rules
  * @param callback
  */
-function saveRules(gameId, authToken, changes, text, callback) {
-  $.post(`/rules/${gameId}`,
-    {
-      changes,
-      text,
-      authToken
-    })
-    .done(function () {
-      callback(null);
-    })
-    .fail(function (resp) {
-      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
-    });
+function saveRules(gameId, changes, text, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
+    $.post(`/rules/${gameId}`,
+      {
+        changes,
+        text,
+        authToken
+      })
+      .done(function () {
+        callback(null);
+      })
+      .fail(function (resp) {
+        callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
+      });
+  });
 }
 
 export {getRules, saveRules};

@@ -38,7 +38,6 @@ export default {
   },
   computed  : {
     ...mapFields([
-      'authToken',
       'gameId',
       'properties.propertyList'
     ]),

@@ -5,6 +5,7 @@
 import $ from 'jquery';
 import axios from 'axios';
 import {get} from 'lodash';
+import {getAuthToken} from '../../common/adapters/authToken';
 
 /**
  * Returns the pricelist for a game play
@@ -22,7 +23,16 @@ function getPricelist(gameId, callback) {
     });
 }
 
-function createPricelist(gameId, authToken, callback) {
+/**
+ * Creates (calculates) a price list
+ * @param gameId
+ * @param callback
+ */
+function createPricelist(gameId, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
   axios.post('/pricelist/create',
     {
       gameId,
@@ -35,6 +45,7 @@ function createPricelist(gameId, authToken, callback) {
       let message = get(error, 'response.data.message', error);
       callback({message});
     });
+  });
 }
 
 export {getPricelist, createPricelist};

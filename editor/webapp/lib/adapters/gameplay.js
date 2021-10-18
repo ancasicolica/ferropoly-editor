@@ -5,6 +5,7 @@ import $ from 'jquery';
 import {DateTime} from 'luxon';
 import axios from 'axios';
 import {pick, get} from 'lodash';
+import {getAuthToken} from '../../common/adapters/authToken';
 
 /**
  * Returns all games of this user  in the callback
@@ -79,77 +80,100 @@ function deleteGameplay(id, callback) {
 /**
  * finalizes a gameplay
  * @param id is the ID of the gameplay to finalize
- * @param authToken is the token for authentication
  * @param callback with the error text (if any)
  */
-function finalizeGameplay(id, authToken, callback) {
-  $.post('/gameplay/finalize', {gameId: id, authToken})
-    .done(function () {
-      console.log(`finalized ${id}`);
-      callback(null);
-    })
-    .fail(function (resp) {
-      console.error(`Error while finalizing ${id}`, resp);
-      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
-    });
+function finalizeGameplay(id, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
+    $.post('/gameplay/finalize', {gameId: id, authToken})
+      .done(function () {
+        console.log(`finalized ${id}`);
+        callback(null);
+      })
+      .fail(function (resp) {
+        console.error(`Error while finalizing ${id}`, resp);
+        callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
+      });
+  });
 }
 
 /**
  * saves a gameplay
  * @param gp is the gameplay object
- * @param authToken is the token for authentication
  * @param callback with the error text (if any)
  */
-function saveGameplay(gp, authToken, callback) {
-  axios.post(`/gameplay/save/${gp.internal.gameId}`,
-    {
-      gameplay: gp,
-      authToken
-    })
-    .then(function () {
-      callback(null);
-    })
-    .catch(function (error) {
-      let message = get(error, 'response.data.message', error);
-      callback({message});
-    });
+function saveGameplay(gp, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
+    axios.post(`/gameplay/save/${gp.internal.gameId}`,
+      {
+        gameplay: gp,
+        authToken
+      })
+      .then(function () {
+        callback(null);
+      })
+      .catch(function (error) {
+        let message = get(error, 'response.data.message', error);
+        callback({message});
+      });
+  });
 }
 
 /**
  * Saves data of a property
  * @param property
  * @param gameId
- * @param authToken
  * @param callback
  */
-function saveProperty(property, gameId, authToken, callback) {
-  axios.post(`/gameplay/saveProperty/${gameId}`,
-    {
-      property: pick(property, ['gameId', 'uuid', 'location', 'pricelist']),
-      authToken
-    })
-    .then(function () {
-      callback(null);
-    })
-    .catch(function (error) {
-      let message = get(error, 'response.data.message', error);
-      callback({message});
-    });
+function saveProperty(property, gameId, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
+    axios.post(`/gameplay/saveProperty/${gameId}`,
+      {
+        property: pick(property, ['gameId', 'uuid', 'location', 'pricelist']),
+        authToken
+      })
+      .then(function () {
+        callback(null);
+      })
+      .catch(function (error) {
+        let message = get(error, 'response.data.message', error);
+        callback({message});
+      });
+  });
 }
 
-function savePositionInPricelist(saveSet, gameId, authToken, callback) {
-  axios.post(`/gameplay/savePositionInPricelist/${gameId}`,
-    {
-      properties: saveSet,
-      authToken
-    })
-    .then(function () {
-      callback(null);
-    })
-    .catch(function (error) {
-      let message = get(error, 'response.data.message', error);
-      callback({message});
-    });
+/**
+ * Saves the position of a set (only uuids and positions) of some properties
+ * @param saveSet
+ * @param gameId
+ * @param callback
+ */
+function savePositionInPricelist(saveSet, gameId, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
+    axios.post(`/gameplay/savePositionInPricelist/${gameId}`,
+      {
+        properties: saveSet,
+        authToken
+      })
+      .then(function () {
+        callback(null);
+      })
+      .catch(function (error) {
+        let message = get(error, 'response.data.message', error);
+        callback({message});
+      });
+  });
 }
 
 /**
@@ -185,28 +209,32 @@ function checkId(gameId, callback) {
 /**
  * Creates a new game
  * @param settings
- * @param authToken
  * @param callback
  */
-function createGame(settings, authToken, callback) {
-  $.post('/gameplay/createnew',
-    {
-      gamename: settings.name,
-      map     : settings.map,
-      gamedate: settings.date,
-      random  : settings.random,
-      presets : settings.presets,
-      gameId  : settings.selectedId,
-      authToken
-    })
-    .done(function (resp) {
-      console.log('createdGame');
-      callback(null, resp.gameId);
-    })
-    .fail(function (resp) {
-      console.error('Error while creating', resp);
-      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
-    });
+function createGame(settings, callback) {
+  getAuthToken((err, authToken) => {
+    if (err) {
+      return callback(err);
+    }
+    $.post('/gameplay/createnew',
+      {
+        gamename: settings.name,
+        map     : settings.map,
+        gamedate: settings.date,
+        random  : settings.random,
+        presets : settings.presets,
+        gameId  : settings.selectedId,
+        authToken
+      })
+      .done(function (resp) {
+        console.log('createdGame');
+        callback(null, resp.gameId);
+      })
+      .fail(function (resp) {
+        console.error('Error while creating', resp);
+        callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
+      });
+  });
 }
 
 
