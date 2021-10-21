@@ -12,7 +12,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import {DateTime} from 'luxon';
 
 // Import components
-import ModalAgb from './components/modal-agb.vue';
+import ModalAgb from '../common/components/modal-agb/modal-agb.vue';
 import GameSelector from './components/game-selector.vue';
 
 Vue.use(VueRouter);
