@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import PricelistList from './pricelist-list.vue'
+import PricelistList from '../../common/components/pricelist/pricelist-list.vue'
 import {formatGameDate, formatDateTime, formatGameTime} from '../../common/lib/formatters';
 
 export default {

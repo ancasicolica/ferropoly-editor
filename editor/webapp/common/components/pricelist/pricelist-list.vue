@@ -1,6 +1,6 @@
 <!---
-  The core price list for the editor. I doubt that this can be used else where as the
-  vue bootstrap table covers quite a lot
+  Pricelist core control
+  Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
 -->
 <template lang="pug">
 #pricelist-list
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import {formatPrice} from '../../common/lib/formatters';
+import {formatPrice} from '../../lib/formatters';
 
 export default {
   name      : "pricelist-list",
