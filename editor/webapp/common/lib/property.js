@@ -35,7 +35,6 @@ class Property extends EventEmitter {
     merge(this, p);
     this.marker          = null;
     this.isVisibleInList = true; // Flag indicating if the property is in the list or not
-    this.positionInPriceRangeChanged = false; // flag for "save list"
   }
 
   /**
@@ -103,88 +102,7 @@ class Property extends EventEmitter {
     };
   }
 
-  /**
-   * Sets the position in the price range. Always use this function to set it, as only this triggers
-   * the save process!
-   * @param pos
-   */
-  setPositionInPriceRange(pos) {
-    this.positionInPriceRangeChanged = (this.pricelist.positionInPriceRange !== pos);
-    this.pricelist.positionInPriceRange = pos;
-  }
 
-  /**
-   * Returns the set of the position for the priceslist, null if it didn't change
-   * @returns {*}
-   */
-  getPricelistPositionSaveSet() {
-    if (!this.positionInPriceRangeChanged) {
-      return null;
-    }
-
-    return {
-      uuid: this.uuid,
-      positionInPriceRange: this.pricelist.positionInPriceRange
-    };
-  };
-
-  /**
-   * Set the icon for this location in the map
-   * @param editMode true if editing the item
-   */
-  setMarkerIcon(editMode) {
-    if (this.marker) {
-      let x = -1;
-      if (this.pricelist) {
-        x = this.pricelist.priceRange;
-      }
-      if (editMode) {
-        this.marker.setIcon(ICON_EDIT_LOCATION);
-      } else {
-        switch (this.location.accessibility) {
-          case 'train':
-            if (x === -1) {
-              this.marker.setIcon(ICON_TRAIN_LOCATION);
-            } else {
-              this.marker.setIcon(ICON_TRAIN_LOCATION_USED + iconPriceLabels[x]);
-            }
-            break;
-
-          case 'bus':
-            if (x === -1) {
-              this.marker.setIcon(ICON_BUS_LOCATION);
-            } else {
-              this.marker.setIcon(ICON_BUS_LOCATION_USED + iconPriceLabels[x]);
-            }
-            break;
-
-          case 'boat':
-            if (x === -1) {
-              this.marker.setIcon(ICON_BOAT_LOCATION);
-            } else {
-              this.marker.setIcon(ICON_BOAT_LOCATION_USED + iconPriceLabels[x]);
-            }
-            break;
-
-          case 'cablecar':
-            if (x === -1) {
-              this.marker.setIcon(ICON_CABLECAR_LOCATION);
-            } else {
-              this.marker.setIcon(ICON_CABLECAR_LOCATION_USED + iconPriceLabels[x]);
-            }
-            break;
-
-          default:
-            if (x === -1) {
-              this.marker.setIcon(ICON_OTHER_LOCATION);
-            } else {
-              this.marker.setIcon(ICON_OTHER_LOCATION_USED + iconPriceLabels[x]);
-            }
-            break;
-        }
-      }
-    }
-  };
 }
 
 export default Property;

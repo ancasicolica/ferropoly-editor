@@ -13,7 +13,7 @@ import {loadGame, saveGameplay} from '../../lib/adapters/gameplay';
 import {createPricelist} from '../../lib/adapters/pricelist';
 import {get, set} from 'lodash';
 import {getField, updateField} from 'vuex-map-fields';
-import Property from '../lib/property';
+import EditorProperty from '../lib/editorProperty';
 
 Vue.use(Vuex);
 
@@ -63,7 +63,7 @@ const storeEditor = new Vuex.Store({
         this.state.gameHost     = get(res, 'settings.publicServer.host', 'nada');
         this.state.gameHostPort = get(res, 'settings.publicServer.port', 443);
         res.properties.forEach(p => {
-          this.state.properties.propertyList.addProperty(new Property(p));
+          this.state.properties.propertyList.addProperty(new EditorProperty(p));
         });
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');
