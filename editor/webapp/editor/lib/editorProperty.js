@@ -6,6 +6,8 @@
 
 import Property from '../../common/lib/property';
 
+
+
 class EditorProperty extends Property {
 
   /**
@@ -54,46 +56,46 @@ class EditorProperty extends Property {
         x = this.pricelist.priceRange;
       }
       if (editMode) {
-        this.marker.setIcon(ICON_EDIT_LOCATION);
+        this.marker.setIcon(this.ICON_EDIT_LOCATION);
       } else {
         switch (this.location.accessibility) {
           case 'train':
             if (x === -1) {
-              this.marker.setIcon(ICON_TRAIN_LOCATION);
+              this.marker.setIcon(this.ICON_TRAIN_LOCATION);
             } else {
-              this.marker.setIcon(ICON_TRAIN_LOCATION_USED + iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_TRAIN_LOCATION_USED + this.iconPriceLabels[x]);
             }
             break;
 
           case 'bus':
             if (x === -1) {
-              this.marker.setIcon(ICON_BUS_LOCATION);
+              this.marker.setIcon(this.ICON_BUS_LOCATION);
             } else {
-              this.marker.setIcon(ICON_BUS_LOCATION_USED + iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_BUS_LOCATION_USED + this.iconPriceLabels[x]);
             }
             break;
 
           case 'boat':
             if (x === -1) {
-              this.marker.setIcon(ICON_BOAT_LOCATION);
+              this.marker.setIcon(this.ICON_BOAT_LOCATION);
             } else {
-              this.marker.setIcon(ICON_BOAT_LOCATION_USED + iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_BOAT_LOCATION_USED + this.iconPriceLabels[x]);
             }
             break;
 
           case 'cablecar':
             if (x === -1) {
-              this.marker.setIcon(ICON_CABLECAR_LOCATION);
+              this.marker.setIcon(this.ICON_CABLECAR_LOCATION);
             } else {
-              this.marker.setIcon(ICON_CABLECAR_LOCATION_USED + iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_CABLECAR_LOCATION_USED + this.iconPriceLabels[x]);
             }
             break;
 
           default:
             if (x === -1) {
-              this.marker.setIcon(ICON_OTHER_LOCATION);
+              this.marker.setIcon(this.ICON_OTHER_LOCATION);
             } else {
-              this.marker.setIcon(ICON_OTHER_LOCATION_USED + iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_OTHER_LOCATION_USED + this.iconPriceLabels[x]);
             }
             break;
         }
