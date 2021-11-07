@@ -108,7 +108,18 @@
         )
       b-col
         p Wert: {{vEmail}}
-
+    b-row
+      b-col
+        input-textarea(
+          label="Bemerkungen"
+          help="Bemerkungen können die Verarbeitungszeit verlängern"
+          v-model="vLarge"
+          rows="4"
+          max-rows="8"
+          placeholder="Bitte gib was ein"
+          )
+      b-col
+        p Wert: {{vLarge}}
 
 </template>
 
@@ -121,6 +132,7 @@ import FormSelector from '../../common/components/form-controls/form-selector.vu
 import InputText from '../../common/components/form-controls/input-text.vue'
 import InputEmail from '../../common/components/form-controls/input-email.vue'
 import InputPhone from '../../common/components/form-controls/input-phone.vue'
+import InputTextarea from '../../common/components/form-controls/input-textarea.vue'
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import {DateTime} from 'luxon';
 
@@ -139,6 +151,7 @@ export default {
       v2            : '05:05:00',
       v3            : '20:05:00',
       v4            : DateTime.now().toISODate(),
+      vLarge        : 'large text',
       vRange        : 1.75,
       dateMin       : DateTime.now().minus({days: 1}).toISODate(),
       dateMax       : DateTime.now().plus({month: 5}).toISODate(),
@@ -165,7 +178,7 @@ export default {
       console.log(this.startTimeValid, this.endTimeValid);
     }
   },
-  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector},
+  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector, InputTextarea},
   filters   : {},
   mixins    : [FormValidatorMixin]
 }
