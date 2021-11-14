@@ -12,7 +12,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 // Import components
-import AccountRoot from './components/account-root.vue';
+import AccountRoot from '../common/components/account/account-root.vue';
 
 Vue.use(VueRouter);
 

@@ -28,7 +28,7 @@
 
 <script>
 import {get} from 'lodash'
-import {formatDateTime} from '../../common/lib/formatters'
+import {formatDateTime} from '../../lib/formatters'
 
 export default {
   name      : 'account-general',

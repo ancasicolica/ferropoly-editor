@@ -1,5 +1,7 @@
 /**
  * User Account Info
+ * This is the same file for all ferropoly apps, but as there is a reference to the public folder, this
+ * does not work in the common folder
  * Created by kc on 29.12.15.
  */
 const express = require('express');

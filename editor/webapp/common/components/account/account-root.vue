@@ -25,12 +25,12 @@
 </template>
 
 <script>
-import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
+import MenuBar from '../menu-bar/menu-bar.vue'
 import AccountGeneral from './account-general.vue'
 import AccountGoogle from './account-google.vue'
 import AccountFacebook from './account-facebook.vue'
 import AccountMicrosoft from './account-microsoft.vue'
-import {getUserInfo} from '../../lib/adapters/userInfo'
+import {getUserInfo} from '../../adapters/userInfo'
 import {get} from 'lodash';
 
 export default {
