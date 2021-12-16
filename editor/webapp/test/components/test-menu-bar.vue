@@ -30,7 +30,18 @@
   b-row
     b-col
       p Event-Daten: {{bar2EventData}}
-
+      h2 Test 3
+      p Online Zustand
+  b-row
+    b-col
+      menu-bar(:elements="menuBar2Elements"
+        show-user-box=true
+        help-url="https://www.ferropoly.ch/"
+        showOnlineStatus=true
+        :online="online")
+  b-row
+    b-col
+      b-form-checkbox(v-model="online") Online status
 </template>
 
 <script>
@@ -56,7 +67,8 @@ export default {
         {title: 'Nummer 4', href: '#', event: 'bar2-event', eventParam: 'bar2-4'},
         {title: 'Nummer 5', href: '#', event: 'bar2-event', eventParam: 'bar2-5'}
       ],
-      bar2EventData : 'keine'
+      bar2EventData : 'keine',
+      online: false
     };
   },
   model     : {},
