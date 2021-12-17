@@ -1,5 +1,5 @@
 <!---
-
+  Test for the ferro-card
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 12.08.21
 -->
@@ -9,7 +9,9 @@
     b-row
       b-col
         FerroCard(title="Demo 1")
+          template(v-slot:controls) A B C
           div Normale Card mit normalen Abständen
+
       b-col
         FerroCard(title="Demo 2" size="sm")
           div Schmale Karte
@@ -21,19 +23,19 @@
 import FerroCard from '../../common/components/ferro-card/ferro-card.vue';
 
 export default {
-  name      : 'test-ferro-card',
+  name      : 'TestFerroCard',
+  components: {FerroCard},
+  filters   : {},
+  mixins    : [],
+  model     : {},
   props     : {},
   data      : function () {
     return {};
   },
-  model     : {},
+  computed  : {},
   created   : function () {
   },
-  computed  : {},
-  methods   : {},
-  components: {FerroCard},
-  filters   : {},
-  mixins    : []
+  methods   : {}
 }
 </script>
 
