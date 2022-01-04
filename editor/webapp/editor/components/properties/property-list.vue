@@ -29,7 +29,10 @@ import {formatAccessibility, formatPriceRange} from '../../../common/lib/formatt
 import $ from 'jquery';
 
 export default {
-  name   : 'property-list',
+  name   : 'PropertyList',
+  components: {},
+  filters   : {formatAccessibility, formatPriceRange},
+  model  : {},
   props  : {
     properties: {
       type   : Array,
@@ -59,7 +62,7 @@ export default {
       ]
     };
   },
-  model  : {},
+  computed  : {},
   mounted: function () {
     this.resizeHandler();
   },
@@ -70,7 +73,6 @@ export default {
   destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
   },
-  computed  : {},
   methods   : {
     /**
      * Property was clicked, fire property-selected event
@@ -123,9 +125,7 @@ export default {
     onFiltered(f) {
       this.$emit('filtered', f);
     }
-  },
-  components: {},
-  filters   : {formatAccessibility, formatPriceRange}
+  }
 }
 </script>
 
