@@ -5,39 +5,42 @@
   Created: 28.04.21
 -->
 <template lang="pug">
-#rules
-  modal-error(title="Fehler" ref='error')
-  modal-info-yes-no(title="Info" ref="info" size="xl" @yes="loadLocallyStoredData" @no="discardLocallyStoredData")
-  menu-bar(:elements="menuElements" show-user-box=true
-    @rules-view="showRules"
-    @rules-editor="showEditor"
-    @rules-info="showInfo"
-    @rules-print="printRules"
-    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/spielregeln/")
-  b-container(fluid=true)
-    b-row
-      rules-viewer(v-if="currentView === 'view'" :rules="rules")
-      rules-editor(v-if="currentView === 'editor'"
-        :rules="rules" :game-id="gameId"
-        @reload-rules="loadRules")
-      rules-info(v-if="currentView === 'info'" :rules="rules")
+  #rules
+    modal-error(title="Fehler" ref='error')
+    modal-info-yes-no(title="Info" ref="info" size="xl" @yes="loadLocallyStoredData" @no="discardLocallyStoredData")
+    menu-bar(:elements="menuElements" show-user-box=true
+      @rules-view="showRules"
+      @rules-editor="showEditor"
+      @rules-info="showInfo"
+      @rules-print="printRules"
+      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/spielregeln/")
+    b-container(fluid=true)
+      b-row
+        rules-viewer(v-if="currentView === 'view'" :rules="rules")
+        rules-editor(v-if="currentView === 'editor'"
+          :rules="rules" :game-id="gameId"
+          @reload-rules="loadRules")
+        rules-info(v-if="currentView === 'info'" :rules="rules")
 
 </template>
 
 <script>
-import MenuBar from "../../common/components/menu-bar/menu-bar.vue";
+import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import RulesEditor from './rules-editor.vue';
 import RulesInfo from './rules-info.vue';
-import RulesViewer from './rules-viewer.vue';
-import {getRules} from "../../lib/adapters/rules";
-import {last, split} from "lodash";
+import RulesViewer from '../../common/components/rules-viewer/rules-viewer.vue';
+import {getRules} from '../../lib/adapters/rules';
+import {last, split} from 'lodash';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue';
-import {DateTime} from "luxon";
-import $ from "jquery";
+import {DateTime} from 'luxon';
+import $ from 'jquery';
 
 export default {
-  name      : "rules-root",
+  name      : 'RulesRoot',
+  components: {MenuBar, RulesEditor, RulesInfo, RulesViewer, ModalError, ModalInfoYesNo},
+  filters   : {},
+  model     : {},
   props     : {},
   data      : function () {
     return {
@@ -53,18 +56,17 @@ export default {
       gameId      : ''
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
     let self       = this;
     // Retrieve GameId for this page
     const elements = split(window.location.pathname, '/');
     self.gameId    = last(elements);
-    $(document).ready(function() {
+    $(document).ready(function () {
       console.log('doc ready');
       self.loadRules();
     });
   },
-  computed  : {},
   methods   : {
     /**
      * Load the rules and check, if there are some newer in the cache
@@ -119,9 +121,7 @@ export default {
     printRules() {
       window.print();
     }
-  },
-  components: {MenuBar, RulesEditor, RulesInfo, RulesViewer, ModalError, ModalInfoYesNo},
-  filters   : {}
+  }
 }
 </script>
 
