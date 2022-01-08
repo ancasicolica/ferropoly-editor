@@ -25,7 +25,10 @@ const mapOptionsDefaults = {
 };
 
 export default {
-  name : 'ferropoly-map',
+  name : 'FerropolyMap',
+  components: {},
+  filters   : {},
+  model: {},
   props: {
     mapOptions: {
       type   : Object,
@@ -40,7 +43,6 @@ export default {
       map       : undefined
     };
   },
-  model: {},
   /**
    * When Map was mounted
    */
@@ -90,11 +92,11 @@ export default {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler(null);
   },
+  computed  : {},
   destroyed() {
     console.log('fuck, destroyed')
     window.removeEventListener('resize', this.resizeHandler);
   },
-  computed  : {},
   methods   : {
     /**
      * Sets the focus on the property: if the property
@@ -127,9 +129,7 @@ export default {
         console.log('Map not ready yet');
       }
     }
-  },
-  components: {},
-  filters   : {}
+  }
 }
 </script>
 
