@@ -43,6 +43,7 @@ export default {
       map       : undefined
     };
   },
+  computed  : {},
   /**
    * When Map was mounted
    */
@@ -56,12 +57,12 @@ export default {
       }
       console.log('Google API loaded, creating map...');
 
-      this.mapOptions.mapTypeControlOptions = {
+      self.mapOptions.mapTypeControlOptions = {
         mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'swisstopo']
       };
 
-      if (!this.mapOptions.center) {
-        this.mapOptions.center = mapOptionsDefaults.center;
+      if (!self.mapOptions.center) {
+        self.mapOptions.center = mapOptionsDefaults.center;
       }
       console.log('mapOptions', this.mapOptions);
       self.map     = new google.maps.Map(document.getElementById('map'), this.mapOptions);
@@ -92,7 +93,6 @@ export default {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler(null);
   },
-  computed  : {},
   destroyed() {
     console.log('fuck, destroyed')
     window.removeEventListener('resize', this.resizeHandler);
