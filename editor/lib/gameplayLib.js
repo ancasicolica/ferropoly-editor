@@ -377,7 +377,7 @@ function createDemoTeams(gp, teamNb, callback) {
                                              [demoUsers.getTeamLeaderEmail(20), demoUsers.getTeamLeaderEmail(21)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
                                              demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
-                                             [demoUsers.getTeamLeaderEmail(22), demoUsers.getTeamLeaderEmail(23), 
+                                             [demoUsers.getTeamLeaderEmail(22), demoUsers.getTeamLeaderEmail(23),
                                               demoUsers.getTeamLeaderEmail(24)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
                                              demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
