@@ -322,7 +322,7 @@ function deleteGameplay(gpOptions, callback) {
         function (callback) {
           gameLog.deleteAllEntries(gpOptions.gameId, callback);
         }
-      ], function (err, results) {
+      ], function (err) {
         if (err) {
           logger.error('Error while deleting gameplays', err);
         }
@@ -351,7 +351,8 @@ function createDemoTeamEntry(gameId, entry) {
       name        : entry[0],
       organization: entry[1],
       teamLeader  : {name: entry[2], email: entry[3], phone: entry[4]},
-      remarks     : entry[5]
+      remarks     : '',
+      members     : entry[5] || []
     }
   };
 }
@@ -372,11 +373,15 @@ function createDemoTeams(gp, teamNb, callback) {
 
   let referenceData = [
     createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0),
-                                             demoUsers.getTeamLeaderEmail(0), '079 000 00 01']),
+                                             demoUsers.getTeamLeaderEmail(0), '079 000 00 01',
+                                             [demoUsers.getTeamLeaderEmail(20), demoUsers.getTeamLeaderEmail(21)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
-                                             demoUsers.getTeamLeaderEmail(1), '079 000 00 02']),
+                                             demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
+                                             [demoUsers.getTeamLeaderEmail(22), demoUsers.getTeamLeaderEmail(23), 
+                                              demoUsers.getTeamLeaderEmail(24)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
-                                             demoUsers.getTeamLeaderEmail(2), '079 000 00 03']),
+                                             demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
+                                             [demoUsers.getTeamLeaderEmail(20)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3),
                                              demoUsers.getTeamLeaderEmail(3), '079 000 00 04',
                                              'Siegerteam letztes Jahr']),
