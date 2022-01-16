@@ -26,6 +26,7 @@
     test-property-sorting(v-if="panel==='propertySorting'")
     test-property-list(v-if="panel==='propertyList'")
     test-input(v-if="panel==='input'")
+    test-ferro-nav(v-if="panel==='ferroNav'")
 </template>
 
 <script>
@@ -43,12 +44,31 @@ import TestPropertySorting from './test-property-sorting.vue';
 import TestPropertyList from './test-property-list.vue';
 import TestFerroCard from './test-ferro-card.vue';
 import TestInput from './test-input.vue';
+import TestFerroNav from './test-ferro-nav.vue';
 
 // EASY START
 const defaultPanel = getItem('test-panel', 'top');
 
 export default {
-  name      : 'test-root',
+  name      : 'TestRoot',
+  filters   : {},
+  components: {
+    TestFerropolyMap,
+    TestPlayerInfo,
+    MenuBar,
+    TestMenuBar,
+    TestModalError,
+    TestModalInfoYesNo,
+    TestPlayerList,
+    TestPlayerEdit,
+    TestAdminEntry,
+    TestPropertySorting,
+    TestPropertyList,
+    TestInput,
+    TestFerroCard,
+    TestFerroNav
+  },
+  model     : {},
   props     : {},
   data      : function () {
     return {
@@ -63,6 +83,7 @@ export default {
             {title: 'Modal Info', href: '#', event: 'panel-change', eventParam: 'modalInfo'},
             {title: 'Inputs', href:'#', event:'panel-change', eventParam: 'input'},
             {title: 'Ferropoly Cards', href:'#', event:'panel-change', eventParam: 'ferroCard'},
+            {title: 'Ferropoly Navigation', href:'#', event:'panel-change', eventParam: 'ferroNav'},
           ]
         },
         /* 2 */  {
@@ -82,10 +103,9 @@ export default {
       showUserBox : true
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
   },
-  computed  : {},
   methods   : {
     onPanelChange(panel) {
       console.log('onPanelChange', panel);
@@ -95,23 +115,7 @@ export default {
     onTestEvent(data) {
       console.log('onTestEvent', data);
     }
-  },
-  components: {
-    TestFerropolyMap,
-    TestPlayerInfo,
-    MenuBar,
-    TestMenuBar,
-    TestModalError,
-    TestModalInfoYesNo,
-    TestPlayerList,
-    TestPlayerEdit,
-    TestAdminEntry,
-    TestPropertySorting,
-    TestPropertyList,
-    TestInput,
-    TestFerroCard
-  },
-  filters   : {}
+  }
 }
 </script>
 
