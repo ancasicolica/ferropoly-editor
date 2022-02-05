@@ -41,7 +41,8 @@ import {mapFields} from 'vuex-map-fields';
 import {filter} from 'lodash';
 
 export default {
-  name      : 'panel-properties',
+  name      : 'PanelProperties',
+  model     : {},
   props     : {},
   data      : function () {
     return {
@@ -49,7 +50,6 @@ export default {
       filter    : ''      // currently active filter data
     };
   },
-  model     : {},
   created   : function () {
     this.propertyList.on('property-selected', this.propertySelected);
   },
