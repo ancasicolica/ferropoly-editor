@@ -21,8 +21,7 @@ const editor = {
     },
     panel    : {
       current: 'panel-basic'
-    },
-    map: null
+    }
   }),
   getters  : {
     apiError            : state => {

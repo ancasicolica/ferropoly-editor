@@ -41,7 +41,10 @@ import {mapFields} from 'vuex-map-fields';
 import {filter} from 'lodash';
 
 export default {
-  name      : 'PanelProperties',
+  name   : 'PanelProperties',
+  filters: {},
+
+  components: {FerropolyMap, PropertyFilter, PropertyList, PropertySelected},
   model     : {},
   props     : {},
   data      : function () {
@@ -50,15 +53,13 @@ export default {
       filter    : ''      // currently active filter data
     };
   },
-  created   : function () {
-    this.propertyList.on('property-selected', this.propertySelected);
-  },
   computed  : {
-    ...mapFields([
-      'properties.propertyList',
-      'properties.selectedProperty',
-      'editor.map',
-    ]),
+    ...mapFields({
+      propertyList    : 'properties.propertyList',
+      selectedProperty: 'properties.selectedProperty',
+      map             : 'map.instance',
+      bounds          : 'map.bounds'
+    }),
     requestPending() {
       return this.$store.getters.requestPending;
     },
@@ -67,7 +68,7 @@ export default {
     },
     mapOptions() {
       let opts = {
-        zoom: 10
+        zoom: 14
       }
       if (this.selectedProperty) {
         opts.center = this.selectedProperty.getGoogleMapsLocation();
@@ -89,6 +90,9 @@ export default {
       return f.length;
     }
   },
+  created   : function () {
+    this.propertyList.on('property-selected', this.propertySelected);
+  },
   methods   : {
     /**
      * A new map instance was created, we're using this one now
@@ -97,6 +101,8 @@ export default {
       console.log('new Map!', map);
       this.map = map;
       this.$store.dispatch({type: 'applyFilter', gameId: this.gameId});
+      this.$refs.map.setCenter(this.$store.getters.getMapCenter);
+      this.$refs.map.fitBounds(this.bounds);
     },
     /**
      * Usage of a location (the one in the editor) changed
@@ -122,6 +128,7 @@ export default {
      */
     propertySelected(p) {
       this.$store.dispatch({type: 'selectProperty', property: p});
+      console.log('property selected', p);
       this.$refs.map.setFocusOnProperty(p);
     },
     /***
@@ -134,8 +141,7 @@ export default {
       this.propertyList.applyFilter(f);
     }
   },
-  components: {FerropolyMap, PropertyFilter, PropertyList, PropertySelected},
-  filters   : {}
+
 }
 </script>
 

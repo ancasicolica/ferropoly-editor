@@ -27,9 +27,9 @@ const properties = {
     updatePropertiesField
   },
   actions  : {
-    applyFilter({state, commit, rootState}) {
+    applyFilter({state, rootState}) {
       state.propertyList.getProperties().forEach(p => {
-        p.setMap(rootState.editor.map);
+        p.setMap(rootState.map.instance);
       });
     },
     selectProperty({state, commit, rootState}, options) {

@@ -8,6 +8,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import gameplay from './modules/gameplay.js';
 import properties from './modules/properties.js';
+import map from '../../common/store/map';
 import editor from './modules/editor.js';
 import {loadGame, saveGameplay} from '../../lib/adapters/gameplay';
 import {createPricelist} from '../../lib/adapters/pricelist';
@@ -38,7 +39,8 @@ const storeEditor = new Vuex.Store({
   modules  : {
     gameplay,
     properties,
-    editor
+    editor,
+    map
   },
   getters  : {
     getField
@@ -51,8 +53,9 @@ const storeEditor = new Vuex.Store({
      * @param commit
      * @param rootState
      * @param options
+     * @param dispatch
      */
-    fetchData({state, commit, rootState}, options) {
+    fetchData({state, commit, rootState, dispatch}, options) {
       loadGame(options.gameId, (err, res) => {
         if (err) {
           console.error('Error while loading game data', err);
@@ -65,6 +68,9 @@ const storeEditor = new Vuex.Store({
         res.properties.forEach(p => {
           this.state.properties.propertyList.addProperty(new EditorProperty(p));
         });
+        // Properties -> Map settings
+        dispatch('setMapBounds', state.properties.propertyList);
+
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');
         setProp(state, res, 'gameplay.owner.organisatorEmail');
