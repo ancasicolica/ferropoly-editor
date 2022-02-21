@@ -15,7 +15,7 @@
  * @param value
  */
 function setItem(key, value) {
-  console.warn('This function is obsolete!');
+  console.warn('setItem in sessionStorage is obsolete!');
   setString(key, value);
 }
 
@@ -68,6 +68,9 @@ function getItem(key, def = undefined) {
   }
   catch (e) {
     console.warn(e);
+  }
+  if (!data) {
+    return def;
   }
 
   console.log('session storage', data);
