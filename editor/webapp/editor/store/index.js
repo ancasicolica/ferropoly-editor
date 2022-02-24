@@ -69,8 +69,8 @@ const storeEditor = new Vuex.Store({
           this.state.properties.propertyList.addProperty(new EditorProperty(p));
         });
         // Properties -> Map settings
-        dispatch('setMapBounds', state.properties.propertyList);
-
+        dispatch('setMapBounds', state.properties.propertyList.getProperties());
+        console.log('loaded gp', state, res);
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');
         setProp(state, res, 'gameplay.owner.organisatorEmail');

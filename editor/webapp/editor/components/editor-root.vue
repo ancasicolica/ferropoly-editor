@@ -50,9 +50,25 @@ import {mapFields} from 'vuex-map-fields';
 import {last, split} from 'lodash';
 
 export default {
-  name   : 'editor-root',
-  props  : {},
-  data   : function () {
+  name      : 'EditorRoot',
+  components: {
+    MenuBar,
+    PanelBasic,
+    PanelCreate,
+    PanelHouses,
+    PanelPlayer,
+    PanelPricelist,
+    PanelProperties,
+    PanelRent,
+    PanelSorting,
+    ModalError,
+    KeepWaiting,
+    PanelChance
+  },
+
+  model     : {},
+  props     : {},
+  data      : function () {
     return {
       menuElements: [
         /* 0 */ {
@@ -83,14 +99,7 @@ export default {
       }
     };
   },
-  model  : {},
-  created: function () {
-    // Retrieve GameId for this page
-    const elements = split(window.location.pathname, '/');
-    this.gameId    = last(elements);
-  },
-
-  computed  : {
+  computed: {
     ...mapFields([
       'gameId'
     ]),
@@ -128,7 +137,12 @@ export default {
       }
     }
   },
-  methods   : {
+  created   : function () {
+    // Retrieve GameId for this page
+    const elements = split(window.location.pathname, '/');
+    this.gameId    = last(elements);
+  },
+  methods : {
     /**
      * Panel change from menu bar / component
      * @param panel
@@ -137,22 +151,7 @@ export default {
       console.log('onPanelChange', panel);
       this.$store.commit('setPanel', panel);
     }
-  },
-  components: {
-    MenuBar,
-    PanelBasic,
-    PanelCreate,
-    PanelHouses,
-    PanelPlayer,
-    PanelPricelist,
-    PanelProperties,
-    PanelRent,
-    PanelSorting,
-    ModalError,
-    KeepWaiting,
-    PanelChance
-  },
-  filters   : {}
+  }
 }
 </script>
 

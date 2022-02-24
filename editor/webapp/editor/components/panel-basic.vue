@@ -27,15 +27,13 @@ import GameTiming from './basic/game-timing.vue';
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 
 export default {
-  name      : 'panel-basic',
-  props     : {
-  },
+  name      : 'PanelBasic',
+  components: {ContactInfo, GameInfo, GameTiming},
+  mixins    : [FormValidatorMixin],
+  model     : {},
+  props     : {},
   data      : function () {
     return {};
-  },
-  model     : {},
-  created   : function () {
-
   },
   computed  : {
     ...mapFields([
@@ -46,14 +44,13 @@ export default {
       return this.$store.getters.requestPending;
     }
   },
+  created   : function () {
+  },
   methods   : {
     saveAndContinue() {
       this.$store.dispatch({type: 'saveData', targetPanel: 'panel-player'});
     }
-  },
-  components: {ContactInfo, GameInfo, GameTiming},
-  filters   : {},
-  mixins    : [FormValidatorMixin]
+  }
 }
 </script>
 
