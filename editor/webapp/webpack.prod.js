@@ -33,6 +33,11 @@ module.exports = merge(common, {
     preset  : 'normal',
     children: true
   },
+  resolve     : {
+    alias: {
+      vue: 'vue/dist/vue.min.js'
+    }
+  },
   optimization: {
     splitChunks: {
       chunks                : 'all',
