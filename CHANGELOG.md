@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+* Dependency Updates
+* Neues Titelbild "Paradeplatz"
+
 # V3.0.0 19.9.2021
 * Neubau aller Frontend-User-Interfaces: Umstellung User Interface von Angular.js auf vue.js
 * Swiss Topo Landeskarte
