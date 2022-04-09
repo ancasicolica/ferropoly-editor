@@ -601,10 +601,10 @@ function deleteOldGameplays(callback) {
           // This is the code which should run for current (V2) ferropolys
           timeout = moment(gp.scheduling.deleteTs);
         }
-        logger.info('Timeout for ' + gp._id, timeout.toDate());
+        logger.info(`Deletion timeout for "${gp._id}":`, timeout.toDate());
         if (!timeout) {
           // Still no timeout, cancel this one, but still handle others
-          logger.error(new Error('No timeout found for ' + gp._id));
+          logger.error(new Error('No deletion timeout found for ' + gp._id));
           return cb();
         }
 

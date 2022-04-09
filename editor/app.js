@@ -42,6 +42,7 @@ const compression  = require('compression');
 const authStrategy = require('../common/lib/authStrategy')(settings, users);
 const demoUsers    = require('./lib/demoUsers');
 const {v4: uuid}   = require('uuid');
+const gpLib        = require('./lib/gameplayLib');
 
 let initServer = function () {
   cronjobs.init();
@@ -197,6 +198,17 @@ let initServer = function () {
       logger.info('This is free software, and you are welcome to redistribute it');
       logger.info('under certain conditions; see www.ferropoly.ch for details.');
       logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
+
+      // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
+      // CRON task never executes (FERE-9)
+      gpLib.deleteOldGameplays(function (err) {
+        if (err) {
+          logger.error('error while deleting old gameplays', err);
+        } else {
+          logger.info('old gameplays deleted');
+        }
+      });
+
     });
   });
 
