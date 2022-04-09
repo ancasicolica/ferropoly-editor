@@ -20,28 +20,27 @@
 <script>
 
 import FerropolyMap from '../../common/components/ferropoly-map/ferropoly-map.vue';
-import geograph from '../../common/lib/geograph';
+
 
 export default {
-  name      : 'test-ferropoly-map',
+  name      : 'TestFerropolyMap',
+  components: {FerropolyMap},
+  filters   : {},
+  model     : {},
   props     : {},
   data      : function () {
     return {
       mapOptions: {
-        center: geograph.getLastLocation(),
+        center: {lat: 46, lng: 8},
         zoom  : 10
       },
-      showMap: false
+      showMap   : false
     };
   },
-  model     : {},
-  created   : function () {
-    geograph.localize();
-  },
   computed  : {},
-  methods   : {},
-  components: {FerropolyMap},
-  filters   : {}
+  created   : function () {
+  },
+  methods   : {}
 }
 </script>
 

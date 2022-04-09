@@ -38,7 +38,7 @@ import TestPlayerInfo from './test-player-info.vue';
 import TestPlayerList from './test-player-list.vue';
 import TestPlayerEdit from './test-player-edit.vue';
 import TestAdminEntry from './test-admin-entry.vue';
-import {getItem, setItem} from '../../common/lib/sessionStorage';
+import {getItem, setString} from '../../common/lib/sessionStorage';
 import TestFerropolyMap from './test-ferropoly-map.vue';
 import TestPropertySorting from './test-property-sorting.vue';
 import TestPropertyList from './test-property-list.vue';
@@ -110,7 +110,7 @@ export default {
     onPanelChange(panel) {
       console.log('onPanelChange', panel);
       this.panel = panel;
-      setItem('test-panel', panel);
+      setString('test-panel', panel);
     },
     onTestEvent(data) {
       console.log('onTestEvent', data);
