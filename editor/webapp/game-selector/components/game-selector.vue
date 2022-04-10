@@ -6,7 +6,7 @@
 <template lang="pug">
   #game-selector
     modal-agb()
-    menu-bar(:elements="menuElements" show-user-box=true)
+    menu-bar(:elements="menuElements" :elements-right="menuElementsRight" show-user-box=true)
     welcome-bar(:user-name="userName")
     b-container(fluid=true)
       b-row
@@ -24,32 +24,35 @@ import WelcomeBar from './welcome-bar.vue'
 import MyGames from './my-games.vue'
 import ModalAgb from '../../common/components/modal-agb/modal-agb.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
-import {readUserInfo} from "../adapter/userInfo";
+import {readUserInfo} from '../adapter/userInfo';
 
 
 export default {
-  name      : 'game-selector',
-  props     : [],
-  data      : function () {
+  name : 'GameSelector',
+  components: {WelcomeBar, MyGames, ModalAgb, MenuBar},
+  model: {},
+  props: [],
+  data : function () {
     return {
-      gamePlays   : {},
-      menuElements: [
+      gamePlays        : {},
+      menuElements     : [
         {title: 'Neues Spiel', href: '/newgame', hide: false},
         {title: 'Admin Dashboard', href: '/dashboard', hide: true}
       ],
-      userName: '',
-      isAdmin: false
+      menuElementsRight: [
+        {title: 'Hilfe / Info', href: '/about', hide: false}
+      ],
+      userName         : '',
+      isAdmin          : false
     };
-  },
-  model     : {
   },
   created() {
     let self = this;
     // Get the User Info
     readUserInfo((err, info) => {
       if (!err) {
-        self.userName = info.personalData.forename // + ' ' + info.personalData.surname;
-        self.isAdmin = info.roles.admin;
+        self.userName             = info.personalData.forename // + ' ' + info.personalData.surname;
+        self.isAdmin              = info.roles.admin;
         self.menuElements[1].hide = !self.isAdmin;
       }
     });
@@ -63,8 +66,7 @@ export default {
       this.gamePlays            = gps;
       this.menuElements[0].hide = gps.length > 2;
     }
-  },
-  components: {WelcomeBar, MyGames, ModalAgb, MenuBar}
+  }
 }
 </script>
 

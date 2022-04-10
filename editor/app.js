@@ -25,6 +25,7 @@ const gameplay     = require('./routes/gameplay');
 const authtoken    = require('./routes/authtoken');
 const infoRoute    = require('../common/routes/info');
 const debugRoute   = require('../common/routes/debug');
+const aboutRoute   = require('../common/routes/about');
 const passport     = require('passport');
 const session      = require('express-session');
 const MongoStore   = require('connect-mongo');
@@ -106,6 +107,7 @@ let initServer = function () {
   login.init(app, settings);
   authtoken.init(app);
   useradmin.init(app, settings, users);
+  aboutRoute.init(app, settings);
 
   app.use('/', routes);
   newgame.init(app);
@@ -119,7 +121,6 @@ let initServer = function () {
   app.use('/test', require('./routes/test'));
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
-  app.use('/dashboard', require('./routes/dashboard'));
 
 
   var server = require('http').Server(app);

@@ -48,5 +48,9 @@ module.exports = [
     name    : 'dashboard',
     entry   : path.join(__dirname, 'dashboard', 'app.js'),
     htmlFile: 'dashboard.html'
+  }, {
+    name    : 'about',
+    entry   : path.join(__dirname, 'about', 'app.js'),
+    htmlFile: 'about.html'
   }
 ];
