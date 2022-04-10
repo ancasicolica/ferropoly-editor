@@ -121,6 +121,7 @@ let initServer = function () {
   app.use('/test', require('./routes/test'));
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
+  app.use('/dashboard', require('./routes/dashboard'));
 
 
   var server = require('http').Server(app);
