@@ -23,13 +23,15 @@
             b-tr
               b-td Anzahl Orte total
               b-td {{locationSummary.all}}
-            b-tr(v-for="map in locationSummary.maps")
+            b-tr(v-for="map in locationSummary.maps" :key="map.name")
               b-td(v-if="map.enabled") {{map.name}}
               b-td(v-if="map.enabled") {{map.locationNb}}
         b-col
-          h3 Up/Download
+          h4 Download Ortsdaten
           p
             b-button(href='/locations') Alle Orte downloaden
+          h4 Upload Ortsdaten
+          location-uploader
       b-row
         b-col
           h3 Registrierte Spiele
@@ -43,10 +45,11 @@ import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
 import {getNbOfUsers, getGameplays, getLocationSummary} from '../adapter/dashboard';
 import dashboardGpList from './dashboard-gp-list.vue';
 import {DateTime} from 'luxon';
+import LocationUploader from './location-uploader.vue';
 
 export default {
   name      : 'DashboardRoot',
-  components: {MenuBar, dashboardGpList},
+  components: {LocationUploader, MenuBar, dashboardGpList},
   filters   : {},
   mixins    : [],
   model     : {},

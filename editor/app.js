@@ -59,8 +59,9 @@ let initServer = function () {
   // app.use(morgan(':prefix :method :status :remote-addr :url'));
   logging.setExpressLogger(app);
 
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded({extended: false}));
+  app.use(express.urlencoded({limit:'50mb', extended: true }));
 
   // Using compression speeds up the connection (and uses much less data for mobile)
   app.use(compression());
@@ -122,7 +123,7 @@ let initServer = function () {
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
   app.use('/dashboard', require('./routes/dashboard'));
-  app.use('/locations', require('./routes/locations'));
+  require('./routes/locations')(app);
 
 
   const server = require('http').Server(app);

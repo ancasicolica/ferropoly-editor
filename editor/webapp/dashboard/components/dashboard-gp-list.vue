@@ -48,7 +48,11 @@ function formatCountdown(c) {
 }
 
 export default {
-  name      : 'dashboard-gp-list',
+  name      : 'DashboardGpList',
+  components: {},
+  filters   : {formatDate, formatCountdown},
+  mixins    : [],
+  model     : {},
   props     : {
     gameplays: {
       type   : Array,
@@ -72,18 +76,14 @@ export default {
       ]
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
   },
-  computed  : {},
   methods   : {
     emailLink(mail) {
       return `mailto:${mail}`;
     }
-  },
-  components: {},
-  filters   : {formatDate, formatCountdown},
-  mixins    : []
+  }
 }
 </script>
 
