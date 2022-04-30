@@ -14,7 +14,8 @@ const os            = require('os');
 const logger        = require('../../common/lib/logger').getLogger('routes:locations');
 const upload        = require('multer')({dest: os.tmpdir()});
 const async         = require('async');
-
+const {DateTime}    = require('luxon');
+const settings      = require('../settings');
 
 /**
  * Imports a location into the DB. Existing locations with new data get overwritten (return value -1), existing
@@ -64,6 +65,7 @@ const importLocation = function (location, callback) {
       let foundLocationObj = foundLocation.toObject();
       if (!_.isEqual(foundLocationObj.maps, location.maps)) {
         saveNeeded = true;
+        _.assign(foundLocation.maps, location.maps);
       }
 
       if (saveNeeded) {
@@ -103,9 +105,13 @@ router.get('/', function (req, res) {
         return res.send('ERROR: ' + err);
       }
       let resData  = {
-        type: 'LocationDatabase', version: 1, timestamp: new Date(), locations: data
+        type     : 'LocationDatabase',
+        version  : 1,
+        timestamp: new Date(),
+        instance : settings.server.serverId,
+        locations: data
       };
-      let fileName = 'locationDb-' + new Date().getTime().toString(16) + '.json'
+      let fileName = 'locationDb-' + DateTime.now().toFormat('yyLLdd-HHmmss') + '.json'
       res.setHeader('Content-type', 'application/force-download');
       res.setHeader('Content-Disposition', 'attachement; filename="' + fileName + '"');
       return res.send(JSON.stringify(resData));
