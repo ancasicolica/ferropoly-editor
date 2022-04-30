@@ -12,10 +12,27 @@
           h1 Administrator Dashboard
       b-row
         b-col
+          h3 Benutzer
           p Anzahl registrierte Benutzer: {{userNb}}
+        b-col
+          h3 Locations
+          b-table-simple(small)
+            b-tr
+              b-td Maps Version
+              b-td {{locationSummary.version}}
+            b-tr
+              b-td Anzahl Orte total
+              b-td {{locationSummary.all}}
+            b-tr(v-for="map in locationSummary.maps")
+              b-td(v-if="map.enabled") {{map.name}}
+              b-td(v-if="map.enabled") {{map.locationNb}}
+        b-col
+          h3 Up/Download
+          p
+            b-button(href='/locations') Alle Orte downloaden
       b-row
         b-col
-          h2 Registrierte Spiele
+          h3 Registrierte Spiele
           dashboard-gp-list(:gameplays="gameplays")
 
 
@@ -23,20 +40,35 @@
 
 <script>
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
-import {getNbOfUsers, getGameplays} from '../adapter/dashboard';
+import {getNbOfUsers, getGameplays, getLocationSummary} from '../adapter/dashboard';
 import dashboardGpList from './dashboard-gp-list.vue';
 import {DateTime} from 'luxon';
 
 export default {
-  name      : 'dashboard-root',
+  name      : 'DashboardRoot',
+  components: {MenuBar, dashboardGpList},
+  filters   : {},
+  mixins    : [],
+  model     : {},
   props     : {},
   data      : function () {
     return {
       userNb   : 0,
-      gameplays: []
+      gameplays: [],
+      locationSummary: {
+        version: '0',
+        all: 0,
+        maps: [{
+          "map": "sbb",
+          "name": "Ganze Schweiz",
+          "description": "Die grösste Karte des Ferropoly: das ganze Schweizer ÖV-Netz",
+          "enabled": true,
+          "locationNb": 0
+        }]
+      }
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
     let self = this;
 
@@ -60,13 +92,16 @@ export default {
       console.log('gameplays', info);
       self.gameplays = info;
     });
+    getLocationSummary((err, summary) => {
+      if (err) {
+        return console.error('Location summary not read', err);
+      }
+      this.locationSummary = summary;
+      console.log(this.locationSummary);
+    });
 
   },
-  computed  : {},
-  methods   : {},
-  components: {MenuBar, dashboardGpList},
-  filters   : {},
-  mixins    : []
+  methods   : {}
 }
 </script>
 

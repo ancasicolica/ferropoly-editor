@@ -9,21 +9,27 @@ import axios from 'axios';
 function getNbOfUsers(callback) {
   axios.get('/dashboard/users').then(resp => {
     return callback(null, resp.data);
-  })
-    .catch(err => {
-      return callback(err);
-    });
+  }).catch(err => {
+    return callback(err);
+  });
 }
 
 function getGameplays(callback) {
   axios.get('/dashboard/gameplays').then(resp => {
     return callback(null, resp.data.gameplays);
-  })
-    .catch(err => {
-      return callback(err);
-    });
+  }).catch(err => {
+    return callback(err);
+  });
+}
+
+function getLocationSummary(callback) {
+  axios.get('/locations/summary').then(resp => {
+    return callback(null, resp.data);
+  }).catch(err => {
+    return callback(err);
+  });
 }
 
 export {
-  getNbOfUsers, getGameplays
+  getNbOfUsers, getGameplays, getLocationSummary
 };
