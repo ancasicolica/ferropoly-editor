@@ -31,7 +31,7 @@
           p
             b-button(href='/locations') Alle Orte downloaden
           h4 Upload Ortsdaten
-          location-uploader
+          location-uploader(@uploaded="onLocationsUploaded")
       b-row
         b-col
           h3 Registrierte Spiele
@@ -56,17 +56,17 @@ export default {
   props     : {},
   data      : function () {
     return {
-      userNb   : 0,
-      gameplays: [],
+      userNb         : 0,
+      gameplays      : [],
       locationSummary: {
         version: '0',
-        all: 0,
-        maps: [{
-          "map": "sbb",
-          "name": "Ganze Schweiz",
-          "description": "Die grösste Karte des Ferropoly: das ganze Schweizer ÖV-Netz",
-          "enabled": true,
-          "locationNb": 0
+        all    : 0,
+        maps   : [{
+          'map'        : 'sbb',
+          'name'       : 'Ganze Schweiz',
+          'description': 'Die grösste Karte des Ferropoly: das ganze Schweizer ÖV-Netz',
+          'enabled'    : true,
+          'locationNb' : 0
         }]
       }
     };
@@ -88,23 +88,33 @@ export default {
       }
       let today = DateTime.now();
       info.forEach(gp => {
-        let gameDate = DateTime.fromISO(gp.scheduling.gameDate);
-        let delta = gameDate.diff(today, 'days').days;
+        let gameDate            = DateTime.fromISO(gp.scheduling.gameDate);
+        let delta               = gameDate.diff(today, 'days').days;
         gp.scheduling.countdown = Math.ceil(delta);
       })
       console.log('gameplays', info);
       self.gameplays = info;
     });
-    getLocationSummary((err, summary) => {
-      if (err) {
-        return console.error('Location summary not read', err);
-      }
-      this.locationSummary = summary;
-      console.log(this.locationSummary);
-    });
+    this.getLocationSummary();
 
   },
-  methods   : {}
+  methods   : {
+    /**
+     * Gets the summary about the locations
+     */
+    getLocationSummary() {
+      getLocationSummary((err, summary) => {
+        if (err) {
+          return console.error('Location summary not read', err);
+        }
+        this.locationSummary = summary;
+        console.log('Location Summary loaded', this.locationSummary);
+      });
+    },
+    onLocationsUploaded() {
+      this.getLocationSummary();
+    }
+  }
 }
 </script>
 

@@ -82,6 +82,7 @@ export default {
           this.uploadSucceeded = true;
           this.uploadInfo      = res;
         }
+        this.$emit('uploaded');
         this.$forceUpdate();
       })
     }
