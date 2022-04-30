@@ -122,9 +122,10 @@ let initServer = function () {
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
   app.use('/dashboard', require('./routes/dashboard'));
+  app.use('/locations', require('./routes/locations'));
 
 
-  var server = require('http').Server(app);
+  const server = require('http').Server(app);
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
