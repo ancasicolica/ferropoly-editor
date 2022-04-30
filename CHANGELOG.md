@@ -1,7 +1,12 @@
 # Changelog Ferropoly Editor
 
-* Dependency Updates
+# V3.1.0 30.04.2022
+* Karte Bern (Libero 100/101) neu
+* Backup / Upload Orte neu (Admin Funktion)
 * Neues Titelbild "Paradeplatz"
+* "Hilfe/Info" Seite erstellt
+* Bei Programmstart werden die zu löschenden Spiele aus der DB entfernt
+* Dependency Updates
 
 # V3.0.0 19.9.2021
 * Neubau aller Frontend-User-Interfaces: Umstellung User Interface von Angular.js auf vue.js
