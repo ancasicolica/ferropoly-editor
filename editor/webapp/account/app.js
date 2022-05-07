@@ -16,7 +16,7 @@ import AccountRoot from '../common/components/account/account-root.vue';
 
 Vue.use(VueRouter);
 
-Vue.component('account-root', AccountRoot);
+Vue.component('AccountRoot', AccountRoot);
 
 console.log('Webapp initializing');
 
@@ -33,11 +33,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#account-app',
+    data   : {},
     created: function () {
       console.log('created');
-    },
-    data   : {
-
     }
   });
 });

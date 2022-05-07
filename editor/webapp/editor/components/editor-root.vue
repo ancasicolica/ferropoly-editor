@@ -20,7 +20,7 @@
     b-container(fluid=true)
       div(v-if="!dataLoaded")
         keep-waiting
-      div(v-if="dataLoaded")
+      div.mt-2(v-if="dataLoaded")
         panel-basic(v-show="panel==='panel-basic'" @panel-change="onPanelChange")
         panel-create(v-if="panel==='panel-create'")
         panel-houses(v-if="panel==='panel-houses'")

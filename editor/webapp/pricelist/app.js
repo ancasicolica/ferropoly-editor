@@ -17,7 +17,7 @@ import PricelistRoot from './components/pricelist-root.vue';
 
 Vue.use(VueRouter);
 
-Vue.component('pricelist-root', PricelistRoot);
+Vue.component('PricelistRoot', PricelistRoot);
 
 console.log('Webapp initializing');
 
@@ -37,11 +37,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#pricelist-app',
+    data   : {},
     created: function () {
       console.log('created');
-    },
-    data   : {
-
     }
   });
 });

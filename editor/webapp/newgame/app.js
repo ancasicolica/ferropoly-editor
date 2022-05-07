@@ -16,7 +16,7 @@ import NewGameRoot from './components/new-game-root.vue';
 
 Vue.use(VueRouter);
 
-Vue.component('new-game-root', NewGameRoot);
+Vue.component('NewGameRoot', NewGameRoot);
 
 console.log('Webapp initializing');
 
@@ -32,11 +32,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#new-game-app',
+    data   : {},
     created: function () {
       console.log('created');
-    },
-    data   : {
-
     }
   });
 });

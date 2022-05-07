@@ -18,7 +18,7 @@ import EditorRoot from './components/editor-root.vue';
 Vue.use(VueRouter);
 Vue.use(Vuex);
 
-Vue.component('editor-root', EditorRoot);
+Vue.component('EditorRoot', EditorRoot);
 
 console.log('Webapp initializing');
 
@@ -35,6 +35,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#editor-app',
+    data   : {
+      gameId: 'none'
+    },
     created: function () {
       // Retrieve GameId for this page
       const elements = split(window.location.pathname, '/');
@@ -42,9 +45,6 @@ $(document).ready(function () {
       console.log(`created app for ${this.gameId}`);
       this.$store.dispatch({type: 'fetchData', gameId: this.gameId});
     },
-    store  : storeEditor,
-    data   : {
-      gameId: 'none'
-    }
+    store  : storeEditor
   });
 });

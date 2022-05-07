@@ -16,7 +16,7 @@ import AdminsRoot from './components/admins-root.vue';
 
 Vue.use(VueRouter);
 
-Vue.component('admins-root', AdminsRoot);
+Vue.component('AdminsRoot', AdminsRoot);
 
 console.log('Webapp initializing');
 
@@ -34,13 +34,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#admins-app',
+    data   : {},
     created: function () {
-
-
       console.log('created');
-    },
-    data   : {
-
     }
   });
 });

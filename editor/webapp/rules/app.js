@@ -14,11 +14,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 // Import components
 import RulesRoot from './components/rules-root.vue';
 
-
-
 Vue.use(VueRouter);
-
-Vue.component('rules-root', RulesRoot);
+Vue.component('RulesRoot', RulesRoot);
 
 console.log('Webapp initializing');
 
@@ -27,7 +24,6 @@ import '../common/style/app.scss';
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
 
-
 /**
  * Startpoint of the app
  */
@@ -35,9 +31,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#rules-app',
+    data   : {},
     created: function () {
       console.log('created');
-    },
-    data   : {}
+    }
   });
 });

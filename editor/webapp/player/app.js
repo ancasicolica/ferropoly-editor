@@ -16,7 +16,7 @@ import PlayerRoot from './components/player-root.vue';
 
 Vue.use(VueRouter);
 
-Vue.component('player-root', PlayerRoot);
+Vue.component('PlayerRoot', PlayerRoot);
 
 console.log('Webapp initializing');
 
@@ -32,10 +32,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#player-app',
+    data   : {},
     created: function () {
       console.log('created');
-    },
-    data   : {
     }
   });
 });

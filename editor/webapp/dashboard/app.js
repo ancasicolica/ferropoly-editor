@@ -16,7 +16,7 @@ import AdminsRoot from './components/dashboard-root.vue';
 
 Vue.use(VueRouter);
 
-Vue.component('dashboard-root', AdminsRoot);
+Vue.component('DashboardRoot', AdminsRoot);
 
 console.log('Webapp initializing');
 
@@ -34,9 +34,9 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#dashboard-app',
+    data   : {},
     created: function () {
       console.log('created');
-    },
-    data   : {}
+    }
   });
 });

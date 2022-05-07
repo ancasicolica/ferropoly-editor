@@ -26,9 +26,20 @@ import {kebabCase} from 'lodash';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 
 export default {
-  name : 'new-game-name',
+  name : 'NewGameName',
+  components: {ModalError},
+  filters   : {},
+  model: {},
   props: {
-    settings       : Object,
+    settings       : {
+      type   : Object,
+      default: () => {
+        return {
+          selectedId: '',
+          name      : ''
+        };
+      }
+    },
     validationState: Boolean
   },
   data : function () {
@@ -37,7 +48,16 @@ export default {
       gameCreationActive: false
     };
   },
-  model: {},
+  computed  : {
+    /**
+     * State of the ID input Box
+     */
+    idState() {
+      let valid = this.settings.selectedId.length > 5;
+      this.$emit('form-validation', {id: 'gameId', valid});
+      return valid;
+    }
+  },
   /**
    * Creation of the control: get some IDs
    */
@@ -60,16 +80,6 @@ export default {
       })
     });
 
-  },
-  computed  : {
-    /**
-     * State of the ID input Box
-     */
-    idState() {
-      let valid = this.settings.selectedId.length > 5;
-      this.$emit('form-validation', {id: 'gameId', valid});
-      return valid;
-    }
   },
   methods   : {
     onBack: function () {
@@ -119,9 +129,7 @@ export default {
     idFormatter(text) {
       return kebabCase(text);
     }
-  },
-  components: {ModalError},
-  filters   : {}
+  }
 }
 </script>
 
