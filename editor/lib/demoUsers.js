@@ -1,13 +1,13 @@
 /**
- * Demo users for ferropoly
+ * Demo users for Ferropoly
  * Created by kc on 06.01.16.
  */
 
-var async = require('async');
-var users = require('../../common/models/userModel');
-var gravatar = require('../../common/lib/gravatar');
+const async    = require('async');
+const users    = require('../../common/models/userModel');
+const gravatar = require('../../common/lib/gravatar');
 
-var demoUsers = [
+const demoUsers = [
   {forename: 'Heinz', surename: 'Muster', email: 'demo@ferropoly.ch'},
   {forename: 'Nora', surename: 'Reichle', email: 'team1@ferropoly.ch'},
   {forename: 'Marius', surename: 'Garatti', email: 'team2@ferropoly.ch'},
@@ -34,7 +34,11 @@ var demoUsers = [
   {forename: 'Annina', surename: 'Cavegn', email: 'team23@ferropoly.ch'},
   {forename: 'Peter', surename: 'Joss', email: 'team24@ferropoly.ch'},
   {forename: 'Jeanette', surename: 'Meyer', email: 'team25@ferropoly.ch'},
-  {forename: 'Silvan', surename: 'Rümeli', email: 'team26@ferropoly.ch'}
+  {forename: 'Silvan', surename: 'Rümeli', email: 'team26@ferropoly.ch'},
+  {forename: 'Yvonne', surename: 'Eigenmann', email: 'team27@ferropoly.ch'},
+  {forename: 'Urs', surename: 'Alessi', email: 'team28@ferropoly.ch'},
+  {forename: 'Denise', surename: 'Dütschler', email: 'team29@ferropoly.ch'},
+  {forename: 'Cyrill', surename: 'Looser', email: 'team30@ferropoly.ch'}
 ];
 
 module.exports = {
@@ -61,23 +65,22 @@ module.exports = {
    * Updates (creates if needed) the logins for the users.
    * @param callback
    */
-  updateLogins: function(callback) {
+  updateLogins: function (callback) {
     async.each(demoUsers,
-    function(u, cb){
-      users.getUserByMailAddress(u.email, function(err, foundUser) {
-        if (err || foundUser) {
-          return cb(err);
-        }
-        var user = new users.Model();
-        user.personalData.forename = u.forename;
-        user.personalData.surname = u.surename;
-        user.personalData.email = u.email;
-        user.personalData.avatar = gravatar.getUrl(u.email);
-        user.login.verifiedEmail = true;
-        users.updateUser(user,  '12345678', cb);
-      });
-    },
-    callback);
+      function (u, cb) {
+        users.getUserByMailAddress(u.email, function (err, foundUser) {
+          if (err || foundUser) {
+            return cb(err);
+          }
+          var user                   = new users.Model();
+          user.personalData.forename = u.forename;
+          user.personalData.surname  = u.surename;
+          user.personalData.email    = u.email;
+          user.personalData.avatar   = gravatar.getUrl(u.email);
+          user.login.verifiedEmail   = true;
+          users.updateUser(user, '12345678', cb);
+        });
+      },
+      callback);
   }
-
 };
