@@ -17,10 +17,8 @@
     b-container(fluid=true)
       b-row
         rules-viewer(v-if="currentView === 'view'" :rules="rules")
-        rules-editor(v-if="currentView === 'editor'"
-          :rules="rules" :game-id="gameId"
-          @reload-rules="loadRules")
-        rules-info(v-if="currentView === 'info'" :rules="rules")
+        rules-editor(v-if="currentView === 'editor'" @reload-rules="loadRules")
+        rules-info(v-if="currentView === 'info'")
 
 </template>
 
@@ -35,6 +33,8 @@ import ModalError from '../../common/components/modal-error/modal-error.vue';
 import ModalInfoYesNo from '../../common/components/modal-info-yes-no/modal-info-yes-no.vue';
 import {DateTime} from 'luxon';
 import $ from 'jquery';
+import {mapFields} from 'vuex-map-fields';
+import {getItem, removeItem} from '../../common/lib/localStorage';
 
 export default {
   name      : 'RulesRoot',
@@ -43,27 +43,23 @@ export default {
   model     : {},
   props     : {},
   data      : function () {
-    return {
-      menuElements: [
-        // take care of the Id's as we're accessing them directly
-        /* 0 */  {title: 'Spielregeln', href: '#', event: 'rules-view'},
-        /* 1 */  {title: 'Editor', href: '#', event: 'rules-editor'},
-        /* 2 */  {title: 'Infos / Hilfe', href: '#', event: 'rules-info'},
-        /* 3 */  {title: 'Drucken', href: '#', event: 'rules-print', hide: false}
-      ],
-      currentView : 'view',
-      rules       : {text: 'Bitte warten...'},
-      gameId      : ''
-    };
+    return {};
   },
-  computed  : {},
+  computed  : {
+    ...mapFields({
+      menuElements: 'menuElements',
+      currentView : 'currentView',
+      rules       : 'rules',
+      gameId      : 'gameId',
+      editAllowed : 'editAllowed'
+    }),
+  },
   created   : function () {
     let self       = this;
     // Retrieve GameId for this page
     const elements = split(window.location.pathname, '/');
     self.gameId    = last(elements);
     $(document).ready(function () {
-      console.log('doc ready');
       self.loadRules();
     });
   },
@@ -78,11 +74,14 @@ export default {
           this.$refs['error'].showError('Fehler', 'Die Regeln konnten nicht geladen werden, folgende Meldung wurde gesendet:', err);
           return;
         }
-        self.rules     = data;
-        let savedRules = localStorage.getItem(self.gameId + '-rules-text');
+        console.log('Rules read', data);
+        self.rules       = data.rules;
+        self.editAllowed = data.editAllowed;
+        self.menuElements[1].hide = !data.editAllowed;
+        let savedRules   = getItem(self.gameId + '-rules-text');
         if (savedRules && (savedRules !== self.rules.text)) {
           console.log('Local saved rules are different');
-          let oldTs       = DateTime.fromISO(localStorage.getItem(self.gameId + '-rules-ts'));
+          let oldTs       = DateTime.fromISO(getItem(self.gameId + '-rules-ts'));
           let lastElement = last(self.rules.changelog);
           let newTs       = DateTime.fromISO(lastElement.ts);
           this.$refs['info'].showInfo('Spielregeln',
@@ -96,15 +95,15 @@ export default {
      */
     loadLocallyStoredData() {
       console.info('use locally data');
-      this.rules.text = localStorage.getItem(this.gameId + '-rules-text');
+      this.rules.text = getItem(this.gameId + '-rules-text');
     },
     /**
      * Remove the local storage entry, undo the unsaved work
      */
     discardLocallyStoredData() {
       console.info('use db data');
-      localStorage.removeItem(this.gameId + '-rules-text');
-      localStorage.removeItem(this.gameId + '-rules-ts');
+      removeItem(this.gameId + '-rules-text');
+      removeItem(this.gameId + '-rules-ts');
     },
     showRules() {
       this.currentView = 'view';

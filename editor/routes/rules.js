@@ -8,6 +8,8 @@ const router        = express.Router();
 const gameplayModel = require('../../common/models/gameplayModel');
 const logger        = require('../../common/lib/logger').getLogger('routes:rules');
 const path          = require('path');
+const _             = require('lodash');
+const { DateTime } = require("luxon");
 
 /* GET Page with rules. */
 router.get('/:gameId', function (req, res) {
@@ -21,8 +23,11 @@ router.get('/data/:gameId', function (req, res) {
     if (err) {
       return res.status(500).send({message: err.message});
     }
-    let rules = gp.toObject().rules;
-    res.send(rules);
+    let gameStart =  _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
+    let now = DateTime.now();
+    const editAllowed = now < gameStart;
+    let rules         = gp.toObject().rules;
+    res.send({editAllowed, rules});
   });
 });
 
