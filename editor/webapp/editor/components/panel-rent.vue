@@ -50,6 +50,12 @@
             :state="$store.getters.debtInterestValid"
           )
       b-col
+        div(v-if="!toFewInterestRounds")
+          b-alert(show variant="success") Im Spiel wird es {{nbInterestRounds}} Zinsrunden (plus {{interestCyclesAtEndOfGame}} am Spielende) geben.
+            p Das ist ein guter Wert, empfohlen sind mindestens 10 Runden.
+        div(v-if="toFewInterestRounds")
+          b-alert(v-model="toFewInterestRounds" variant="warning") Die Anzahl Zinsrunden ist mit {{nbInterestRounds}} tief angesetzt, es lohnt sich kaum Häuser zu bauen. Empfohlen sind mindestens 10 Zinsrunden
+            p Lösung: entweder die Dauer einer Spielrunde verkürzen oder die Spieldauer verlängern.
         b-button(
           variant="primary"
           :disabled="requestPending || !rentFormIsValid"
@@ -65,14 +71,14 @@ import InputNumeric from '../../common/components/form-controls/input-numeric.vu
 import FormSelector from '../../common/components/form-controls/form-selector.vue';
 
 export default {
-  name      : 'panel-rent',
-  props     : {
-  },
+  name      : 'PanelRent',
+  components: {InputNumeric, FerroCard, FormSelector},
+  filters   : {},
+  mixins    : [FormValidatorMixin],
+  model     : {},
+  props     : {},
   data      : function () {
     return {};
-  },
-  model     : {},
-  created   : function () {
   },
   computed  : {
     ...mapFields([
@@ -82,6 +88,12 @@ export default {
       'gameplay.gameParams.interestCyclesAtEndOfGame',
       'gameplay.gameParams.debtInterest',
     ]),
+    toFewInterestRounds() {
+      return this.nbInterestRounds < 10;
+    },
+    nbInterestRounds() {
+      return this.$store.getters.numberOfInterestRounds;
+    },
     requestPending() {
       return this.$store.getters.requestPending;
     },
@@ -125,6 +137,8 @@ export default {
       ]
     }
   },
+  created   : function () {
+  },
   methods   : {
     saveAndContinue() {
       console.log('save and continue');
@@ -135,9 +149,6 @@ export default {
       this.$store.commit('setRentFormValid', this.isFormValid());
     }
   },
-  components: {InputNumeric, FerroCard, FormSelector},
-  filters   : {},
-  mixins    : [FormValidatorMixin]
 }
 </script>
 
