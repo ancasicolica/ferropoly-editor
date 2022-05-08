@@ -2,24 +2,29 @@
   Setting the price list
 -->
 <template lang="pug">
-#new-game-pricelist
-  h2 Preisliste
-  p Wie gut kennt ihr das Spiel schon? Die Gestaltung der Preisliste hat einen grossen Einfluss auf den Spielverlauf. Wähle hier die Variante aus, welche am Besten zu Euch passt, Du kannst später die Einstellungen noch nach Belieben verändern.
-  b-form-radio-group.mb-2(v-model="settings.presets", :options="priceListOptions" stacked)
-  h2 Zufallspreisliste
-  p Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
-  b-form-select(v-model="settings.random", :options="randomPropertyOptions")
-  b-button.mt-2(@click="onBack()") Zurück
-  b-button.mt-2.ml-2(variant="primary" @click="onNext()") Weiter
+  #new-game-pricelist
+    h2 Preisliste
+    p Wie gut kennt ihr das Spiel schon? Die Gestaltung der Preisliste hat einen grossen Einfluss auf den Spielverlauf. Wähle hier die Variante aus, welche am Besten zu Euch passt, Du kannst später die Einstellungen noch nach Belieben verändern.
+    b-form-radio-group.mb-2(v-model="presets", :options="priceListOptions" stacked)
+    h2 Zufallspreisliste
+    p Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
+    b-form-select(v-model="randomNb", :options="randomPropertyOptions")
+    b-button.mt-2(@click="onBack()") Zurück
+    b-button.mt-2.ml-2(variant="primary" @click="onNext()") Weiter
 </template>
 
 <script>
+import {mapFields} from 'vuex-map-fields';
+
 export default {
-  name      : "new-game-pricelist",
-  props     : {settings: Object},
+  name      : 'NewGamePricelist',
+  components: {},
+  filters   : {},
+  model     : {},
+  props     : {},
   data      : function () {
     return {
-      priceListOptions: [
+      priceListOptions     : [
         {
           html : '<b>Einfach</b>: Die Preisspanne zwischen dem günstigsten und teuersten Ort ist klein. Es kommt im Spiel mehr darauf an wie viele Orte man kauft und weniger welche es sind. Diese Art von Preisliste ist gut geeignet für wenig erfahrene Spieler.<br/>&nbsp;',
           value: 'easy',
@@ -35,9 +40,10 @@ export default {
       ],
       randomPropertyOptions: [
         {
-          text: 'Keine Orte der Preisliste zuweisen',
-          value : 0
+          text : 'Keine Orte der Preisliste zuweisen',
+          value: 0
         },
+        {text: '40', value: 40},
         {text: '60', value: 60},
         {text: '80', value: 80},
         {text: '100', value: 100},
@@ -47,7 +53,12 @@ export default {
       ]
     };
   },
-  model     : {},
+  computed  : {
+    ...mapFields({
+      presets : 'gameSettings.presets',
+      randomNb: 'gameSettings.random'
+    }),
+  },
   methods   : {
     onNext: function () {
       this.$emit('change-view', 'name')
@@ -55,9 +66,7 @@ export default {
     onBack: function () {
       this.$emit('change-view', 'date')
     }
-  },
-  components: {},
-  filters   : {}
+  }
 }
 </script>
 

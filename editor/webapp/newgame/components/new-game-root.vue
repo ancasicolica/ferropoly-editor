@@ -2,18 +2,16 @@
   Root view for a new game
 -->
 <template lang="pug">
-#new-game
-  menu-bar(show-user-box=false help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/" )
-  b-container(fluid=true)
-    b-row
-      b-col
-        h1 Neues Spiel anlegen
-    new-game-map(v-if="currentView === 'map'" :settings="gameSettings" @change-view="onChangeView"
-      @form-validation="onFormValidation")
-    new-game-date(v-if="currentView === 'date'" :settings="gameSettings" @change-view="onChangeView")
-    new-game-pricelist(v-if="currentView === 'pricelist'" :settings="gameSettings" @change-view="onChangeView")
-    new-game-name(v-if="currentView === 'name'" :settings="gameSettings" :validation-state="validationState"
-      @change-view="onChangeView" @form-validation="onFormValidation")
+  #new-game
+    menu-bar(show-user-box=false help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/" )
+    b-container(fluid=true)
+      b-row
+        b-col
+          h1 Neues Spiel anlegen
+      new-game-map(v-if="currentView === 'map'" @change-view="onChangeView" @form-validation="onFormValidation")
+      new-game-date(v-if="currentView === 'date'"  @change-view="onChangeView")
+      new-game-pricelist(v-if="currentView === 'pricelist'"  @change-view="onChangeView")
+      new-game-name(v-if="currentView === 'name'"  @change-view="onChangeView" @form-validation="onFormValidation")
 </template>
 
 
@@ -23,31 +21,26 @@ import NewGameMap from './new-game-map.vue'
 import NewGameName from './new-game-name.vue'
 import NewGamePricelist from './new-game-pricelist.vue'
 import MenuBar from '../../common/components/menu-bar/menu-bar.vue'
-import {getDefaultMap} from '../../common/lib/mapTypes'
-import {DateTime} from 'luxon';
 import {forOwn} from 'lodash';
+import {mapFields} from 'vuex-map-fields';
 
 export default {
-  name : 'new-game-root',
-  props: {},
-  data : function () {
-    return {
-      currentView     : 'map',
-      gameSettings    : {
-        name      : 'Ferropoly Spiel',
-        map       : getDefaultMap(),
-        date      : DateTime.now().plus({days: 7}).toISODate(),
-        presets   : 'moderate',
-        random    : 0,
-        selectedId: ''
-      },
-      validationState : true,
-      validationObject: {}
-    };
+  name      : 'NewGameRoot',
+  components: {MenuBar, NewGameDate, NewGameMap, NewGameName, NewGamePricelist},
+  filters   : {},
+  model     : {},
+  props     : {},
+  data      : function () {
+    return {};
   },
-  model: {},
-  created: function() {
-
+  computed  : {
+    ...mapFields({
+      currentView     : 'currentView',
+      validationState : 'validationState',
+      validationObject: 'validationObject',
+    }),
+  },
+  created   : function () {
   },
   methods   : {
     /**
@@ -75,9 +68,7 @@ export default {
       self.validationState = dataSetValid;
       // console.log('validated', self.validationState);
     }
-  },
-  components: {MenuBar, NewGameDate, NewGameMap, NewGameName, NewGamePricelist},
-  filters   : {}
+  }
 }
 </script>
 

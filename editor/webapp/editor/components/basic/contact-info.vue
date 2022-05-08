@@ -9,7 +9,7 @@
       input-text(
         v-model="gamename"
         label="Spielname"
-        feedback="Die Eingabe muss zwischen 3 und 60 Zeichen lang sein."
+        feedback="Die Eingabe muss zwischen 4 und 60 Zeichen lang sein."
         :state="$store.getters.gamenameValid"
       )
       input-text(
@@ -51,13 +51,14 @@ import InputPhone from '../../../common/components/form-controls/input-phone.vue
 import FormValidatorMixin from '../../../common/components/form-controls/formValidatorMixin';
 
 export default {
-  name      : 'contact-info',
+  name      : 'ContactInfo',
+  components: {FerroCard, InputText, InputEmail, InputPhone},
+  filters   : {},
+  mixins    : [FormValidatorMixin],
+  model     : {},
   props     : {},
   data      : function () {
     return {};
-  },
-  model     : {},
-  created   : function () {
   },
   computed  : {
     ...mapFields([
@@ -68,10 +69,9 @@ export default {
       'gameplay.owner.organisatorPhone'
     ])
   },
+  created   : function () {
+  },
   methods   : {},
-  components: {FerroCard, InputText, InputEmail, InputPhone},
-  filters   : {},
-  mixins    : [FormValidatorMixin]
 }
 </script>
 

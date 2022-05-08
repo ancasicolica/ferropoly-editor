@@ -6,6 +6,7 @@ import Vue from 'vue';
 import {BootstrapVue} from 'bootstrap-vue';
 import $ from 'jquery';
 import VueRouter from 'vue-router';
+import store from './store';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css';
@@ -35,6 +36,7 @@ $(document).ready(function () {
     data   : {},
     created: function () {
       console.log('created');
-    }
+    },
+    store  : store
   });
 });
