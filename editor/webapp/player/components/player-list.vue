@@ -15,7 +15,10 @@
 import PlayerInfo from './player-info.vue';
 
 export default {
-  name      : 'player-list',
+  name      : 'PlayerList',
+  components: {PlayerInfo},
+  filters   : {},
+  model     : {},
   props     : {
     players: {
       type   : Array,
@@ -31,22 +34,19 @@ export default {
   data      : function () {
     return {};
   },
-  model     : {},
-  created   : function () {
-  },
   computed  : {
     title() {
       return `Teilnehmende Gruppen (${this.players.length} / max 20)`
     }
+  },
+  created   : function () {
   },
   methods   : {
     onClick(p) {
       console.log('player', p);
       this.$emit('player-selected', p);
     }
-  },
-  components: {PlayerInfo},
-  filters   : {}
+  }
 }
 </script>
 

@@ -98,7 +98,7 @@
           b-icon-cloud-upload
         b-button.my-1.ml-2(@click="confirmPlayer()"  v-if="playerToBeConfirmed" :disabled="!isSubmitButtonEnabled") Gruppe bestätigen&nbsp;
           b-icon-person-check-fill
-        b-button.my-1.ml-2(@click="deletePlayer()" variant="danger" :disabled="!playerSet") Gruppe löschen&nbsp;
+        b-button.my-1.ml-2(@click="deletePlayer()" variant="danger" :disabled="editDisabled") Gruppe löschen&nbsp;
           b-icon-trash
 </template>
 
@@ -131,7 +131,10 @@ const emptyPlayer = {
   }
 };
 export default {
-  name      : 'player-edit',
+  name      : 'PlayerEdit',
+  components: {ModalInfoYesNo, BIconTrash, BIconCloudUpload, BIconPersonCheckFill},
+  filters   : {},
+  model     : {},
   props     : {
     emailRequired: {
       type   : Boolean,
@@ -144,9 +147,6 @@ export default {
       playerBackup: {},
       player      : emptyPlayer,
     };
-  },
-  model     : {},
-  created   : function () {
   },
   computed  : {
     playerToBeConfirmed() {
@@ -219,11 +219,16 @@ export default {
      * Enabling the SAVE Button
      */
     isSubmitButtonEnabled() {
-      if (!this.playerSet) {
-        return null;
+      if (this.editDisabled) {
+        return false;
       }
       return (checkPlayer(this.player, this.emailRequired));
+    },
+    editDisabled() {
+      return (!this.playerSet || !this.$store.getters.editAllowed);
     }
+  },
+  created   : function () {
   },
   methods   : {
     /**
@@ -297,9 +302,7 @@ export default {
       this.player.data.confirmed = true; // Temporary! Truth lies in the Server DB. Will be reloaded afterwards
       this.$emit('confirm-player', this.player);
     }
-  },
-  components: {ModalInfoYesNo, BIconTrash, BIconCloudUpload, BIconPersonCheckFill},
-  filters   : {}
+  }
 }
 </script>
 

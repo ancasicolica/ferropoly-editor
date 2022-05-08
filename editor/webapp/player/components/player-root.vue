@@ -5,21 +5,21 @@
   Created: 01.05.21
 -->
 <template lang="pug">
-#player-root
-  modal-error(ref="err1")
-  menu-bar(:elements="menuElements" show-user-box=true
-    @add-new-team="addNewTeam"
-    help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/player/")
-  b-container(fluid=true)
-    b-row.mt-1
-      b-col(sm="12" md="4" lg="5" xl="6")
-        player-list(:players="teams" @player-selected="playerSelected")
-      b-col(sm="12" md="8" lg="7" xl="6")
-        player-edit(ref="edit"
-          :email-required="emailRequired"
-          @save-player="savePlayer",
-          @delete-player="deletePlayer",
-          @confirm-player="confirmPlayer")
+  #player-root
+    modal-error(ref="err1")
+    menu-bar(:elements="menuElements" show-user-box=true
+      @add-new-team="addNewTeam"
+      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/player/")
+    b-container(fluid=true)
+      b-row.mt-1
+        b-col(sm="12" md="4" lg="5" xl="6")
+          player-list(:players="teams" @player-selected="playerSelected")
+        b-col(sm="12" md="8" lg="7" xl="6")
+          player-edit(ref="edit"
+            :email-required="emailRequired"
+            @save-player="savePlayer",
+            @delete-player="deletePlayer",
+            @confirm-player="confirmPlayer")
 </template>
 
 <script>
@@ -31,31 +31,35 @@ import {getTeams, createTeam, storeTeam, deleteTeam, confirmTeam} from '../../li
 import {getGameInfo} from '../../lib/adapters/gameplay'
 import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
-import {DateTime} from 'luxon';
+import {mapFields} from 'vuex-map-fields';
 
 export default {
-  name : 'player-root',
-  props: {},
-  data : function () {
-    return {
-      menuElements: [
-        // take care of the Id's as we're accessing them directly
-        /* 0 */  {title: 'Gruppe hinzufügen', href: '#', event: 'add-new-team', hide: true}
-      ],
-      gameId      : 'none',
-      gameplay    : {
-        scheduling: {
-          gameDate: DateTime.now()
-        }
-      },
-      teams       : []
-    };
+  name      : 'PlayerRoot',
+  filters   : {},
+  components: {MenuBar, PlayerList, PlayerEdit, ModalError},
+  model     : {},
+  props     : {},
+  data      : function () {
+    return {};
   },
-  model: {},
+  computed  : {
+    ...mapFields({
+      gameId  : 'gameId',
+      gameplay: 'gameplay',
+      teams   : 'teams',
+      menuElements   : 'menuElements',
+    }),
+    /***
+     * Returns true when an email address is required for the game
+     */
+    emailRequired() {
+      return (get(this.gameplay, 'mobile.level', 0) >= 5);
+    }
+  },
   /**
    * Initialization after creation
    */
-  created   : function () {
+  created: function () {
     let self       = this;
     // Retrieve GameId for this page
     const elements = split(window.location.pathname, '/');
@@ -67,6 +71,7 @@ export default {
           self.showError(`Das Spiel mit der ID ${self.gameId} konnte nicht gefunden werden`)
           return;
         }
+        console.log('GameInfo', info);
         self.gameplay = info;
         getTeams(self.gameId, (err, teams) => {
           if (err) {
@@ -80,24 +85,14 @@ export default {
       });
     });
   },
-  computed  : {
-    /***
-     * Returns true when an email address is required for the game
-     */
-    emailRequired() {
-      return (get(this.gameplay, 'mobile.level', 0) >= 5);
-    }
-  },
-  methods   : {
+  methods: {
     /**
      * Updates the menu bar: new teams allowed?
      */
     updateNewTeamsAllowed() {
-      let now                   = DateTime.now().startOf('day');
-      let start                 = DateTime.fromISO(this.gameplay.scheduling.gameDate).startOf('day');
-      let isBefore              = now < start;
+      let editAllowed           = this.$store.getters.editAllowed;
       let numberOfTeamsOk       = this.teams.length < 20;
-      this.menuElements[0].hide = !(isBefore && numberOfTeamsOk);
+      this.menuElements[0].hide = !(editAllowed && numberOfTeamsOk);
     },
     /**
      * Adds a new team
@@ -163,7 +158,7 @@ export default {
      */
     confirmPlayer(player) {
       let self = this;
-      confirmTeam(player,  (err, info) => {
+      confirmTeam(player, (err, info) => {
         if (err) {
           console.error(err);
           self.showError('Das Team konnte nicht bestätigt werden. Fehlermeldung:', err);
@@ -174,8 +169,7 @@ export default {
         self.savePlayer(player);
         if (info.mailSent) {
           self.makeToast('Team bestätigt, Email wurde versendet', 'success');
-        }
-        else {
+        } else {
           self.makeToast('Team bestätigt, Email konnte nicht versendet werden', 'warning');
         }
       });
@@ -185,9 +179,9 @@ export default {
      */
     makeToast(info, variant = null) {
       this.$bvToast.toast(info, {
-        title: 'Ferropoly',
+        title  : 'Ferropoly',
         variant: variant,
-        solid: true
+        solid  : true
       })
     },
     /**
@@ -202,9 +196,7 @@ export default {
         message
       });
     }
-  },
-  components: {MenuBar, PlayerList, PlayerEdit, ModalError},
-  filters   : {}
+  }
 }
 </script>
 
