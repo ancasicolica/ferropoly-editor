@@ -20,4 +20,9 @@ Die Tests für die Webapp sind in jeder App separat beschrieben:
 * [Pricelist App](../editor/webapp/pricelist/test/readme.md): zeigt die Preisliste an
 * [Rules App](../editor/webapp/rules/test/readme.md): Spielregel-Editor
 
+## Test kompletter Ablauf
 
+1. Spiel erstellen mit [Editor App](../editor/webapp/editor/test/readme.md)
+2. Im _Ferropoly Spiel_ Team anmelden, muss dann in [Player App](../editor/webapp/player/test/readme.md) bestätigt werden
+3. Im _Ferropoly Spiel_ dürfen zu diesem Zeitpunkt weder eine Spielregel noch eine Preisliste zu finden sein.
+4. Spiel in [Pricelist App](../editor/webapp/pricelist/test/readme.md) finalisieren. Die Spielregeln und Preisliste sollten nun auch im _Ferropoly Spiel_  zu sehen sein.
