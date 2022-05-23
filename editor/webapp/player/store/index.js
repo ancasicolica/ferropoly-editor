@@ -7,6 +7,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {getField, updateField} from 'vuex-map-fields';
 import {DateTime} from 'luxon';
+import {get} from 'lodash';
+
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
@@ -35,7 +37,8 @@ const store = new Vuex.Store({
      */
     editAllowed(state) {
       let now   = DateTime.now().startOf('day');
-      let limit = DateTime.fromISO(state.gameplay.scheduling.gameStartTs).minus({hours: 1});
+      let limit = DateTime.fromISO(get(state, 'gameplay.scheduling.gameStartTs', get(state, 'gameplay.scheduling.gameDate', '2000-01-01T00:00:00'))).minus({hours: 1});
+      console.log('EditAllowed', now, limit);
       return (!state.gameplay.internal.isDemo && (now < limit));
     }
   },
