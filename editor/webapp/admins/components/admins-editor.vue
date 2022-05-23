@@ -8,11 +8,11 @@
   modal-error(title="Fehler" ref='admin-error')
   b-card
     b-card-text
-      admin-entry(title="Spielleiter 1" :entry="admins[0]")
-      admin-entry(title="Spielleiter 2" :entry="admins[1]"  )
-      admin-entry(title="Spielleiter 3" :entry="admins[2]" )
+      admin-entry(title="Spielleiter*in 1" :entry="admins[0]")
+      admin-entry(title="Spielleiter*in 2" :entry="admins[1]"  )
+      admin-entry(title="Spielleiter*in 3" :entry="admins[2]" )
       b-button.my-1(@click="saveAdmins") Speichern
-      b-alert( variant="warning" :show="showNotAllHaveLoginsAlert") Noch nicht alle Spielleiter haben ein Ferropoly-Login. Damit sie am Spieltag mithelfen können, müssen sie sich zuerst noch anmelden. Bitte informiere die entsprechende(n) Person(en) entsprechend.
+      b-alert( variant="warning" :show="showNotAllHaveLoginsAlert") Noch nicht alle Spielleiter*innen haben ein Ferropoly-Login. Damit sie am Spieltag mithelfen können, müssen sie sich zuerst noch anmelden. Bitte informiere die entsprechende(n) Person(en).
 
 </template>
 
@@ -22,7 +22,10 @@ import AdminEntry from './admin-entry.vue';
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 
 export default {
-  name      : 'admins-editor',
+  name      : 'AdminsEditor',
+  components: {AdminEntry, ModalError},
+  filters   : {},
+  model     : {},
   props     : {
     gameId: {
       type   : String,
@@ -39,11 +42,10 @@ export default {
       showNotAllHaveLoginsAlert: false
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
     this.getAdmins();
   },
-  computed  : {},
   methods   : {
     /**
      * Creates a Toast message
@@ -98,9 +100,7 @@ export default {
         });
       });
     }
-  },
-  components: {AdminEntry, ModalError},
-  filters   : {}
+  }
 }
 </script>
 

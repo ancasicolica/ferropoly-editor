@@ -7,26 +7,15 @@
 #admins-info
   b-card(title="Info")
     b-card-text
-      p Mit zusätzlichen Spielleitern kannst Du dir die Arbeit in der Zentrale auf verschiedene Personen aufteilen: jeder Spielleiter hat während des Spiels vollen Zugriff auf das Spielgeschehen und kann so für die Teams Orte kaufen und Häuser bauen.
-      p Die hier definierten Spielleiter können jedoch die Preisliste nicht modifizieren und auch keine Teams hinzufügen, das ist Dir als Organisator vorbehalten.
-      p Es sind maximal drei weitere Spielleiter möglich. Gib deren Email-Adresse in die Textfelder ein und speichere diese. Für den Zugriff auf das Spiel müssen die Spielleiter sich im Ferropoly mit derselben Email-Adresse registriert haben.
+      p Mit zusätzlichen Spielleiter*innen kannst Du dir die Arbeit in der Zentrale auf verschiedene Personen aufteilen: jeder Spielleiter*in hat während des Spiels vollen Zugriff auf das Spielgeschehen und kann so für die Gruppen Orte kaufen und Häuser bauen.
+      p Die hier definierten Spielleiter*innen können jedoch die Preisliste nicht modifizieren und auch keine Gruppen hinzufügen, das ist Dir als Organisator*in vorbehalten.
+      p Es sind maximal drei weitere Spielleiter*innen möglich. Gib deren Email-Adresse in die Textfelder ein und speichere diese. Für den Zugriff auf das Spiel müssen sich die Spielleiter*innen im Ferropoly mit derselben Email-Adresse registriert haben.
 
 </template>
 
 <script>
 export default {
-  name      : 'admins-info',
-  props     : {},
-  data      : function () {
-    return {};
-  },
-  model     : {},
-  created   : function () {
-  },
-  computed  : {},
-  methods   : {},
-  components: {},
-  filters   : {}
+  name      : 'AdminsInfo'
 }
 </script>
 

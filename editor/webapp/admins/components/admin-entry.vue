@@ -29,7 +29,10 @@ import {checkEmail} from '../../common/lib/playerValidator'
 import {BIconCheckCircle, BIconExclamationCircle} from 'bootstrap-vue';
 
 export default {
-  name      : 'admin-entry',
+  name      : 'AdminEntry',
+  components: {BIconCheckCircle, BIconExclamationCircle},
+  filters   : {},
+  model     : {},
   props     : {
     title: {
       type   : String,
@@ -46,9 +49,6 @@ export default {
   data      : function () {
     return {};
   },
-  model     : {},
-  created   : function () {
-  },
   computed  : {
     emailState() {
       if (this.entry.email.length < 3) {
@@ -57,9 +57,9 @@ export default {
       return checkEmail(this.entry.email);
     }
   },
-  methods   : {},
-  components: {BIconCheckCircle, BIconExclamationCircle},
-  filters   : {}
+  created   : function () {
+  },
+  methods   : {}
 }
 </script>
 
