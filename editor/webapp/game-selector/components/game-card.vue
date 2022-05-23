@@ -36,10 +36,10 @@
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('internal.finalized')" :href="url.rules") Spielregeln &nbsp;
             b-icon-pencil
 
-          b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editPlayer") Spieler &nbsp;
+          b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editPlayer") Gruppen &nbsp;
             b-icon-people
 
-          b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter
+          b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter*innen
             b-icon-person
 
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')" v-on:click="deleteGameplay") Löschen
@@ -54,7 +54,9 @@ import {getMapName} from '../../common/lib/mapTypes'
 import FerroCard from '../../common/components/ferro-card/ferro-card.vue'
 
 export default {
-  name      : 'game-card',
+  name      : 'GameCard',
+  components: {FerroCard, BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil},
+  model     : {},
   props     : {
     gameplay: {
       type   : Object,
@@ -75,7 +77,6 @@ export default {
       }
     };
   },
-  model     : {},
   methods   : {
     /**
      * Gameplay shall be deleted: raise an event
@@ -99,8 +100,7 @@ export default {
       console.log('getMapName', this.getGpProperty('internal.map'), getMapName(this.getGpProperty('internal.map')));
       return getMapName(this.getGpProperty('internal.map'));
     }
-  },
-  components: {FerroCard, BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil}
+  }
 }
 </script>
 

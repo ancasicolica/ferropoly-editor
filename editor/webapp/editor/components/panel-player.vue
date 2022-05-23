@@ -5,15 +5,15 @@
 -->
 <template lang="pug">
   #panel-player
-    h1 Ferropoly-Spielerzugang
+    h1 Ferropoly-Gruppenzugang
     div
       b-row
         b-col(sm="12" md="12" lg="8" xl="8")
           ferro-card(title="Online Anmeldung")
-            p Spieler mit einem Login auf die Ferropoly-App können sich online für das Spiel anmelden (
+            p Spieler*innen mit einem Login auf die Ferropoly-App können ihre Gruppe online für das Spiel anmelden (
               a(:href="gameUrl") Link &nbsp;
                 b-icon-box-arrow-up-right
-              | ). Du bekommst bei jeder neuen Anmeldung ein Mail zugeschickt. Diese Anmeldung muss unter "Spieler" dann noch bestätigt werden. Lege hier den Anmeldeschluss und den auf der Anmeldeseite angezeigten Text fest.
+              | ). Du bekommst bei jeder neuen Anmeldung ein Mail zugeschickt. Diese Anmeldung muss unter "Gruppen" dann noch bestätigt werden. Lege hier den Anmeldeschluss und den auf der Anmeldeseite angezeigten Text fest.
             input-date-time(
               v-model="possibleUntil"
               label="Anmeldeschluss"
@@ -28,10 +28,10 @@
           ferro-card(title="Spielform")
             b-form-radio(v-model="level" value="0")
               b Zentrale ohne Mobile-Unterstützung: &nbsp;
-              span Die Spieler können die Preisliste ohne Login einsehen, während dem Spiel bleibt das Smartphone aber ausgeschaltet. Für alle Aktionen muss die Zentrale angerufen werden.
+              span Die Gruppen können die Preisliste ohne Login einsehen, während dem Spiel bleibt das Smartphone aber ausgeschaltet. Für alle Aktionen muss die Zentrale angerufen werden.
             b-form-radio(v-model="level" value="5")
               b Zentrale, Zugriff auf eigene Daten zulassen: &nbsp;
-              span Die Teams haben per Smartphone Zugriff auf ihre eigenen Informationen, können aber so weder Orte noch Häuser kaufen. Dies erfolgt telefonisch über die Zentrale.
+              span Die Gruppen haben per Smartphone Zugriff auf ihre eigenen Informationen, können aber so weder Orte noch Häuser kaufen. Dies erfolgt telefonisch über die Zentrale.
           b-button(
             :disabled="requestPending"
             v-on:click="saveData") Speichern
@@ -52,15 +52,14 @@ import {VueEditor} from 'vue2-editor';
 import editorToolbar from '../lib/editorToolbar';
 
 export default {
-  name      : 'panel-player',
+  name      : 'PanelPlayer',
+  components: {FerroCard, BIconBoxArrowUpRight, InputDateTime, VueEditor},
+  model     : {},
   props     : {},
   data      : function () {
     return {
       toolbar: editorToolbar
     };
-  },
-  model     : {},
-  created   : function () {
   },
   computed  : {
     ...mapFields([
@@ -91,9 +90,7 @@ export default {
     saveAndContinue() {
       this.$store.dispatch({type: 'saveData', targetPanel: 'panel-rent'});
     },
-  },
-  components: {FerroCard, BIconBoxArrowUpRight, InputDateTime, VueEditor},
-  filters   : {}
+  }
 }
 </script>
 

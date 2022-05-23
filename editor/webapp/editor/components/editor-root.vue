@@ -75,7 +75,7 @@ export default {
           title   : 'Spielparameter', href: '#', type: 'dropdown',
           elements: [
             {title: 'Spieldaten', href: '#', event: 'panel-change', eventParam: 'panel-basic'},
-            {title: 'Spielerzugang', href: '#', event: 'panel-change', eventParam: 'panel-player'},
+            {title: 'Gruppenzugang', href: '#', event: 'panel-change', eventParam: 'panel-player'},
             {title: 'Preisliste', href: '#', event: 'panel-change', eventParam: 'panel-pricelist'},
             {title: 'Startgeld & Zins', href: '#', event: 'panel-change', eventParam: 'panel-rent'},
             {title: 'Häuser & Hotel', href: '#', event: 'panel-change', eventParam: 'panel-houses'},

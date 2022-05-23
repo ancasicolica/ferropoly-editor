@@ -1,7 +1,9 @@
 # Changelog Ferropoly Editor
 
 * Bei fehlerhaftem Login gibt es neu eine Info
-
+* Gendergerechte Sprache in Editor und auf Startseite
+* Bugfix: Gruppen konnten nur in finalisierten Spielen hinzugefügt werden
+ 
 ## V3.1.1 8.05.2022
 * Erste RC-Version Editor V3
 * Hinweis, wenn Intervall für Zinsrunden und Spieldauer weniger als 10 Zinsrunden ergeben
