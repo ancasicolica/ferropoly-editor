@@ -2,34 +2,35 @@
   Tab with the finalization
 -->
 <template lang="pug">
-#pricelist-info-finalize
-  ModalFinalizeGame(ref="finalize-confirm" @finalize-gameplay-confirmed="onFinalizeGameplayConfirmed")
-  modal-error(title="Fehler" ref='finalize-error')
-  b-card(title="Sind alle Daten richtig?" v-if="finalizationEnabled()")
-    b-card-text
-      | Wenn die Preisliste den Vorstellungen entspricht und die Spieldaten alle richtig sind, dann muss das Spiel 'finalisiert' werden, erst dann kann das Spiel gespielt werden. Konkret heisst das folgendes:
-      ul
-        li Die Spielparameter werden eingefroren und können nicht mehr verändert werden
-        li Die Preisliste ist fix - es können keine Orte hinzugefügt, entfernt oder die Reihenfolge verändert werden
-        li Der Timer für den Spielbeginn wird gesetzt, das erste Startgeld wird den dann vorhandenen Gruppen automatisch ausbezahlt
-        li Die Preisliste wird für die Spieler sichtbar
-      br
-      | Nach diesem Schritt hat man also das endgültige Spiel und die Preisliste wird den Spielerinnen und Spieler über den "Link zur Preisliste für Teams" angezeigt.
-      br
-      b-button(variant="primary" @click="onClickFinalize()" :disabled="finalizing") Preisliste finalisieren
-      //button.btn.btn-primary.btn-lg(type='submit' class="" data-toggle="modal" ng-disabled='finalizing || data.gameplay.internal.priceListPendingChanges' data-target="#finalizeModal") Preisliste finalisieren
+  #pricelist-info-finalize
+    ModalFinalizeGame(ref="finalize-confirm" @finalize-gameplay-confirmed="onFinalizeGameplayConfirmed")
+    modal-error(title="Fehler" ref='finalize-error')
+    b-card(title="Sind alle Daten richtig?" v-if="finalizationEnabled()")
+      b-card-text
+        | Wenn die Preisliste den Vorstellungen entspricht und die Spieldaten alle richtig sind, dann muss das Spiel 'finalisiert' werden, erst dann kann das Spiel gespielt werden. Konkret heisst das folgendes:
+        ul
+          li Die Spielparameter werden eingefroren und können nicht mehr verändert werden
+          li Die Preisliste ist fix - es können keine Orte hinzugefügt, entfernt oder die Reihenfolge verändert werden
+          li Der Timer für den Spielbeginn wird gesetzt, das erste Startgeld wird den dann vorhandenen Gruppen automatisch ausbezahlt
+          li Die Preisliste wird für die Spieler sichtbar
+        br
+        | Nach diesem Schritt hat man also das endgültige Spiel und die Preisliste wird den Spielerinnen und Spieler über den "Link zur Preisliste für Teams" angezeigt.
+        br
+        b-button(variant="primary" @click="onClickFinalize()" :disabled="finalizing") Preisliste finalisieren
+        //button.btn.btn-primary.btn-lg(type='submit' class="" data-toggle="modal" ng-disabled='finalizing || data.gameplay.internal.priceListPendingChanges' data-target="#finalizeModal") Preisliste finalisieren
 
 </template>
 
 <script>
-import {get} from "lodash";
+import {get} from 'lodash';
 import ModalFinalizeGame from './modal-finalize-game.vue'
 import ModalError from '../../common/components/modal-error/modal-error.vue'
 import {finalizeGameplay} from '../../lib/adapters/gameplay'
 
 export default {
-  name : "pricelist-info-finalize",
-  props: {
+  name      : 'PricelistInfoFinalize',
+  components: {ModalFinalizeGame, ModalError},
+  props     : {
     gameplay: {
       type   : Object,
       default: function () {
@@ -37,19 +38,18 @@ export default {
       }
     }
   },
-  data : function () {
+  data      : function () {
     return {
       finalizationSucceeded: false,
       finalizing           : false
     };
   },
-  model: {},
   /**
    * Called when control is created
    */
-  created   : function () {
+  created: function () {
   },
-  methods   : {
+  methods: {
     /**
      * Checks if finalization is possible
      * @returns {boolean|any}
@@ -71,7 +71,7 @@ export default {
     onFinalizeGameplayConfirmed() {
       console.log('Finalizing Gameplay');
       this.finalizing = true;
-      finalizeGameplay(get(this.gameplay, 'internal.gameId', 'none'),  err => {
+      finalizeGameplay(get(this.gameplay, 'internal.gameId', 'none'), err => {
         if (err) {
           console.error(err);
           this.$refs['finalize-error'].showError('Fehler', 'Das Spiel konnte nicht finalisiert werden, folgende Meldung wurde gesendet:', err);
@@ -82,8 +82,7 @@ export default {
         this.finalizationSucceeded = true;
       });
     }
-  },
-  components: {ModalFinalizeGame, ModalError}
+  }
 }
 </script>
 

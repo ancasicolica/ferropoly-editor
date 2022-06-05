@@ -20,6 +20,7 @@
             @save-player="savePlayer",
             @delete-player="deletePlayer",
             @confirm-player="confirmPlayer")
+
 </template>
 
 <script>

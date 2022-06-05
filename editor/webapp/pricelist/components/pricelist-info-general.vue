@@ -37,7 +37,11 @@ import {BIconDownload} from 'bootstrap-vue';
 import {formatGameDate} from '../../common/lib/formatters'
 
 export default {
-  name      : "pricelist-info-general",
+  name      : "PricelistInfoGeneral",
+  components: {BIconDownload},
+  filters   : {
+    formatGameDate
+  },
   props     : {
     gameplay: {
       type   : Object,
@@ -49,7 +53,6 @@ export default {
   data      : function () {
     return {};
   },
-  model     : {},
   methods   : {
     /**
      * Get the property of the gameplay object
@@ -65,10 +68,6 @@ export default {
     getDownloadLink() {
       return `/pricelist/download/${this.getGpProperty('internal.gameId')}`;
     }
-  },
-  components: {BIconDownload},
-  filters   : {
-    formatGameDate
   }
 }
 </script>

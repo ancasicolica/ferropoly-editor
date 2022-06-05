@@ -3,18 +3,18 @@
   14.4.21 KC
 -->
 <template lang="pug">
-#pricelist-info
-  b-container(fluid=true)
-    b-row
-      b-col
-        h1 {{getGameName()}}
-    b-row
-      b-col
-        pricelist-info-general(:gameplay="gameplay")
-      b-col
-        pricelist-info-game(:gameplay="gameplay", :game-url="gameUrl")
-      b-col
-        pricelist-info-finalize(:gameplay="gameplay")
+  #pricelist-info
+    b-container(fluid=true)
+      b-row
+        b-col
+          h1 {{getGameName()}}
+      b-row
+        b-col
+          pricelist-info-general(:gameplay="gameplay")
+        b-col
+          pricelist-info-game(:gameplay="gameplay", :game-url="gameUrl")
+        b-col
+          pricelist-info-finalize(:gameplay="gameplay")
 </template>
 
 <script>
@@ -24,7 +24,8 @@ import PricelistInfoFinalize from './pricelist-info-finalize.vue'
 import {get} from 'lodash'
 
 export default {
-  name      : "pricelist-info",
+  name      : 'PricelistInfo',
+  components: {PricelistInfoGeneral, PricelistInfoGame, PricelistInfoFinalize},
   props     : {
     gameplay: {
       type   : Object,
@@ -33,13 +34,15 @@ export default {
       }
     },
     gameUrl : {
-      type: String
+      type   : String,
+      default: function () {
+        return '/';
+      }
     }
   },
   data      : function () {
     return {};
   },
-  model     : {},
   methods   : {
     /**
      * Returns the name of the Game
@@ -48,8 +51,7 @@ export default {
     getGameName: function () {
       return get(this.gameplay, 'gamename', 'game name!')
     }
-  },
-  components: {PricelistInfoGeneral, PricelistInfoGame, PricelistInfoFinalize}
+  }
 }
 </script>
 

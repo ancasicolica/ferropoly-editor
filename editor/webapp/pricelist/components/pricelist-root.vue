@@ -30,7 +30,8 @@ import {getPricelist} from '../../lib/adapters/pricelist'
 import {get, split, last} from 'lodash'
 
 export default {
-  name      : "pricelist-root",
+  name      : "PricelistRoot",
+  components: {MenuBar, Pricelist, PricelistInfo},
   props     : {
     gameInfoString: {
       type   : String,
@@ -60,7 +61,6 @@ export default {
       }
     };
   },
-  model     : {},
   created   : function () {
     let self = this;
 
@@ -107,8 +107,7 @@ export default {
     getGameUrl: function () {
       return get(this.gameInfo, 'gameUrl', 'none');
     }
-  },
-  components: {MenuBar, Pricelist, PricelistInfo}
+  }
 }
 </script>
 
