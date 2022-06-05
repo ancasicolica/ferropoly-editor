@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+## V3.1.2 5.6.22
 * Bei fehlerhaftem Login gibt es neu eine Info
 * Gendergerechte Sprache in Editor und auf Startseite
 * Link zur Online-Anmeldung auch im Gruppeneditor sichtbar
