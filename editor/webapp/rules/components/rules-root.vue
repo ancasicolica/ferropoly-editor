@@ -13,7 +13,7 @@
       @rules-editor="showEditor"
       @rules-info="showInfo"
       @rules-print="printRules"
-      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/spielregeln/")
+      help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/spielregeln/")
     b-container(fluid=true)
       b-row
         rules-viewer(v-if="currentView === 'view'" :rules="rules")
