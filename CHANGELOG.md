@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Bugfix: Logout funktioniert wieder
+
 ## V3.1.2 5.6.22
 * Bei fehlerhaftem Login gibt es neu eine Info
 * Gendergerechte Sprache in Editor und auf Startseite
