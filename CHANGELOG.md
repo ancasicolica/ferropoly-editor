@@ -4,7 +4,8 @@
 * Gendergerechte Sprache in Editor und auf Startseite
 * Link zur Online-Anmeldung auch im Gruppeneditor sichtbar
 * Bugfix: Gruppen konnten nur in finalisierten Spielen hinzugefügt werden
- 
+* Dependency Updates
+
 ## V3.1.1 8.05.2022
 * Erste RC-Version Editor V3
 * Hinweis, wenn Intervall für Zinsrunden und Spieldauer weniger als 10 Zinsrunden ergeben
