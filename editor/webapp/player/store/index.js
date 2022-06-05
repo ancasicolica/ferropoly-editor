@@ -25,6 +25,9 @@ const store = new Vuex.Store({
       scheduling: {
         gameDate   : DateTime.now().toISO(),
         gameStartTs: DateTime.now().toISO()
+      },
+      joining   : {
+        url: '#'
       }
     },
     teams       : []

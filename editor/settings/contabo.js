@@ -54,7 +54,7 @@ module.exports = function (settings) {
     }
   };
 
-  settings.mainInstances = ['http://spiel.ferropoly.ch'];
+  settings.mainInstances = ['https://spiel.ferropoly.ch'];
 
   // Logger
   settings.logger = {

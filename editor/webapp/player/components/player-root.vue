@@ -20,6 +20,7 @@
             @save-player="savePlayer",
             @delete-player="deletePlayer",
             @confirm-player="confirmPlayer")
+          player-join-info.mt-2(:join-url="joinUrl")
 
 </template>
 
@@ -33,11 +34,12 @@ import {getGameInfo} from '../../lib/adapters/gameplay'
 import {last, split, findIndex, get} from 'lodash';
 import $ from 'jquery';
 import {mapFields} from 'vuex-map-fields';
+import PlayerJoinInfo from './player-join-info.vue';
 
 export default {
   name      : 'PlayerRoot',
   filters   : {},
-  components: {MenuBar, PlayerList, PlayerEdit, ModalError},
+  components: {PlayerJoinInfo, MenuBar, PlayerList, PlayerEdit, ModalError},
   model     : {},
   props     : {},
   data      : function () {
@@ -45,10 +47,11 @@ export default {
   },
   computed  : {
     ...mapFields({
-      gameId  : 'gameId',
-      gameplay: 'gameplay',
-      teams   : 'teams',
-      menuElements   : 'menuElements',
+      gameId      : 'gameId',
+      gameplay    : 'gameplay',
+      teams       : 'teams',
+      menuElements: 'menuElements',
+      joinUrl     : 'gameplay.joining.url'
     }),
     /***
      * Returns true when an email address is required for the game

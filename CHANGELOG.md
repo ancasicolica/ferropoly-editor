@@ -2,6 +2,7 @@
 
 * Bei fehlerhaftem Login gibt es neu eine Info
 * Gendergerechte Sprache in Editor und auf Startseite
+* Link zur Online-Anmeldung auch im Gruppeneditor sichtbar
 * Bugfix: Gruppen konnten nur in finalisierten Spielen hinzugefügt werden
  
 ## V3.1.1 8.05.2022

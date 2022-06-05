@@ -12,7 +12,7 @@ import {getAuthToken} from '../../common/adapters/authToken';
  * @param gameId
  * @param callback
  */
-function getPricelist(gameId, callback) {
+function  getPricelist(gameId, callback) {
   $.ajax(`/pricelist/get/${gameId}`, {dataType: 'json'})
     .done(function (data) {
       callback(null, data);

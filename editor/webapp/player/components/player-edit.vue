@@ -86,6 +86,7 @@
           v-model="player.data.remarks"
           rows="3"
           max-rows="6"
+          placeholder="Diese Kommentare werden mit der Gruppe geteilt."
           :disabled="!playerSet")
     b-row.my-1(v-if="playerToBeConfirmed")
       b-col(sm="3")

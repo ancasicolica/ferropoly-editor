@@ -56,7 +56,7 @@ module.exports = function (settings) {
   // Microsoft settings
   settings.oAuth.microsoft.callbackURL  = 'https://editor-rc.ferropoly.ch/auth/microsoft/callback';
 
-  settings.mainInstances = ['http://spiel-rc.ferropoly.ch'];
+  settings.mainInstances = ['https://spiel-rc.ferropoly.ch'];
 
   // Logger
   settings.logger = {

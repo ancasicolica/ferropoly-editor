@@ -262,7 +262,8 @@ function createNewGameplay(gpOptions, callback) {
       mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
       gameParams      : getGameParamsPresetSet(gpOptions.presets),
       interestInterval: gpOptions.interestInterval,
-      isDemo          : gpOptions.isDemo
+      isDemo          : gpOptions.isDemo,
+      mainInstances   : settings.mainInstances
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
