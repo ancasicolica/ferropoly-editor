@@ -3,23 +3,23 @@ h1 Spielregeln Ferropoly
 h2 Spielzeit
 
 p.
-  Das Spiel beginnt Punkt $scheduling.gameStart$ Uhr, ab diesem Zeitpunkt werden Anrufe entgegen genommen. Bis
-  $scheduling.gameEnd$ Uhr werden Anrufe entgegen genommen.
+  Das Spiel beginnt Punkt $scheduling.gameStart$ Uhr, ab diesem Zeitpunkt werden Anrufe entgegen genommen. Spielende ist
+  $scheduling.gameEnd$ Uhr.
 
 h2 Geld
 
 p.
-  Jede Gruppe hat zu Beginn des Spiels Fr. $gameParams.startCapital$ auf ihrem Konto. Das Startgeld von Fr.
-  $gameParams.interest$  wird zu jeder neuen Spielrunde zusammen mit dem Zins ausbezahlt. (Erste Auszahlung des
+  Jede Gruppe hat zu Beginn des Spiels $gameParams.startCapital$ CHF auf ihrem Konto. Das Startgeld von
+  $gameParams.interest$ CHF wird zu jeder neuen Spielrunde zusammen mit dem Zins ausbezahlt. (Erste Auszahlung des
   Startgeldes bei Spielbeginn, eine Spielrunde dauert $gameParams.interestInterval$ Minuten.)
 if interestCyclesAtEndOfGame
-  p Bei Spielende wird das Startgeld noch $gameParams.interestCyclesAtEndOfGame$ Mal ausbezahlt.
+  p Bei Spielende wird das Startgeld noch $gameParams.interestCyclesAtEndOfGame$ mal ausbezahlt.
 
 h2 Grundstück kaufen
 
 p.
-  Um ein Grundstück zu kaufen muss ein Beweis des Besuches erbracht werden. Dies kann eine Entwertung einer Kartonkarte
-  im Billetentwerter oder ein Selfie mit Bahnhofsuhr und –schild sein. Erst nach Aufnahme dieses Beweisstücks
+  Um ein Grundstück zu kaufen muss ein Beweis des Besuches erbracht werden. Dies kann ein Selfie mit Bahnhofsuhr und
+  –schild sein oder eine Entwertung einer Kartonkarte im Billetentwerter. Erst nach Aufnahme dieses Beweisstücks
   darf die Zentrale angerufen werden. Stempeln zwei Gruppen zur selben Zeit, so erhält die Gruppe das Grundstück
   die zuerst anruft. Die Beweisstücke werden am Ende des Spieles stichprobenweise kontrolliert.
 
@@ -43,19 +43,18 @@ h2 Chance-Kanzlei-Parkplatz
 
 p.
   Bei jedem Anruf hat man die Chance Geld zu gewinnen - oder zu verlieren. Es handelt sich dabei um Zufallsbeträge
-  zwischen Fr. $gameParams.chancellery.minLottery$ bis Fr. $gameParams.chancellery.maxLottery$. Beim
+  zwischen $gameParams.chancellery.minLottery$ CHF bis $gameParams.chancellery.maxLottery$ CHF. Beim
   Parkplatzgewinn erhält die Gruppe dessen ganzen Inhalt.
 
 p.
-  Ab und zu stellen wir Euch am Telephon eine Frage. Ihr könnt einen Betrag bis Fr. $gameParams.chancellery.maxGambling$
-  als Einsatz setzen. Ist die Antwort dann richtig, gewinnt ihr denselben Betrag. Im andern Fall ist der Einsatz
-  futsch. (No risk - No fun...)
+  Ab und zu stellen wir Euch am Telephon eine Frage. Ihr könnt einen Betrag bis $gameParams.chancellery.maxGambling$ CHF
+  als Einsatz setzen. Ist die Antwort dann richtig, gewinnt ihr denselben Betrag. Im andern Fall verliert ihr den Einsatz.
 p Sämtliche Bankgewinne (ausser Häuserbau) landen auf dem Parkplatz.
 
-h2 Sieger
+h2 Abschluss
 
 p.
-  Gewonnen hat, wer am Schluss am meisten Geld und spätestens zum vereinbarten Zeitpunkt am vom Organisator angegebenen
+  Gewonnen hat, wer am Schluss am meisten Geld und spätestens zum vereinbarten Zeitpunkt am vom Organisations-Team angegebenen
   Treffpunkt ist.
 
 h2 Zentrale
@@ -80,18 +79,18 @@ ul
   li Euren aktuellen Rang
 
 if mobileInfoAccess
-  p Die Infos könnt ihr auch per Smartphone in dieser App aufrufen (Login nötig).
+  p Viele dieser Infos könnt ihr auch per Smartphone in dieser App aufrufen (Login nötig).
 
 h2 Diverses & Tipps
 
 ul
   li.
     Die Gruppen müssen während der ganzen Spielzeit zusammenbleiben. Wenn aus irgendwelchen Gründen die Gruppe
-    aufgeteilt wird (medizinischer Notfall), muss die Zentrale umgehend informiert werden. Es darf dann  nur
+    aufgeteilt wird (z.B. wegen medizinischem Notfall), muss die Zentrale umgehend informiert werden. Es darf dann nur
     noch ein Gruppenteil aktiv am Spiel teilnehmen.
-  li Prüft, ob es Orte ennet der Landesgrenze gibt. In diesem Fall wären ein paar Euros in der Tasche sicher gut.
+  li Prüft, ob es Orte ennet der Landesgrenze gibt. In diesem Fall sind eine Identitätskarte Pflicht und ein paar Euros in der Tasche sicher gut.
   li.
-    Nicht alle Orte können mit dem Billet gratis angefahren werden. Zum Teil müssen selbst GA Besitzer noch einen
+    Möglicherweise können nicht alle Orte mit eurem Billet gratis angefahren werden. Zum Teil müssen selbst GA Besitzer noch einen
     Aufpreis bezahlen. Diese Orte sind in der Preisliste nicht speziell markiert (da dies immer mal wieder
     ändert), prüft dies selbst! Dies ist meist nur bei touristischen Orten (z.B. Buslinien über Pässe) der Fall.
   li.
@@ -104,7 +103,7 @@ ul
 h2 Fairplay
 
 p.
-  Die Teams sind angehalten die Spielregeln einzuhalten und bei Unklarheiten bei der Spielleitung sich umgehend zu
+  Die Teams sind angehalten die Spielregeln einzuhalten und sich bei Unklarheiten bei der Spielleitung umgehend zu
   informieren. Sollte die Spielleitung feststellen, dass sich eine Gruppe die Spielregeln etwas gar nach ihrem
   Geschmack auslegt oder sie gar bricht, dann wird diese Gruppe mit einem beliebigen Geldabzug bis hin zur
   Disqualifikation bestraft.

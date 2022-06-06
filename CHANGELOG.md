@@ -1,6 +1,7 @@
 # Changelog Ferropoly Editor
 
 * Microsoft login Bugfix
+* Spielregel-Text sprachlich leicht angepasst
 
 ## v3.1.3 6.6.22
 * Bugfix: Logout in Passport benötigt neu Callback
