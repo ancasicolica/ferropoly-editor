@@ -1,6 +1,7 @@
 # Changelog Ferropoly Editor
 
-* Bugfix: Logout funktioniert wieder
+## v3.1.3 6.6.22
+* Bugfix: Logout in Passport benötigt neu Callback
 
 ## V3.1.2 5.6.22
 * Bei fehlerhaftem Login gibt es neu eine Info
