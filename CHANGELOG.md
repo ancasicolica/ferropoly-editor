@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+## v3.1.4 11.7.22
 * Microsoft login Bugfix
 * Spielregel-Text sprachlich leicht angepasst
 
