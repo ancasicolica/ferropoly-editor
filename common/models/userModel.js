@@ -15,10 +15,12 @@ const pbkdf2     = require('pbkdf2-sha256');
 const logger     = require('../lib/logger').getLogger('userModel');
 const _          = require('lodash');
 const {v4: uuid} = require('uuid');
+const accountLog = require('./accountLogModel');
+
 /**
  * The mongoose schema for an user
  */
-let userSchema   = mongoose.Schema({
+let userSchema = mongoose.Schema({
   _id         : {type: String},
   id          : String,
   personalData: {
@@ -150,6 +152,7 @@ function updateUser(user, password, callback) {
         generatePasswordHash(user, password);
         user.info.registrationDate = new Date();
         user._id                   = user.personalData.email;
+        accountLog.addNewUserEntry(user.personalData.email, 'Email-Adresse');
         return user.save(function (err, savedUser) {
           if (err) {
             return callback(err);
@@ -360,6 +363,7 @@ function findOrCreateFacebookUser(profile, callback) {
         newUser.personalData.surname    = profile.name.familyName;
         newUser.personalData.email      = emailAddress ? emailAddress : profile.id; // using facebook profile id as email alternative
         newUser.personalData.avatar     = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
+        accountLog.addNewUserEntry(newUser._id, 'Facebook');
         newUser.save(function (err, savedUser) {
           if (err) {
             return callback(err);
@@ -384,6 +388,7 @@ function findOrCreateFacebookUser(profile, callback) {
             user.personalData.surname    = profile.name.familyName;
             user.login.facebookProfileId = profile.id;
             user.personalData.avatar     = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
+            accountLog.addNewUserEntry(emailAddress, 'Facebook');
             user.save(function (err) {
               if (err) {
                 return callback(err);
@@ -468,6 +473,7 @@ function findOrCreateGoogleUser(profile, callback) {
         newUser.personalData.surname  = profile.name.familyName;
         newUser.personalData.email    = emailAddress;
         newUser.personalData.avatar   = avatar;
+        accountLog.addNewUserEntry(newUser._id, 'Google');
         newUser.save(function (err, savedUser) {
           if (err) {
             return callback(err);
@@ -492,6 +498,7 @@ function findOrCreateGoogleUser(profile, callback) {
             user.personalData.surname  = profile.name.familyName;
             user.login.googleProfileId = profile.id;
             user.personalData.avatar   = avatar;
+            accountLog.addNewUserEntry(emailAddress, 'Google');
             user.save(function (err) {
               if (err) {
                 return callback(err);
@@ -576,6 +583,7 @@ function findOrCreateMicrosoftUser(profile, callback) {
         newUser.personalData.surname     = profile.name.familyName;
         newUser.personalData.email       = emailAddress;
         newUser.personalData.avatar      = avatar;
+        accountLog.addNewUserEntry(newUser._id, 'Microsoft');
         newUser.save(function (err, savedUser) {
           if (err) {
             return callback(err);
@@ -595,11 +603,12 @@ function findOrCreateMicrosoftUser(profile, callback) {
             // Ok, we know this user. Update profile for microsoft access
             user.info.microsoft           = profile;
             user.info.registrationDate    = new Date();
-            user.login.verifiedEmail      = true; // Google does not need verification
+            user.login.verifiedEmail      = true; // MS does not need verification
             user.personalData.forename    = profile.name.givenName;
             user.personalData.surname     = profile.name.familyName;
             user.login.microsoftProfileId = profile.id;
             user.personalData.avatar      = avatar;
+            accountLog.addNewUserEntry(emailAddress, 'Microsoft');
             user.save(function (err) {
               if (err) {
                 return callback(err);
