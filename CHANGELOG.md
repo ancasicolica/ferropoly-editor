@@ -1,7 +1,8 @@
 # Changelog Ferropoly Editor
 
 * Bugfix in Model: getFacebookUser war Variable implizit deklariert
-* 
+* Twitter und Dropbox Login dauerhaft entfernt
+
 ## v3.1.4 11.7.22
 * Microsoft login Bugfix
 * Spielregel-Text sprachlich leicht angepasst

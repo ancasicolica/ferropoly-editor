@@ -49,10 +49,6 @@ module.exports = function (settings) {
   settings.oAuth.facebook.callbackURL = 'https://editor-rc.ferropoly.ch/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor-rc.ferropoly.ch/auth/google/callback';
-  // Dropbox settings
-  settings.oAuth.dropbox.callbackURL = 'https://editor-rc.ferropoly.ch/auth/dropbox/callback';
-  // Twitter settings
-  settings.oAuth.twitter.callbackURL  = 'https://editor-rc.ferropoly.ch/auth/twitter/callback';
   // Microsoft settings
   settings.oAuth.microsoft.callbackURL  = 'https://editor-rc.ferropoly.ch/auth/microsoft/callback';
 

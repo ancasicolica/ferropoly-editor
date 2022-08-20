@@ -22,18 +22,12 @@
           b-button(href='/auth/google' block large variant="danger")
             b-icon-google
             | &nbsp;Login mit Google
-          //a#button-dropbox.btn.btn-lg.btn-primary.btn-block(href='/auth/dropbox')
-            i.fa.fa-dropbox
-            | &nbsp;Login mit Dropbox
           b-button(href='/auth/facebook' block large variant="primary")
             b-icon-facebook
             | &nbsp;Login mit Facebook
           b-button(href='/auth/microsoft' block large variant="success")
             font-awesome-icon.no-url(:icon="['fab', 'windows']")
             | &nbsp;Login mit Microsoft
-          //a#button-twitter.btn.btn-lg.btn-primary.btn-block(href='/auth/twitter')
-            i.fa.fa-twitter
-            | &nbsp;Login mit Twitter
           button.btn.btn-sm.btn-default.btn-block(@click="enablePasswordLogin")
             | Login mit Passwort
 

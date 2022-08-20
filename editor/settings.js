@@ -57,18 +57,6 @@ let settings = {
       callbackURL : 'none' // is set in settings file for environment
     },
 
-    dropbox: {
-      clientId    : process.env.FERROPOLY_DROPBOX_CLIENT_ID || 'none',
-      clientSecret: process.env.FERROPOLY_DROPBOX_CLIENT_SECRET || 'no_secret',
-      callbackURL : 'none' // is set in settings file for environment
-    },
-
-    twitter: {
-      consumerKey   : process.env.FERROPOLY_TWITTER_CONSUMER_KEY || 'none',
-      consumerSecret: process.env.FERROPOLY_TWITTER_CONSUMER_SECRET || 'no_secret',
-      callbackURL   : 'none' // is set in settings file for environment
-    },
-
     microsoft: {
       clientId    : process.env.FERROPOLY_MICROSOFT_CLIENT_ID || 'none',
       clientSecret: process.env.FERROPOLY_MICROSOFT_CLIENT_SECRET || 'no_secret',

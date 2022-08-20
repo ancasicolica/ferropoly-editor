@@ -34,8 +34,6 @@ module.exports = function (settings) {
   settings.oAuth.facebook.callbackURL = 'https://editor.ferropoly.ch/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
-  // Twitter settings
-  settings.oAuth.twitter.callbackURL  = 'https://editor.ferropoly.ch/auth/twitter/callback';
   // Microsoft settings
   settings.oAuth.microsoft.callbackURL  = 'https://editor.ferropoly.ch/auth/microsoft/callback';
 
