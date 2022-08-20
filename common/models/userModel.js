@@ -387,7 +387,7 @@ function findOrCreateFacebookUser(profile, callback) {
       let emailAddress = _.isArray(profile.emails) ? profile.emails[0].value : undefined;
 
       function createNewFacebookUser() {
-        newUser                         = new User();
+        let newUser                     = new User();
         newUser._id                     = emailAddress || profile.id;
         newUser.login.facebookProfileId = profile.id;
         newUser.info.facebook           = profile;

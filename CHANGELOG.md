@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Bugfix in Model: getFacebookUser war Variable implizit deklariert
+* 
 ## v3.1.4 11.7.22
 * Microsoft login Bugfix
 * Spielregel-Text sprachlich leicht angepasst
