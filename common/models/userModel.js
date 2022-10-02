@@ -195,14 +195,19 @@ function getUserByMailAddress(emailAddress, callback) {
 
     // Verify if this user already has an ID or not. If not, upgrade to new model
     let foundUser = docs[0];
-    if (!_.isString(foundUser._id)) {
-      foundUser._id = foundUser.personalData.email;
-      foundUser.save(function (err) {
+    if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
+      const id      = foundUser._id;
+      const newUser = new User();
+      copyUser(foundUser, newUser);
+      newUser._id = emailAddress;
+      newUser.save(function (err) {
         if (err) {
           return callback(err);
         }
-        logger.info('Updated user with email ' + foundUser.personalData.email);
-        callback(null, foundUser);
+        User.findByIdAndRemove(id, function (err) {
+          logger.info('Updated user with email ' + newUser.personalData.email);
+          callback(err, newUser);
+        });
       });
     } else {
       callback(null, foundUser);
