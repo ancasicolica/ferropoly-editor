@@ -6,6 +6,7 @@
 
 const mongoose = require('mongoose');
 const logger   = require('../lib/logger').getLogger('accountModel');
+const _        = require('lodash');
 
 let accountLogSchema = mongoose.Schema({
   timestamp: Date,
