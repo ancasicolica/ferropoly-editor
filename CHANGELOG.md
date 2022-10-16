@@ -2,6 +2,7 @@
 
 * Bugfix in Model: getFacebookUser war Variable implizit deklariert
 * Twitter und Dropbox Login dauerhaft entfernt
+* Update Controls: ES-Lint und disabled Prop neu
 
 ## v3.1.4 11.7.22
 * Microsoft login Bugfix

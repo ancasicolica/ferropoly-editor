@@ -15,7 +15,8 @@
           @state="onState"
           step="0.25"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{v1}}
       b-col
         input-range(v-model="vRange"
@@ -24,7 +25,8 @@
           @state="onState"
           step="0.25"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{vRange}}
     b-row
       b-col
@@ -35,7 +37,8 @@
           @state="onTimeState"
           :validTime="startTimeValid"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{v2}}
       b-col
         input-time(v-model="v3"
@@ -45,7 +48,8 @@
           @state="onTimeState"
           :validTime="endTimeValid"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{v3}}
     b-row
       b-col
@@ -56,7 +60,8 @@
           feedback="Wert muss vor dem Ende sein sein"
           @state="onState"
           :min="dateMin",
-          :max="dateMax")
+          :max="dateMax"
+          :disabled="disabled")
         p Wert: {{v4}}
     b-row
       b-col
@@ -67,12 +72,14 @@
           help="Wähle eine Option"
           feedback="Keine Option gewählt"
           @state="onState"
+          :disabled="disabled"
         )
         p {{vselector}}
       b-col
         b-form-select(
           v-model="vselector"
-          :options="selectOptions")
+          :options="selectOptions"
+          :disabled="disabled")
     b-row
       b-col
         input-text(
@@ -83,6 +90,7 @@
           min="4"
           max="10"
           @state="onState"
+          :disabled="disabled"
         )
       b-col
         p Wert: {{vText}}
@@ -94,6 +102,7 @@
           help="Deine Email bitte"
           feedback="Bitte gültige Email-Adresse eingeben"
           @state="onState"
+          :disabled="disabled"
         )
       b-col
         p Wert: {{vEmail}}
@@ -105,6 +114,7 @@
           help="Deine Telefonnummer bitte"
           feedback="Bitte gültigeTelefonnummer eingeben"
           @state="onState"
+          :disabled="disabled"
         )
       b-col
         p Wert: {{vEmail}}
@@ -117,9 +127,11 @@
           rows="4"
           max-rows="8"
           placeholder="Bitte gib was ein"
+          :disabled="disabled"
           )
       b-col
         p Wert: {{vLarge}}
+        b-form-checkbox(v-model="disabled" value=true unchecked-value=false) Disable all
 
 </template>
 
@@ -143,7 +155,11 @@ const selectorOptions = [
   {value: 3, text: 'Option 3'},
 ];
 export default {
-  name      : 'test-input',
+  name      : 'TestInput',
+  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector, InputTextarea},
+  filters   : {},
+  mixins    : [FormValidatorMixin],
+  model     : {},
   props     : {},
   data      : function () {
     return {
@@ -161,13 +177,13 @@ export default {
       vPhone        : '077 444 33 33',
       selectOptions : selectorOptions,
       startTimeValid: true,
-      endTimeValid  : true
+      endTimeValid  : true,
+      disabled      : false
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
   },
-  computed  : {},
   methods   : {
     onTimeState(s) {
       this.onState(s);
@@ -177,10 +193,7 @@ export default {
       this.endTimeValid   = start < end;
       console.log(this.startTimeValid, this.endTimeValid);
     }
-  },
-  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector, InputTextarea},
-  filters   : {},
-  mixins    : [FormValidatorMixin]
+  }
 }
 </script>
 
