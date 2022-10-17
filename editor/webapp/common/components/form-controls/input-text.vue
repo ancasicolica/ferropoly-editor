@@ -48,12 +48,6 @@ export default {
         return '100';
       }
     },
-    disabled: {
-      type   : Boolean,
-      default: () => {
-        return false;
-      }
-    },
     state   : {
       type   : Boolean,
       default: () => {

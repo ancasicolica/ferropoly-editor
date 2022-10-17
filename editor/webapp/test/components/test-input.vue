@@ -120,6 +120,15 @@
         p Wert: {{vEmail}}
     b-row
       b-col
+        input-password(
+          label="Passwort"
+          help="Bitte Passwort eingeben"
+          v-model="vPassword"
+          :disabled="disabled")
+      b-col
+        p Passwort: {{vPassword}}
+    b-row
+      b-col
         input-textarea(
           label="Bemerkungen"
           help="Bemerkungen können die Verarbeitungszeit verlängern"
@@ -128,7 +137,7 @@
           max-rows="8"
           placeholder="Bitte gib was ein"
           :disabled="disabled"
-          )
+        )
       b-col
         p Wert: {{vLarge}}
         b-form-checkbox(v-model="disabled" value=true unchecked-value=false) Disable all
@@ -145,6 +154,7 @@ import InputText from '../../common/components/form-controls/input-text.vue'
 import InputEmail from '../../common/components/form-controls/input-email.vue'
 import InputPhone from '../../common/components/form-controls/input-phone.vue'
 import InputTextarea from '../../common/components/form-controls/input-textarea.vue'
+import InputPassword from '../../common/components/form-controls/input-password.vue';
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import {DateTime} from 'luxon';
 
@@ -156,7 +166,18 @@ const selectorOptions = [
 ];
 export default {
   name      : 'TestInput',
-  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector, InputTextarea},
+  components: {
+    InputRange,
+    InputPhone,
+    InputEmail,
+    InputText,
+    InputNumeric,
+    InputTime,
+    InputDate,
+    FormSelector,
+    InputTextarea,
+    InputPassword
+  },
   filters   : {},
   mixins    : [FormValidatorMixin],
   model     : {},
@@ -175,6 +196,7 @@ export default {
       vText         : 'abc',
       vEmail        : 'demo@ferropoly.ch',
       vPhone        : '077 444 33 33',
+      vPassword     : '',
       selectOptions : selectorOptions,
       startTimeValid: true,
       endTimeValid  : true,
