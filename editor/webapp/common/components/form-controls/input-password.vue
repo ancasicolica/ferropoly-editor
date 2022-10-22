@@ -21,7 +21,7 @@
         b-input-group-append
           b-button(@click="togglePasswordVisiblity" variant="dark")
             font-awesome-icon.no-url(v-if="type==='password'" icon="fa-solid fa-eye")
-            font-awesome-icon.no-url(v-if="type==='input'" icon="fa-solid fa-eye-slash")
+            font-awesome-icon.no-url(v-if="type==='text'" icon="fa-solid fa-eye-slash")
     b-form-invalid-feedback(v-if="feedback") {{feedback}}
     b-form-text(v-if="help") {{help}}
 
@@ -79,10 +79,10 @@ export default {
       this.$emit('input', e);
     },
     togglePasswordVisiblity() {
-      if (this.type === 'input') {
+      if (this.type === 'text') {
         this.type = 'password'
       } else {
-        this.type = 'input';
+        this.type = 'text';
       }
     },
 
