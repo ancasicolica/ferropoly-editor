@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+## v3.1.5 3.1.23
 * Bugfix in Model: getFacebookUser war Variable implizit deklariert
 * Twitter und Dropbox Login dauerhaft entfernt
 * Update Controls: ES-Lint und disabled Prop neu
