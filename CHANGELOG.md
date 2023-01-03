@@ -3,9 +3,9 @@
 * Bugfix in Model: getFacebookUser war Variable implizit deklariert
 * Twitter und Dropbox Login dauerhaft entfernt
 * Update Controls: ES-Lint und disabled Prop neu
+* Fonts von static.ferropoly.ch 
 * Dependency Updates, the following fixed with intention:
 ```
-
 Package               Current Wanted  Latest Package Type    URL                                                                        
 bootstrap             4.6.0   4.6.0   5.2.3  devDependencies https://getbootstrap.com/                                                  
 vue                   2.6.14  2.6.14  3.2.45 devDependencies https://github.com/vuejs/core/tree/main/packages/vue#readme                
