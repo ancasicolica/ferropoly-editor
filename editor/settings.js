@@ -16,20 +16,20 @@ let preview    = true;
 let debug      = process.env.DEBUG || false;
 
 // Set specific deploy type
-if (process.env.OPENSHIFT_NODEJS_IP) {
-  deployType = 'openshift';
-  preview    = false;
-} else if (process.env.DEPLOY_TYPE === 'contabo') {
+if (process.env.DEPLOY_TYPE === 'contabo') {
   // check which instance
   let rootPath = path.join(__dirname, '..');
   console.log('Root path: ' + rootPath);
   if (_.endsWith(rootPath, 'preview')) {
     deployType = 'contabo_preview';
+    preview    = true;
     debug      = true;
   } else if (_.endsWith(rootPath, 'rc')) {
     deployType = 'contabo_rc';
+    preview    = true;
   } else {
     preview = false;
+    debug   = false;
   }
 }
 // Avoid "unable to verify the first certificate"
