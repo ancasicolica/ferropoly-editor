@@ -118,3 +118,11 @@
     -o-background-size: cover;
     background-size: cover;
 }
+
+.bg16 {
+    background: url("/images/ferropoly_background16.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
