@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+## v3.1.6 15.1.23
 * Login Screen überarbeitet mit Link auf auth.ferropoly.ch
 
 ## v3.1.5 3.1.23
