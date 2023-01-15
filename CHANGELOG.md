@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Login Screen überarbeitet mit Link auf auth.ferropoly.ch
+
 ## v3.1.5 3.1.23
 * Bugfix in Model: getFacebookUser war Variable implizit deklariert
 * Twitter und Dropbox Login dauerhaft entfernt
