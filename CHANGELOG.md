@@ -1,5 +1,11 @@
 # Changelog Ferropoly Editor
 
+## v3.2.0 19.1.23
+* Goodbye Facebook: das war nun ein Mail von Facebook zuviel, in welchem sie mir die Einstellung der Dienste
+androhten, wenn ich die Guidelines nicht erfülle - die Guidelines, welche sich nicht verändert haben und ich seit 
+Jahr und Tag ohne Probleme erfülle...
+
+
 ## v3.1.7 16.1.23
 * Dependency Updates
 

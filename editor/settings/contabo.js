@@ -30,8 +30,6 @@ module.exports = function (settings) {
     deleteOldGameplays: '12 2 * * *'
   };
 
-  // Facebook settings
-  settings.oAuth.facebook.callbackURL = 'https://editor.ferropoly.ch/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
   // Microsoft settings

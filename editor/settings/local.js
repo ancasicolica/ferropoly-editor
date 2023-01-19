@@ -41,8 +41,6 @@ module.exports = function (settings) {
     key: '1234'
   };
 
-  // Facebook settings
-  settings.oAuth.facebook.callbackURL = 'http://localhost:3002/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL   = 'http://localhost:3002/auth/google/callback';
   // Microsoft settings

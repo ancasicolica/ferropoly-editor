@@ -45,12 +45,6 @@ let settings = {
   appPath: 'editor', // folder where the app resides
 
   oAuth: {
-    facebook: {
-      appId      : process.env.FERROPOLY_FACEBOOK_APP_ID || 'no_idea',
-      secret     : process.env.FERROPOLY_FACEBOOK_APP_SECRET || 'no_secret',
-      callbackURL: 'none' // is set in settings file for environment
-    },
-
     google: {
       clientId    : process.env.FERROPOLY_GOOGLE_CLIENT_ID || 'none',
       clientSecret: process.env.FERROPOLY_GOOGLE_CLIENT_SECRET || 'no_secret',

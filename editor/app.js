@@ -71,7 +71,6 @@ let initServer = function () {
 
 
   // Define Strategy, login
-  passport.use(authStrategy.facebookStrategy);
   passport.use(authStrategy.googleStrategy);
   passport.use(authStrategy.localStrategy);
   passport.use(authStrategy.microsoftStrategy);

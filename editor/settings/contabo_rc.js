@@ -45,8 +45,6 @@ module.exports = function (settings) {
     }
   };
 
-  // Facebook settings
-  settings.oAuth.facebook.callbackURL = 'https://editor-rc.ferropoly.ch/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL = 'https://editor-rc.ferropoly.ch/auth/google/callback';
   // Microsoft settings
