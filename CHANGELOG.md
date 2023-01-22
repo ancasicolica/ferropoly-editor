@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Background images got an own route
+
 ## v3.2.0 19.1.23
 * Goodbye Facebook: das war nun ein Mail von Facebook zuviel, in welchem sie mir die Einstellung der Dienste
 androhten, wenn ich die Guidelines nicht erfülle - die Guidelines, welche sich nicht verändert haben und ich seit 

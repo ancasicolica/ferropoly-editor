@@ -120,6 +120,7 @@ let initServer = function () {
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
   app.use('/dashboard', require('./routes/dashboard'));
+  app.use('/images', require('../common/routes/images'));
   require('./routes/locations')(app);
 
 
