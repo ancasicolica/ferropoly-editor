@@ -17,14 +17,12 @@ Vue.use(VueRouter);
 
 Vue.component('login', Login);
 
-
 console.log('Webapp initializing');
 
 // Ferropoly Style!
 import '../common/style/app.scss';
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
-
 
 /**
  * Startpoint of the meteo view
@@ -33,9 +31,6 @@ $(document).ready(function () {
   console.log('DOM ready');
   new Vue({
     el     : '#login-app',
-    created: function () {
-      console.log('created');
-    },
     data   : {
       user   : {
         name: ''
@@ -44,6 +39,9 @@ $(document).ready(function () {
         background: ''
       },
       methods: {}
+    },
+    created: function () {
+      console.log('created');
     }
   });
 });

@@ -15,7 +15,8 @@
           @state="onState"
           step="0.25"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{v1}}
       b-col
         input-range(v-model="vRange"
@@ -24,7 +25,8 @@
           @state="onState"
           step="0.25"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{vRange}}
     b-row
       b-col
@@ -35,7 +37,8 @@
           @state="onTimeState"
           :validTime="startTimeValid"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{v2}}
       b-col
         input-time(v-model="v3"
@@ -45,7 +48,8 @@
           @state="onTimeState"
           :validTime="endTimeValid"
           min="1"
-          max="10")
+          max="10"
+          :disabled="disabled")
         p Wert: {{v3}}
     b-row
       b-col
@@ -56,7 +60,8 @@
           feedback="Wert muss vor dem Ende sein sein"
           @state="onState"
           :min="dateMin",
-          :max="dateMax")
+          :max="dateMax"
+          :disabled="disabled")
         p Wert: {{v4}}
     b-row
       b-col
@@ -67,12 +72,14 @@
           help="Wähle eine Option"
           feedback="Keine Option gewählt"
           @state="onState"
+          :disabled="disabled"
         )
         p {{vselector}}
       b-col
         b-form-select(
           v-model="vselector"
-          :options="selectOptions")
+          :options="selectOptions"
+          :disabled="disabled")
     b-row
       b-col
         input-text(
@@ -83,6 +90,7 @@
           min="4"
           max="10"
           @state="onState"
+          :disabled="disabled"
         )
       b-col
         p Wert: {{vText}}
@@ -94,6 +102,7 @@
           help="Deine Email bitte"
           feedback="Bitte gültige Email-Adresse eingeben"
           @state="onState"
+          :disabled="disabled"
         )
       b-col
         p Wert: {{vEmail}}
@@ -105,9 +114,19 @@
           help="Deine Telefonnummer bitte"
           feedback="Bitte gültigeTelefonnummer eingeben"
           @state="onState"
+          :disabled="disabled"
         )
       b-col
         p Wert: {{vEmail}}
+    b-row
+      b-col
+        input-password(
+          label="Passwort"
+          help="Bitte Passwort eingeben"
+          v-model="vPassword"
+          :disabled="disabled")
+      b-col
+        p Passwort: {{vPassword}}
     b-row
       b-col
         input-textarea(
@@ -117,9 +136,11 @@
           rows="4"
           max-rows="8"
           placeholder="Bitte gib was ein"
-          )
+          :disabled="disabled"
+        )
       b-col
         p Wert: {{vLarge}}
+        b-form-checkbox(v-model="disabled" value=true unchecked-value=false) Disable all
 
 </template>
 
@@ -133,6 +154,7 @@ import InputText from '../../common/components/form-controls/input-text.vue'
 import InputEmail from '../../common/components/form-controls/input-email.vue'
 import InputPhone from '../../common/components/form-controls/input-phone.vue'
 import InputTextarea from '../../common/components/form-controls/input-textarea.vue'
+import InputPassword from '../../common/components/form-controls/input-password.vue';
 import FormValidatorMixin from '../../common/components/form-controls/formValidatorMixin';
 import {DateTime} from 'luxon';
 
@@ -143,7 +165,22 @@ const selectorOptions = [
   {value: 3, text: 'Option 3'},
 ];
 export default {
-  name      : 'test-input',
+  name      : 'TestInput',
+  components: {
+    InputRange,
+    InputPhone,
+    InputEmail,
+    InputText,
+    InputNumeric,
+    InputTime,
+    InputDate,
+    FormSelector,
+    InputTextarea,
+    InputPassword
+  },
+  filters   : {},
+  mixins    : [FormValidatorMixin],
+  model     : {},
   props     : {},
   data      : function () {
     return {
@@ -159,15 +196,16 @@ export default {
       vText         : 'abc',
       vEmail        : 'demo@ferropoly.ch',
       vPhone        : '077 444 33 33',
+      vPassword     : '',
       selectOptions : selectorOptions,
       startTimeValid: true,
-      endTimeValid  : true
+      endTimeValid  : true,
+      disabled      : false
     };
   },
-  model     : {},
+  computed  : {},
   created   : function () {
   },
-  computed  : {},
   methods   : {
     onTimeState(s) {
       this.onState(s);
@@ -177,10 +215,7 @@ export default {
       this.endTimeValid   = start < end;
       console.log(this.startTimeValid, this.endTimeValid);
     }
-  },
-  components: {InputRange, InputPhone, InputEmail, InputText, InputNumeric, InputTime, InputDate, FormSelector, InputTextarea},
-  filters   : {},
-  mixins    : [FormValidatorMixin]
+  }
 }
 </script>
 

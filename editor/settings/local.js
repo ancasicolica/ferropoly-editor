@@ -41,14 +41,8 @@ module.exports = function (settings) {
     key: '1234'
   };
 
-  // Facebook settings
-  settings.oAuth.facebook.callbackURL = 'http://localhost:3002/auth/facebook/callback';
   // Google Settings
   settings.oAuth.google.callbackURL   = 'http://localhost:3002/auth/google/callback';
-  // Dropbox settings
-  settings.oAuth.dropbox.callbackURL  = 'http://localhost:3002/auth/dropbox/callback';
-  // Twitter settings
-  settings.oAuth.twitter.callbackURL  = 'http://localhost:3002/auth/twitter/callback';
   // Microsoft settings
   settings.oAuth.microsoft.callbackURL  = 'http://localhost:3002/auth/microsoft/callback';
 

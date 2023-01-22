@@ -16,20 +16,20 @@ let preview    = true;
 let debug      = process.env.DEBUG || false;
 
 // Set specific deploy type
-if (process.env.OPENSHIFT_NODEJS_IP) {
-  deployType = 'openshift';
-  preview    = false;
-} else if (process.env.DEPLOY_TYPE === 'contabo') {
+if (process.env.DEPLOY_TYPE === 'contabo') {
   // check which instance
   let rootPath = path.join(__dirname, '..');
   console.log('Root path: ' + rootPath);
   if (_.endsWith(rootPath, 'preview')) {
     deployType = 'contabo_preview';
+    preview    = true;
     debug      = true;
   } else if (_.endsWith(rootPath, 'rc')) {
     deployType = 'contabo_rc';
+    preview    = true;
   } else {
     preview = false;
+    debug   = false;
   }
 }
 // Avoid "unable to verify the first certificate"
@@ -45,28 +45,10 @@ let settings = {
   appPath: 'editor', // folder where the app resides
 
   oAuth: {
-    facebook: {
-      appId      : process.env.FERROPOLY_FACEBOOK_APP_ID || 'no_idea',
-      secret     : process.env.FERROPOLY_FACEBOOK_APP_SECRET || 'no_secret',
-      callbackURL: 'none' // is set in settings file for environment
-    },
-
     google: {
       clientId    : process.env.FERROPOLY_GOOGLE_CLIENT_ID || 'none',
       clientSecret: process.env.FERROPOLY_GOOGLE_CLIENT_SECRET || 'no_secret',
       callbackURL : 'none' // is set in settings file for environment
-    },
-
-    dropbox: {
-      clientId    : process.env.FERROPOLY_DROPBOX_CLIENT_ID || 'none',
-      clientSecret: process.env.FERROPOLY_DROPBOX_CLIENT_SECRET || 'no_secret',
-      callbackURL : 'none' // is set in settings file for environment
-    },
-
-    twitter: {
-      consumerKey   : process.env.FERROPOLY_TWITTER_CONSUMER_KEY || 'none',
-      consumerSecret: process.env.FERROPOLY_TWITTER_CONSUMER_SECRET || 'no_secret',
-      callbackURL   : 'none' // is set in settings file for environment
     },
 
     microsoft: {

@@ -12,7 +12,9 @@ div
 import {DateTime} from "luxon";
 
 export default {
-  name : "welcome-bar",
+  name : "WelcomeBar",
+  components: {},
+  model: {},
   props: {
     userName: {
       type: String,
@@ -27,16 +29,6 @@ export default {
       backgroundImage: ''
     };
   },
-  model: {},
-  /**
-   * Called when component is being created
-   */
-  created   : function () {
-    // Define Background
-    let index            = DateTime.now().minute % 10;
-    this.backgroundImage = `url("/images/ferropoly_header_0${index}.jpg")`;
-  },
-  methods   : {},
   computed: {
     greetingText() {
       // Be kind and say hello
@@ -55,7 +47,15 @@ export default {
       return greeting;
     }
   },
-  components: {}
+  /**
+   * Called when component is being created
+   */
+  created   : function () {
+    // Define Background
+    let index            = DateTime.now().minute % 11;
+    this.backgroundImage = `url("/images/ferropoly_header_0${index}.jpg")`;
+  },
+  methods   : {}
 }
 </script>
 
