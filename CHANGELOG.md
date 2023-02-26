@@ -1,6 +1,7 @@
 # Changelog Ferropoly Editor
 
-* Background images got an own route
+* Background Bilder über eigene Route
+* Dependency Updates
 
 ## v3.2.0 19.1.23
 * Goodbye Facebook: das war nun ein Mail von Facebook zuviel, in welchem sie mir die Einstellung der Dienste
