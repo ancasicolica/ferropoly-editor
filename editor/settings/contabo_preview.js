@@ -4,7 +4,6 @@
  */
 
 
-
 module.exports = function (settings) {
   settings.version += '-PREVIEW';
 
@@ -21,9 +20,12 @@ module.exports = function (settings) {
 
   settings.locationDbSettings = {
     mongoDbUrl: 'mongodb://localhost/ferropoly_preview',
-    poolSize: 3
+    poolSize  : 3
   };
 
+  settings.autopilot = {
+    enabled: true
+  }
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
@@ -48,9 +50,9 @@ module.exports = function (settings) {
   };
 
   // Google Settings
-  settings.oAuth.google.callbackURL = 'https://editor-preview.ferropoly.ch/auth/google/callback';
+  settings.oAuth.google.callbackURL    = 'https://editor-preview.ferropoly.ch/auth/google/callback';
   // Microsoft settings
-  settings.oAuth.microsoft.callbackURL  = 'https://editor-preview.ferropoly.ch/auth/microsoft/callback';
+  settings.oAuth.microsoft.callbackURL = 'https://editor-preview.ferropoly.ch/auth/microsoft/callback';
 
   settings.mainInstances = ['https://spiel-preview.ferropoly.ch'];
 

@@ -9,11 +9,11 @@
  * Created by kc on 22.01.15.
  */
 
-const mongoose = require('mongoose');
-const Moniker  = require('moniker');
-const _        = require('lodash');
-const moment   = require('moment-timezone');
-const logger   = require('../lib/logger').getLogger('gameplayModel');
+const mongoose   = require('mongoose');
+const Moniker    = require('moniker');
+const _          = require('lodash');
+const {DateTime} = require("luxon");
+const logger     = require('../lib/logger').getLogger('gameplayModel');
 
 const MOBILE_NONE  = 0;
 const MOBILE_BASIC = 5;
@@ -88,7 +88,12 @@ const gameplaySchema = mongoose.Schema({
     priceListPendingChanges: {type: Boolean, default: false}, // Are there pending changes?
     creatingInstance       : String,                          // Instance creating this gameplay
     gameDataPublic         : {type: Boolean, default: false}, // After the game, the complete game is "public"
-    isDemo                 : {type: Boolean, default: false}  // Demo games have some special behaviour
+    isDemo                 : {type: Boolean, default: false}, // Demo games have some special behaviour
+    autopilot              : {
+      active   : {type: Boolean, default: false},             // Autopilot active
+      picBucket: {type: Boolean, default: false},             // Generating pics for picbucket with autopilot
+      interval : {type: Number, default: (5 * 60 * 1000)}     // Interval in ms between rounds
+    }
   },
   joining   : {
     possibleUntil: {type: Date},
@@ -136,19 +141,29 @@ let createGameplay      = function (gpOptions, callback) {
   gp.scheduling.gameDate       = gpOptions.gameDate;
   gp.scheduling.gameStart      = gpOptions.gameStart;
   gp.scheduling.gameEnd        = gpOptions.gameEnd;
-  gp.scheduling.deleteTs       = moment(gpOptions.gameDate).add(30, 'd').hour(23).minute(59).toDate();
-  gp.joining.possibleUntil     = gpOptions.joiningUntilDate || moment(gp.scheduling.gameDate).subtract(5, 'days').set('hour', 20).set('minute', 0).set('second', 0).toDate();
+  gp.scheduling.deleteTs       = DateTime.fromJSDate(gpOptions.gameDate).plus({days: 30}).set({
+    hour  : 23,
+    minute: 59
+  }).toJSDate();
+  gp.joining.possibleUntil     = gpOptions.joiningUntilDate || DateTime.fromJSDate(gp.scheduling.gameDate).minus({days: 5}).set({
+    hour  : 20,
+    minute: 0,
+    second: 0
+  }).toJSDate();
   gp.joining.infotext          = gpOptions.infoText;
   gp.gamename                  = gpOptions.name;
   gp.internal.gameId           = gpOptions.gameId || Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
   gp.joining.url               = _.get(gpOptions, 'mainInstances[0]', 'https://spiel.ferropoly.ch') + '/anmelden/' + gp.internal.gameId;
   gp.internal.creatingInstance = gpOptions.instance;
+  gp.internal.autopilot        = gpOptions.autopilot;
   gp.mobile                    = gpOptions.mobile || {level: MOBILE_NONE};
   gp._id                       = gp.internal.gameId;
 
   gp.gameParams                  = _.assign(gp.gameParams, gpOptions.gameParams);
   gp.gameParams.interestInterval = gpOptions.interestInterval || gp.gameParams.interestInterval;
 
+  console.log(gpOptions);
+  console.log(gp);
   checkIfGameIdExists(gp.internal.gameId, function (err, isExisting) {
     if (err) {
       return callback(err);
@@ -311,16 +326,13 @@ let removeGameplay = function (gp, callback) {
 function finalizeTime(date, time) {
   try {
     let e      = time.split(':');
-    let hour   = e[0];
-    let minute = e[1];
+    let hour   = parseInt(e[0]);
+    let minute = parseInt(e[1]);
 
-    let newDate = moment.tz(date.getTime(), 'Europe/Zurich');
-    newDate.minute(minute);
-    newDate.hour(hour);
-    newDate.second(0);
-    return newDate.toDate();
-  }
-  catch (e) {
+    let newDate = DateTime.fromJSDate(date);
+    newDate     = newDate.set({minute: minute, hour: hour, second: 0});
+    return newDate.toUTC().toJSDate();
+  } catch (e) {
     logger.info('ERROR in finalizeTime: ' + e);
     return new Date();
   }
@@ -603,6 +615,19 @@ let saveNewPriceListRevision = function (gameplay, callback) {
 };
 
 /**
+ * Returns all active autoilot games, only the ones today, only demo
+ * @param callback
+ */
+let getAutopilotGameplays = function (callback) {
+  let today = DateTime.now().toISODate()
+  Gameplay.find({
+    'internal.isDemo': true, 'internal.autopilot.active': true, 'scheduling.gameDate': {
+      $gte: today, $lte: today
+    }
+  }).lean().exec(callback);
+}
+
+/**
  * Exports of this module
  * @type {{init: Function, close: Function, Model: (*|Model), createGameplay: Function, getGameplaysForUser: Function, removeGameplay: Function, updateGameplay: Function, getGameplay: Function}}
  */
@@ -627,6 +652,7 @@ module.exports = {
   getAllGameplays               : getAllGameplays,
   invalidatePricelist           : invalidatePricelist,
   updateGameplayPartial         : updateGameplayPartial,
+  getAutopilotGameplays         : getAutopilotGameplays,
   // Constants
   MOBILE_NONE : MOBILE_NONE,
   MOBILE_BASIC: MOBILE_BASIC,

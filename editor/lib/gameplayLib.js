@@ -263,7 +263,8 @@ function createNewGameplay(gpOptions, callback) {
       gameParams      : getGameParamsPresetSet(gpOptions.presets),
       interestInterval: gpOptions.interestInterval,
       isDemo          : gpOptions.isDemo,
-      mainInstances   : settings.mainInstances
+      mainInstances   : settings.mainInstances,
+      autopilot       : gpOptions.autopilot
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
@@ -475,7 +476,12 @@ function createDemoGameplay(p1, p2) {
     interestInterval: settings.interestInterval,
     mobile          : settings.mobile || {level: 5},
     presets         : settings.presets,
-    isDemo          : true
+    isDemo          : true,
+    autopilot       : {
+      active   : _.get(settings, 'autopilot.active', false),
+      picBucket: _.get(settings, 'autopilot.picBucket', false),
+      interval : _.get(settings, 'autopilot.interval', (30 * 60 * 1000))
+    }
   };
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job

@@ -5,33 +5,67 @@
  */
 
 
-const cron     = require('node-schedule');
-const gpLib    = require('./gameplayLib');
-const settings = require('../settings');
-const logger   = require('../../common/lib/logger').getLogger('cronjobs');
+const cron       = require('node-schedule');
+const gpLib      = require('./gameplayLib');
+const settings   = require('../settings');
+const logger     = require('../../common/lib/logger').getLogger('cronjobs');
+const _          = require('lodash');
+const {DateTime} = require('luxon');
 
 /**
  * Set game options, different for different days
  */
 function generateGameOptions() {
-  let today       = new Date();
-  let gameOptions = {};
+  let gameOptions = {
+    autopilot: {
+      active   : _.get(settings, 'autopilot.enabled', false),
+      picBucket: _.get(settings, 'autopilot.picBucket', true)
+    },
+    presets  : 'moderate',
+  };
 
-  switch (today.getUTCDate() % 4) {
+  switch (DateTime.now().ordinal % 5) {
     case 0:
-      gameOptions.map    = 'ostwind';
-      gameOptions.random = 60;
+      gameOptions.gameId             = 'play-a-ostwind-game';
+      gameOptions.map                = 'ostwind';
+      gameOptions.random             = 80;
+      gameOptions.teamNb             = 12;
+      gameOptions.autopilot.interval = 15 * 60 * 1000;
       break;
 
     case 1:
-      gameOptions.map    = 'zvv';
-      gameOptions.random = 60;
+      gameOptions.gameId             = 'play-a-zvv-game';
+      gameOptions.map                = 'zvv';
+      gameOptions.random             = 80;
+      gameOptions.teamNb             = 8;
+      gameOptions.autopilot.interval = 20 * 60 * 1000;
+      break;
+
+    case 2:
+      gameOptions.gameId             = 'play-a-zvv110-game';
+      gameOptions.map                = 'zvv110';
+      gameOptions.random             = 240;
+      gameOptions.teamNb             = 5;
+      gameOptions.gameStart          = '12:00';
+      gameOptions.gameEnd            = '16:00';
+      gameOptions.interestInterval   = 15;
+      gameOptions.autopilot.interval = 3.5 * 60 * 1000;
+      break;
+
+    case 3:
+      gameOptions.gameId             = 'play-a-libero100-game';
+      gameOptions.map                = 'libero100';
+      gameOptions.random             = 80;
+      gameOptions.teamNb             = 7;
+      gameOptions.autopilot.interval = 15 * 60 * 1000;
       break;
 
     default:
-      gameOptions.map    = 'sbb';
-      gameOptions.random = 120;
-      gameOptions.teamNb = 12;
+      gameOptions.gameId             = 'play-a-demo-game';
+      gameOptions.map                = 'sbb';
+      gameOptions.random             = 120;
+      gameOptions.teamNb             = 16;
+      gameOptions.autopilot.interval = 10 * 60 * 1000;
       break;
   }
 
@@ -51,9 +85,9 @@ function setUpDemoGamemplayCreation() {
       gpLib.createDemoGameplay(gameOpts, function (err) {
         if (err) {
           logger.error('CRON: error while creating demo gameplay', err);
-        }
-        else {
+        } else {
           logger.info('CRON: demo set created');
+
         }
       });
     });
@@ -67,8 +101,7 @@ function setupDeletingOldGameplays() {
       gpLib.deleteOldGameplays(function (err) {
         if (err) {
           logger.error('CRON: error while deleting old gameplays', err);
-        }
-        else {
+        } else {
           logger.info('CRON: old gameplays deleted');
         }
       });

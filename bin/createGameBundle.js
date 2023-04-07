@@ -2,66 +2,86 @@
 /*
  Creates a few games running tomorrow: testing how the system behaves with several games
  */
-var settings = require('../editor/settings');
+var settings    = require('../editor/settings');
 var ferropolyDb = require('../common/lib/ferropolyDb');
-var gplib = require('../editor/lib/gameplayLib');
+var gplib       = require('../editor/lib/gameplayLib');
 
 
 function createGame1(callback) {
   gplib.createDemoGameplay({
-    gameId: 'bundle-game-1',
-    gamename: 'Bundle Spiel 1 (shorty)',
+    gameId          : 'bundle-game-1',
+    gamename        : 'Bundle Spiel 1 (shorty)',
     interestInterval: 20,
-    gameStart: '05:00',
-    gameEnd: '7:00',
-    random: 100,
-    teamNb: 4,
-    tomorrow: true,
-    doNotNotifyMain: false
+    gameStart       : '05:00',
+    gameEnd         : '7:00',
+    random          : 100,
+    teamNb          : 4,
+    tomorrow        : true,
+    doNotNotifyMain : false,
+    autopilot       : {
+      active   : true,
+      picBucket: true,
+      interval : 5 * 60 * 1000
+    },
   }, callback);
 }
 
 function createGame2(callback) {
   gplib.createDemoGameplay({
-    gameId: 'bundle-game-2',
-    gamename: 'Bundle Spiel 2',
+    gameId          : 'bundle-game-2',
+    gamename        : 'Bundle Spiel 2',
     interestInterval: 60,
-    gameStart: '05:00',
-    gameEnd: '20:00',
-    random: 100,
-    teamNb: 12,
-    tomorrow: true,
-    doNotNotifyMain: false
+    gameStart       : '05:00',
+    gameEnd         : '20:00',
+    random          : 100,
+    teamNb          : 12,
+    tomorrow        : true,
+    doNotNotifyMain : false,
+    autopilot       : {
+      active   : true,
+      picBucket: true,
+      interval : 5 * 60 * 1000
+    },
   }, callback);
 }
 
 
 function createGame3(callback) {
   gplib.createDemoGameplay({
-    gameId: 'bundle-game-3',
-    gamename: 'Bundle Spiel 3 (full)',
+    gameId          : 'bundle-game-3',
+    gamename        : 'Bundle Spiel 3 (full)',
     interestInterval: 60,
-    gameStart: '05:00',
-    gameEnd: '19:00',
-    random: 200,
-    teamNb: 20,
-    tomorrow: true,
-    doNotNotifyMain: false
+    gameStart       : '05:00',
+    gameEnd         : '19:00',
+    random          : 200,
+    teamNb          : 20,
+    tomorrow        : true,
+    doNotNotifyMain : false,
+    autopilot       : {
+      active   : true,
+      picBucket: true,
+      interval : 5 * 60 * 1000
+    },
   }, callback);
 }
 
 
 function createGame4(callback) {
   gplib.createDemoGameplay({
-    gameId: 'bundle-game-4',
-    gamename: 'Bundle Spiel 4',
+    gameId          : 'bundle-game-4',
+    gamename        : 'Bundle Spiel 4',
     interestInterval: 60,
-    gameStart: '05:00',
-    gameEnd: '18:00',
-    random: 80,
-    teamNb: 8,
-    tomorrow: true,
-    doNotNotifyMain: false
+    gameStart       : '05:00',
+    gameEnd         : '18:00',
+    random          : 80,
+    teamNb          : 8,
+    tomorrow        : true,
+    doNotNotifyMain : false,
+    autopilot       : {
+      active   : true,
+      picBucket: true,
+      interval : 5 * 60 * 1000
+    },
   }, callback);
 }
 
