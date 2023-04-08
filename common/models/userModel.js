@@ -184,34 +184,43 @@ function updateUser(user, password, callback) {
  * @param callback
  */
 function getUserByMailAddress(emailAddress, callback) {
-  User.find({'personalData.email': emailAddress}, function (err, docs) {
-    if (err) {
-      return callback(err);
-    }
-    if (docs.length === 0) {
-      return callback();
-    }
+  User
+    .find({'personalData.email': emailAddress})
+    .exec()
+    .then(docs => {
+      if (docs.length === 0) {
+        return callback();
+      }
 
-    // Verify if this user already has an ID or not. If not, upgrade to new model
-    let foundUser = docs[0];
-    if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
-      const id      = foundUser._id;
-      const newUser = new User();
-      copyUser(foundUser, newUser);
-      newUser._id = emailAddress;
-      newUser.save(function (err) {
-        if (err) {
-          return callback(err);
-        }
-        User.findByIdAndRemove(id, function (err) {
-          logger.info('Updated user with email ' + newUser.personalData.email);
-          callback(err, newUser);
+      // Verify if this user already has an ID or not. If not, upgrade to new model
+      let foundUser = docs[0];
+      if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
+        const id      = foundUser._id;
+        const newUser = new User();
+        copyUser(foundUser, newUser);
+        newUser._id = emailAddress;
+        newUser.save(function (err) {
+          if (err) {
+            return callback(err);
+          }
+          User
+            .findByIdAndRemove(id)
+            .exec()
+            .then(()=>{
+              logger.info('Updated user with email ' + newUser.personalData.email);
+              callback(null, newUser);
+            })
+            .catch(ex => {
+              callback(ex);
+            }, function (err) {
+
+          });
         });
-      });
-    } else {
-      callback(null, foundUser);
-    }
-  });
+      } else {
+        callback(null, foundUser);
+      }
+    })
+    .catch(callback);
 }
 
 /**

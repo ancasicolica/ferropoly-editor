@@ -32,6 +32,7 @@ router.get('/mygames', function (req, res) {
         });
       });
     }
+
     return res.send(retVal);
   });
 });
