@@ -285,7 +285,6 @@ async function countGameplays(callback) {
  * @param callback
  */
 async function getGameplay(gameId, ownerId, callback) {
-  console.log(gameId, ownerId);
   try {
     let params = {$or: [{'internal.owner': ownerId}, {'admins.logins': ownerId}], 'internal.gameId': gameId};
     //  var params = {'internal.owner': ownerId, 'internal.gameId': gameId};
