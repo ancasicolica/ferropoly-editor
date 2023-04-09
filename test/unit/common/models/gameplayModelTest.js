@@ -15,7 +15,7 @@ const users = ['admin1@ferropoly.ch', 'admin2@ferropoly.ch'];
 let gp1, gp2, gp3;
 describe('GameplayModel Tests', function () {
   before(function (done) {
-    db.init(settings, function (err) {
+    db.init(settings, function () {
       gameplays.removeGameplaysForUser(users[0], () => {
         gameplays.removeGameplaysForUser(users[1], done);
       })
@@ -102,13 +102,13 @@ describe('GameplayModel Tests', function () {
   describe('Counting the gameplays', function () {
     it('should return the correct number for user 1', function (done) {
       gameplays.countGameplaysForUser(users[0], function (err, nb) {
-        // expect(nb).to.be(2);
+        expect(nb >= 2).to.be(true);
         done(err);
       })
     });
     it('should return the correct number for user 2', function (done) {
       gameplays.countGameplaysForUser(users[1], function (err, nb) {
-        //expect(nb).to.be(1);
+        expect(nb >= 1).to.be(true);
         done(err);
       })
     });
@@ -362,14 +362,14 @@ describe('GameplayModel Tests', function () {
 
     it('verify by getting all gameplays should return none for user 1', function (done) {
       gameplays.getGameplaysForUser(users[0], function (err, gps) {
-        //expect(gps).to.be(undefined);
+        expect(gps.length).to.be(0);
         done(err);
       })
     });
 
     it('verify by getting all gameplays should return none for user 2', function (done) {
       gameplays.getGameplaysForUser(users[1], function (err, gps) {
-        //expect(gps).to.be(undefined);
+        expect(gps.length).to.be(0);
         done(err);
       })
     });
