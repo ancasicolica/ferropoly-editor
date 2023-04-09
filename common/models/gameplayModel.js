@@ -285,6 +285,7 @@ async function countGameplays(callback) {
  * @param callback
  */
 async function getGameplay(gameId, ownerId, callback) {
+  console.log(gameId, ownerId);
   try {
     let params = {$or: [{'internal.owner': ownerId}, {'admins.logins': ownerId}], 'internal.gameId': gameId};
     //  var params = {'internal.owner': ownerId, 'internal.gameId': gameId};
@@ -337,7 +338,25 @@ async function removeGameplay(gp, callback) {
     }
     logger.info('Removing gameplay ' + gp.internal.gameId + ' (' + gp.gamename + ')');
     await Gameplay
-      .deleteMany({'internal.gameId': gp.internal.gameId}).exec();
+      .deleteOne({'internal.gameId': gp.internal.gameId}).exec();
+    callback(null);
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
+}
+
+/**
+ * Deletes all gameplays for a user, this is for internal and testing purposes only
+ * @param email
+ * @param callback
+ * @returns {*}
+ */
+async function removeGameplaysForUser(email, callback) {
+  try {
+    logger.info(`Removing Gameplays for ${email}`);
+    await Gameplay
+      .deleteMany({'owner.organisatorEmail': email}).exec();
     callback(null);
   } catch (ex) {
     logger.error(ex);
@@ -661,8 +680,8 @@ async function saveNewPriceListRevision(gameplay, callback) {
     } else {
       gameplay.log.priceListVersion++;
     }
-    await gameplay.save();
-    callback();
+    const updatedGp = await gameplay.save();
+    callback(null, updatedGp);
   } catch (ex) {
     logger.error(ex);
     callback(ex);
@@ -676,17 +695,19 @@ async function saveNewPriceListRevision(gameplay, callback) {
 async function getAutopilotGameplays(callback) {
   try {
     let today = DateTime.now().toISODate()
-    const gps = await Gameplay.find({
-      'internal.isDemo': true, 'internal.autopilot.active': true, 'scheduling.gameDate': {
-        $gte: today, $lte: today
-      }
-    }).lean().exec();
+    const gps = await Gameplay
+      .find({
+        'internal.isDemo': true, 'internal.autopilot.active': true, 'scheduling.gameDate': {
+          $gte: today, $lte: today
+        }
+      })
+      .lean()
+      .exec();
     callback(null, gps);
   } catch (ex) {
     logger.error(ex);
     callback(ex);
   }
-
 }
 
 /**
@@ -700,6 +721,7 @@ module.exports = {
   createNewGameId               : createNewGameId,
   getGameplaysForUser           : getGameplaysForUser,
   removeGameplay                : removeGameplay,
+  removeGameplaysForUser        : removeGameplaysForUser,
   updateGameplay                : updateGameplay,
   setAdmins                     : setAdmins,
   getGameplay                   : getGameplay,
