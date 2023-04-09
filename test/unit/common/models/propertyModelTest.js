@@ -15,7 +15,7 @@ let propId0;
 
 describe('PropertyModel Tests', function () {
   before(function (done) {
-    db.init(settings, function (err) {
+    db.init(settings, function () {
       locations.getAllLocationsForMap('zvv', function (err, _locations) {
         foundLocations = _locations;
         done(err);
