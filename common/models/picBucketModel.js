@@ -133,5 +133,6 @@ module.exports = {
   deletePicBucket,
   findPicById,
   findPicsByFilter,
-  save
+  save,
+  assignProperty
 }
