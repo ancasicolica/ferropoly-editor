@@ -9,9 +9,9 @@ const locations  = require('./../../../../common/models/locationModel');
 const properties = require('./../../../../common/models/propertyModel');
 const settings   = require('./../../../../editor/settings');
 
-var gameId = 'gameplay-test-id';
-var foundLocations;
-var propId0;
+const gameId = 'gameplay-test-id';
+let foundLocations;
+let propId0;
 
 describe('PropertyModel Tests', function () {
   before(function (done) {
@@ -25,7 +25,10 @@ describe('PropertyModel Tests', function () {
 
   // Close DB afterwards
   after(function (done) {
-    db.close(done);
+    properties.removeAllPropertiesFromGameplay(gameId, err=> {
+      expect(err).to.be(null);
+      db.close(done);
+    })
   });
 
   describe('Deleting all properties', function () {
@@ -67,6 +70,17 @@ describe('PropertyModel Tests', function () {
         });
       })
     });
+    it('should add the third location', function (done) {
+      properties.createPropertyFromLocation(gameId, foundLocations[2], function (err, prop) {
+        expect(prop.location.uuid).to.be(foundLocations[2].uuid);
+        expect(prop.gameId).to.be(gameId);
+        expect(prop.uuid.length > 6).to.be(true);
+        properties.getPropertiesForGameplay(gameId, null, function (err, props) {
+          expect(props.length).to.be(3);
+          done(err);
+        });
+      })
+    });
   });
 
   describe('Set the price range in a property', function () {
@@ -90,6 +104,24 @@ describe('PropertyModel Tests', function () {
         expect(prop).to.be(undefined);
         done();
       })
+    });
+  });
+
+  describe('Getting a property', ()=> {
+    it('should return one by id', done=> {
+      properties.getPropertyById(gameId, propId0, (err, prop) => {
+        console.log(prop);
+        expect(prop.uuid).to.be(propId0);
+        done(err);
+      } );
+    });
+  })
+  describe('Allow building', ()=> {
+    it('should work', done=> {
+      properties.allowBuilding(gameId, (err, res) => {
+        console.log(res);
+        done(err);
+      } );
     });
   })
 });

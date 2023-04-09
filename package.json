@@ -91,6 +91,7 @@
     "html-webpack-plugin": "5.5.0",
     "load-grunt-tasks": "5.1.0",
     "mocha": "10.2.0",
+    "nyc": "^15.1.0",
     "popper.js": "1.16.1",
     "pug-plain-loader": "1.1.0",
     "raw-loader": "4.0.2",

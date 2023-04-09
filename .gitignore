@@ -42,3 +42,5 @@ node_modules
 yarn.lock
 /editor/webapp/webapp_config.json
 /editor/views/error/*.html
+/.nyc_output/**.*
+/.nyc_output/processinfo/**.*
