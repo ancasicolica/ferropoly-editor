@@ -10,7 +10,6 @@ const tat      = require('./../../../../common/models/accounting/teamAccountTran
 const settings = require('./../../../../editor/settings');
 
 const gameId     = 'unit-test';
-const propertyId = 'prop-id-test';
 const teamIds    = ['team-id-1', 'team-id-2'];
 describe('Chancellery Transaction Tests', function () {
   before(function (done) {

@@ -183,6 +183,7 @@ async function getRankingList(gameId, callback) {
 /**
  * Get the balance of a team
  * @param gameId
+ * @param teamId
  * @param callback
  */
 async function getBalance(gameId, teamId, callback) {
@@ -209,14 +210,13 @@ async function getBalance(gameId, teamId, callback) {
     }
     retVal.asset = data[0].asset;
 
-    const result = await TeamAccountTransaction
+    retVal.count = await TeamAccountTransaction
       .countDocuments({
         gameId: gameId,
         teamId: teamId
       })
       .exec();
 
-    retVal.count = result;
     return callback(null, retVal);
 
   } catch (ex) {
