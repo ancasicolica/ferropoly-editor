@@ -42,32 +42,39 @@ const Location = mongoose.model('Location', locationSchema);
  * Returns all locations in ferropoly style, LEAN
  * @param callback
  */
-function getAllLocationsLean(callback) {
-  Location.find({}).lean().exec(function (err, docs) {
-    if (err) {
-      logger.error('Location.find failed: ', err);
-      return callback(err);
-    }
+async function getAllLocationsLean(callback) {
+  try {
+    const docs = await Location
+      .find({})
+      .lean()
+      .exec()
+
     let locations = [];
     for (let i = 0; i < docs.length; i++) {
       locations.push(convertModelDataToObject(docs[i]));
     }
     return callback(null, locations);
-  });
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
+
 
 /**
  * Returns all locations in ferropoly style, COMPLETE OBJECTS
  * @param callback
  */
-function getAllLocations(callback) {
-  Location.find({}).exec(function (err, docs) {
-    if (err) {
-      logger.error('Location.find failed: ', err);
-      return callback(err);
-    }
+async function getAllLocations(callback) {
+  try {
+    const docs = await Location
+      .find({})
+      .exec();
     return callback(null, docs);
-  });
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 
@@ -76,26 +83,24 @@ function getAllLocations(callback) {
  * @param map : map ('zvv', 'sbb' or 'ostwind')
  * @param callback
  */
-function getAllLocationsForMap(map, callback) {
-  // This creates a query in this format: {'maps.zvv': true}
-  let index    = 'maps.' + map;
-  let query    = {};
-  query[index] = true;
+async function getAllLocationsForMap(map, callback) {
+  try {
+    // This creates a query in this format: {'maps.zvv': true}
+    let index    = 'maps.' + map;
+    let query    = {};
+    query[index] = true;
 
-  Location.find(query).lean().exec(function (err, docs) {
-    if (err) {
-      logger.error('LocationFind failed', err);
-      return callback(err);
-    }
-    let locations = [];
-    for (let i = 0;
-         i < docs.length;
-         i++
-    ) {
-      locations.push(docs[i]);
-    }
-    return callback(null, locations);
-  });
+    const docs = await Location
+      .find(query)
+      .lean()
+      .exec();
+
+    return callback(null, docs);
+
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 /**
@@ -103,50 +108,55 @@ function getAllLocationsForMap(map, callback) {
  * @param uuid
  * @param callback
  */
-function getLocationByUuid(uuid, callback) {
-  Location.find({uuid: uuid}, function (err, docs) {
-    if (err) {
-      return callback(err);
-    }
+async function getLocationByUuid(uuid, callback) {
+  try {
+    const docs = await Location
+      .find({uuid: uuid})
+      .exec();
+
     if (docs.length === 0) {
       // No location found
       return callback(null, null);
     }
     return callback(null, docs[0]);
-  });
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 /**
  * Count Locations
  * @param callback
  */
-function countLocations(callback) {
-  let retVal = _.clone(mapinfo, true);
+async function countLocations(callback) {
+  try {
+    let retVal = _.clone(mapinfo, true);
 
-  Location.countDocuments({}, function (err, nb) {
-    if (err) {
-      retVal.all = 0;
-    } else {
-      retVal.all = nb;
-    }
+    retVal.all = await Location
+      .countDocuments({})
+      .exec();
 
     async.each(retVal.maps,
-      function (m, cb) {
+      async function (m, cb) {
         // This creates a query in this format: {'maps.zvv': true}
         let index    = 'maps.' + m.map;
         let query    = {};
         query[index] = true;
 
-        Location.countDocuments(query, function (err, nb) {
-          m.locationNb = nb;
-          cb(err);
-        });
+        m.locationNb = await Location
+          .countDocuments(query)
+          .exec();
+        cb();
       },
       function (err) {
         callback(err, retVal);
       }
     );
-  });
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 /**
@@ -170,10 +180,14 @@ function convertModelDataToObject(data) {
  * @param location
  * @param callback
  */
-function saveLocation(location, callback) {
-  location.save(function (err, savedLocation) {
+async function saveLocation(location, callback) {
+  try {
+    const savedLocation = await location.save();
     callback(err, savedLocation);
-  })
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 module.exports = {
