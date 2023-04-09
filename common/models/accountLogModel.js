@@ -26,7 +26,9 @@ function addNewUserEntry(email, means) {
     if (err) {
       logger.error(err);
     }
-  });
+  })
+    .then(() => {
+    });
 }
 
 /**
@@ -34,12 +36,18 @@ function addNewUserEntry(email, means) {
  * @param info
  * @param callback
  */
-function addEntry(info, callback) {
-  let entry       = new accountLogEntry();
-  entry.timestamp = new Date();
-  entry.user      = _.get(info, 'user', 'none');
-  entry.activity  = _.get(info, 'activity', '');
-  entry.save(callback);
+async function addEntry(info, callback) {
+  try {
+    let entry       = new accountLogEntry();
+    entry.timestamp = new Date();
+    entry.user      = _.get(info, 'user', 'none');
+    entry.activity  = _.get(info, 'activity', '');
+    const res       = await entry.save();
+    callback(null, res);
+  } catch (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 module.exports = {
