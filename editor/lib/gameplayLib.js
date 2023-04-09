@@ -6,7 +6,6 @@
 
 const gameplays                  = require('../../common/models/gameplayModel');
 const properties                 = require('../../common/models/propertyModel');
-const propertyGridModel          = require('../../common/models/propertyGridModel');
 const propertyMap                = require('../../common/lib/propertyMap');
 const locations                  = require('../../common/models/locationModel');
 const travelLog                  = require('../../common/models/travelLogModel');
@@ -19,7 +18,6 @@ const schedulerEvents            = require('../../common/lib/schedulerEvents');
 const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
 const picBucketModel             = require('../../common/models/picBucketModel');
 const userModel                  = require('../../common/models/userModel');
-const propertyGrid               = require('../../common/lib/propertyGrid');
 const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
 const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
@@ -322,9 +320,6 @@ function deleteGameplay(gpOptions, callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
         },
         function (callback) {
-          propertyGridModel.removeAllPropertyGridsFromGameplay(gpOptions.gameId, callback);
-        },
-        function (callback) {
           gameLog.deleteAllEntries(gpOptions.gameId, callback);
         }
       ], function (err) {
@@ -573,16 +568,10 @@ function finalizeGameplay(gameplay, email, callback) {
             if (err) {
               logger.error(err);
             }
-            propertyGrid.create(gameplay.internal.gameId, err => {
-              if (err) {
-                logger.error(err);
-              }
-              logger.info('Gameplay finalized', gameplay.internal.gameId);
-              if (gameplay.internal.doNotNotifyMain) {
-                return callback();
-              }
-              updateFerropolyMainCache(4000, callback);
-            });
+            if (gameplay.internal.doNotNotifyMain) {
+              return callback();
+            }
+            updateFerropolyMainCache(4000, callback);
           });
         });
       });
