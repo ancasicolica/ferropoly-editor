@@ -22,7 +22,6 @@ describe('Chancellery Transaction Tests', function () {
 
   // Close DB afterwards
   after(function (done) {
-    return db.close(done);
     schedulerEventsModel.dumpEvents(gameId, () => {
       db.close(done);
     });
