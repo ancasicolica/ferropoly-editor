@@ -14,7 +14,7 @@ let team2;
 const gameId = 'test-game';
 describe('TeamModel Tests', function () {
   before(function (done) {
-    db.init(settings, function (err) {
+    db.init(settings, function () {
       teams.deleteAllTeams(gameId, done);
     });
   });
