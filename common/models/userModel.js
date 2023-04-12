@@ -183,44 +183,36 @@ function updateUser(user, password, callback) {
  * @param emailAddress
  * @param callback
  */
-function getUserByMailAddress(emailAddress, callback) {
-  User
-    .find({'personalData.email': emailAddress})
-    .exec()
-    .then(docs => {
-      if (docs.length === 0) {
-        return callback();
-      }
+async function getUserByMailAddress(emailAddress, callback) {
+  try {
+    const foundUser = await User
+      .findOne({'personalData.email': emailAddress})
+      .exec();
 
-      // Verify if this user already has an ID or not. If not, upgrade to new model
-      let foundUser = docs[0];
-      if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
-        const id      = foundUser._id;
-        const newUser = new User();
-        copyUser(foundUser, newUser);
-        newUser._id = emailAddress;
-        newUser.save(function (err) {
-          if (err) {
-            return callback(err);
-          }
-          User
-            .findByIdAndRemove(id)
-            .exec()
-            .then(()=>{
-              logger.info('Updated user with email ' + newUser.personalData.email);
-              callback(null, newUser);
-            })
-            .catch(ex => {
-              callback(ex);
-            }, function (err) {
+    if (!foundUser) {
+      return callback();
+    }
 
-          });
-        });
-      } else {
-        callback(null, foundUser);
-      }
-    })
-    .catch(callback);
+    // Verify if this user already has an ID or not. If not, upgrade to new model
+    if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
+      const id      = foundUser._id;
+      const newUser = new User();
+      copyUser(foundUser, newUser);
+      newUser._id = emailAddress;
+      await newUser.save();
+      await User
+        .findByIdAndRemove(id)
+        .exec();
+      logger.info('Updated user with email ' + newUser.personalData.email);
+      callback(null, newUser);
+    } else {
+      callback(null, foundUser);
+    }
+  } catch
+    (ex) {
+    logger.error(ex);
+    callback(ex);
+  }
 }
 
 /**
