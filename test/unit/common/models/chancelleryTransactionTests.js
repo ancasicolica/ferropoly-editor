@@ -47,6 +47,13 @@ describe('Chancellery Transaction Tests', function () {
         done(err);
       })
     });
+    it('sccce then', done => {
+      chancellery.getBalance(gameId,(err, res)=> {
+        console.log('CALLBACK', err, res);
+        //res.g.g=2;
+        done(err);
+      })
+    });
 
     it('should book another transaction', done => {
       const entry = new chancellery.Model();

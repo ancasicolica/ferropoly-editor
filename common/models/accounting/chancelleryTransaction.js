@@ -37,12 +37,15 @@ const ChancelleryTransaction = mongoose.model('ChancelleryTransactions', chancel
  * @param callback
  */
 async function book(transaction, callback) {
+  let result;
+  let err;
   try {
-    const result = await transaction.save();
-    callback(null, result);
+    result = await transaction.save();
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
@@ -52,18 +55,21 @@ async function book(transaction, callback) {
  * @param callback
  */
 async function dumpChancelleryData(gameId, callback) {
+  let result;
+  let err;
   try {
     if (!gameId) {
       return callback(new Error('No gameId supplied'));
     }
     logger.info('Removing all chancellery information for ' + gameId);
-    await ChancelleryTransaction
+    result = await ChancelleryTransaction
       .deleteMany({gameId: gameId})
       .exec();
-    callback(null);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
@@ -77,6 +83,8 @@ async function dumpChancelleryData(gameId, callback) {
  * @returns {*}
  */
 async function getEntries(gameId, tsStart, tsEnd, callback) {
+  let result;
+  let err;
   try {
     if (!gameId) {
       return callback(new Error('parameter error'));
@@ -87,16 +95,17 @@ async function getEntries(gameId, tsStart, tsEnd, callback) {
     if (!tsEnd) {
       tsEnd = moment();
     }
-    const entries = await ChancelleryTransaction
+    result = await ChancelleryTransaction
       .find({gameId: gameId})
       .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
       .sort('timestamp')
       .lean()
       .exec();
-    callback(null, entries);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
@@ -106,8 +115,10 @@ async function getEntries(gameId, tsStart, tsEnd, callback) {
  * @param callback
  */
 async function getBalance(gameId, callback) {
+  let result;
+  let err;
   try {
-    const data = await ChancelleryTransaction
+    result = await ChancelleryTransaction
       .aggregate([
         {
           $match: {
@@ -121,14 +132,14 @@ async function getBalance(gameId, callback) {
         }
       ])
       .exec();
-
-    if (data && isArray(data) && data.length > 0) {
-      return callback(null, data[0]);
+    if (result && isArray(result) && result.length > 0) {
+      result = result[0];
     }
-    callback(null, data);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
