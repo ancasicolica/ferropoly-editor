@@ -176,7 +176,7 @@ async function createGameplay(gpOptions, callback) {
         }
       } catch (ex) {
         logger.error(ex);
-        err = ex;
+        errInfo = ex;
       } finally {
         callback(errInfo, result);
       }
