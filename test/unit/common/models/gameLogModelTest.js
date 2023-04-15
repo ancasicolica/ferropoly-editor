@@ -27,6 +27,16 @@ describe('gameLogModel Tests', () => {
   });
 
   describe('Adding some log entries', () => {
+    it('fails without gameId', done => {
+      log.addEntry({
+        title  : 'Unit Test',
+        options: {message: 'This is a message', teamId: teamIds[0]}
+      }, (err, res) => {
+        console.log(err);
+        expect(err).to.be.an('object');
+        done();
+      })
+    })
     it('adds an entry with new API', done => {
       log.addEntry({
         gameId : gameId,

@@ -54,13 +54,16 @@ let GameLog = mongoose.model('GameLog', gameLogSchema);
  */
 //let addEntry = function (gameId, category, title, options, callback) {
 async function addEntry(p1, p2, p3, p4, p5) {
+  let result;
+  let err;
+  let callback;
   try {
     let gameId    = p1;
     let category  = p2;
     let title     = p3;
     let saveTitle = ''; // title without additional infos about locations, "game save"
     let options   = p4;
-    let callback  = p5;
+    callback      = p5;
 
     if (_.isFunction(p2) && _.isObject((p1))) {
       // New API with object as param 1 and callback as param 2
@@ -73,12 +76,15 @@ async function addEntry(p1, p2, p3, p4, p5) {
     }
 
     if (!gameId) {
-      return callback(new Error('gameId in addEntry must be set'));
+      err = new Error('gameId in addEntry must be set');
+      return;
     }
 
     if (!_.isString(gameId) || !_.isString(title)) {
-      return callback(new Error('all params in createEntry must be strings'));
+      err = new Error('all params in createEntry must be strings');
+      return;
     }
+
     let logEntry       = new GameLog();
     logEntry.gameId    = gameId;
     logEntry.title     = title;
@@ -88,11 +94,13 @@ async function addEntry(p1, p2, p3, p4, p5) {
     logEntry.teamId    = _.get(options, 'teamId', undefined);
     logEntry.files     = []; // Not used yet
     logEntry._id       = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
-    const res          = await logEntry.save();
-    callback(null, res);
+    result             = await logEntry.save();
+
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
