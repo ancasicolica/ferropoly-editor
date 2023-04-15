@@ -128,7 +128,7 @@ const Gameplay = mongoose.model('Gameplay', gameplaySchema);
  * @param callback
  */
 async function createGameplay(gpOptions, callback) {
-  let err;
+  let errInfo;
   let gp = new Gameplay();
   if (!gpOptions.map || !gpOptions.ownerEmail || !gpOptions.name) {
     return callback(new Error('Missing parameter'));
@@ -178,7 +178,7 @@ async function createGameplay(gpOptions, callback) {
         logger.error(ex);
         err = ex;
       } finally {
-        callback(err, result);
+        callback(errInfo, result);
       }
     });
   } catch (ex) {
@@ -503,7 +503,7 @@ async function updateGameplayPartial(gp, callback) {
       logger.info('Gameplay update: ' + gpSaved.internal.gameId);
     } catch (ex) {
       logger.error(ex);
-      err = ex;
+      errInfo = ex;
     } finally {
       callback(errInfo, gpSaved)
     }
