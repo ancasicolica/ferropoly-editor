@@ -32,7 +32,7 @@ describe('gameLogModel Tests', () => {
         title  : 'Unit Test',
         options: {message: 'This is a message', teamId: teamIds[0]}
       }, (err, res) => {
-        console.log(err);
+        console.log(err, res);
         expect(err).to.be.an('object');
         done();
       })
