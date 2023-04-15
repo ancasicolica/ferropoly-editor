@@ -37,16 +37,19 @@ function addNewUserEntry(email, means) {
  * @param callback
  */
 async function addEntry(info, callback) {
+  let result;
+  let err;
   try {
     let entry       = new accountLogEntry();
     entry.timestamp = new Date();
     entry.user      = _.get(info, 'user', 'none');
     entry.activity  = _.get(info, 'activity', '');
-    const res       = await entry.save();
-    callback(null, res);
+    result          = await entry.save();
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
