@@ -203,6 +203,20 @@ describe('GameplayModel Tests', function () {
 
       })
     });
+    it('should work with a plain object', function (done) {
+      gameplays.getGameplay(gp3.internal.gameId, users[1], function (err, gp) {
+        expect(gp).to.be.a('object');
+        expect(gp.internal.gameId).to.be(gp3.internal.gameId);
+        gp.gameParams.startCapital = 4555;
+        gp.save = null;
+        gameplays.updateGameplay(gp, function (err, gpSaved) {
+          expect(gpSaved.gameParams.startCapital).to.be(4555);
+          console.log(gpSaved.internal.gameId + ' updated');
+          done(err);
+        });
+
+      })
+    });
     it('should work also partially', function (done) {
       let partial = {
         internal: {
@@ -299,10 +313,10 @@ describe('GameplayModel Tests', function () {
   describe('Updating rules', function () {
     it('should create version 1 the first time', function (done) {
       gameplays.updateRules(gp3.internal.gameId, users[1], {text: 'Spielregeln'}, err => {
-        expect(err).to.be(null);
+        expect(err).to.be(undefined);
 
         gameplays.getGameplay(gp3.internal.gameId, users[1], (err, gp) => {
-          expect(err).to.be(null);
+          expect(err).to.be(undefined);
           expect(gp.rules.text).to.be('Spielregeln');
           expect(gp.rules.version).to.be(0);
 
@@ -310,10 +324,10 @@ describe('GameplayModel Tests', function () {
             text   : 'Updated',
             changes: 'abc'
           }, err => {
-            expect(err).to.be(null);
+            expect(err).to.be(undefined);
 
             gameplays.getGameplay(gp3.internal.gameId, users[1], (err, gp) => {
-              expect(err).to.be(null);
+              expect(err).to.be(undefined);
               expect(gp.rules.text).to.be('Updated');
               expect(gp.rules.changelog.length).to.be(2);
               expect(gp.rules.changelog[1].changes).to.be('abc');
