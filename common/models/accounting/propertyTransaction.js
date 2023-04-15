@@ -39,12 +39,15 @@ const PropertyAccountTransaction = mongoose.model('PropertyTransactions', proper
  * @param callback
  */
 async function book(transaction, callback) {
+  let result;
+  let err;
   try {
-    const result = await transaction.save();
-    callback(null, result);
+    result = await transaction.save();
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
@@ -55,18 +58,21 @@ async function book(transaction, callback) {
  * @param callback
  */
 async function dumpAccounts(gameId, callback) {
+  let result;
+  let err;
   try {
     if (!gameId) {
       return callback(new Error('No gameId supplied'));
     }
     logger.info('Removing all account information for ' + gameId);
-    await PropertyAccountTransaction
+    result = await PropertyAccountTransaction
       .deleteMany({gameId: gameId})
       .exec();
-    callback();
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, result);
   }
 }
 
@@ -81,6 +87,8 @@ async function dumpAccounts(gameId, callback) {
  * @returns {*}
  */
 async function getEntries(gameId, propertyId, tsStart, tsEnd, callback) {
+  let data;
+  let err;
   try {
     if (!gameId || !propertyId) {
       return callback(new Error('parameter error'));
@@ -94,27 +102,27 @@ async function getEntries(gameId, propertyId, tsStart, tsEnd, callback) {
     }
     if (!propertyId) {
       // Get all
-      const data = await PropertyAccountTransaction
+      data = await PropertyAccountTransaction
         .find({gameId: gameId})
         .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
         .sort('timestamp')
         .lean()
         .exec();
-      callback(null, data);
     } else {
       // get only of the provided property
-      const data = await PropertyAccountTransaction
+      data = await PropertyAccountTransaction
         .find({gameId: gameId})
         .where('propertyId').equals(propertyId)
         .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
         .sort('timestamp')
         .lean()
         .exec();
-      callback(null, data);
     }
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, data);
   }
 }
 
@@ -125,6 +133,8 @@ async function getEntries(gameId, propertyId, tsStart, tsEnd, callback) {
  * @param callback
  */
 async function getSummary(gameId, propertyId, callback) {
+  let data;
+  let err;
   try {
     if (_.isFunction(propertyId)) {
       callback   = propertyId;
@@ -137,7 +147,7 @@ async function getSummary(gameId, propertyId, callback) {
       match['propertyId'] = propertyId;
     }
 
-    const data = await PropertyAccountTransaction
+    data = await PropertyAccountTransaction
       .aggregate([{
         $match: match
       }, {
@@ -147,10 +157,11 @@ async function getSummary(gameId, propertyId, callback) {
         }
       }])
       .exec();
-    callback(null, data);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, data);
   }
 }
 
