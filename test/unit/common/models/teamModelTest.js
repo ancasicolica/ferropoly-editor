@@ -40,7 +40,7 @@ describe('TeamModel Tests', function () {
         },
         gameId,
         function (err, team) {
-          expect(err).to.be(null);
+          expect(err).to.be(undefined);
           expect(team.data.name).to.be('Albatros');
           expect(team.data.organization).to.be('Pfadi Sirius');
           expect(team.data.teamLeader.name).to.be('Plato');
@@ -60,7 +60,7 @@ describe('TeamModel Tests', function () {
         },
         gameId,
         function (err, team) {
-          expect(err).to.be(null);
+          expect(err).to.be(undefined);
           expect(team.data.name).to.be('Ferropoly Riders');
           expect(team.data.organization).to.be('Pfadi Paprika');
           expect(team.data.teamLeader.name).to.be('Celesta');
@@ -135,7 +135,7 @@ describe('TeamModel Tests', function () {
   describe('Delete a team', function () {
     it('should delete the team', function (done) {
       teams.deleteTeam(team1.uuid, function (err) {
-        expect(err).to.be(null);
+        expect(err).to.be(undefined);
         teams.getTeams(gameId, function (err, teams) {
           expect(teams.length).to.be(1);
           done(err);
