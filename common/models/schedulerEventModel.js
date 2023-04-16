@@ -5,7 +5,6 @@
 
 const mongoose = require('mongoose');
 const moment   = require('moment');
-const _        = require('lodash');
 const logger   = require('../lib/logger').getLogger('schedulerEventModel');
 
 /**
