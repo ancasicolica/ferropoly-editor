@@ -41,18 +41,20 @@ const Model = mongoose.model('PicBucket', picBucketSchema);
  * @returns {Promise<*>}
  */
 async function deletePicBucket(gameId, callback) {
+  let res, err;
   try {
     if (!gameId) {
       return callback(new Error('No gameId supplied'));
     }
     logger.info('Deleting Pic Bucket for ' + gameId);
-    const res = await Model
+    res = await Model
       .deleteMany({gameId: gameId})
       .exec();
-    callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -63,12 +65,14 @@ async function deletePicBucket(gameId, callback) {
  * @returns {Promise<void>}
  */
 async function save(pic, callback) {
+  let res, err;
   try {
-    const res = await pic.save();
-    callback(null, res);
+    res = await pic.save();
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -80,14 +84,16 @@ async function save(pic, callback) {
  * @returns {Promise<void>}
  */
 async function findPicById(id, callback) {
+  let res, err;
   try {
-    const res = Model
+    res = Model
       .find({_id: id})
       .exec();
-    callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -98,14 +104,16 @@ async function findPicById(id, callback) {
  * @returns {Promise<void>}
  */
 async function findPicsByFilter(filter, callback) {
+  let res, err;
   try {
-    const res = Model
+    res = Model
       .find(filter)
       .exec();
-    callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -117,14 +125,17 @@ async function findPicsByFilter(filter, callback) {
  * @returns {Promise<void>}
  */
 async function assignProperty(id, propertyId, callback) {
+  let res, err;
   try {
-    const res = Model
+    res = Model
       .findOneAndUpdate({_id: id}, {propertyId: propertyId})
       .exec();
     callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
