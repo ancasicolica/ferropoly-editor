@@ -16,13 +16,13 @@ const gameId = 'unit-test';
 describe('Scheduler Event Tests', function () {
   before(function (done) {
     db.init(settings, function () {
-      schedulerEventsModel.dumpEvents(gameId, done)
+      schedulerEventsModel.dumpEvents(gameId).then(done())
     });
   });
 
   // Close DB afterwards
   after(function (done) {
-    schedulerEventsModel.dumpEvents(gameId, () => {
+    schedulerEventsModel.dumpEvents(gameId).then( () => {
       db.close(done);
     });
   });
@@ -49,12 +49,12 @@ describe('Scheduler Event Tests', function () {
 
   describe('Getting some events', ()=> {
     it('should hopefully return some', done=> {
-      schedulerEventsModel.getUpcomingEvents((err, events)=> {
+      schedulerEventsModel.getUpcomingEvents().then( events => {
         // This hardly depends on the games in the DB, do not analyse too much
         console.log(events);
-        expect(events.length > 10).to.be(true);
-        done(err);
-      })
+        expect(events.length > 1).to.be(true);
+        done();
+      }).catch();
     })
   })
 

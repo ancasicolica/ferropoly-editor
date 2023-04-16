@@ -295,24 +295,16 @@ function deleteGameplay(gpOptions, callback) {
         return callback(err);
       }
       await teams.deleteAllTeams(gpOptions.gameId);
+      await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
+      await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
+      await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
+      await schedulerEventsModel.dumpEvents(gpOptions.gameId);
       async.series([
         function (callback) {
           gameplays.removeGameplay(gp, callback);
         },
         function (callback) {
           picBucketModel.deletePicBucket(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          propertyAccountTransaction.dumpAccounts(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          teamAccountTransaction.dumpAccounts(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          chancelleryTransaction.dumpChancelleryData(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          schedulerEventsModel.dumpEvents(gpOptions.gameId, callback);
         },
         function (callback) {
           travelLog.deleteAllEntries(gpOptions.gameId, callback);
@@ -363,7 +355,7 @@ function createDemoTeamEntry(gameId, entry) {
  */
 async function createDemoTeams(gp, teamNb, callback) {
   let i;
-  teamNb           = teamNb || 8;
+  teamNb = teamNb || 8;
   if (teamNb > 20) {
     teamNb = 20;
   }
