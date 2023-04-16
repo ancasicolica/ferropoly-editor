@@ -61,6 +61,7 @@ module.exports = {
       } finally {
         callback(errInfo, res.id);
       }
+    }).then(() => {
     });
   },
 
