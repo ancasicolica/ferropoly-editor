@@ -13,7 +13,7 @@ const {DateTime}           = require('luxon');
 
 const gameId = 'unit-test';
 
-describe('Chancellery Transaction Tests', function () {
+describe('Scheduler Event Tests', function () {
   before(function (done) {
     db.init(settings, function () {
       schedulerEventsModel.dumpEvents(gameId, done)

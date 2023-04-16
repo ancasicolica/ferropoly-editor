@@ -7,12 +7,11 @@ const mongoose = require('mongoose');
 const moment   = require('moment');
 const _        = require('lodash');
 const logger   = require('../lib/logger').getLogger('schedulerEventModel');
-const async    = require('async');
 
 /**
  * The mongoose schema for a scheduleEvent
  */
-const scheduleEventSchema  = mongoose.Schema({
+const scheduleEventSchema = mongoose.Schema({
   _id      : String,
   gameId   : String, // Gameplay this team plays with
   timestamp: Date, // When it is going to happen
@@ -27,7 +26,7 @@ const scheduleEventSchema  = mongoose.Schema({
 /**
  * The scheduleEvent model
  */
-const scheduleEventModel = mongoose.model('schedulerEvent', scheduleEventSchema);
+const scheduleEventModel  = mongoose.model('schedulerEvent', scheduleEventSchema);
 
 /**
  * Creates an event
@@ -47,19 +46,21 @@ function createEvent(gameId, timestamp, type) {
  * @param callback
  */
 function saveEvents(events, callback) {
+  let err;
   try {
-    dumpEvents(events[0].gameId, function (err) {
+    dumpEvents(events[0].gameId, async function (err) {
       if (err) {
         return callback(err);
       }
-      async.eachSeries(events, async (item) => {
-          await item.save();
-        },
-        callback);
+      for (const item of events) {
+        await item.save();
+      }
     });
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err);
   }
 }
 
@@ -70,18 +71,21 @@ function saveEvents(events, callback) {
  * @returns {*}
  */
 async function dumpEvents(gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  logger.info('Removing all existing scheduler event information for ' + gameId);
+
+  let err, res;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
-    logger.info('Removing all existing scheduler event information for ' + gameId);
-    const res = await scheduleEventModel
+    res = await scheduleEventModel
       .deleteMany({gameId: gameId})
       .exec();
-    callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -91,32 +95,33 @@ async function dumpEvents(gameId, callback) {
  * @param callback
  */
 async function getUpcomingEvents(callback) {
+  let err, res;
   try {
     let untilTime = moment().add(4, 'h');
 
-    const res = await scheduleEventModel
+    res = await scheduleEventModel
       .find()
       .where('handled').equals(false)
       .where('timestamp').lte(untilTime.toDate())
       .sort('timestamp')
       .lean()
       .exec();
-    callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
 /**
- * Gets an event to handle on a save way:
- * only if we can reserve the event for our handling it is returned. Therefore we read the
- * event, write it with our serverId and then check again if it is ours.
+ * This function was way to complicated, just save an event!
  * @param event
  * @param serverId
  * @param callback
  */
 async function requestEventSave(event, serverId, callback) {
+  let err, res;
   try {
     const data = await scheduleEventModel
       .find()
@@ -136,31 +141,12 @@ async function requestEventSave(event, serverId, callback) {
       id      : serverId,
       reserved: new Date()
     };
-
-    // Now try to save and read it back again after a short, random period
-    const savedEvent = await ev.save();
-    // This delay avoids collisions between two parallel servers
-    let delay        = _.random(20, 200);
-    logger.info('requestEventSave: delay: ' + delay + ' for event ' + savedEvent._id);
-    _.delay(async function (_eventId, _serverId, _callback) {
-        const data = await scheduleEventModel
-          .find()
-          .where('_id').equals(_eventId)
-          .where('handler.id').equals(_serverId)
-          .exec();
-
-        if (!data || data.length === 0) {
-          return _callback(null, null);
-        }
-        _callback(null, data[0]);
-
-      },
-      delay,
-      savedEvent._id, serverId, callback);
-  } catch
-    (ex) {
+    res        = await ev.save();
+  } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -171,24 +157,24 @@ async function requestEventSave(event, serverId, callback) {
  * @returns {*}
  */
 async function saveAfterHandling(event, callback) {
+  if (!event) {
+    return callback(new Error('No event supplied'));
+  }
+  if (!event.handler || !event.handler.reserved) {
+    return callback(new Error('This event is not properly handled, can not save it!'));
+  }
+
+  let err, savedEvent;
   try {
-    if (!event) {
-      return callback(new Error('No event supplied'));
-    }
-    if (!event.handler || !event.handler.reserved) {
-      return callback(new Error('This event is not properly handled, can not save it!'));
-    }
     event.handler.handled = new Date();
     event.handled         = true;
-
-    let savedEvent = await event.save();
+    savedEvent            = await event.save();
     logger.info('Event marked as finished');
-    callback(null, savedEvent);
-
-  } catch
-    (ex) {
+  } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, savedEvent);
   }
 }
 
