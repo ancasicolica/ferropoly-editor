@@ -8,6 +8,7 @@ const mongoose   = require('mongoose');
 const logger     = require('../lib/logger').getLogger('teamModel');
 const {v4: uuid} = require('uuid');
 const userModel  = require('./userModel');
+const _          = require('lodash');
 
 /**
  * The mongoose schema for a property
@@ -41,119 +42,88 @@ const teamSchema = mongoose.Schema({
 const Team = mongoose.model('Team', teamSchema);
 
 /**
- * Create a new team
+ * Creates a new team
  * @param newTeam
  * @param gameId
- * @param callback
+ * @return {Promise<*>}
  */
-async function createTeam(newTeam, gameId, callback) {
-  let savedTeam, err;
-  try {
-    let team    = new Team();
-    team.uuid   = uuid();
-    team.gameId = gameId;
-    team.data   = newTeam.data;
-    team._id    = gameId + '-' + team.uuid;
-    savedTeam   = await team.save();
-    logger.info(`Created team ${team.uuid} for ${gameId}`);
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, savedTeam);
-  }
+async function createTeam(newTeam, gameId) {
+  let team    = new Team();
+  team.uuid   = uuid();
+  team.gameId = gameId;
+  team.data   = newTeam.data;
+  team._id    = gameId + '-' + team.uuid;
+  logger.info(`Created team ${team.uuid} for ${gameId}`);
+  return await team.save();
 }
 
 /**
- * Update a Team
+ * Updates a team
  * @param team
- * @param callback
+ * @return {Promise<*|undefined|void>}
  */
-async function updateTeam(team, callback) {
-  let res, errInfo;
-  try {
-    logger.info(`Updating team ${team.uuid} for ${team.gameId}`);
-    let doc = await Team
-      .findOne({uuid: team.uuid})
-      .exec();
+async function updateTeam(team) {
+  let res
 
-    if (!doc) {
-      // Team not available yet, create it
-      if (!team.gameId) {
-        return callback(new Error('no game id'));
+  logger.info(`Updating team ${team.uuid} for ${team.gameId}`);
+  let doc = await Team
+    .findOne({uuid: team.uuid})
+    .exec();
+
+  if (!doc) {
+    // Team not available yet, create it
+    if (!team.gameId) {
+      throw new Error('no game id');
+    }
+    return createTeam(team, team.gameId, function (err, newTeam) {
+      if (err) {
+        throw new Error('can not create new team: ' + err.message);
+      } else {
+        res = newTeam;
       }
-      return createTeam(team, team.gameId, function (err, newTeam) {
+    });
+  } else {
+    if (!team.data.teamLeader.hasLogin) {
+      logger.info(`Team leader ${team.data.teamLeader.name} has no login for team ${team.uuid} for ${team.gameId}`);
+      // Check for Login
+      return await userModel.getUserByMailAddress(team.data.teamLeader.email, async (err, user) => {
+        logger.info(`User found`, user);
         if (err) {
-          errInfo = new Error('can not create new team: ' + err.message);
-        } else {
-          res = newTeam;
+          // Not critical!!! ES-Lint requires this if, nothing to do.
         }
+        if (user) {
+          // When the team-leader has a login, set to true. This never becomes false as logins can not be deleted
+          team.data.teamLeader.hasLogin = true;
+        }
+        doc.data = team.data;
+        return await doc.save();
       });
     } else {
-      if (!team.data.teamLeader.hasLogin) {
-        logger.info(`Team leader ${team.data.teamLeader.name} has no login for team ${team.uuid} for ${team.gameId}`);
-        // Check for Login
-        await userModel.getUserByMailAddress(team.data.teamLeader.email, async (err, user) => {
-          logger.info(`User found`, user);
-          if (err) {
-            // Not critical!!! ES-Lint requires this if, nothing to do.
-          }
-          if (user) {
-            // When the team-leader has a login, set to true. This never becomes false as logins can not be deleted
-            team.data.teamLeader.hasLogin = true;
-          }
-          doc.data = team.data;
-          res      = await doc.save();
-        });
-      } else {
-        // Team leader has a login, just save
-        doc.data = team.data;
-        res      = await doc.save()
-      }
+      // Team leader has a login, just save
+      doc.data = team.data;
+      return await doc.save()
     }
-  } catch (ex) {
-    logger.error(ex);
-    errInfo = ex;
-  } finally {
-    callback(errInfo, res);
   }
 }
 
 /**
- * Delete a team
+ * Deletes one team
  * @param teamId
- * @param callback
+ * @return {Promise<DeleteResult>}
  */
-async function deleteTeam(teamId, callback) {
-  let err;
-  try {
-    await Team
-      .deleteOne({uuid: teamId})
-      .exec();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err);
-  }
+async function deleteTeam(teamId) {
+  return await Team
+    .deleteOne({uuid: teamId})
+    .exec();
 }
 
 /**
- * Delete all teams
+ * Deletes all teams
  * @param gameId
- * @param callback
+ * @return {Promise<DeleteResult>}
  */
-async function deleteAllTeams(gameId, callback) {
-  let err, res;
-  try {
-    logger.info('Removing all teams for ' + gameId);
-    res = await Team.deleteMany({gameId: gameId}).exec();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, res);
-  }
+async function deleteAllTeams(gameId) {
+  return await Team.deleteMany({gameId: gameId}).exec();
 }
 
 /**

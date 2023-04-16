@@ -290,16 +290,14 @@ function deleteGameplay(gpOptions, callback) {
     if (err) {
       return callback(err);
     }
-    return gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail, function (err, gp) {
+    return gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail, async function (err, gp) {
       if (err || !gp) {
         return callback(err);
       }
+      await teams.deleteAllTeams(gpOptions.gameId);
       async.series([
         function (callback) {
           gameplays.removeGameplay(gp, callback);
-        },
-        function (callback) {
-          teams.deleteAllTeams(gpOptions.gameId, callback);
         },
         function (callback) {
           picBucketModel.deletePicBucket(gpOptions.gameId, callback);
@@ -363,8 +361,7 @@ function createDemoTeamEntry(gameId, entry) {
  * @param teamNb
  * @param callback
  */
-function createDemoTeams(gp, teamNb, callback) {
-  let demoTeamData = [];
+async function createDemoTeams(gp, teamNb, callback) {
   let i;
   teamNb           = teamNb || 8;
   if (teamNb > 20) {
@@ -422,16 +419,10 @@ function createDemoTeams(gp, teamNb, callback) {
       demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
   ];
   for (i = 0; i < teamNb; i++) {
-    demoTeamData.push(referenceData[i]);
+    await teams.createTeam(referenceData[i], gp.internal.gameId);
   }
-  async.each(demoTeamData,
-    function (t, cb) {
-      teams.createTeam(t, gp.internal.gameId, cb);
-    },
-    function (err) {
-      callback(err);
-    }
-  );
+
+  callback();
 }
 
 /**
