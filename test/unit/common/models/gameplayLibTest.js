@@ -11,8 +11,8 @@ const properties = require('./../../../../common/models/propertyModel');
 const gameplays  = require('./../../../../common/models/gameplayModel');
 const settings   = require('./../../../../editor/settings');
 const gplib      = require('./../../../../editor/lib/gameplayLib');
-var gameId       = 'gameplay-test-id';
-var gp;
+const {DateTime} = require('luxon');
+let gp;
 
 describe('GameplayLib Tests', function () {
   before(function (done) {
@@ -32,7 +32,7 @@ describe('GameplayLib Tests', function () {
         email   : 'anyone@me.com',
         map     : 'zvv',
         gamename: 'LibTest',
-        gamedate: '2020-01-01'
+        gamedate: DateTime.local(2020, 1, 1).toJSDate()
       }, function (err, newGp) {
         expect(newGp.gamename).to.be('LibTest');
         gp = newGp;
