@@ -77,23 +77,23 @@ function createPropertyFromLocation(gameId, location, callback) {
  * @param callback
  */
 async function updateProperties(properties, callback) {
-  try {
-    for (let i = 0; i < properties.length; i++) {
-      if (!(properties[i] instanceof Property)) {
-        return callback(new Error('not real properties'));
-      }
+
+  for (let i = 0; i < properties.length; i++) {
+    if (!(properties[i] instanceof Property)) {
+      return callback(new Error('not real properties'));
     }
-    async.each(properties, async (p, cb) => {
-      try {
-        const doc = await p.save();
-        cb(null, doc);
-      } catch (ex) {
-        cb(ex);
-      }
-    }, callback);
+  }
+
+  let err;
+  try {
+    for (const p of properties) {
+      await p.save();
+    }
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err);
   }
 }
 
@@ -104,19 +104,24 @@ async function updateProperties(properties, callback) {
  * @param callback
  */
 function updatePropertyPartial(gameId, property, callback) {
-  try {
-    getPropertyById(gameId, property.uuid, async (err, loadedProperty) => {
-      if (err) {
-        return callback(err);
-      }
-      _.merge(loadedProperty, property);
-      const res = await loadedProperty.save();
-      return callback(null, res);
-    });
-  } catch (ex) {
-    logger.error(ex);
-    callback(ex);
-  }
+
+  getPropertyById(gameId, property.uuid, async (err, loadedProperty) => {
+    if (err) {
+      return callback(err);
+    }
+    _.merge(loadedProperty, property);
+
+    let res, errInfo;
+    try {
+      res = await loadedProperty.save();
+    } catch (ex) {
+      logger.error(ex);
+      errInfo = ex;
+    } finally {
+      callback(errInfo, res);
+    }
+  });
+
 }
 
 /**
@@ -126,59 +131,69 @@ function updatePropertyPartial(gameId, property, callback) {
  * @param callback
  */
 async function updateProperty(gameId, property, callback) {
-  try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  if (!property.location || !property.location.uuid) {
+    // this one is pretty useless!
+    return callback(new Error('No location added, can not save property'));
+  }
+  if (!(property instanceof Property)) {
+    /* In the original version, we created here a new property object.
+       This could have been important for the admin, but this was not
+       the best solution
+    */
+    updatePropertyPartial(gameId, property, (err, prop) => {
+      return callback(err, prop);
+    });
+  } else {
+    // This is a Property object, save it
+    if (!property.gameId) {
+      property.gameId = gameId;
     }
-    if (!property.location || !property.location.uuid) {
-      // this one is pretty useless!
-      return callback(new Error('No location added, can not save property'));
+    if (!property.uuid) {
+      property.uuid = uuid();
     }
+    // load the existing one (if there is one) and update it
+    return getPropertyByLocationId(gameId, property.location.uuid, async function (err, foundProperty) {
+      if (err) {
+        return callback(err);
+      }
+      if (!foundProperty) {
+        // this is a new one!
+        let prop       = new Property();
+        prop.gameId    = gameId;
+        prop.uuid      = uuid();
+        prop.location  = property.location;
+        prop.gamedata  = property.gamedata;
+        prop.pricelist = property.pricelist;
+        prop._id       = createPropertyId(gameId, property.location);
 
-    if (!(property instanceof Property)) {
-      /* In the original version, we created here a new property object.
-         This could have been important for the admin, but this was not
-         the best solution
-      */
-      updatePropertyPartial(gameId, property, (err, prop) => {
-        return callback(err, prop);
-      });
-    } else {
-      // This is a Property object, save it
-      if (!property.gameId) {
-        property.gameId = gameId;
-      }
-      if (!property.uuid) {
-        property.uuid = uuid();
-      }
-      // load the existing one (if there is one) and update it
-      return getPropertyByLocationId(gameId, property.location.uuid, async function (err, foundProperty) {
-        if (err) {
-          return callback(err);
+        let savedProp, errInfo;
+        try {
+          savedProp = await prop.save();
+        } catch (ex) {
+          logger.error(ex);
+          errInfo = ex;
+        } finally {
+          callback(err, savedProp)
         }
-        if (!foundProperty) {
-          // this is a new one!
-          let prop        = new Property();
-          prop.gameId     = gameId;
-          prop.uuid       = uuid();
-          prop.location   = property.location;
-          prop.gamedata   = property.gamedata;
-          prop.pricelist  = property.pricelist;
-          prop._id        = createPropertyId(gameId, property.location);
-          const savedProp = await prop.save();
-          return callback(err, savedProp);
-        } else {
-          // we found the property and do not touch gameId and location data
-          foundProperty.gamedata  = property.gamedata;
-          foundProperty.pricelist = property.pricelist;
-          const savedProp         = await foundProperty.save();
-          return callback(null, savedProp);
+      } else {
+        // we found the property and do not touch gameId and location data
+        foundProperty.gamedata  = property.gamedata;
+        foundProperty.pricelist = property.pricelist;
+
+        let savedProp, errInfo;
+        try {
+          savedProp = await foundProperty.save();
+        } catch (ex) {
+          logger.error(ex);
+          errInfo = ex;
+        } finally {
+          callback(err, savedProp)
         }
-      });
-    }
-  } catch (ex) {
-    logger.error(ex);
-    callback(ex);
+      }
+    });
   }
 }
 
@@ -191,10 +206,11 @@ async function updateProperty(gameId, property, callback) {
  * @returns {*}
  */
 async function updatePositionInPriceList(gameId, propertyId, position, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  let savedProperty, err;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
     const docs = await Property
       .findOne({gameId: gameId, uuid: propertyId})
       .exec();
@@ -204,12 +220,13 @@ async function updatePositionInPriceList(gameId, propertyId, position, callback)
     }
     docs.pricelist.positionInPriceRange = position;
 
-    const savedProperty = await docs.save();
+    savedProperty = await docs.save();
     logger.info(savedProperty.location.name + ' updated' + ` v: ${savedProperty.pricelist.positionInPriceRange}`);
-    callback(null, savedProperty);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, savedProperty);
   }
 }
 
@@ -221,19 +238,20 @@ async function updatePositionInPriceList(gameId, propertyId, position, callback)
  * @returns {*}
  */
 async function getPropertyByLocationId(gameId, locationId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+
+  let docs, err;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
-    const docs = await Property
+    docs = await Property
       .findOne({gameId: gameId, 'location.uuid': locationId})
       .exec();
-
-    callback(null, docs);
-
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, docs);
   }
 }
 
@@ -246,18 +264,19 @@ async function getPropertyByLocationId(gameId, locationId, callback) {
  * @returns {*}
  */
 async function getPropertyById(gameId, propertyId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  let err, docs;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
-    const docs = await Property
+    docs = await Property
       .findOne({gameId: gameId, 'uuid': propertyId})
       .exec();
-
-    callback(null, docs);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, docs);
   }
 }
 
@@ -273,35 +292,35 @@ async function getPropertyById(gameId, propertyId, callback) {
  * @returns {Query}
  */
 async function getPropertiesForGameplay(gameId, options, callback) {
-  try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
 
+  let docs, err;
+  try {
     if (options && options.lean) {
-      const docs = await Property
+      docs = await Property
         .find()
         .where('gameId').equals(gameId)
         .lean()
         .exec();
-      return callback(null, docs);
     } else if (options && options.propertyGroup) {
-      const docs = await Property
+      docs = await Property
         .find()
         .where('gameId').equals(gameId)
         .where('pricelist.propertyGroup').equals(options.propertyGroup)
         .exec();
-      return callback(null, docs);
     } else {
-      const docs = await Property
+      docs = await Property
         .find()
         .where('gameId').equals(gameId)
         .exec();
-      return callback(null, docs);
     }
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, docs);
   }
 }
 
@@ -313,19 +332,22 @@ async function getPropertiesForGameplay(gameId, options, callback) {
  * @returns {*}
  */
 async function getPropertiesForTeam(gameId, teamId, callback) {
+  if (!gameId || !teamId) {
+    return callback(new Error('Parameter error'));
+  }
+
+  let data, err;
   try {
-    if (!gameId || !teamId) {
-      return callback(new Error('Parameter error'));
-    }
-    const data = await Property
+    data = await Property
       .find()
       .where('gamedata.owner').equals(teamId)
       .where('gameId').equals(gameId)
       .exec();
-    callback(null, data);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, data);
   }
 }
 
@@ -337,20 +359,22 @@ async function getPropertiesForTeam(gameId, teamId, callback) {
  * @returns {*}
  */
 async function getPropertiesIdsForTeam(gameId, teamId, callback) {
+  if (!gameId || !teamId) {
+    return callback(new Error('Parameter error'));
+  }
+  let err, data;
   try {
-    if (!gameId || !teamId) {
-      return callback(new Error('Parameter error'));
-    }
-    const data = await Property
+    data = await Property
       .find()
       .where('gamedata.owner').equals(teamId)
       .where('gameId').equals(gameId)
       .select('uuid')
       .exec();
-    callback(null, data);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, data);
   }
 }
 
@@ -361,18 +385,21 @@ async function getPropertiesIdsForTeam(gameId, teamId, callback) {
  * @param callback
  */
 async function removePropertyFromGameplay(gameId, locationId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+
+  let res, err;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
     logger.info('Removing one property for ' + gameId);
-    const res = await Property
+    res = await Property
       .deleteOne({gameId: gameId, 'location.uuid': locationId})
       .exec();
-    callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -383,21 +410,23 @@ async function removePropertyFromGameplay(gameId, locationId, callback) {
  * @returns {*}
  */
 async function finalizeProperties(gameId, callback) {
-  try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
 
-    const res = await Property
+  let err, res;
+  try {
+    res = await Property
       .deleteMany({
         gameId                : gameId,
         'pricelist.priceRange': -1
       })
       .exec();
-    return callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -407,18 +436,21 @@ async function finalizeProperties(gameId, callback) {
  * @param callback
  */
 async function removeAllPropertiesFromGameplay(gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+  logger.info('Removing all properties for ' + gameId);
+
+  let err, res;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
-    logger.info('Removing all properties for ' + gameId);
-    const res = await Property
+    res = await Property
       .deleteMany({gameId: gameId})
       .exec();
-    return callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -429,11 +461,13 @@ async function removeAllPropertiesFromGameplay(gameId, callback) {
  * @returns {*}
  */
 async function allowBuilding(gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+
+  let res, err;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
-    const numAffected = Property
+    const numAffected = await Property
       .updateMany(
         {
           gameId          : gameId,
@@ -446,11 +480,13 @@ async function allowBuilding(gameId, callback) {
           'gamedata.buildingEnabled': true
         })
       .exec();
-    callback(null, _.get(numAffected, 'nModified', 0));
 
+    res = _.get(numAffected, 'nModified', 0);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 
@@ -461,17 +497,20 @@ async function allowBuilding(gameId, callback) {
  * @returns {*}
  */
 async function countProperties(gameId, callback) {
+  if (!gameId) {
+    return callback(new Error('No gameId supplied'));
+  }
+
+  let err, res;
   try {
-    if (!gameId) {
-      return callback(new Error('No gameId supplied'));
-    }
-    const res = Property
+    res = await Property
       .countDocuments({gameId: gameId})
       .exec();
-    return callback(null, res);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, res);
   }
 }
 

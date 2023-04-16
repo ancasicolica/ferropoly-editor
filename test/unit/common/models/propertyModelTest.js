@@ -26,7 +26,7 @@ describe('PropertyModel Tests', function () {
   // Close DB afterwards
   after(function (done) {
     properties.removeAllPropertiesFromGameplay(gameId, err=> {
-      expect(err).to.be(null);
+      expect(err).to.be(undefined);
       db.close(done);
     })
   });
@@ -86,21 +86,21 @@ describe('PropertyModel Tests', function () {
   describe('Set the price range in a property', function () {
     it('should set the price range', function (done) {
       properties.updatePositionInPriceList(gameId, propId0, 12, function (err, prop) {
-        expect(err).to.be(null);
+        expect(err).to.be(undefined);
         expect(prop.pricelist.positionInPriceRange).to.be(12);
         done(err);
       })
     });
     it('should set the price range again', function (done) {
       properties.updatePositionInPriceList(gameId, propId0, 2, function (err, prop) {
-        expect(err).to.be(null);
+        expect(err).to.be(undefined);
         expect(prop.pricelist.positionInPriceRange).to.be(2);
         done(err);
       })
     });
     it('should fail as the gameId is wrong', function (done) {
       properties.updatePositionInPriceList('test', propId0, 2, function (err, prop) {
-        expect(err).not.to.be(null);
+        expect(err).not.to.be(undefined);
         expect(prop).to.be(undefined);
         done();
       })
@@ -120,6 +120,15 @@ describe('PropertyModel Tests', function () {
     it('should work', done=> {
       properties.allowBuilding(gameId, (err, res) => {
         console.log(res);
+        done(err);
+      } );
+    });
+  })
+  describe('Counting properties', ()=> {
+    it('should work', done=> {
+      properties.countProperties(gameId, (err, res) => {
+        console.log(res);
+        expect(res).to.be(3);
         done(err);
       } );
     });
