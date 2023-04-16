@@ -8,7 +8,6 @@ const mongoose   = require('mongoose');
 const logger     = require('../lib/logger').getLogger('teamModel');
 const {v4: uuid} = require('uuid');
 const userModel  = require('./userModel');
-const _          = require('lodash');
 
 /**
  * The mongoose schema for a property
@@ -109,7 +108,7 @@ async function updateTeam(team) {
 /**
  * Deletes one team
  * @param teamId
- * @return {Promise<DeleteResult>}
+ * @return {Promise<>}
  */
 async function deleteTeam(teamId) {
   return await Team
@@ -120,7 +119,7 @@ async function deleteTeam(teamId) {
 /**
  * Deletes all teams
  * @param gameId
- * @return {Promise<DeleteResult>}
+ * @return {Promise<>}
  */
 async function deleteAllTeams(gameId) {
   return await Team.deleteMany({gameId: gameId}).exec();
