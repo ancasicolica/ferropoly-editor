@@ -18,7 +18,7 @@ describe('UserModel Tests', function () {
     db.close(done);
   });
 
-  var user = new users.Model();
+  let user = new users.Model();
 
   describe('Generating a new password hash', function () {
     it('should create it', function () {
@@ -38,7 +38,7 @@ describe('UserModel Tests', function () {
       expect(users.verifyPassword(user, 'Taibika')).to.be(false);
     });
     it('with correct password but manipulated has should fail', function () {
-      var originalHash        = user.login.passwordHash;
+      let originalHash        = user.login.passwordHash;
       user.login.passwordHash = '31963ada680a676def6dfe00989104858b7c3471835ffd639a38ea60fa42bda8';
       expect(users.verifyPassword(user, 'taibika')).to.be(false);
       user.login.passwordHash = originalHash;
@@ -48,7 +48,7 @@ describe('UserModel Tests', function () {
 
   describe('Updating the password hash', function () {
     it('should create a new hash', function () {
-      var originalHash = user.passwordHash;
+      let originalHash = user.passwordHash;
       users.generatePasswordHash(user, 'taibika');
       expect(users.verifyPassword(user, 'taibika')).to.be(true);
       expect(originalHash).to.not.be(user.login.passwordHash);
@@ -56,7 +56,7 @@ describe('UserModel Tests', function () {
   });
 
   describe('Updating / creating', function () {
-    var user1          = new users.Model({
+    let user1          = new users.Model({
       personalData: {
         surname : 'Kunz',
         forename: 'Olivia',
@@ -64,7 +64,7 @@ describe('UserModel Tests', function () {
       }
     });
     user1.roles.editor = true;
-    var password1      = 'erstfeld';
+    let password1      = 'erstfeld';
 
     describe('Removing user 1', function () {
       it('should work if it exits', function (done) {
@@ -135,12 +135,22 @@ describe('UserModel Tests', function () {
     });
   });
 
-  var nb = 0;
+  let nb = 0;
   describe('Getting all users', function () {
     it('should return some', function (done) {
       users.getAllUsers(function (err, users) {
         nb = users.length;
         expect(nb >= 2).to.be(true);
+        done(err);
+      });
+    })
+  });
+
+
+  describe('Getting one user', function () {
+    it('should return one', function (done) {
+      users.getUser('olivia@gm-x.ch', function (err, user) {
+        console.log(user);
         done(err);
       });
     })
