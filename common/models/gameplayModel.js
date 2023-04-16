@@ -9,11 +9,12 @@
  * Created by kc on 22.01.15.
  */
 
-const mongoose   = require('mongoose');
-const Moniker    = require('moniker');
-const _          = require('lodash');
-const {DateTime} = require("luxon");
-const logger     = require('../lib/logger').getLogger('gameplayModel');
+const mongoose    = require('mongoose');
+const Moniker     = require('moniker');
+const _           = require('lodash');
+const {DateTime}  = require("luxon");
+const dateTimeLib = require('../lib/dateTimeLib');
+const logger      = require('../lib/logger').getLogger('gameplayModel');
 
 const MOBILE_NONE  = 0;
 const MOBILE_BASIC = 5;
@@ -142,11 +143,11 @@ async function createGameplay(gpOptions, callback) {
     gp.scheduling.gameDate       = gpOptions.gameDate;
     gp.scheduling.gameStart      = gpOptions.gameStart;
     gp.scheduling.gameEnd        = gpOptions.gameEnd;
-    gp.scheduling.deleteTs       = DateTime.fromJSDate(gpOptions.gameDate).plus({days: 30}).set({
+    gp.scheduling.deleteTs       = DateTime.fromJSDate(dateTimeLib.getJsDate(gpOptions.gameDate)).plus({days: 30}).set({
       hour  : 23,
       minute: 59
     }).toJSDate();
-    gp.joining.possibleUntil     = gpOptions.joiningUntilDate || DateTime.fromJSDate(gp.scheduling.gameDate).minus({days: 5}).set({
+    gp.joining.possibleUntil     = gpOptions.joiningUntilDate || DateTime.fromJSDate(dateTimeLib.getJsDate(gp.scheduling.gameDate)).minus({days: 5}).set({
       hour  : 20,
       minute: 0,
       second: 0
