@@ -9,7 +9,6 @@
 const mongoose       = require('mongoose');
 const logger         = require('../lib/logger').getLogger('propertyModel');
 const _              = require('lodash');
-const async          = require('async');
 const {v4: uuid}     = require('uuid');
 /**
  * The mongoose schema for a property
@@ -176,7 +175,7 @@ async function updateProperty(gameId, property, callback) {
           logger.error(ex);
           errInfo = ex;
         } finally {
-          callback(err, savedProp)
+          callback(errInfo, savedProp)
         }
       } else {
         // we found the property and do not touch gameId and location data
@@ -190,7 +189,7 @@ async function updateProperty(gameId, property, callback) {
           logger.error(ex);
           errInfo = ex;
         } finally {
-          callback(err, savedProp)
+          callback(errInfo, savedProp)
         }
       }
     });
