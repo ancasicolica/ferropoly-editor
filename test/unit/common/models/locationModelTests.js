@@ -39,6 +39,14 @@ describe('Location Model test', () => {
       done(err);
     })
   })
+  it('should return the number of locations for a map', done => {
+    locations.countLocations((err, data) => {
+      console.log(data);
+      expect(data).to.be.a('object');
+      expect(data.maps[0].locationNb).to.be.a('number');
+      done(err);
+    })
+  })
   it('should return a single location', done => {
     locations.getLocationByUuid('2a3f232a-438a-421d-ca8f-f574c6d6c991', (err, data) => {
       console.log(data);

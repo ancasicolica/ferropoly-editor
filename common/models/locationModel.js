@@ -7,11 +7,11 @@
  * Created by kc on 02.01.15.
  */
 
-const mongoose       = require('mongoose');
-const logger         = require('../lib/logger').getLogger('locationModel');
-const mapinfo        = require('../lib/maps.json');
-const _              = require('lodash');
-const async          = require('async');
+const mongoose = require('mongoose');
+const logger   = require('../lib/logger').getLogger('locationModel');
+const mapinfo  = require('../lib/maps.json');
+const _        = require('lodash');
+
 /**
  * The mongoose schema for a location
  */
@@ -43,20 +43,22 @@ const Location = mongoose.model('Location', locationSchema);
  * @param callback
  */
 async function getAllLocationsLean(callback) {
+  let err, locations;
   try {
     const docs = await Location
       .find({})
       .lean()
       .exec()
 
-    let locations = [];
+    locations = [];
     for (let i = 0; i < docs.length; i++) {
       locations.push(convertModelDataToObject(docs[i]));
     }
-    return callback(null, locations);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, locations);
   }
 }
 
@@ -66,14 +68,16 @@ async function getAllLocationsLean(callback) {
  * @param callback
  */
 async function getAllLocations(callback) {
+  let docs, err;
   try {
-    const docs = await Location
+    docs = await Location
       .find({})
       .exec();
-    return callback(null, docs);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, docs);
   }
 }
 
@@ -84,22 +88,22 @@ async function getAllLocations(callback) {
  * @param callback
  */
 async function getAllLocationsForMap(map, callback) {
+  let docs, err;
   try {
     // This creates a query in this format: {'maps.zvv': true}
     let index    = 'maps.' + map;
     let query    = {};
     query[index] = true;
 
-    const docs = await Location
+    docs = await Location
       .find(query)
       .lean()
       .exec();
-
-    return callback(null, docs);
-
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, docs);
   }
 }
 
@@ -109,6 +113,7 @@ async function getAllLocationsForMap(map, callback) {
  * @param callback
  */
 async function getLocationByUuid(uuid, callback) {
+  let doc, err;
   try {
     const docs = await Location
       .find({uuid: uuid})
@@ -116,12 +121,15 @@ async function getLocationByUuid(uuid, callback) {
 
     if (docs.length === 0) {
       // No location found
-      return callback(null, null);
+      doc = null;
+    } else {
+      doc = docs[0];
     }
-    return callback(null, docs[0]);
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, doc);
   }
 }
 
@@ -130,32 +138,28 @@ async function getLocationByUuid(uuid, callback) {
  * @param callback
  */
 async function countLocations(callback) {
+  let retVal, err;
   try {
-    let retVal = _.clone(mapinfo, true);
+    retVal = _.clone(mapinfo, true);
 
     retVal.all = await Location
       .countDocuments({})
       .exec();
 
-    async.each(retVal.maps,
-      async function (m, cb) {
-        // This creates a query in this format: {'maps.zvv': true}
-        let index    = 'maps.' + m.map;
-        let query    = {};
-        query[index] = true;
-
-        m.locationNb = await Location
-          .countDocuments(query)
-          .exec();
-        cb();
-      },
-      function (err) {
-        callback(err, retVal);
-      }
-    );
+    for (const m of retVal.maps) {
+      // This creates a query in this format: {'maps.zvv': true}
+      let index    = 'maps.' + m.map;
+      let query    = {};
+      query[index] = true;
+      m.locationNb = await Location
+        .countDocuments(query)
+        .exec();
+    }
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, retVal);
   }
 }
 
@@ -181,12 +185,14 @@ function convertModelDataToObject(data) {
  * @param callback
  */
 async function saveLocation(location, callback) {
+  let savedLocation, err;
   try {
-    const savedLocation = await location.save();
-    callback(err, savedLocation);
+    savedLocation = await location.save();
   } catch (ex) {
     logger.error(ex);
-    callback(ex);
+    err = ex;
+  } finally {
+    callback(err, savedLocation);
   }
 }
 
