@@ -44,17 +44,20 @@ describe('TravelLogModel Tests', function () {
   describe('Adding normal entries', function () {
     it('should work ', function (done) {
       travelLogModel.addEntry(gameId, teamIds[0], propertyId, (err, info) => {
+        console.log(info);
         done(err);
       })
     });
     it('should deny if teamId is not a string ', function (done) {
       travelLogModel.addEntry(gameId, {}, propertyId, (err, info) => {
+        console.log(info);
         expect(err).to.be.a('object')
         done();
       })
     });
     it('should deny if propertyId is not set', function (done) {
       travelLogModel.addEntry(gameId, teamIds[0], null, (err, info) => {
+        console.log(info);
         expect(err).to.be.a('object')
         done();
       })
@@ -64,17 +67,20 @@ describe('TravelLogModel Tests', function () {
   describe('Adding property entries', function () {
     it('should work ', function (done) {
       travelLogModel.addPropertyEntry(gameId, teamIds[0], property, (err, info) => {
+        console.log(info);
         done(err);
       })
     });
     it('should deny if teamId is not a string ', function (done) {
       travelLogModel.addPropertyEntry(gameId, {}, propertyId, (err, info) => {
+        console.log(info);
         expect(err).to.be.a('object')
         done();
       })
     });
     it('should deny if propertyId is not set', function (done) {
       travelLogModel.addPropertyEntry(gameId, teamIds[0], null, (err, info) => {
+        console.log(info);
         expect(err).to.be.a('object')
         done();
       })
@@ -84,17 +90,20 @@ describe('TravelLogModel Tests', function () {
   describe('Adding position entries', function () {
     it('should work ', function (done) {
       travelLogModel.addPositionEntry(gameId, teamIds[0], user, position, (err, info) => {
+        console.log(info);
         done(err);
       })
     });
     it('should deny if teamId is not a string ', function (done) {
       travelLogModel.addPositionEntry(gameId, {}, user, position, (err, info) => {
+        console.log(info);
         expect(err).to.be.a('object')
         done();
       })
     });
     it('should deny if user is not set', function (done) {
       travelLogModel.addPositionEntry(gameId, teamIds[0], null, position, (err, info) => {
+        console.log(info);
         expect(err).to.be.a('object')
         done();
       })
