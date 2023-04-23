@@ -10,10 +10,11 @@
  * Created by kc on 16.04.2020
  */
 
-const mongoose = require('mongoose');
-const logger   = require('../lib/logger').getLogger('gameLogModel');
-const moment   = require('moment');
-const _        = require('lodash');
+const mongoose        = require('mongoose');
+const logger          = require('../lib/logger').getLogger('gameLogModel');
+const moment          = require('moment');
+const _               = require('lodash');
+const async           = require('async');
 
 /**
  * Categories
@@ -109,10 +110,10 @@ async function addEntry(p1, p2, p3, p4, p5) {
  * @param gameId
  */
 async function deleteAllEntries(gameId) {
-    logger.info('Removing all entries in the game log');
-    return await GameLog
-      .deleteMany({gameId: gameId})
-      .exec();
+  logger.info('Removing all entries in the game log');
+  return await GameLog
+    .deleteMany({gameId: gameId})
+    .exec();
 }
 
 
