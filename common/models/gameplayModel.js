@@ -730,28 +730,20 @@ async function saveNewPriceListRevision(gameplay, callback) {
 
 /**
  * Returns all active autoilot games, only the ones today, only demo
- * @param callback
  */
-async function getAutopilotGameplays(callback) {
-  let err, gps;
-  try {
-    let today = DateTime.now().toISODate()
-    gps       = await Gameplay
-      .find({
-        'internal.isDemo': true, 'internal.autopilot.active': true, 'scheduling.gameDate': {
-          $gte: today, $lte: today
-        }
-      })
-      .lean()
-      .exec();
-
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, gps);
-  }
+async function getAutopilotGameplays() {
+  let yesterday = DateTime.now().minus({days: 1}).toJSDate();
+  let tomorrow  = DateTime.now().plus({days: 1}).toJSDate();
+  return await Gameplay
+    .find({
+      'internal.isDemo'          : true,
+      'internal.autopilot.active': true,
+      'scheduling.gameDate'      : {$gt: yesterday, $lt: tomorrow}
+    })
+    .lean()
+    .exec();
 }
+
 
 /**
  * Exports of this module
