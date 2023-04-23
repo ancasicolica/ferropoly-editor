@@ -110,16 +110,10 @@ async function addEntry(p1, p2, p3, p4, p5) {
  * @param callback
  */
 async function deleteAllEntries(gameId, callback) {
-  try {
     logger.info('Removing all entries in the game log');
-    const res = await GameLog
+    return await GameLog
       .deleteMany({gameId: gameId})
       .exec();
-    callback(null, res);
-  } catch (ex) {
-    logger.error(ex);
-    callback(ex);
-  }
 }
 
 

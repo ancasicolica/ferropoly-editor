@@ -294,35 +294,27 @@ function deleteGameplay(gpOptions, callback) {
       if (err || !gp) {
         return callback(err);
       }
-      await teams.deleteAllTeams(gpOptions.gameId);
-      await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
-      await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
-      await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
-      await schedulerEventsModel.dumpEvents(gpOptions.gameId);
-      async.series([
-        function (callback) {
-          gameplays.removeGameplay(gp, callback);
-        },
-        function (callback) {
-          picBucketModel.deletePicBucket(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          travelLog.deleteAllEntries(gpOptions.gameId, callback);
-        },
-        function (callback) {
-          gameLog.deleteAllEntries(gpOptions.gameId, callback);
-        }
-      ], function (err) {
+      try {
+        await teams.deleteAllTeams(gpOptions.gameId);
+        await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
+        await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
+        await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
+        await schedulerEventsModel.dumpEvents(gpOptions.gameId);
+        await picBucketModel.deletePicBucket(gpOptions.gameId);
+        await gameplays.removeGameplay(gp);
+        await travelLog.deleteAllEntries(gpOptions.gameId);
+        await gameLog.deleteAllEntries(gpOptions.gameId);
+      } catch (err) {
         if (err) {
           logger.error('Error while deleting gameplays', err);
         }
-        logger.info('Parallel task finished');
-        if (gpOptions.doNotNotifyMain) {
-          return callback();
-        }
-        // update main instances as we removed the game!
-        updateFerropolyMainCache(100, callback);
-      });
+      }
+      logger.info('cleaning task finished');
+      if (gpOptions.doNotNotifyMain) {
+        return callback();
+      }
+      // update main instances as we removed the game!
+      updateFerropolyMainCache(100, callback);
     });
   });
 }

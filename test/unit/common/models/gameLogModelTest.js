@@ -15,13 +15,13 @@ const teamIds = ['team-id-1', 'team-id-2'];
 describe('gameLogModel Tests', () => {
   before(function (done) {
     db.init(settings, function () {
-      log.deleteAllEntries(gameId, done);
+      log.deleteAllEntries(gameId).then(done());
     });
   });
 
   // Close DB afterwards
   after(function (done) {
-    log.deleteAllEntries(gameId, () => {
+    log.deleteAllEntries(gameId).then(() => {
       db.close(done);
     });
   });

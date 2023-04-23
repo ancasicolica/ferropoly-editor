@@ -354,23 +354,17 @@ describe('GameplayModel Tests', function () {
   describe('Deleting all gameplays again', function () {
     it('should work with #1', function (done) {
       gameplays.getGameplay(gp1.internal.gameId, users[0], function (err, gp) {
-        gameplays.removeGameplay(gp, function (err) {
-          done(err);
-        });
+        gameplays.removeGameplay(gp).then(done()).catch(done);
       })
     });
     it('should work with #2', function (done) {
       gameplays.getGameplay(gp2.internal.gameId, users[0], function (err, gp) {
-        gameplays.removeGameplay(gp, function (err) {
-          done(err);
-        });
+        gameplays.removeGameplay(gp).then(done()).catch(done);
       })
     });
     it('should work with #3', function (done) {
       gameplays.getGameplay(gp3.internal.gameId, users[1], function (err, gp) {
-        gameplays.removeGameplay(gp, function (err) {
-          done(err);
-        });
+        gameplays.removeGameplay(gp).then(done()).catch(done);
       })
     });
 

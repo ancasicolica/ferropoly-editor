@@ -341,24 +341,17 @@ async function getAllGameplays(callback) {
 /**
  * Remove a gameplay for ever (delete from DB)
  * @param gp gameplay object to remove
- * @param callback
  * @returns {*}
  */
-async function removeGameplay(gp, callback) {
-  let err;
+async function removeGameplay(gp) {
+
   if (!gp || !gp.internal || !gp.internal.gameId) {
-    return callback(new Error('Invalid gameplay'));
+    throw new Error('Invalid gameplay');
   }
   logger.info('Removing gameplay ' + gp.internal.gameId + ' (' + gp.gamename + ')');
-  try {
-    await Gameplay
-      .deleteOne({'internal.gameId': gp.internal.gameId}).exec();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err);
-  }
+  return await Gameplay
+    .deleteOne({'internal.gameId': gp.internal.gameId}).exec();
+
 }
 
 /**

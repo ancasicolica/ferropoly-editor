@@ -36,10 +36,9 @@ describe('TravelLogModel Tests', function () {
 
   // Close DB afterwards
   after(function (done) {
-    travelLogModel.deleteAllEntries(gameId, err => {
-      expect(err).to.be(undefined);
+    travelLogModel.deleteAllEntries(gameId).then(() => {
       db.close(done);
-    });
+    }).catch(done);
   });
 
   describe('Adding normal entries', function () {
