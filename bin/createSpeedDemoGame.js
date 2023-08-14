@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- Creates a demo game for mobile access which is running today
+ Creates a demo game which is running today with high speed
  */
 const settings    = require('../editor/settings');
 const ferropolyDb = require('../common/lib/ferropolyDb');
@@ -13,14 +13,21 @@ ferropolyDb.init(settings, function (err) {
     return;
   }
   gplib.createDemoGameplay({
-    map            : 'sbb',
-    gameId         : 'local-demo-game-mobile',
-    gameStart      : '04:00',
-    gameEnd        : '23:30',
-    presets        : 'moderate',
-    doNotNotifyMain: true,
-    mobile         : {
-      level: 10
+    map             : 'sbb',
+    gameId          : 'local-demo-game',
+    gameStart       : '04:00',
+    gameEnd         : '23:30',
+    presets         : 'moderate',
+    doNotNotifyMain : true,
+    random          : 480,
+    interestInterval: 15,
+    autopilot       : {
+      active   : true,
+      picBucket: true,
+      interval : 1 * 60 * 1000
+    },
+    mobile          : {
+      level: 5
     }
   }, function (err) {
     if (err) {

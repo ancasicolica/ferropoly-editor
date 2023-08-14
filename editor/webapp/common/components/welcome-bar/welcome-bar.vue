@@ -12,28 +12,28 @@ div
 import {DateTime} from "luxon";
 
 export default {
-  name : "WelcomeBar",
+  name      : "WelcomeBar",
   components: {},
-  model: {},
-  props: {
+  model     : {},
+  props     : {
     userName: {
-      type: String,
+      type   : String,
       default: () => {
         return '';
       }
     }
   },
-  data : function () {
+  data      : function () {
     return {
       welcomeText    : '',
       backgroundImage: ''
     };
   },
-  computed: {
+  computed  : {
     greetingText() {
       // Be kind and say hello
-      let currentHour      = DateTime.now().hour;
-      let greeting         = 'Hallo'
+      let currentHour = DateTime.now().hour;
+      let greeting    = 'Hallo'
       if (currentHour < 4) {
         greeting = 'Hallo';
       } else if (currentHour < 10) {
@@ -52,36 +52,35 @@ export default {
    */
   created   : function () {
     // Define Background
-    let index            = DateTime.now().minute % 11;
-    this.backgroundImage = `url("/images/ferropoly_header_0${index}.jpg")`;
+    this.backgroundImage = `url("/images/header.jpg")`;
   },
-  methods   : {}
+  methods: {}
 }
 </script>
 
 <style scoped>
 #info-header {
-  height: 180px;
-  min-height: 180px;
-  position: relative;
-  overflow: hidden;
-  background-position: center;
-  background-size: cover;
-  width: 100%;
+    height: 180px;
+    min-height: 180px;
+    position: relative;
+    overflow: hidden;
+    background-position: center;
+    background-size: cover;
+    width: 100%;
 }
 
 #info-welcome {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, .4);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, .4);
 }
 
 h1.info-header {
-  margin-top: 10px;
-  margin-left: 20px;
-  margin-bottom: 20px;
-  color: white;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    color: white;
 }
 </style>

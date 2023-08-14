@@ -4,15 +4,15 @@
  * Created by kc on 20.04.15.
  */
 
+const mongoose = require('mongoose');
+const moment   = require('moment');
+const logger   = require('../../lib/logger').getLogger('chancelleryTransaction');
+const isArray  = require('lodash/isArray');
 
-var mongoose                            = require('mongoose');
-var moment                              = require('moment');
-var logger                              = require('../../lib/logger').getLogger('chancelleryTransaction');
-var isArray                             = require('lodash/isArray');
 /**
  * The mongoose schema for a team account
  */
-var chancelleryAccountTransactionSchema = mongoose.Schema({
+const chancelleryAccountTransactionSchema = mongoose.Schema({
   gameId   : String, // Game the transaction belongs to
   timestamp: {type: Date, default: Date.now}, // Timestamp of the transaction
   // teamId: String, // This is the uuid of the team the account belongs to
@@ -29,30 +29,31 @@ var chancelleryAccountTransactionSchema = mongoose.Schema({
 /**
  * The Gameplay model
  */
-var ChancelleryTransaction = mongoose.model('ChancelleryTransactions', chancelleryAccountTransactionSchema);
+const ChancelleryTransaction = mongoose.model('ChancelleryTransactions', chancelleryAccountTransactionSchema);
 
 /**
  * Book the transaction
  * @param transaction
- * @param callback
  */
-function book(transaction, callback) {
-  transaction.save(function (err) {
-    callback(err);
-  });
+async function book(transaction) {
+  //logger.info('Booking transaction', transaction);
+  let res = await transaction.save();
+  console.log('saved', res);
+  return res;
 }
 
 /**
  * Dumps all data for a gameplay (when deleting the game data)
  * @param gameId
- * @param callback
  */
-function dumpChancelleryData(gameId, callback) {
+async function dumpChancelleryData(gameId) {
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
   logger.info('Removing all chancellery information for ' + gameId);
-  ChancelleryTransaction.deleteMany({gameId: gameId}, callback)
+  return await ChancelleryTransaction
+    .deleteMany({gameId: gameId})
+    .exec();
 }
 
 
@@ -61,12 +62,11 @@ function dumpChancelleryData(gameId, callback) {
  * @param gameId
  * @param tsStart moment() to start, if undefined all
  * @param tsEnd   moment() to end, if undefined now()
- * @param callback
  * @returns {*}
  */
-function getEntries(gameId, tsStart, tsEnd, callback) {
+async function getEntries(gameId, tsStart, tsEnd) {
   if (!gameId) {
-    return callback(new Error('parameter error'));
+    throw new Error('parameter error');
   }
   if (!tsStart) {
     tsStart = moment('2015-01-01');
@@ -74,42 +74,38 @@ function getEntries(gameId, tsStart, tsEnd, callback) {
   if (!tsEnd) {
     tsEnd = moment();
   }
-  ChancelleryTransaction.find({gameId: gameId})
+  return await ChancelleryTransaction
+    .find({gameId: gameId})
     .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
     .sort('timestamp')
     .lean()
-    .exec(function (err, data) {
-      callback(err, data);
-    })
+    .exec();
 }
 
 /**
  * Get the balance, the current value of the chancellery
  * @param gameId
- * @param callback
  */
-function getBalance(gameId, callback) {
+async function getBalance(gameId) {
+  let result = await ChancelleryTransaction
+    .aggregate([
+      {
+        $match: {
+          gameId: gameId
+        }
+      }, {
+        $group: {
+          _id    : 'balance',
+          balance: {$sum: "$transaction.amount"}
+        }
+      }
+    ])
+    .exec();
 
-  ChancelleryTransaction.aggregate([
-    {
-      $match: {
-        gameId: gameId
-      }
-    }, {
-      $group: {
-        _id    : 'balance',
-        balance: {$sum: "$transaction.amount"}
-      }
-    }
-  ], function (err, data) {
-    if (err) {
-      return callback(err);
-    }
-    if (data && isArray(data) && data.length > 0) {
-      return callback(null, data[0]);
-    }
-    callback(null, data);
-  });
+  if (result && isArray(result) && result.length > 0) {
+    result = result[0];
+  }
+  return result;
 }
 
 

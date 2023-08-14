@@ -1,5 +1,12 @@
 # Changelog Ferropoly Editor
 
+## v3.3.0 1.7.23
+* PicBucket integriert: Löscht Bilder beim Löschen eines Games
+* Background Bilder über eigene Route
+* Dependency Updates
+* Header Bilder: neue Bilder, neue Art, wie sie geladen werden
+* Generierung von Demo-Games überarbeitet: mehr Games, Summary sichtbar
+
 ## v3.2.0 19.1.23
 * Goodbye Facebook: das war nun ein Mail von Facebook zuviel, in welchem sie mir die Einstellung der Dienste
 androhten, wenn ich die Guidelines nicht erfülle - die Guidelines, welche sich nicht verändert haben und ich seit 

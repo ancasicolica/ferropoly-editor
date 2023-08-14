@@ -4,13 +4,12 @@
  */
 
 
-
 module.exports = function (settings) {
   settings.version += '-RC';
 
   settings.server = {
-    port: 3202,
-    host: 'app.ferropoly.ch',
+    port    : 3202,
+    host    : 'app.ferropoly.ch',
     serverId: 'editor-app.ferropoly.ch-v' + settings.version
   };
 
@@ -21,8 +20,12 @@ module.exports = function (settings) {
 
   settings.locationDbSettings = {
     mongoDbUrl: 'mongodb://localhost/ferropoly_rc',
-    poolSize: 3
+    poolSize  : 3
   };
+
+  settings.autopilot = {
+    enabled: true
+  }
 
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
@@ -36,19 +39,19 @@ module.exports = function (settings) {
 
   settings.mailer = {
     senderAddress: process.env.MAILER_SENDER,
-    host: process.env.MAILER_HOST,
-    port: 465,
-    secure: true,
-    auth: {
+    host         : process.env.MAILER_HOST,
+    port         : 465,
+    secure       : true,
+    auth         : {
       pass: process.env.MAILER_PASS,
       user: process.env.MAILER_USER
     }
   };
 
   // Google Settings
-  settings.oAuth.google.callbackURL = 'https://editor-rc.ferropoly.ch/auth/google/callback';
+  settings.oAuth.google.callbackURL    = 'https://editor-rc.ferropoly.ch/auth/google/callback';
   // Microsoft settings
-  settings.oAuth.microsoft.callbackURL  = 'https://editor-rc.ferropoly.ch/auth/microsoft/callback';
+  settings.oAuth.microsoft.callbackURL = 'https://editor-rc.ferropoly.ch/auth/microsoft/callback';
 
   settings.mainInstances = ['https://spiel-rc.ferropoly.ch'];
 

@@ -20,6 +20,10 @@ module.exports = function (settings) {
     poolSize  : 3
   };
 
+  settings.autopilot = {
+    enabled: true
+  }
+
   settings.cron = {
     // [MINUTE] [HOUR] [DAY OF MONTH] [MONTH OF YEAR] [DAY OF WEEK] [YEAR (optional)]
     deleteOldGameplays: '30 * * * *'
@@ -42,9 +46,9 @@ module.exports = function (settings) {
   };
 
   // Google Settings
-  settings.oAuth.google.callbackURL   = 'http://localhost:3002/auth/google/callback';
+  settings.oAuth.google.callbackURL    = 'http://localhost:3002/auth/google/callback';
   // Microsoft settings
-  settings.oAuth.microsoft.callbackURL  = 'http://localhost:3002/auth/microsoft/callback';
+  settings.oAuth.microsoft.callbackURL = 'http://localhost:3002/auth/microsoft/callback';
 
   // Ferropoly main instances to update when a gameplay was added / removed
   settings.mainInstances = ['http://localhost:3004'];

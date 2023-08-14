@@ -4,12 +4,11 @@
  */
 
 
-
 module.exports = function (settings) {
 
   settings.server = {
-    port: 3002,
-    host: 'app.ferropoly.ch',
+    port    : 3002,
+    host    : 'app.ferropoly.ch',
     serverId: 'editor-app.ferropoly.ch-v' + settings.version
   };
 
@@ -20,8 +19,12 @@ module.exports = function (settings) {
 
   settings.locationDbSettings = {
     mongoDbUrl: 'mongodb://localhost/ferropoly',
-    poolSize: 5
+    poolSize  : 5
   };
+
+  settings.autopilot = {
+    enabled: false
+  }
 
 
   settings.cron = {
@@ -31,9 +34,9 @@ module.exports = function (settings) {
   };
 
   // Google Settings
-  settings.oAuth.google.callbackURL = 'https://editor.ferropoly.ch/auth/google/callback';
+  settings.oAuth.google.callbackURL    = 'https://editor.ferropoly.ch/auth/google/callback';
   // Microsoft settings
-  settings.oAuth.microsoft.callbackURL  = 'https://editor.ferropoly.ch/auth/microsoft/callback';
+  settings.oAuth.microsoft.callbackURL = 'https://editor.ferropoly.ch/auth/microsoft/callback';
 
   settings.demoGameplay = {
     addDays: 0
@@ -41,10 +44,10 @@ module.exports = function (settings) {
 
   settings.mailer = {
     senderAddress: process.env.MAILER_SENDER,
-    host: process.env.MAILER_HOST,
-    port: 465,
-    secure: true,
-    auth: {
+    host         : process.env.MAILER_HOST,
+    port         : 465,
+    secure       : true,
+    auth         : {
       pass: process.env.MAILER_PASS,
       user: process.env.MAILER_USER
     }

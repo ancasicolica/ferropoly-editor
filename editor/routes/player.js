@@ -93,16 +93,16 @@ router.post('/create', function (req, res) {
       let team = new teams.Model();
       c++; // Do not start counting with 0, they're not engineers :-)
       team.data.name = 'Team ' + c;
-      teams.createTeam(team, gameId, function (err, newTeam) {
-        if (err) {
-          logger.error('updateTeam Error', err);
+      teams
+        .createTeam(team, gameId)
+        .then(newTeam => {
+          res.send({team: newTeam});
+        })
+        .catch(err => {
+          logger.error('createTeam Error', err);
           res.status(500).send('Fehler beim Erstellen des Teams: ' + err.message);
-          return;
-        }
-        return res.send({team: newTeam});
-      });
+        });
     });
-
   });
 });
 
@@ -191,13 +191,7 @@ router.post('/store', function (req, res) {
         return;
       }
     }
-    teams.updateTeam(team, function (err, storedTeam) {
-      if (err) {
-        logger.error('updateTeam Error', err);
-        res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
-        return;
-      }
-
+    teams.updateTeam(team).then(storedTeam => {
       // Check if a login is available
       users.getUserByMailAddress(storedTeam.data.teamLeader.email, function (err, user) {
         if (err || !user) {
@@ -216,9 +210,11 @@ router.post('/store', function (req, res) {
         };
         return res.send({team: storedTeam});
       });
+    }).catch(err => {
+      logger.error('updateTeam Error', err);
+      res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
     });
-  })
-  ;
+  });
 });
 
 
@@ -259,22 +255,22 @@ router.post('/confirm', function (req, res) {
       team.data.confirmed        = true;
       team.data.confirmationDate = new Date();
 
-      teams.updateTeam(team, function (err, updatedTeam) {
-        if (err) {
-          logger.error('updateTeam Error', err);
-          res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
-          return;
-        }
-        logger.info(`Confirmed team ${team.data.name} for ${team.data.gameId}`);
-        sendConfirmationMail(gp, team, err => {
-          let mailSent = true;
-          if (err) {
-            logger.error('Email send error', err);
-            mailSent = false;
-          }
-          return res.send({mailSent: mailSent, team: updatedTeam});
-        });
-      });
+      teams.updateTeam(team)
+           .then(updatedTeam => {
+             logger.info(`Confirmed team ${team.data.name} for ${team.data.gameId}`);
+             sendConfirmationMail(gp, team, err => {
+               let mailSent = true;
+               if (err) {
+                 logger.error('Email send error', err);
+                 mailSent = false;
+               }
+               return res.send({mailSent: mailSent, team: updatedTeam});
+             });
+           })
+           .catch(err => {
+             logger.error('updateTeam Error', err);
+             res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
+           });
     });
   });
 });
@@ -305,13 +301,11 @@ router.delete('/:gameId/:teamId', function (req, res) {
         return;
       }
     }
-    teams.deleteTeam(req.params.teamId, function (err) {
-      if (err) {
-        logger.error('deleteTeam Error', err);
-        res.status(500).send({message: 'Fehler bei Team löschen: ' + err.message});
-        return;
-      }
-      return res.send({});
+    teams.deleteTeam(req.params.teamId).then(info => {
+      return res.send(info);
+    }).catch(err => {
+      logger.error('deleteTeam Error', err);
+      res.status(500).send({message: 'Fehler bei Team löschen: ' + err.message});
     });
   });
 

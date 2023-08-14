@@ -19,6 +19,11 @@ ferropolyDb.init(settings, function (err) {
     gameEnd        : '23:30',
     presets        : 'moderate',
     doNotNotifyMain: true,
+    autopilot: {
+      active: true,
+      picBucket: true,
+      interval: 5*60*1000
+    },
     mobile         : {
       level: 5
     }

@@ -7,6 +7,7 @@
 const {v4: uuid} = require('uuid');
 const mongoose   = require('mongoose');
 const tokens     = {};
+const logger     = require('../lib/logger').getLogger('authTokenManager');
 
 const tokenSchema = mongoose.Schema({
   login     : String,
@@ -17,18 +18,19 @@ const tokenSchema = mongoose.Schema({
 
 const Token = mongoose.model('Token', tokenSchema);
 
-function getToken(user, callback) {
-  Token.find()
-    .where('login').equals(user)
-    .exec(function (err, docs) {
-      if (err) {
-        return callback(err);
-      }
-      if (!docs || docs.length === 0) {
-        return callback();
-      }
-      callback(err, docs[0]);
-    });
+async function getToken(user, callback) {
+  let token, err;
+  try {
+    token = await Token
+      .findOne()
+      .where('login').equals(user)
+      .exec();
+  } catch (ex) {
+    logger.error(ex);
+    err = ex;
+  } finally {
+    callback(err, token);
+  }
 }
 
 
@@ -39,7 +41,8 @@ module.exports = {
    * @param callback
    */
   getNewToken: function (options, callback) {
-    getToken(options.user, function (err, token) {
+    logger.debug(`New authtokenn requested for ${options.user} suggessting '${options.proposedToken}'`)
+    getToken(options.user, async function (err, token) {
       if (err) {
         return callback(err);
       }
@@ -48,9 +51,17 @@ module.exports = {
       }
       token.id    = options.proposedToken || uuid();
       token.login = options.user;
-      token.save(function (err) {
-        callback(err, token.id);
-      });
+      let res, errInfo;
+      try {
+        res = await token.save();
+        logger.debug(`User ${options.user} has now authtoken ${token.id}`);
+      } catch (ex) {
+        logger.error(ex);
+        errInfo = ex;
+      } finally {
+        callback(errInfo, res.id);
+      }
+    }).then(() => {
     });
   },
 
@@ -72,13 +83,16 @@ module.exports = {
         return callback(err);
       }
       if (!token) {
+        logger.info(`Not able to find an authtoken for '${user}'`);
         return callback(new Error('No token retrieved in verifyToken!'));
       }
       if (userToken === token.id) {
         tokens[user] = token;
         return callback(null);
       }
+      logger.info(`Authtoken invalid, supplied '${userToken}' but got ${token.id} for ${user}`);
       callback(new Error('invalid token'));
+    }).then(() => {
     });
   }
 };
