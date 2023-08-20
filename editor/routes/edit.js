@@ -161,8 +161,9 @@ router.post('/dataChanged/:gameId', function (req, res) {
     }
 
     // This also invalidates the pricelist
-    gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
-      res.send({});
+    gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, (err, doc) => {
+      console.log('XXXXXX', err, doc);
+      //res.send({});
     });
   });
 });

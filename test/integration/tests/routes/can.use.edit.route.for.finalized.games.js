@@ -4,20 +4,15 @@
  */
 
 const expect              = require('expect.js');
-const needle              = require('needle');
 const settings            = require('../../fixtures/settings');
 const login               = require('../../routes/login');
 const logout              = require('../../routes/logout');
-const createGame          = require('../../sequences/createGame');
 const createFinalizedGame = require('../../sequences/createFinalizedGame');
 const deleteAllGames      = require('../../sequences/deleteAllGames');
-const gameplay            = require('../../routes/gameplay');
 const _                   = require('lodash');
-const admins              = require('../../routes/admins');
 const edit                = require('../../routes/edit');
 const debug               = require('../../routes/debug');
 const moment              = require('moment');
-const async               = require('async');
 
 describe('/edit route tests with finalized games', function () {
   let gameId  = '';
@@ -157,7 +152,6 @@ describe('/edit route tests with finalized games', function () {
             console.log(data.gameplay.log.lastEdited);
             done();
           });
-
         });
       });
     });
