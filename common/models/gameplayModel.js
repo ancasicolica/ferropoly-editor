@@ -129,7 +129,6 @@ const Gameplay = mongoose.model('Gameplay', gameplaySchema);
  * @param callback
  */
 function createGameplay(gpOptions, callback) {
-  let errInfo;
   let gp = new Gameplay();
   if (!gpOptions.map || !gpOptions.ownerEmail || !gpOptions.name) {
     return callback(new Error('Missing parameter'));
