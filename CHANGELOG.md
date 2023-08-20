@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+## v3.3.1 20.8.23
+* Letztes Dependency Updates vor Herbst-Release, nur noch Bug-Fixes geplant
+
 ## v3.3.0 1.7.23
 * PicBucket integriert: Löscht Bilder beim Löschen eines Games
 * Background Bilder über eigene Route
