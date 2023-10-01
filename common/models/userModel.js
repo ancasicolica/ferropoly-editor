@@ -182,41 +182,56 @@ async function updateUser(user, password, callback) {
  * @param emailAddress
  * @param callback
  */
-async function getUserByMailAddress(emailAddress, callback) {
-  try {
-    const foundUser = await User
-      .findOne({'personalData.email': emailAddress})
-      .exec();
+function getUserByMailAddress(emailAddress, callback) {
 
-    if (!foundUser) {
-      return callback();
-    }
+  User
+    .findOne({'personalData.email': emailAddress})
+    .exec()
+    .then(foundUser => {
+      if (!foundUser) {
+        return callback();
+      }
 
-    // Verify if this user already has an ID or not. If not, upgrade to new model
-    if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
-      const id      = foundUser._id;
-      const newUser = new User();
-      copyUser(foundUser, newUser);
-      newUser._id = emailAddress;
-      await newUser.save();
-      await User
-        .findByIdAndRemove(id)
-        .exec();
-      logger.info('Updated user with email ' + newUser.personalData.email);
-      callback(null, newUser);
-    } else {
-      callback(null, foundUser);
-    }
-  } catch (ex) {
-    logger.error(ex);
-    callback(ex);
-  }
+      // Verify if this user already has an ID or not. If not, upgrade to new model
+      if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
+        const id      = foundUser._id;
+        const newUser = new User();
+        copyUser(foundUser, newUser);
+        newUser._id = emailAddress;
+        newUser.save()
+               .then(() => {
+                 User
+                   .findByIdAndRemove(id)
+                   .exec()
+                   .then(() => {
+                     logger.info('Updated user with email ' + newUser.personalData.email);
+                     callback(null, newUser);
+                   })
+                   .catch(callback);
+               })
+               .catch(callback);
+      } else {
+        callback(null, foundUser);
+      }
+    })
+    .catch(callback);
+}
+
+async function getUserByMailAddressB(emailAddress) {
+  return new Promise(resolve => {
+    getUserByMailAddress(emailAddress, (err, user) => {
+      if (err) {
+        throw new Error(err);
+      }
+      resolve(user);
+    });
+  });
 }
 
 /**
  * Get a user by its ID
  * @param id
- * @param callback, providing the complete user information when found
+ * @param callback , providing the complete user information when found
  */
 async function getUser(id, callback) {
   let doc, err;
@@ -526,6 +541,7 @@ module.exports = {
   generatePasswordHash     : generatePasswordHash,
   verifyPassword           : verifyPassword,
   getUserByMailAddress     : getUserByMailAddress,
+  getUserByMailAddressB:getUserByMailAddressB,
   removeUser               : removeUser,
   getAllUsers              : getAllUsers,
   getUser                  : getUser,
