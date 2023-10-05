@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+## v3.3.2 5.10.23
+* Bugfixes in Models
+
 ## v3.3.1 20.8.23
 * Letztes Dependency Updates vor Herbst-Release, nur noch Bug-Fixes geplant
 
