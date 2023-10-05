@@ -465,7 +465,7 @@ function findOrCreateMicrosoftUser(profile, callback) {
         }
         logger.info(`Microsoft login with email Address ${emailAddress}`, profile);
 
-        function saveNewMicrosoftUser() {
+        async function saveNewMicrosoftUser() {
           let newUser                      = new User();
           newUser._id                      = emailAddress || profile.id;
           newUser.login.microsoftProfileId = profile.id;
@@ -477,18 +477,14 @@ function findOrCreateMicrosoftUser(profile, callback) {
           newUser.personalData.email       = emailAddress;
           newUser.personalData.avatar      = avatar;
           accountLog.addNewUserEntry(newUser._id, 'Microsoft');
-          newUser.save(function (err, savedUser) {
-            if (err) {
-              return callback(err);
-            }
-            logger.info('Created microsoft user', savedUser);
-            // Recursive call, now we'll find this user
-            return findOrCreateMicrosoftUser(profile, callback);
-          });
+          let savedUser = await newUser.save();
+          logger.info('Created microsoft user', savedUser);
+          // Recursive call, now we'll find this user
+          return findOrCreateMicrosoftUser(profile, callback);
         }
 
         if (emailAddress) {
-          getUserByMailAddress(emailAddress, function (err, user) {
+          getUserByMailAddress(emailAddress, async function (err, user) {
             if (err) {
               return callback(err);
             }
@@ -502,15 +498,10 @@ function findOrCreateMicrosoftUser(profile, callback) {
               user.login.microsoftProfileId = profile.id;
               user.personalData.avatar      = avatar;
               accountLog.addNewUserEntry(emailAddress, 'Microsoft');
-              user.save(function (err) {
-                if (err) {
-                  return callback(err);
-                }
-                logger.info('Upgraded user ' + emailAddress + ' for microsoft access');
-                // Recursive call, now we'll find this user
-                return findOrCreateMicrosoftUser(profile, callback);
-              });
-              return;
+              await user.save();
+              logger.info('Upgraded user ' + emailAddress + ' for google access');
+              // Recursive call, now we'll find this user
+              return findOrCreateMicrosoftUser(profile, callback);
             }
 
             // We do not know this user. Add him/her to the list.
@@ -541,7 +532,7 @@ module.exports = {
   generatePasswordHash     : generatePasswordHash,
   verifyPassword           : verifyPassword,
   getUserByMailAddress     : getUserByMailAddress,
-  getUserByMailAddressB:getUserByMailAddressB,
+  getUserByMailAddressB    : getUserByMailAddressB,
   removeUser               : removeUser,
   getAllUsers              : getAllUsers,
   getUser                  : getUser,

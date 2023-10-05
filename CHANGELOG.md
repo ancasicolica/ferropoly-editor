@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Bugfix Microsoft Login
+
 ## v3.3.2 5.10.23
 * Bugfixes in Models
 
