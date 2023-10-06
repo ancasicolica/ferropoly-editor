@@ -19,8 +19,11 @@ Die integration Tests prüfen Funktionen des Backends: HTTP-Routen und Abläufe 
 
 Sowohl der Editor wie auch das Main-Programm müssen für die Tests gestartet sein.
 
-### Frontend Tests
-Für die Prüfung der Webapp sind Abläufe auf der [Testing-Seite](./test/test.md) Definiert.
+### Volltests
+Für die Prüfung der Webapp sind Abläufe auf der [Testing-Seite](./test/test.md) definiert. Für die Verwaltung von Tests stellt [Testiny](https://www.testiny.io/) uns einen kostenlosen Account zur Verfügung.
+
+![Testify](./common/badge-tested-with-testiny@2x.png)
+
 
 ## Copyright
 Das Ferropoly ist unter der GPL V3 Lizenz verfügbar. 
