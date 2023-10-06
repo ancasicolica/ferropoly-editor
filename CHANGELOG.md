@@ -1,6 +1,9 @@
 # Changelog Ferropoly Editor
 
+## v3.3.3 6.10.23
+* Release Candidate 1
 * Bugfix Microsoft Login
+* Referenz auf Testiny
 
 ## v3.3.2 5.10.23
 * Bugfixes in Models
