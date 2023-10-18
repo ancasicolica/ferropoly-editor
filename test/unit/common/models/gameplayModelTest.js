@@ -348,7 +348,14 @@ describe('GameplayModel Tests', function () {
         done(err);
       });
     });
+  });
 
+  describe('Making a GP public', function() {
+    it ('should mark the public flag', async function () {
+      let gp = await gameplays.makeGameplayPublic(gp1.internal.gameId)
+      expect(gp.internal.gameDataPublic).to.be(true);
+      return true;
+    })
   });
 
   describe('Deleting all gameplays again', function () {

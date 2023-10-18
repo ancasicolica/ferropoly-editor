@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* makeGameplayPublic in GameplayModel added
+
 ## v3.3.3 6.10.23
 * Release Candidate 1
 * Bugfix Microsoft Login
