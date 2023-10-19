@@ -1,6 +1,7 @@
 # Changelog Ferropoly Editor
 
 * makeGameplayPublic in GameplayModel added
+* Update Spielregeln für Bildupload
 
 ## v3.3.3 6.10.23
 * Release Candidate 1
