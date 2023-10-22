@@ -38,8 +38,8 @@
             label="Maximalbetrag Parkplatz"
             help="Sobald dieser Betrag erreicht wird, steigt die Chance auf einen Parkplatzgewinn deutlich an."
             step="10000"
-            min="20000"
-            max="600000")
+            min="10000"
+            max="200000")
       b-col
         b-button(
           variant="primary"
