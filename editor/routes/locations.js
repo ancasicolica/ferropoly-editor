@@ -39,13 +39,16 @@ const importLocation = function (location, callback) {
         maps         : location.maps
       });
       // Save the new location
-      return newLocation.save(function (err, location) {
-        if (err) {
-          return callback(err, location, 0);
-        }
-        console.log('saved:' + location.name);
-        return callback(null, location, 1);
-      });
+      return newLocation.save()
+                        .then(loc => {
+                          console.log('saved:' + location.name);
+                          return callback(null, location, 1);
+                        })
+                        .catch(err => {
+                          return callback(err, location, 0);
+                        })
+
+
     } else {
       // Update an existing item of the Location model (if data changed)
       let saveNeeded = false;

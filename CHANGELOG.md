@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+
+* Bugfix: Import Locations funktionierte für Admins nicht
+
 ## v3.3.5 22.10.23 Release
 * Parkplatz ist per Default unattraktiver: grössere Chance auf Gewinn, kleinere Gesamtsumme (Feedback Keira, SBB)
 
