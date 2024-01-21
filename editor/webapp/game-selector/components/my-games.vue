@@ -23,7 +23,9 @@ import ModalDeleteGame from "./modal-delete-game.vue";
 import ModalError from '../../common/components/modal-error/modal-error.vue';
 
 export default {
-  name      : "my-games",
+  name      : "MyGames",
+  components: {GameCard, ModalDeleteGame, ModalError},
+  model     : {},
   props     : [],
   data      : function () {
     return {
@@ -31,7 +33,6 @@ export default {
       gameplayToDelete: ''
     };
   },
-  model     : {},
   created   : function () {
     this.updateGameplays();
   },
@@ -65,11 +66,11 @@ export default {
       let self = this;
       readMyGames((err, gameplays) => {
         self.gameplays = gameplays;
+        console.log('GAMES', self.gameplays);
         this.$emit('gameplays-changed', gameplays);
       });
     }
-  },
-  components: {GameCard, ModalDeleteGame, ModalError}
+  }
 }
 </script>
 

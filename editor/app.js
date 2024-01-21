@@ -119,6 +119,7 @@ let initServer = function () {
   app.use('/test', require('./routes/test'));
   app.use('/agb', require('../common/routes/agb'));
   app.use('/rules', require('./routes/rules'));
+  app.use('/registration', require('./routes/registration'));
   app.use('/dashboard', require('./routes/dashboard'));
   app.use('/images', require('../common/routes/images'));
   require('./routes/locations')(app);

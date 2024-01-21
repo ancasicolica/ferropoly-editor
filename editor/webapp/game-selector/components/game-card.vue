@@ -30,6 +30,12 @@
           b-button.btn-gameplay(size="sm" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
             b-icon-pencil
 
+          b-button.btn-gameplay(size="sm" v-if="joiningPossible" variant="success" :href="url.registration") Anmeldung &nbsp;
+            b-icon-file-post
+
+          b-button.btn-gameplay(size="sm" v-if="!joiningPossible" variant="warning" :href="url.registration") Anmeldung &nbsp;
+            b-icon-file-post
+
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
             b-icon-eye
 
@@ -48,14 +54,15 @@
 </template>
 
 <script>
-import {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil} from 'bootstrap-vue';
+import {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil, BIconFilePost} from 'bootstrap-vue';
 import {get} from 'lodash';
 import {getMapName} from '../../common/lib/mapTypes'
 import FerroCard from '../../common/components/ferro-card/ferro-card.vue'
+import {DateTime} from "luxon";
 
 export default {
   name      : 'GameCard',
-  components: {FerroCard, BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil},
+  components: {FerroCard, BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil, BIconFilePost},
   model     : {},
   props     : {
     gameplay: {
@@ -73,9 +80,19 @@ export default {
         viewPricelist: `/pricelist/view/${this.gameplay.internal.gameId}`,
         rules        : `/rules/${this.gameplay.internal.gameId}`,
         editPlayer   : `/player/edit/${this.gameplay.internal.gameId}`,
-        editAdmins   : `/admins/edit/${this.gameplay.internal.gameId}`
+        editAdmins   : `/admins/edit/${this.gameplay.internal.gameId}`,
+        registration : `/registration/${this.gameplay.internal.gameId}`
       }
     };
+  },
+  computed: {
+    /**
+     * True if you still can join the game, false if it is too late
+     */
+    joiningPossible()  {
+      let deadline = DateTime.fromISO(this.gameplay.joining.possibleUntil);
+      return DateTime.now() < deadline;
+    }
   },
   methods   : {
     /**

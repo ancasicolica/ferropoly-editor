@@ -27,6 +27,7 @@ router.get('/mygames', function (req, res) {
           internal  : gameplay.internal,
           gamename  : gameplay.gamename,
           scheduling: gameplay.scheduling,
+          joining   : gameplay.joining,
           log       : gameplay.log,
           isOwner   : _.get(gameplay, 'internal.owner') === req.session.passport.user
         });
@@ -101,8 +102,7 @@ router.post('/createnew', function (req, res) {
           });
       });
     });
-  }
-  catch (e) {
+  } catch (e) {
     logger.error('Exception in gameplay.createnew.post', e);
     return res.status(500).send({message: e.message});
   }
@@ -139,8 +139,7 @@ router.post('/finalize', function (req, res) {
         return res.send({});
       });
     });
-  }
-  catch (e) {
+  } catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);
     return res.status(500).send({message: e.message});
   }
@@ -223,8 +222,7 @@ router.delete('/:gameId', function (req, res) {
         return res.send({gameId: gp.internal.gameId, name: gp.gamename});
       });
     });
-  }
-  catch (e) {
+  } catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);
     return res.status(500).send({message: e.message});
   }
