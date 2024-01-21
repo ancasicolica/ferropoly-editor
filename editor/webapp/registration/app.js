@@ -16,7 +16,7 @@ import RegistrationRoot from './components/RegistrationRoot.vue'
 
 Vue.use(VueRouter);
 
-Vue.component('registration-root', RegistrationRoot);
+Vue.component('RegistrationRoot', RegistrationRoot);
 
 console.log('Webapp initializing');
 

@@ -9,7 +9,6 @@ import {getField, updateField} from 'vuex-map-fields';
 import gameplay from '../../editor/store/modules/gameplay';
 import {loadGame} from "../../lib/adapters/gameplay";
 import {get, set} from "lodash";
-import EditorProperty from "../../editor/lib/editorProperty";
 
 Vue.use(Vuex);
 
