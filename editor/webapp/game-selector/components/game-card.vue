@@ -42,10 +42,10 @@
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('internal.finalized')" :href="url.rules") Spielregeln &nbsp;
             b-icon-pencil
 
-          b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editPlayer") Gruppen &nbsp;
+          b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner')" :href="url.editPlayer") Gruppen &nbsp;
             b-icon-people
 
-          b-button.btn-gameplay(size="sm" v-if="(getGpProperty('log.priceListVersion') > 0) && getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter*innen
+          b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner')" :href="url.editAdmins") Spielleiter*innen
             b-icon-person
 
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')" v-on:click="deleteGameplay") Löschen

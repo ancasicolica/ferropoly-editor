@@ -27,11 +27,11 @@ const store = new Vuex.Store({
   state    : {
     menuElements    : [
       // take care of the Id's as we're accessing them directly
-      /* 0 */  {title: 'Info', id: 'info', href: '#', event: 'show-info', hide: false, active: true},
-      /* 1 */  {title: 'Editor', id: 'edit', href: '#', event: 'show-editor', hide: false, active: false},
+      /* 1 */  {title: 'Editor', id: 'edit', href: '#', event: 'show-editor', hide: false, active: true},
+      /* 1 */  {title: 'Vorschau', id: 'preview', href: '#', event: 'show-editor', hide: false, active: false},
 
     ],
-    currentView     : 'info',
+    currentView     : 'edit',
     registrationText: {text: 'Bitte warten...'},
     gameId          : '',
     editAllowed     : true,

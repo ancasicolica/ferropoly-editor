@@ -10,7 +10,6 @@
     @show-editor="showEditor"
     help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/spielregeln/")
 
-  registration-info(v-if="currentView==='info'")
   registration-editor(v-if="currentView==='edit'")
 
 
