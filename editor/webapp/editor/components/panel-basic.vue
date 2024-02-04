@@ -48,7 +48,7 @@ export default {
   },
   methods   : {
     saveAndContinue() {
-      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-player'});
+      this.$store.dispatch({type: 'saveData', targetPanel: 'panel-pricelist'});
     }
   }
 }

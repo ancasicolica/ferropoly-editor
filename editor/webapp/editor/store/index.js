@@ -109,6 +109,7 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.gameParams.chancellery.probabilityLoose');
         setProp(state, res, 'gameplay.joining.possibleUntil');
         setProp(state, res, 'gameplay.joining.infotext');
+        setProp(state, res, 'gameplay.joining.url');
         setProp(state, res, 'gameplay.mobile.level');
       });
     },

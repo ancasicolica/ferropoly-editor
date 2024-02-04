@@ -14,6 +14,11 @@
         b-col Ende
         b-col {{getGpProperty('scheduling.gameEnd')}}
       b-row
+        b-col Anmeldeschluss
+        b-col.registration-active(v-if="registrationActive") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
+        b-col.registration-soon(v-if="registrationEndingSoon") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
+        b-col.registration-finished(v-if="registrationFinished") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
+      b-row
         b-col Karte
         b-col {{getMapName()}}
       b-row
@@ -27,16 +32,10 @@
         b-col.id Id: {{getGpProperty('internal.gameId')}}
       b-row
         b-col
-          b-button.btn-gameplay(size="sm" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
+          b-button.btn-gameplay(size="sm" variant="primary" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
             b-icon-pencil
 
-          b-button.btn-gameplay(size="sm" v-if="registrationActive" variant="success" :href="url.registration") Anmeldung &nbsp;
-            b-icon-file-post
-
-          b-button.btn-gameplay(size="sm" v-if="registrationEndingSoon" variant="warning" :href="url.registration") Anmeldung &nbsp;
-            b-icon-file-post
-
-          b-button.btn-gameplay(size="sm" v-if="registrationFinished" variant="danger" :href="url.registration") Anmeldung &nbsp;
+          b-button.btn-gameplay(size="sm" :href="url.registration") Anmeldung &nbsp;
             b-icon-file-post
 
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
@@ -61,7 +60,8 @@ import {BIconTrash, BIconPerson, BIconPeople, BIconEye, BIconPencil, BIconFilePo
 import {get} from 'lodash';
 import {getMapName} from '../../common/lib/mapTypes'
 import FerroCard from '../../common/components/ferro-card/ferro-card.vue'
-import {DateTime} from "luxon";
+import {DateTime} from 'luxon';
+import {formatTimestampAsAgo, relativeDate} from '../../common/lib/formatters';
 
 export default {
   name      : 'GameCard',
@@ -88,7 +88,7 @@ export default {
       }
     };
   },
-  computed: {
+  computed  : {
     registrationActive() {
       const limit = DateTime.fromISO(this.gameplay.joining.possibleUntil).startOf('day').minus({days: 1});
       return DateTime.local() <= limit.startOf('day');
@@ -99,6 +99,7 @@ export default {
     registrationEndingSoon() {
       return !(this.registrationActive || this.registrationFinished);
     }
+
   },
   methods   : {
     /**
@@ -122,6 +123,10 @@ export default {
     getMapName() {
       console.log('getMapName', this.getGpProperty('internal.map'), getMapName(this.getGpProperty('internal.map')));
       return getMapName(this.getGpProperty('internal.map'));
+    },
+
+    joiningPossibleDate(isoDateString) {
+      return formatTimestampAsAgo(DateTime.fromISO(isoDateString));
     }
   }
 }
@@ -139,4 +144,15 @@ export default {
   font-size: x-small;
 }
 
+.registration-active {
+  color: darkgreen;
+}
+
+.registration-soon {
+  color: darkorange;
+}
+
+.registration-finished {
+  color: red;
+}
 </style>

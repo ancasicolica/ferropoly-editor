@@ -25,7 +25,6 @@
         panel-create(v-if="panel==='panel-create'")
         panel-houses(v-if="panel==='panel-houses'")
         panel-chance(v-if="panel==='panel-chance'")
-        panel-player(v-if="panel==='panel-player'")
         panel-pricelist(v-if="panel==='panel-pricelist'")
         panel-properties(v-if="panel==='panel-properties'")
         panel-rent(v-if="panel==='panel-rent'")
@@ -38,7 +37,6 @@ import MenuBar from '../../common/components/menu-bar/menu-bar.vue';
 import PanelBasic from './panel-basic.vue';
 import PanelCreate from './panel-create.vue';
 import PanelHouses from './panel-houses.vue';
-import PanelPlayer from './panel-player.vue';
 import PanelChance from './panel-chance.vue';
 import PanelPricelist from './panel-pricelist.vue';
 import PanelProperties from './panel-properties.vue';
@@ -56,7 +54,6 @@ export default {
     PanelBasic,
     PanelCreate,
     PanelHouses,
-    PanelPlayer,
     PanelPricelist,
     PanelProperties,
     PanelRent,
@@ -75,7 +72,6 @@ export default {
           title   : 'Spielparameter', href: '#', type: 'dropdown',
           elements: [
             {title: 'Spieldaten', href: '#', event: 'panel-change', eventParam: 'panel-basic'},
-            {title: 'Gruppenzugang', href: '#', event: 'panel-change', eventParam: 'panel-player'},
             {title: 'Preisliste', href: '#', event: 'panel-change', eventParam: 'panel-pricelist'},
             {title: 'Startgeld & Zins', href: '#', event: 'panel-change', eventParam: 'panel-rent'},
             {title: 'Häuser & Hotel', href: '#', event: 'panel-change', eventParam: 'panel-houses'},
@@ -91,7 +87,6 @@ export default {
         'panel-create'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/create',
         'panel-houses'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/houses',
         'panel-chance'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/chance',
-        'panel-player'    : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/player',
         'panel-pricelist' : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/pricelist',
         'panel-rent'      : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/rent',
         'panel-sorting'   : 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/sorting',

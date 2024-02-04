@@ -5,6 +5,7 @@
 -->
 <template lang="pug">
   #edit
+    modal-error(title="Fehler" ref='admin-error')
     b-container(fluid="true").m-3
       h1 Online-Anmeldung
       b-row
@@ -38,10 +39,11 @@ import InputDateTime from '../../common/components/form-controls/input-date-time
 import {VueEditor} from 'vue2-editor';
 import {DateTime} from 'luxon';
 import editorToolbar from '../../editor/lib/editorToolbar';
+import ModalError from '../../common/components/modal-error/modal-error.vue';
 
 export default {
   name      : 'RegistrationEditor',
-  components: {BIconBoxArrowUpRight, InputDateTime, VueEditor},
+  components: {ModalError, BIconBoxArrowUpRight, InputDateTime, VueEditor},
   filters   : {},
   mixins    : [],
   model     : {},
@@ -79,15 +81,31 @@ export default {
   created   : function () {
   },
   methods   : {
+    /**
+     * Creates a Toast message
+     */
+    makeToast(info, variant = null) {
+      this.$bvToast.toast(info, {
+        title  : 'Ferropoly',
+        variant: variant,
+        solid  : true
+      })
+    },
     onSave() {
       let self         = this;
       this.savePending = true;
       this.$store.dispatch('saveRegistrationData')
           .then(() => {
             console.log('done');
+            self.makeToast('Daten für Online-Anmeldung gespeichert', 'success');
           })
           .catch(err => {
             console.error('Nun den Fehler anzeigen', err);
+            self.$refs['admin-error'].showDialog({
+              title  : 'Fehler',
+              info   : 'Die Anmeldedaten konnten nicht gespeichert werden:',
+              message: err.message
+            });
           })
           .finally(()=>{
             self.savePending = false;
