@@ -30,10 +30,13 @@
           b-button.btn-gameplay(size="sm" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
             b-icon-pencil
 
-          b-button.btn-gameplay(size="sm" v-if="joiningPossible" variant="success" :href="url.registration") Anmeldung &nbsp;
+          b-button.btn-gameplay(size="sm" v-if="registrationActive" variant="success" :href="url.registration") Anmeldung &nbsp;
             b-icon-file-post
 
-          b-button.btn-gameplay(size="sm" v-if="!joiningPossible" variant="warning" :href="url.registration") Anmeldung &nbsp;
+          b-button.btn-gameplay(size="sm" v-if="registrationEndingSoon" variant="warning" :href="url.registration") Anmeldung &nbsp;
+            b-icon-file-post
+
+          b-button.btn-gameplay(size="sm" v-if="registrationFinished" variant="danger" :href="url.registration") Anmeldung &nbsp;
             b-icon-file-post
 
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
@@ -86,12 +89,15 @@ export default {
     };
   },
   computed: {
-    /**
-     * True if you still can join the game, false if it is too late
-     */
-    joiningPossible()  {
-      let deadline = DateTime.fromISO(this.gameplay.joining.possibleUntil);
-      return DateTime.now() < deadline;
+    registrationActive() {
+      const limit = DateTime.fromISO(this.gameplay.joining.possibleUntil).startOf('day').minus({days: 1});
+      return DateTime.local() <= limit.startOf('day');
+    },
+    registrationFinished() {
+      return DateTime.local() > DateTime.fromISO(this.gameplay.joining.possibleUntil);
+    },
+    registrationEndingSoon() {
+      return !(this.registrationActive || this.registrationFinished);
     }
   },
   methods   : {
