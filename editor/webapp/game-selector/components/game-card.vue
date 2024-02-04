@@ -35,7 +35,7 @@
           b-button.btn-gameplay(size="sm" variant="primary" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" :href="url.edit") Bearbeiten &nbsp;
             b-icon-pencil
 
-          b-button.btn-gameplay(size="sm" :href="url.registration") Anmeldung &nbsp;
+          b-button.btn-gameplay(size="sm" :href="url.registration" v-if="getGpProperty('isOwner')") Anmeldung &nbsp;
             b-icon-file-post
 
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
