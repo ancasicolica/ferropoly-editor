@@ -92,6 +92,39 @@ router.post('/save/:gameId', function (req, res) {
   });
 });
 
+
+/**
+ * Saves registration data
+ * This can be done even the gameplay was finalized before
+ */
+router.post('/registration/:gameId', (req, res) => {
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info(`/registration/${req.params.gameId} : Auth token missing or wrong, access denied: ${req.body.authToken} vs ${req.session.authToken}`);
+    logger.info('Passport Info:' + _.get(req, 'session.passport', 'none'));
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+  }
+
+  if (req.params.gameId !== req.body.gameplay.internal.gameId) {
+    logger.info(`/save/${req.params.gameId} : GameId mismatch: ${req.params.gameId} vs ${req.body.gameplay.internal.gameId}`);
+    res.status(400).send({message: 'GameID mismatch'});
+    return;
+  }
+
+  if (!req.body.gameplay) {
+    return res.status(400).send({message: 'Ungültige Parameter'});
+  }
+
+  logger.info('Save registration data ' + req.params.gameId);
+  gameplays.updateRegistrationData(req.params.gameId, req.body.gameplay)
+    .then(info => {
+      return res.send({success: true, info});
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(500).send(err);
+    })
+})
+
 /**
  * Save Property
  * Saves ONE SINGLE property which was edited in the editor. Properties can only be updated

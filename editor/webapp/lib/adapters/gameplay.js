@@ -125,6 +125,37 @@ function saveGameplay(gp, callback) {
 }
 
 /**
+ * Saves registration data for a gameplay.
+ *
+ * @param {Gameplay} gp - The gameplay object to be saved.
+ * @returns {Promise<void>} - A promise that resolves when the data is saved successfully, or rejects with an error.
+ */
+function saveRegistrationData(gp) {
+  return new Promise((resolve, reject) => {
+    getAuthToken()
+      .then(authToken=> {
+        console.log('pre post', authToken)
+        axios.post(`/gameplay/registration/${gp.internal.gameId}`, {
+          gameplay: gp,
+          authToken
+        })
+          .then(()=> {
+            resolve();
+          })
+          .catch(err=> {
+            console.error(err);
+            reject({message: get(err, 'message', 'Fehler beim Speichern'),
+            });
+          });
+      })
+      .catch(err => {
+        reject(err);
+      });
+  })
+}
+
+
+/**
  * Saves data of a property
  * @param property
  * @param gameId
@@ -237,6 +268,9 @@ function createGame(settings, callback) {
   });
 }
 
+async function saveRegistration(info) {
+
+}
 
 export {
   saveGameplay,
@@ -249,5 +283,6 @@ export {
   getGameInfo,
   loadGame,
   saveProperty,
-  savePositionInPricelist
+  savePositionInPricelist,
+  saveRegistrationData
 };

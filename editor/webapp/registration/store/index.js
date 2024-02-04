@@ -7,7 +7,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {getField, updateField} from 'vuex-map-fields';
 import gameplay from '../../editor/store/modules/gameplay';
-import {loadGame} from "../../lib/adapters/gameplay";
+import {loadGame, saveRegistrationData} from '../../lib/adapters/gameplay';
 import {get, set} from "lodash";
 
 Vue.use(Vuex);
@@ -27,8 +27,8 @@ const store = new Vuex.Store({
   state    : {
     menuElements    : [
       // take care of the Id's as we're accessing them directly
-      /* 1 */  {title: 'Editor', id: 'edit', href: '#', event: 'show-editor', hide: false, active: true},
-      /* 1 */  {title: 'Vorschau', id: 'preview', href: '#', event: 'show-editor', hide: false, active: false},
+      /* 1 */  {title: 'Editor', id: 'edit', href: '#', event: 'show-editor', hide: true, active: true},
+      /* 1 */  {title: 'Vorschau', id: 'preview', href: '#', event: 'show-editor', hide: true, active: false},
 
     ],
     currentView     : 'edit',
@@ -67,6 +67,7 @@ const store = new Vuex.Store({
         }
         this.state.gameId       = options.gameId;
         // Properties -> Map settings
+        setProp(state, res, 'gameplay.internal.gameId');
         setProp(state, res, 'gameplay.owner.organisatorName');
         setProp(state, res, 'gameplay.owner.organisation');
         setProp(state, res, 'gameplay.owner.organisatorEmail');
@@ -83,6 +84,10 @@ const store = new Vuex.Store({
         console.log('loaded gp', state, res);
       });
     },
+    async saveRegistrationData({state}) {
+      console.log('gp', state.gameplay)
+      return await saveRegistrationData(state.gameplay)
+    }
   }
 
 });

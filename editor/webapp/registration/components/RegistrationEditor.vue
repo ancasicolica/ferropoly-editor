@@ -10,7 +10,7 @@
       b-row
         b-col
           p Die Gruppen können sich online für das Spiel anmelden (
-            a(:href="gameUrl") Link &nbsp;
+            a(:href="gameUrl" target="blank") Link &nbsp;
               b-icon-box-arrow-up-right
             | ). Damit sie sie dieses Anmeldeformular benutzen können, müssen sie sich beim Ferrpoly registrieren - genau gleich, wie Du das bereits gemacht hast.
             | Du bekommst bei jeder neuen Anmeldung ein Mail zugeschickt, diese Anmeldung muss unter "Gruppen" dann noch bestätigt werden.
@@ -27,7 +27,7 @@
             v-model="infotext"
             :editorToolbar="toolbar"
           )
-          b-button.mt-4(variant="primary") Speichern
+          b-button.mt-4(variant="primary" @click="onSave" :disabled="savePending") Speichern
 
 </template>
 <script>
@@ -48,7 +48,8 @@ export default {
   props     : {},
   data      : function () {
     return {
-      toolbar: editorToolbar
+      toolbar    : editorToolbar,
+      savePending: false
     }
   },
   computed  : {
@@ -65,8 +66,8 @@ export default {
       return DateTime.fromISO(this.gameDate).minus({day: 1}).toISO();
     },
     registrationActive() {
-      const limit = DateTime.fromISO(this.possibleUntil).startOf('day').minus({ days: 1 });
-      return  DateTime.local() <= limit.startOf('day');
+      const limit = DateTime.fromISO(this.possibleUntil).startOf('day').minus({days: 1});
+      return DateTime.local() <= limit.startOf('day');
     },
     registrationFinished() {
       return DateTime.local() > DateTime.fromISO(this.possibleUntil);
@@ -74,12 +75,25 @@ export default {
     registrationEndingSoon() {
       return !(this.registrationActive || this.registrationFinished);
     }
-
-
   },
   created   : function () {
   },
-  methods   : {}
+  methods   : {
+    onSave() {
+      let self         = this;
+      this.savePending = true;
+      this.$store.dispatch('saveRegistrationData')
+          .then(() => {
+            console.log('done');
+          })
+          .catch(err => {
+            console.error('Nun den Fehler anzeigen', err);
+          })
+          .finally(()=>{
+            self.savePending = false;
+          })
+    }
+  }
 }
 
 </script>
@@ -94,14 +108,17 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
 .expired {
   background: red;
   color: white;
 }
+
 .expiring-soon {
   background: yellow;
   color: black;
 }
+
 .active {
   background: darkgreen;
   color: white;
