@@ -1,6 +1,7 @@
 # Changelog Ferropoly Editor
 
 
+* Verbesserung UI: Anmeldung und Spielleiter können jederzeit bearbeitet werden (#52)
 * Bugfix: Import Locations funktionierte für Admins nicht
 
 ## v3.3.5 22.10.23 Release
