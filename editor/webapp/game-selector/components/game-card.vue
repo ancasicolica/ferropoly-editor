@@ -41,7 +41,7 @@
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('log.priceListVersion') > 0" :href="url.viewPricelist") Preisliste &nbsp;
             b-icon-eye
 
-          b-button.btn-gameplay(size="sm" v-if="getGpProperty('internal.finalized')" :href="url.rules") Spielregeln &nbsp;
+          b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner') && getGpProperty('internal.finalized')" :href="url.rules") Spielregeln &nbsp;
             b-icon-pencil
 
           b-button.btn-gameplay(size="sm" v-if="getGpProperty('isOwner')" :href="url.editPlayer") Gruppen &nbsp;

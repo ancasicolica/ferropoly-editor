@@ -1,6 +1,9 @@
 # Changelog Ferropoly Editor
 
-## v3.4.1 4.2.24 Release
+## v3.4.2 4.2.24 Release
+* Bugfix: Spielleiter dürfen Spielregeln nicht verändern können (sigh...)
+
+## v3.4.1 4.2.24 
 * Bugfix: Spielleiter dürfen Anmelde-Daten nicht verändern können
 
 ## v3.4.0 4.2.24
