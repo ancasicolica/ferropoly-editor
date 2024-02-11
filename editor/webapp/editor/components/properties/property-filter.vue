@@ -46,10 +46,24 @@ import FerroCard from '../../../common/components/ferro-card/ferro-card.vue';
 import {formatPriceRange, formatAccessibility} from '../../../common/lib/formatters';
 
 export default {
-  name      : 'property-filter',
+  name      : 'PropertyFilter',
+  components: {FerroCard},
+  filters   : {},
+  mixins    : [],
+  model     : {},
   props     : {
-    nbSelected: 0,
-    nbTotal   : 0
+    nbSelected: {
+      type: Number,
+      default: ()=> {
+        return 0;
+      }
+    },
+    nbTotal   : {
+      type: Number,
+      default: ()=> {
+        return 0;
+      }
+    }
   },
   data      : function () {
     return {
@@ -58,9 +72,6 @@ export default {
       priceRangeFilter   : '-1',
       filterType         : 'all'
     };
-  },
-  model     : {},
-  created   : function () {
   },
   computed  : {
     /**
@@ -118,10 +129,11 @@ export default {
         {text: formatAccessibility('train'), value: 'train'},
         {text: formatAccessibility('bus'), value: 'bus'},
         {text: formatAccessibility('boat'), value: 'boat'},
-        {text: formatAccessibility('cablecar'), value: 'cablecar'},
-        {text: formatAccessibility('other'), value: 'other'},
+        {text: formatAccessibility('cablecar'), value: 'cablecar'}
       ]);
     }
+  },
+  created   : function () {
   },
   methods   : {
     /**
@@ -148,10 +160,7 @@ export default {
     locationFilterUpdated() {
       this.$emit('filter', {filterType: this.filterType, filter: this.locationFilter.toLowerCase()});
     }
-  },
-  components: {FerroCard},
-  filters   : {},
-  mixins    : []
+  }
 }
 </script>
 
