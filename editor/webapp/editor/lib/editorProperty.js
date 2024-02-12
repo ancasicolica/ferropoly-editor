@@ -44,6 +44,22 @@ class EditorProperty extends Property {
     };
   };
 
+  getPriceIconIndex(priceRange) {
+    switch(priceRange) {
+      case 0:
+        return this.iconPriceLabels[0];
+      case 1:
+        return this.iconPriceLabels[2];
+      case 2:
+        return this.iconPriceLabels[4];
+      case 3:
+        return this.iconPriceLabels[6];
+      case 4:
+        return this.iconPriceLabels[7];
+      default:
+        return this.iconPriceLabels[9];
+    }
+  }
 
   /**
    * Set the icon for this location in the map, this is editor specific
@@ -63,7 +79,7 @@ class EditorProperty extends Property {
             if (x === -1) {
               this.marker.setIcon(this.ICON_TRAIN_LOCATION);
             } else {
-              this.marker.setIcon(this.ICON_TRAIN_LOCATION_USED + this.iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_TRAIN_LOCATION_USED + this.getPriceIconIndex(x));
             }
             break;
 
@@ -71,7 +87,7 @@ class EditorProperty extends Property {
             if (x === -1) {
               this.marker.setIcon(this.ICON_BUS_LOCATION);
             } else {
-              this.marker.setIcon(this.ICON_BUS_LOCATION_USED + this.iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_BUS_LOCATION_USED + this.getPriceIconIndex(x));
             }
             break;
 
@@ -79,7 +95,7 @@ class EditorProperty extends Property {
             if (x === -1) {
               this.marker.setIcon(this.ICON_BOAT_LOCATION);
             } else {
-              this.marker.setIcon(this.ICON_BOAT_LOCATION_USED + this.iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_BOAT_LOCATION_USED + this.getPriceIconIndex(x));
             }
             break;
 
@@ -87,7 +103,7 @@ class EditorProperty extends Property {
             if (x === -1) {
               this.marker.setIcon(this.ICON_CABLECAR_LOCATION);
             } else {
-              this.marker.setIcon(this.ICON_CABLECAR_LOCATION_USED + this.iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_CABLECAR_LOCATION_USED + this.getPriceIconIndex(x));
             }
             break;
 
@@ -95,7 +111,7 @@ class EditorProperty extends Property {
             if (x === -1) {
               this.marker.setIcon(this.ICON_OTHER_LOCATION);
             } else {
-              this.marker.setIcon(this.ICON_OTHER_LOCATION_USED + this.iconPriceLabels[x]);
+              this.marker.setIcon(this.ICON_OTHER_LOCATION_USED + this.getPriceIconIndex(x));
             }
             break;
         }
