@@ -1,5 +1,10 @@
 # Changelog Ferropoly Editor
 
+* Mehr Orte
+* Anmeldung kann nach Finalisierung weiter bearbeitet werden
+* Gruppen können vor Finalisierung Preisliste bearbeitet werden
+* Neue Icons für Orte (abhängig vom Preis)
+
 ## v3.4.2 4.2.24 Release
 * Bugfix: Spielleiter dürfen Spielregeln nicht verändern können (sigh...)
 
