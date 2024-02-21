@@ -10,7 +10,8 @@ h2 Geld
 
 p.
   Jede Gruppe hat zu Beginn des Spiels $gameParams.startCapital$ CHF auf ihrem Konto. Das Startgeld von
-  $gameParams.interest$ CHF wird zu jeder neuen Spielrunde zusammen mit dem Zins ausbezahlt. (Erste Auszahlung des
+  $gameParams.interest$ CHF wird zu jeder neuen Spielrunde zusammen mit dem Zins (das ist die Summe der Mietpreise  all
+  eurer Liegenschaften) ausbezahlt. (Erste Auszahlung des
   Startgeldes bei Spielbeginn, eine Spielrunde dauert $gameParams.interestInterval$ Minuten.)
 if interestCyclesAtEndOfGame
   p Bei Spielende wird das Startgeld noch $gameParams.interestCyclesAtEndOfGame$ mal ausbezahlt.
@@ -46,6 +47,8 @@ p.
   Bei jedem Anruf hat man die Chance Geld zu gewinnen - oder zu verlieren. Es handelt sich dabei um Zufallsbeträge
   zwischen $gameParams.chancellery.minLottery$ CHF bis $gameParams.chancellery.maxLottery$ CHF. Beim
   Parkplatzgewinn erhält die Gruppe dessen ganzen Inhalt.
+
+  Die Spielleitung hat keinen Einfluss auf diese Beträge - ob ihr gewinnt oder verliert, ist reiner Zufall.
 
 p.
   Ab und zu stellen wir Euch am Telephon eine Aufgabe. Ihr könnt einen Betrag bis $gameParams.chancellery.maxGambling$ CHF
