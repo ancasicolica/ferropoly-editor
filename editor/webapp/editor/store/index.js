@@ -102,6 +102,8 @@ const storeEditor = new Vuex.Store({
         setProp(state, res, 'gameplay.gameParams.rentFactors.fourHouses');
         setProp(state, res, 'gameplay.gameParams.rentFactors.hotel');
         setProp(state, res, 'gameplay.gameParams.rentFactors.allPropertiesOfGroup');
+        setProp(state, res, 'gameplay.gameParams.chancellery.minGambling');
+        setProp(state, res, 'gameplay.gameParams.chancellery.maxGambling');
         setProp(state, res, 'gameplay.gameParams.chancellery.minLottery');
         setProp(state, res, 'gameplay.gameParams.chancellery.maxLottery');
         setProp(state, res, 'gameplay.gameParams.chancellery.maxJackpotSize');

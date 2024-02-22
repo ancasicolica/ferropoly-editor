@@ -50,6 +50,8 @@ const gameplay = {
         allPropertiesOfGroup: 0
       },
       chancellery              : {
+        minGambling     : 0,
+        maxGambling     : 0,
         minLottery      : 0,
         maxLottery      : 0,
         maxJackpotSize  : 0,

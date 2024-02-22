@@ -1,6 +1,8 @@
 # Changelog Ferropoly Editor
 
-# v3.5.0 21.2.24, Testversion für Release
+* Grenzen für Gambling können gesetzt werden
+
+# v3.5.0 21.2.24
 * Mehr Orte
 * Neue Icons für Orte (abhängig vom Preis)
 

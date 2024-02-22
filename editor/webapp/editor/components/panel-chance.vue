@@ -6,8 +6,11 @@
 <template lang="pug">
   div
     b-row
-      b-col(sm="12" md="12" lg="8" xl="8")
+      b-col(sm="12" md="12" lg="6" xl="6")
         ferro-card(title="Chance & Kanzlei")
+          p.
+            Chance & Kanzlei ist die Lotterie, welche bei jedem Anruf automatisch ausgeführt wird. Setze hier die Limiten für
+            Gewinne und Verluste.
           input-range(v-model="minLottery"
             label="Chance: Minimalbetrag"
             help="Minimalbetrag, welcher bei einem Anruf gewonnen oder verloren werden kann."
@@ -36,11 +39,27 @@
             max="0.8")
           input-range(v-model="maxJackpotSize"
             label="Maximalbetrag Parkplatz"
-            help="Sobald dieser Betrag erreicht wird, steigt die Chance auf einen Parkplatzgewinn deutlich an."
+            help="Sobald dieser Betrag erreicht wird, steigt die Chance auf einen Parkplatzgewinn deutlich an. Nicht zu hoch setzen, der Parkplatzgewinn soll nicht spielentscheidend sein!"
             step="10000"
             min="10000"
             max="200000")
       b-col
+        ferro-card(title="Gambling")
+          p.
+            Beim "Gambling" stellt ihr den Teams Fragen und könnt richtige Antworten belohnen (und falsche bestrafen...). Setze
+            hier die Limiten, in welchem Bereich dies möglich sein soll.
+          input-range(v-model="minGambling"
+            label="Gambling: Minimalbetrag"
+            help="Minimalbetrag, welcher beim Gambling gewonnen oder verloren werden kann."
+            step="200"
+            min="200"
+            :max="maxMinGambling")
+          input-range(v-model="maxGambling"
+            label="Chance: Maximalbetrag"
+            help="Maximalbetrag, welcher beim Gambling gewonnen oder verloren werden kann."
+            step="200"
+            :min="minMaxGambling"
+            max="100000")
         b-button(
           variant="primary"
           :disabled="requestPending"
@@ -54,17 +73,16 @@ import FerroCard from '../../common/components/ferro-card/ferro-card.vue';
 import {mapFields} from 'vuex-map-fields';
 
 export default {
-  name      : 'panel-chance',
-  props     : {
-  },
+  name      : 'PanelChance',
+  components: {InputRange, FerroCard},
+  props     : {},
   data      : function () {
     return {};
   },
-  model     : {},
-  created   : function () {
-  },
   computed  : {
     ...mapFields([
+      'gameplay.gameParams.chancellery.minGambling',
+      'gameplay.gameParams.chancellery.maxGambling',
       'gameplay.gameParams.chancellery.minLottery',
       'gameplay.gameParams.chancellery.maxLottery',
       'gameplay.gameParams.chancellery.maxJackpotSize',
@@ -77,6 +95,14 @@ export default {
     },
     maxMinLottery() {
       let s = this.maxLottery - 1000;
+      return s.toString();
+    },
+    minMaxGambling() {
+      let s = this.minGambling + 1000;
+      return s.toString();
+    },
+    maxMinGambling() {
+      let s = this.maxGambling - 1000;
       return s.toString();
     },
     jackpotChance: {
@@ -116,9 +142,7 @@ export default {
       return i.toString() + '%';
     }
   },
-  components: {InputRange, FerroCard},
-  filters   : {},
-  mixins    : []
+
 }
 </script>
 
