@@ -1,6 +1,8 @@
 # Changelog Ferropoly Editor
 
+# v3.5.1 23.2.24
 * Grenzen für Gambling können gesetzt werden
+* Dependency Updates
 
 # v3.5.0 21.2.24
 * Mehr Orte
