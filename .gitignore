@@ -44,3 +44,4 @@ yarn.lock
 /editor/views/error/*.html
 /.nyc_output/**.*
 /.nyc_output/processinfo/**.*
+/package-lock.json
