@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* HTTP Logs verbessert
+
 # v3.5.1 23.2.24 Release
 * Grenzen für Gambling können gesetzt werden
 * Dependency Updates

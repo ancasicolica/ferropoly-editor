@@ -20,7 +20,7 @@ let testCounter = 0;
  * Formatter for the logger
  * @type {never}
  */
-const logFormat = printf(info => {
+const logFormat     = printf(info => {
   return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
 });
 
@@ -41,7 +41,7 @@ module.exports = {
    * First time initialisation for an instance
    * @param options
    */
-  init: function(options) {
+  init: function (options) {
     settings.debugLevel = _.get(options, 'debugLevel', settings.debugLevel);
   },
 
@@ -50,17 +50,20 @@ module.exports = {
    */
   setExpressLogger: function (app) {
     app.use(expressWinston.logger({
-      transports   : [
+      transports: [
         new transports.Console()
       ],
-      format       : combine(
+      format    : combine(
         label({label: 'HTTP'}),
         timestamp(),
         logFormat
       ),
-      meta         : true, // optional: control whether you want to log the meta data about the request (default to true)
-      msg          : "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
-      expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+      meta      : true, // optional: control whether you want to log the meta data about the request (default to true)
+      msg          : function (req, res) {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        return `${_.get(req, 'user.personalData.email', 'anonymous')} ${ip} ${req.method} ${req.url}` // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+      },
+      expressFormat: false, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
       colorize     : false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
     }));
   },
@@ -122,7 +125,7 @@ module.exports = {
        * @param message
        * @param metadata
        */
-      test : function (message, metadata) {
+      test: function (message, metadata) {
         if (!message) {
           return;
         }
