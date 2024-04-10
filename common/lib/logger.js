@@ -4,15 +4,25 @@
  * Created by kc on 08.06.15.
  */
 
-const util                                = require('util');
-const _                                   = require('lodash');
-const {createLogger, format, transports}  = require('winston');
-const {combine, timestamp, label, printf} = format;
-const expressWinston                      = require('express-winston');
-
-let settings = {
-  debugLevel: 'info'
+const util                                         = require('util');
+const _                                            = require('lodash');
+const {createLogger, format, transports}           = require('winston');
+const {combine, timestamp, label, printf}          = format;
+const expressWinston                               = require('express-winston');
+// Imports the Google Cloud client library for Winston
+const {LoggingWinston}                             = require('@google-cloud/logging-winston');
+require('events').EventEmitter.defaultMaxListeners = 50;
+// The default settings
+let settings                                       = {
+  debugLevel: 'info',
+  google    : {
+    enabled: false
+  }
 };
+
+// Google Logging instance (if configured)
+let googleLogger;
+
 
 let testCounter = 0;
 
@@ -20,7 +30,7 @@ let testCounter = 0;
  * Formatter for the logger
  * @type {never}
  */
-const logFormat     = printf(info => {
+const logFormat = printf(info => {
   return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
 });
 
@@ -43,25 +53,44 @@ module.exports = {
    */
   init: function (options) {
     settings.debugLevel = _.get(options, 'debugLevel', settings.debugLevel);
+    _.set(settings, 'google.enabled', _.get(options, 'google.enabled', false));
+    if (settings.google.enabled) {
+      // Create google cloud logging
+      _.set(settings, 'google.projectId', _.get(options, 'google.projectId', 'not-set'));
+      _.set(settings, 'google.logName', _.get(options, 'google.logName', 'not-set'));
+      _.set(settings, 'google.keyFile', _.get(options, 'google.keyFile', 'not-set'));
+      googleLogger = new LoggingWinston({
+        projectId: _.get(settings, 'google.projectId', 'not_set'),
+        logName  : _.get(settings, 'google.logName', 'not_set'),
+        keyFile  : _.get(settings, 'google.keyFile', 'not_set'),
+        format   : format.json()
+      });
+    }
   },
 
   /**
    * Sets the logger for express
    */
   setExpressLogger: function (app) {
+    // The winston transport layers
+    let supportedTransports = [
+      new transports.Console()
+    ];
+    if (settings.google.enabled) {
+      supportedTransports.push(googleLogger);
+    }
+
     app.use(expressWinston.logger({
-      transports: [
-        new transports.Console()
-      ],
-      format    : combine(
+      transports   : supportedTransports,
+      format       : combine(
         label({label: 'HTTP'}),
         timestamp(),
         logFormat
       ),
-      meta      : true, // optional: control whether you want to log the meta data about the request (default to true)
+      meta         : true, // optional: control whether you want to log the meta data about the request (default to true)
       msg          : function (req, res) {
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        return ` ${ip} ${_.get(req, 'user.personalData.email', 'anonymous')} ${req.method} ${req.url}` // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+        return ` ${ip} ${_.get(req, 'user.personalData.email', 'anonymous')} ${req.method} ${res.statusCode}, ${req.url} ${res.responseTime} ms` // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
       },
       expressFormat: false, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
       colorize     : false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
@@ -74,34 +103,46 @@ module.exports = {
    * @returns {{warn: warn, debug: debug, test: test, error: error, fatal: fatal, info: info}}
    */
   getLogger: function (moduleName) {
+    // The winston transport layers
+    let supportedTransports = [
+      new transports.Console({
+        format: combine(
+          label({label: moduleName}),
+          timestamp(),
+          logFormat
+        )
+      })
+    ];
+    if (settings.google.enabled) {
+      supportedTransports.push(googleLogger);
+    }
+
     const logger = createLogger({
-      format    : combine(
-        label({label: moduleName}),
-        timestamp(),
-        logFormat
-      ),
-      transports: [new transports.Console({level: settings.debugLevel})]
+      transports: supportedTransports
     });
 
 
     /**
      * Core logging function
-     * @param module
      * @param level
      * @param message
      * @param metadata
      */
     function log(level, message, metadata) {
-      let info = '';
-      if (_.isObject(message)) {
-        info += util.inspect(message);
+      if (settings.google.enabled) {
+        logger.log(level, message, {payload: metadata});
       } else {
-        info += message;
+        let info = '';
+        if (_.isObject(message)) {
+          info += util.inspect(message);
+        } else {
+          info += message;
+        }
+        if (metadata) {
+          info += '\n' + util.inspect(metadata);
+        }
+        logger.log(level, info);
       }
-      if (metadata) {
-        info += '\n' + util.inspect(metadata);
-      }
-      logger.log(level, info);
     }
 
     return {

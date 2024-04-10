@@ -2,6 +2,7 @@
  * Created by kc on 07.12.14.
  */
 
+const path     = require('path');
 module.exports = function (settings) {
 
   settings.server = {
@@ -53,10 +54,20 @@ module.exports = function (settings) {
   // Ferropoly main instances to update when a gameplay was added / removed
   settings.mainInstances = ['http://localhost:3004'];
 
+  process.env.GOOGLE_APPLICATION_CREDENTIALS =  path.join(__dirname, '..', '..', '..', 'ferropoly-service.json');
+
   // Logger
   settings.logger = {
-    debugLevel: 'silly'
+    debugLevel: 'silly',
+    google: {
+      enabled: true,
+      projectId: 'crack-lamp-784',
+      logName: 'editor_local',
+      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+    }
   };
+
+
 
   return settings;
 };

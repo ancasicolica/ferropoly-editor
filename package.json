@@ -28,6 +28,7 @@
   },
   "main": "server.js",
   "dependencies": {
+    "@google-cloud/logging-winston": "^6.0.0",
     "async": "3.2.5",
     "axios": "1.6.7",
     "body-parser": "1.20.2",
@@ -64,7 +65,7 @@
     "pug": "3.0.2",
     "serve-favicon": "2.5.0",
     "uuid": "9.0.1",
-    "winston": "3.11.0"
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "6.5.1",

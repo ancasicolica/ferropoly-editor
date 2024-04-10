@@ -9,7 +9,7 @@
 // Logging has highest prio
 const settings = require('./settings');
 const logging  = require('../common/lib/logger');
-logging.init({debugLevel: settings.logger.debugLevel});
+logging.init(settings.logger);
 const logger = logging.getLogger('editor-app');
 
 
@@ -196,7 +196,7 @@ let initServer = function () {
       process.exit(-1);
     }
     server.listen(app.get('port'), app.get('ip'), function () {
-      logger.info('Ferropoly Editor, Copyright (C) 2015 Christian Kuster, CH-8342 Wernetshausen');
+      logger.info('Ferropoly Editor, Copyright (C) 2015-2024 Christian Kuster, CH-8342 Wernetshausen', settings);
       logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
       logger.info('This is free software, and you are welcome to redistribute it');
       logger.info('under certain conditions; see www.ferropoly.ch for details.');
