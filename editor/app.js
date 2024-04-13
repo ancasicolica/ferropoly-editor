@@ -196,6 +196,7 @@ let initServer = function () {
       process.exit(-1);
     }
     server.listen(app.get('port'), app.get('ip'), function () {
+      logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
       logger.info('Ferropoly Editor, Copyright (C) 2015-2024 Christian Kuster, CH-8342 Wernetshausen');
       logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
       logger.info('This is free software, and you are welcome to redistribute it');
