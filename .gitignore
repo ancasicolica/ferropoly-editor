@@ -45,3 +45,7 @@ yarn.lock
 /.nyc_output/**.*
 /.nyc_output/processinfo/**.*
 /package-lock.json
+
+.pnp*
+.yarn
+/.yarnrc.yml
