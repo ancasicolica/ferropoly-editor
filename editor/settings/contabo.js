@@ -55,11 +55,18 @@ module.exports = function (settings) {
 
   settings.mainInstances = ['https://spiel.ferropoly.ch'];
 
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = '/home/kc/ferropoly/ferropoly-service.json'
+
   // Logger
   settings.logger = {
-    debugLevel: 'info'
+    debugLevel: 'info',
+    google: {
+      enabled: true,
+      projectId: 'crack-lamp-784',
+      logName: 'editor',
+      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+    }
   };
-
   return settings;
 }
 ;
