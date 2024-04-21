@@ -1,6 +1,9 @@
 # Changelog Ferropoly Editor
 
-# v3.6.0 Interne Verbesserungen
+# v3.6.2
+* Auth Token Logs aktualisiert
+
+# v3.6.1 Interne Verbesserungen
 * HTTP Logs verbessert
 * Logs in Google Cloud Logging verbunden
 * ESlint Fixes
