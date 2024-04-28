@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+
+* Demo Games sind auf verschiedenen Instanzen an einem anderen Tag (Test Logs auf Google Cloud)
+
 # v3.6.2
 * Auth Token Logs aktualisiert
 

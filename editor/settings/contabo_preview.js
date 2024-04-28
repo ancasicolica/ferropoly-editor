@@ -35,7 +35,8 @@ module.exports = function (settings) {
 
 
   settings.demoGameplay = {
-    addDays: 0
+    addDays: 0,
+    seed   : 1   // Seed for demo game generation
   };
 
   settings.mailer = {
@@ -61,11 +62,11 @@ module.exports = function (settings) {
   // Logger
   settings.logger = {
     debugLevel: 'debug',
-    google: {
-      enabled: true,
+    google    : {
+      enabled  : true,
       projectId: 'crack-lamp-784',
-      logName: 'editor_preview',
-      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+      logName  : 'editor_preview',
+      keyFile  : process.env.GOOGLE_APPLICATION_CREDENTIALS
     }
   };
 

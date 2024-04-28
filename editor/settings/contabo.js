@@ -39,7 +39,8 @@ module.exports = function (settings) {
   settings.oAuth.microsoft.callbackURL = 'https://editor.ferropoly.ch/auth/microsoft/callback';
 
   settings.demoGameplay = {
-    addDays: 0
+    addDays: 0,
+    seed   : 3   // Seed for demo game generation
   };
 
   settings.mailer = {

@@ -24,7 +24,7 @@ function generateGameOptions() {
     presets  : 'moderate',
   };
 
-  switch (DateTime.now().ordinal % 5) {
+  switch ((DateTime.now().ordinal + _.get(settings, 'demoGameplay.seed', 0)) % 5) {
     case 0:
       gameOptions.gameId             = 'play-a-ostwind-game';
       gameOptions.map                = 'ostwind';
@@ -46,8 +46,8 @@ function generateGameOptions() {
       gameOptions.map                = 'zvv110';
       gameOptions.random             = 240;
       gameOptions.teamNb             = 5;
-      gameOptions.gameStart          = '12:00';
-      gameOptions.gameEnd            = '16:00';
+      gameOptions.gameStart          = '10:15';
+      gameOptions.gameEnd            = '19:30';
       gameOptions.interestInterval   = 15;
       gameOptions.autopilot.interval = 3.5 * 60 * 1000;
       break;

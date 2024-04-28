@@ -34,7 +34,8 @@ module.exports = function (settings) {
   };
 
   settings.demoGameplay = {
-    addDays: 0
+    addDays: 0,
+    seed   : 2   // Seed for demo game generation
   };
 
   settings.mailer = {
