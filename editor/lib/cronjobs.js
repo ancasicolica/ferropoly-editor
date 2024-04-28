@@ -4,7 +4,6 @@
  * Created by kc on 06.04.15.
  */
 
-
 const cron       = require('node-schedule');
 const gpLib      = require('./gameplayLib');
 const settings   = require('../settings');
@@ -80,20 +79,25 @@ function setUpDemoGamemplayCreation() {
   if (settings.cron.createDemoGameplay) {
     logger.info('CRON: setting up the demo gameplay job', settings.cron.createDemoGameplay);
     cron.scheduleJob(settings.cron.createDemoGameplay, function () {
-      logger.info('CRON: starting demo gameplay creation: ', new Date());
+      logger.info('CRON: starting demo gameplay creation');
       let gameOpts = generateGameOptions();
       gpLib.createDemoGameplay(gameOpts, function (err) {
         if (err) {
           logger.error('CRON: error while creating demo gameplay', err);
         } else {
           logger.info('CRON: demo set created');
-
         }
       });
     });
   }
 }
 
+
+/**
+ * Sets up the cron job for deleting old gameplays if the corresponding setting is enabled.
+ *
+ * @return {void}
+ */
 function setupDeletingOldGameplays() {
   if (settings.cron.deleteOldGameplays) {
     logger.info('CRON: setting up the delete-old-games job', settings.cron.deleteOldGameplays);

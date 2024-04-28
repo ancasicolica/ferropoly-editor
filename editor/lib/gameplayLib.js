@@ -268,7 +268,7 @@ function createNewGameplay(gpOptions, callback) {
         // Error while creating the gameplay, abort
         return callback(err);
       }
-      logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gameplay.isDemo}`);
+      logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
       return copyLocationsToProperties(gpOptions, gameplay, callback);
     });
   });
