@@ -16,8 +16,8 @@
  *
  * @param grunt
  */
-const webpackDevConfig  = require('./editor/webapp/webpack.dev.js');
-const webpackProdConfig = require('./editor/webapp/webpack.prod.js');
+const webpackDevConfig  = require('./webapp-v4/webpack.dev.js');
+const webpackProdConfig = require('./webapp-v4/webpack.prod.js');
 
 module.exports = function (grunt) {
   grunt.initConfig({
