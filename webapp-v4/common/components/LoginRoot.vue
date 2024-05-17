@@ -5,6 +5,15 @@
 -->
 <template lang="pug">
   #login
+    menubar.title-bar(:model="menuItems")
+      template(#start)
+        .flex.align-content-center
+          .flex
+             img.logo(src="/favicon/apple-touch-icon-180x180.png")
+          .flex.m-0
+            p.title Ferropoly
+      template(#end)
+        p.impressum(@click="goToImpressum") Impressum / Kontakt
     div.centered
       h1 {{appName}} Login
       .flex.flex-wrap.align-content-start.justify-content-center
@@ -38,10 +47,11 @@ import axios from 'axios';
 import {get} from 'lodash';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Menubar from 'primevue/menubar';
 
 export default {
   name      : 'LoginRoot',
-  components: {Button, InputText},
+  components: {Button, InputText, Menubar},
   filters   : {},
   mixins    : [],
   model     : {},
@@ -56,6 +66,7 @@ export default {
   data      : function () {
     return {
       preview: false,
+      menuItems: []
     }
   },
   computed  : {},
@@ -78,6 +89,9 @@ export default {
     },
     goToMicrosoftAuth() {
       window.location.href = '/auth/microsoft';
+    },
+    goToImpressum() {
+      window.location.href = 'https://www.ferropoly.ch';
     }
   }
 }
@@ -141,7 +155,30 @@ export default {
   border-color: #446400; // darker shade for hover
 }
 
+.impressum {
+  cursor: pointer;
+}
 
+.title {
+  font-weight: bold;
+  padding-top: 5px;
+  margin-left: 5px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.logo {
+  height: 2rem;
+  width: 2rem;
+}
+
+.title-bar{
+  padding-top: 3px;
+  padding-bottom: 3px;
+  color: white;
+  background-color: black;
+
+}
 </style>
 
 
