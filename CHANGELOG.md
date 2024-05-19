@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+* Umbau auf vue3 Framework
+* Robots.txt hinzugefügt
+
 # v3.6.3 28.4.24
 * Demo Games sind auf verschiedenen Instanzen an einem anderen Tag (Test Logs auf Google Cloud)
 * Log Entries fixed
