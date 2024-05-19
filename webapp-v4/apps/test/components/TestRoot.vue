@@ -22,9 +22,9 @@ export default {      name: 'TestRoot',
   data      : function () {
     return {
       menuBarElements: [
-        {title: 'Test'},
-        {title: 'Test 2'},
-        {title: 'Test 3'},
+        {title: 'Test', eventParam:'test'},
+        {title: 'Test 2', eventParam: 'test-1', active: true},
+        {title: 'Test 3', eventParam: 'test-2'},
       ]
     }
   },

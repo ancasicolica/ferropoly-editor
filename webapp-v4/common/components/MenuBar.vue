@@ -14,23 +14,25 @@
 
 -->
 <template lang="pug">
-prime-menubar(:model="menuItems" exact=false)
-  template(#start)
-    div.start
-      img.start-logo(v-if="favicon" :src="favicon")
-      div.start-title {{title}}
-  template(#item="{ item, props, root, hasSubmenu }")
-    a.v-ripple.flex.align-items-center(v-bind='props.action')
-      span(:class='item.icon')
-      span.ml-2 {{ item.label }}
-      span.ml-auto.border-1.surface-border.border-round.surface-100.text-xs.p-1(v-if='item.shortcut') {{ item.shortcut }}
-      i(v-if='hasSubmenu' :class="['pi pi-angle-down text-primary', { 'pi-angle-down ml-2': root, 'pi-angle-right ml-auto': !root }]")
+  prime-menubar(:model="menuItems" exact=false)
+    template(#start)
+      .flex.flex-row.flex-wrap.start
+        .flex.justify-content-center.align-items-center
+          img.start-logo(v-if="favicon" :src="favicon" @click="goToRoot")
+        .flex.justify-content-center.align-items-center
+          div.start-title(@click="goToRoot") {{title}}
+    template(#item="{ item, props, root, hasSubmenu }")
+      a.v-ripple.flex.align-items-center(v-bind='props.action' :id="item.key")
+        span(:class='item.icon')
+        span.ml-2 {{ item.label }}
+        span.ml-auto.border-1.surface-border.border-round.surface-100.text-xs.p-1(v-if='item.shortcut') {{ item.shortcut }}
+        i(v-if='hasSubmenu' :class="['pi pi-angle-down text-primary', { 'pi-angle-down ml-2': root, 'pi-angle-right ml-auto': !root }]")
 
-  template(#end)
-    .flex.align-items-center.gap-2
-      prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-cog' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
-      tiered-menu#overlay_menu(ref='menu' :model='settings' :popup='true')
-      div.menu-item(@click="onLogout") Logout
+    template(#end)
+      .flex.align-items-center.gap-2
+        prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-cog' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
+        tiered-menu#overlay_menu(ref='menu' :model='settings' :popup='true')
+        div.menu-item(@click="onLogout") Logout
 
 </template>
 <script>
@@ -41,9 +43,10 @@ import TieredMenu from 'primevue/tieredmenu';
 
 import {kebabCase, get} from 'lodash';
 import $ from 'jquery';
+
 export default {
-  name: 'MenuBar',
-  components: {PrimeMenubar, PrimeMenu,PrimeButton,TieredMenu},
+  name      : 'MenuBar',
+  components: {PrimeMenubar, PrimeMenu, PrimeButton, TieredMenu},
   filters   : {},
   mixins    : [],
   model     : {},
@@ -102,36 +105,49 @@ export default {
   data      : function () {
     return {
       menuItems: [],
-      settings: []
+      settings : [],
+      activeElement : null,
     }
   },
-  computed  : {
-  },
+  computed  : {},
   created   : function () {
     let self = this;
     // Create the menu items
-    this.elements.forEach(e=> {
+    this.elements.forEach(e => {
       if (!e.event) {
         e.event = 'panel-change';
       }
 
+      let key = `menu-${kebabCase(e.eventParam)}`
+
+      if (e.active) {
+        self.activeElement = key;
+      }
+
       self.menuItems.push({
-        label: e.title,
-        url: e.href,
+        label  : e.title,
+        url    : e.href,
         visible: get(e, 'hide', true),
         focused: get(e, 'active', false),
-        key    : `menu-${kebabCase(e.eventParam)}`,
-        command: (f)=> {
+        key    : key,
+        command: (f) => {
           // OnClick Handler: fires event
-          console.log('Menubar clicked', e, f);
+          console.log(`Menubar event "${e.event}" with param "${e.eventParam}"`);
           self.$emit(e.event, e.eventParam);
           // This sets the right class for the active menu
           self.menuItems.forEach(menuItem => {
             $(`#${menuItem.key}`).removeClass('menu-selected');
           })
+          self.activeElement = f.item.key;
           $(`#${f.item.key}`).addClass('menu-selected');
+          console.log($(`#${f.item.key}`).addClass('menu-selected'));
         }
       })
+    })
+
+    // Set initial menu item to bold
+    $(document).ready(() => {
+      $(`#${self.activeElement}`).addClass('menu-selected');
     })
   },
   methods   : {
@@ -142,6 +158,9 @@ export default {
      */
     onLogout() {
       window.location.href = '/logout';
+    },
+    goToRoot() {
+      window.location.href = '/';
     },
     toggle(event) {
       this.$refs.menu.toggle(event);
@@ -161,21 +180,14 @@ export default {
 
 }
 
-.start {
-  vertical-align: middle;
-}
-
 .start-logo {
-
-  height: 32px;
+  height: 24px;
 }
 
 .start-title {
   font-weight: bold;
-  display: inline-block;
-  min-height: 30px;
-  height: 30px;
   padding-right: 5px;
+  padding-left: 5px;
 }
 
 .menu-selected {
