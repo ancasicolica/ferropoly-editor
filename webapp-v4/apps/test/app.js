@@ -23,9 +23,11 @@ import Test3 from './components/Test3.vue';
 import Test2 from './components/Test2.vue';
 import Test1 from './components/Test1.vue';
 import GameCardTest from './components/GameCardTest.vue';
+import FerroCardTest from './components/FerroCardTest.vue';
 
 const routes = [
   { path: '/gamecard', name:'game-card', component: GameCardTest  },
+  { path: '/ferrocard', name:'ferro-card', component: FerroCardTest  },
   { path: '/', name:'root', component: Test1  },
   { path: '/about', name:'about', component: Test2 },
   { path: '/sexy', name:'test3', component: Test3 },

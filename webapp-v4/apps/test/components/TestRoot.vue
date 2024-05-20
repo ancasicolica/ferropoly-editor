@@ -29,7 +29,7 @@ export default {
         {
           title: 'Components', eventParam: 'components',
           items: [{title: 'Game-Card', route:'game-card'},
-                  {title: 'Submenu 2', eventParam: 'sub2'},
+                  {title: 'Ferro-Card', route: 'ferro-card'},
                   {title: 'Submenu 3', eventParam: 'sub3', items: [
                       {title: 'subsub1', eventParam: 'subsub1'},
                       {title: 'subsub2', eventParam: 'subsub2'},

@@ -4,20 +4,41 @@
   Created: 20.05.2024
 -->
 <template lang="pug">
-  game-card
+  .grid.m-1
+    .col-4
+      game-card(:gameplay="gameplay")
+    .col-8
+      .grid
+        .col-6
+          div Spieldatum
+          Calendar(v-model="gameplay.scheduling.gameDate")
+        .col-6
+          div Anmeldeschluss
+          Calendar(v-model="gameplay.joining.possibleUntil")
+        .col-6
+          div Finalisiert
+          Checkbox(v-model="gameplay.internal.finalized" :binary="true")
+
 
 </template>
 <script>
 import GameCard from '../../../common/components/GameCard.vue';
+import fixtures from '../fixtures/edit-gameplay.json';
+
+import Calendar from 'primevue/calendar';
+import Checkbox from 'primevue/checkbox';
+
 export default {
   name      : 'GameCardTest',
-  components: {GameCard},
+  components: {GameCard,Checkbox, Calendar},
   filters   : {},
   mixins    : [],
   model     : {},
   props     : {},
   data      : function () {
-    return {}
+    return {
+      gameplay: fixtures.gameplay
+    }
   },
   computed  : {},
   created   : function () {

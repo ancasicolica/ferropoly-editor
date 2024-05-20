@@ -155,7 +155,6 @@ export default {
           $(`.menu-item`).removeClass('menu-selected');
           self.activeElement = f.item.key;
           if (item.parent) {
-            console.log('PARENT', f.item.parent)
             $(`#${f.item.parent}`).addClass('menu-selected');
           } else {
             $(`#${f.item.key}`).addClass('menu-selected');
@@ -189,11 +188,6 @@ export default {
         }
 
       $(`#${self.activeElement}`).addClass('menu-selected');
-
-      console.log(self.$router);
-      console.log(self.$router.currentRoute);
-      console.log(self.$route.name);
-      console.log(self.$route);
     })
   },
   methods   : {
