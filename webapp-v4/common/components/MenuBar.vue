@@ -51,8 +51,6 @@ import PrimeMenubar from 'primevue/menubar';
 import PrimeMenu from 'primevue/menu';
 import PrimeButton from 'primevue/button';
 import TieredMenu from 'primevue/tieredmenu';
-import { useRoute } from 'vue-router'
-
 import {kebabCase, get} from 'lodash';
 import $ from 'jquery';
 
@@ -179,13 +177,12 @@ export default {
     })
 
 
-
     // Set initial menu item to bold
-    $(document).ready(function()  {
+    $(document).ready(function () {
       let element = get(self, '$route.name', null);
-        if (element) {
-          self.activeElement = `menu-${kebabCase(element)}`
-        }
+      if (element) {
+        self.activeElement = `menu-${kebabCase(element)}`
+      }
 
       $(`#${self.activeElement}`).addClass('menu-selected');
     })

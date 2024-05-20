@@ -5,12 +5,11 @@
  **/
 
 import {createApp} from 'vue'
-import TestRoot from "./components/TestRoot.vue";
+import TestRoot from './components/TestRoot.vue';
 import PrimeVue from 'primevue/config';
-import {createMemoryHistory, createRouter, createWebHashHistory} from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css'            ;    //core css
-
 import 'primeicons/primeicons.css'                      ;    //icons
 import '/node_modules/primeflex/primeflex.css'          ;    //primeflex
 import 'primeicons/primeicons.css';
@@ -26,11 +25,11 @@ import GameCardTest from './components/GameCardTest.vue';
 import FerroCardTest from './components/FerroCardTest.vue';
 
 const routes = [
-  { path: '/gamecard', name:'game-card', component: GameCardTest  },
-  { path: '/ferrocard', name:'ferro-card', component: FerroCardTest  },
-  { path: '/', name:'root', component: Test1  },
-  { path: '/about', name:'about', component: Test2 },
-  { path: '/sexy', name:'test3', component: Test3 },
+  {path: '/gamecard', name: 'game-card', component: GameCardTest},
+  {path: '/ferrocard', name: 'ferro-card', component: FerroCardTest},
+  {path: '/', name: 'root', component: Test1},
+  {path: '/about', name: 'about', component: Test2},
+  {path: '/sexy', name: 'test3', component: Test3},
 ]
 const router = createRouter({
   history: createWebHashHistory(),
