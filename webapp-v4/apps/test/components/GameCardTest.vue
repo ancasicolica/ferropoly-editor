@@ -5,9 +5,9 @@
 -->
 <template lang="pug">
   .grid.m-1
-    .col-4
+    div(class="md:col-4 sm:col-12")
       game-card(:gameplay="gameplay" @delete-gameplay="onDeleteGameplay")
-    .col-8
+    div(class="md:col-8 sm:col-12")
       .grid
         .col-6
           div Spieldatum
