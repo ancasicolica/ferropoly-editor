@@ -22,17 +22,28 @@
         .flex.justify-content-center.align-items-center
           div.start-title(@click="goToRoot") {{title}}
     template(#item="{ item, props, root, hasSubmenu }")
-      a.v-ripple.flex.align-items-center(v-bind='props.action' :id="item.key")
+      router-link.no-underline.menu-item(v-if="item.route" v-slot="{ href, navigate }" :to="{name: item.route}" :id="item.key")
+        a.v-ripple(:href="href" v-bind="props.action" @click="navigate")
+          span(:class='item.icon')
+          span {{ item.label }}
+      a(v-else).v-ripple.flex.align-items-center.menu-item(v-bind='props.action' :id="item.key")
         span(:class='item.icon')
-        span.ml-2 {{ item.label }}
+        span {{ item.label }}
         span.ml-auto.border-1.surface-border.border-round.surface-100.text-xs.p-1(v-if='item.shortcut') {{ item.shortcut }}
         i(v-if='hasSubmenu' :class="['pi pi-angle-down text-primary', { 'pi-angle-down ml-2': root, 'pi-angle-right ml-auto': !root }]")
 
     template(#end)
       .flex.align-items-center.gap-2
-        prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-cog' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
-        tiered-menu#overlay_menu(ref='menu' :model='settings' :popup='true')
-        div.menu-item(@click="onLogout") Logout
+        .flex(v-if="showOnlineStatus && online")
+          i.pi.pi-cloud.online(style="font-size:  2.3rem" v-tooltip.left="'Online Status OK!'")
+        .flex(v-if="showOnlineStatus && !online")
+          i.pi.pi-times-circle.offline(style="font-size:  2rem" v-tooltip.left="'Keine Verbindung zum Server!'")
+        .flex(v-if="helpUrl")
+          a.help-button(:href="helpUrl" target="_blank")
+            i.pi.pi-question-circle(style="font-size:  2rem")
+        .flex(v-if="showUserBox")
+          prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-user' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
+          tiered-menu#overlay_menu(ref='menu' :model='menuUser' :popup='true')
 
 </template>
 <script>
@@ -40,6 +51,7 @@ import PrimeMenubar from 'primevue/menubar';
 import PrimeMenu from 'primevue/menu';
 import PrimeButton from 'primevue/button';
 import TieredMenu from 'primevue/tieredmenu';
+import { useRoute } from 'vue-router'
 
 import {kebabCase, get} from 'lodash';
 import $ from 'jquery';
@@ -83,7 +95,7 @@ export default {
       // URL to help, shows (?)
       type   : String,
       default: function () {
-        return '';
+        return undefined;
       }
     },
     showUserBox     : {
@@ -104,50 +116,84 @@ export default {
   },
   data      : function () {
     return {
-      menuItems: [],
-      settings : [],
-      activeElement : null,
+      menuItems    : [],
+      menuUser     : [
+        {label: 'Mein Account', command: this.onMyAccount},
+        {label: 'Abmelden', command: this.onLogout}
+      ],
+      activeElement: null,
     }
   },
   computed  : {},
   created   : function () {
-    let self = this;
-    // Create the menu items
-    this.elements.forEach(e => {
-      if (!e.event) {
-        e.event = 'panel-change';
+    let self          = this;
+    const itemCreator = function (item) {
+      if (!item.event) {
+        item.event = 'panel-change';
       }
 
-      let key = `menu-${kebabCase(e.eventParam)}`
+      item.key = item.key || `menu-${kebabCase(item.eventParam || item.route)}`
 
-      if (e.active) {
-        self.activeElement = key;
+      if (item.active) {
+        self.activeElement = item.key;
       }
 
-      self.menuItems.push({
-        label  : e.title,
-        url    : e.href,
-        visible: get(e, 'hide', true),
-        focused: get(e, 'active', false),
-        key    : key,
+      let newItem = {
+        label  : item.title,
+        url    : item.href,
+        visible: get(item, 'hide', true),
+        key    : item.key,
+        parent : item.parent,
+        route  : item.route,
         command: (f) => {
           // OnClick Handler: fires event
-          console.log(`Menubar event "${e.event}" with param "${e.eventParam}"`);
-          self.$emit(e.event, e.eventParam);
+          if (item.eventParam) {
+            console.log(`Menubar event "${item.event}" with param "${item.eventParam}"`);
+            self.$emit(item.event, item.eventParam);
+          }
           // This sets the right class for the active menu
-          self.menuItems.forEach(menuItem => {
-            $(`#${menuItem.key}`).removeClass('menu-selected');
-          })
+          $(`.menu-item`).removeClass('menu-selected');
           self.activeElement = f.item.key;
-          $(`#${f.item.key}`).addClass('menu-selected');
-          console.log($(`#${f.item.key}`).addClass('menu-selected'));
+          if (item.parent) {
+            console.log('PARENT', f.item.parent)
+            $(`#${f.item.parent}`).addClass('menu-selected');
+          } else {
+            $(`#${f.item.key}`).addClass('menu-selected');
+          }
+
         }
-      })
+      }
+      // Submenu
+      if (item.items) {
+        newItem.items = newItem.items || [];
+        item.items.forEach(e => {
+          e.parent = item.parent || item.key;
+          newItem.items.push(itemCreator(e));
+        })
+      }
+      return newItem;
+    }
+
+    // Create the menu items
+    this.elements.forEach(e => {
+      self.menuItems.push(itemCreator(e))
     })
 
+
+
     // Set initial menu item to bold
-    $(document).ready(() => {
+    $(document).ready(function()  {
+      let element = get(self, '$route.name', null);
+        if (element) {
+          self.activeElement = `menu-${kebabCase(element)}`
+        }
+
       $(`#${self.activeElement}`).addClass('menu-selected');
+
+      console.log(self.$router);
+      console.log(self.$router.currentRoute);
+      console.log(self.$route.name);
+      console.log(self.$route);
     })
   },
   methods   : {
@@ -158,6 +204,9 @@ export default {
      */
     onLogout() {
       window.location.href = '/logout';
+    },
+    onMyAccount() {
+      window.location.href = '/account';
     },
     goToRoot() {
       window.location.href = '/';
@@ -173,15 +222,12 @@ export default {
 
 <style scoped lang="scss">
 .menu-item {
-  padding-bottom: 10px;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  color: black;
 
 }
 
 .start-logo {
-  height: 24px;
+  height: 2rem;
 }
 
 .start-title {
@@ -196,10 +242,28 @@ export default {
 }
 
 .p-menubar {
-  //background-color: grey;
   width: 100%;
   padding-left: 8px;
   padding-bottom: 0;
   padding-top: 0;
+  border-radius: 0;
+  background-color: lightgray;
 }
+
+.online {
+  color: green;
+}
+
+.offline {
+  color: red;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+.help-button {
+  color: black;
+}
+
 </style>

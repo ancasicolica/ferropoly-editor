@@ -4,16 +4,18 @@
   Created: 19.05.2024
 -->
 <template lang="pug">
-menu-bar(:elements="menuBarElements")
+  menu-bar(:elements="menuBarElements" help-url="https://www.ferropoly.ch" show-user-box show-online-status
+  :online="online")
 
-
-
+  // The different test pages
+  router-view
 </template>
 <script>
 
 import MenuBar from '../../../common/components/MenuBar.vue'
 
-export default {      name: 'TestRoot',
+export default {
+  name      : 'TestRoot',
   components: {MenuBar},
   filters   : {},
   mixins    : [],
@@ -22,16 +24,35 @@ export default {      name: 'TestRoot',
   data      : function () {
     return {
       menuBarElements: [
-        {title: 'Test', eventParam:'test'},
-        {title: 'Test 2', eventParam: 'test-1', active: true},
-        {title: 'Test 3', eventParam: 'test-2'},
-      ]
+        {title: 'Test 1', route:'root'},
+        {title: 'Test 2', route:'about'},
+        {
+          title: 'Components', eventParam: 'components',
+          items: [{title: 'Game-Card', route:'game-card'},
+                  {title: 'Submenu 2', eventParam: 'sub2'},
+                  {title: 'Submenu 3', eventParam: 'sub3', items: [
+                      {title: 'subsub1', eventParam: 'subsub1'},
+                      {title: 'subsub2', eventParam: 'subsub2'},
+                      {title: 'subsub3', eventParam: 'subsub3'},
+                      {title: 'subsub4', eventParam: 'subsub1'},
+                    ]},
+          ]
+        },
+      ],
+      // Some Test data
+      online: true
     }
+
   },
-  computed  : { },
+  computed  : {},
   created   : function () {
   },
-  methods   : {}
+  methods   : {
+    testClick() {
+      console.log('P');
+      this.$router.push('/about');
+    }
+  }
 }
 
 </script>
