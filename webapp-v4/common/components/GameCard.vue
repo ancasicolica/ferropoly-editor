@@ -33,6 +33,22 @@
         td Löschdatum
         td {{deletionDate}}
 
+    p.id  Id: {{getGpProperty('internal.gameId')}}
+
+    prime-button.btn-gameplay(label="Bearbeiten" icon="pi pi-pencil" severity="primary" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" @click="gotoUrl(url.edit)")
+
+    prime-button.btn-gameplay(label="Anmeldung" icon="pi pi-file-edit" severity="secondary"  @click="gotoUrl(url.registration)" v-if="getGpProperty('isOwner')")
+
+    prime-button.btn-gameplay(label="Preisliste" icon="pi pi-list" severity="secondary"  @click="gotoUrl(url.viewPricelist)" v-if="getGpProperty('log.priceListVersion') > 0")
+
+    prime-button.btn-gameplay(label="Spielregeln" icon="pi pi-pencil"  severity="secondary" @click="gotoUrl(url.rules)" v-if="getGpProperty('isOwner') && getGpProperty('internal.finalized')")
+
+    prime-button.btn-gameplay(label="Gruppen" icon="pi pi-users" severity="secondary" @click="gotoUrl(url.editPlayer)" v-if="getGpProperty('isOwner')")
+
+    prime-button.btn-gameplay(label="Spielleiter*innen" icon="pi pi-user" @click="gotoUrl(url.editAdmins)" severity="secondary" v-if="getGpProperty('isOwner')")
+
+    prime-button.btn-gameplay(label="Löschen" icon="pi pi-trash" @click="deleteGameplay" severity="danger" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')")
+
 
 
 
@@ -44,10 +60,10 @@ import {get} from 'lodash';
 import {formatGameDate, formatTimestampAsAgo, createLuxonDate} from '../lib/formatters'
 import {DateTime} from 'luxon';
 import {getMapName} from '../../../editor/webapp/common/lib/mapTypes';
-
+import PrimeButton from 'primevue/button';
 export default {
   name: 'GameCard',
-  components: {FerroCard},
+  components: {FerroCard, PrimeButton},
   filters   : {},
   mixins    : [],
   model     : {},
@@ -115,6 +131,21 @@ export default {
     getMapName() {
        return getMapName(this.getGpProperty('internal.map'));
     },
+    /**
+     * Redirects the current window to the specified URL.
+     *
+     * @param {string} url - The URL to redirect to.
+     */
+    gotoUrl(url) {
+      window.location.href = url;
+    },
+    /**
+     * Gameplay shall be deleted: raise an event
+     */
+    deleteGameplay() {
+      console.log('deleting');
+      this.$emit('delete-gameplay', get(this.gameplay, 'internal.gameId', 'none'));
+    }
   }
 }
 
@@ -136,6 +167,18 @@ export default {
 
 .no-underline {
   text-decoration: none;
+}
+.btn-gameplay {
+  margin-top: 8px;
+  margin-right: 8px;
+  font-size: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.id {
+  color: rgba(115, 115, 115, 0.73);
+  font-size: x-small;
 }
 
 </style>

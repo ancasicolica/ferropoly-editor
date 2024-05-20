@@ -1,5 +1,6 @@
 {
   "gameplay": {
+    "isOwner": true,
     "owner": {
       "organisatorEmail": "familiekuster@gmail.com",
       "organisatorName": "Christian Kuster"

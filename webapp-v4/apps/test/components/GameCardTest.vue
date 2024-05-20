@@ -18,6 +18,12 @@
         .col-6
           div Finalisiert
           Checkbox(v-model="gameplay.internal.finalized" :binary="true")
+        .col-6
+          div isOwner
+          Checkbox(v-model="gameplay.isOwner" :binary="true")
+        .col-6
+          div isDemo
+          Checkbox(v-model="gameplay.internal.isDemo" :binary="true")
 
 
 </template>
