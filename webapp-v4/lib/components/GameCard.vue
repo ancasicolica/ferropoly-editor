@@ -1,5 +1,5 @@
 <!---
-
+  A Card for a single game in the EDITOR
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 20.05.2024
 -->
@@ -49,20 +49,18 @@
 
     prime-button.btn-gameplay(label="Löschen" icon="pi pi-trash" @click="deleteGameplay" severity="danger" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')")
 
-
-
-
 </template>
 <script>
 
-import FerroCard from './FerroCard.vue';
+import FerroCard from '../../common/components/FerroCard.vue';
 import {get} from 'lodash';
-import {formatGameDate, formatTimestampAsAgo, createLuxonDate} from '../lib/formatters'
+import {formatGameDate, formatTimestampAsAgo, createLuxonDate} from '../../common/lib/formatters'
 import {DateTime} from 'luxon';
-import {getMapName} from '../../../editor/webapp/common/lib/mapTypes';
+import {getMapName} from '../../common/lib/mapTypes';
 import PrimeButton from 'primevue/button';
+
 export default {
-  name: 'GameCard',
+  name      : 'GameCard',
   components: {FerroCard, PrimeButton},
   filters   : {},
   mixins    : [],
@@ -89,7 +87,7 @@ export default {
   },
   computed  : {
     gameDate() {
-      return  formatGameDate(this.getGpProperty('scheduling.gameDate'));
+      return formatGameDate(this.getGpProperty('scheduling.gameDate'));
     },
     deletionDate() {
       return createLuxonDate(this.getGpProperty('scheduling.deleteTs')).toLocaleString(DateTime.DATE_MED);
@@ -129,7 +127,7 @@ export default {
      * @returns {string|string}
      */
     getMapName() {
-       return getMapName(this.getGpProperty('internal.map'));
+      return getMapName(this.getGpProperty('internal.map'));
     },
     /**
      * Redirects the current window to the specified URL.
@@ -168,6 +166,7 @@ export default {
 .no-underline {
   text-decoration: none;
 }
+
 .btn-gameplay {
   margin-top: 8px;
   margin-right: 8px;

@@ -1,12 +1,12 @@
 <!---
-
+  Test for the GameCard component
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 20.05.2024
 -->
 <template lang="pug">
   .grid.m-1
     .col-4
-      game-card(:gameplay="gameplay")
+      game-card(:gameplay="gameplay" @delete-gameplay="onDeleteGameplay")
     .col-8
       .grid
         .col-6
@@ -28,7 +28,7 @@
 
 </template>
 <script>
-import GameCard from '../../../common/components/GameCard.vue';
+import GameCard from '../../../lib/components/GameCard.vue';
 import fixtures from '../fixtures/edit-gameplay.json';
 
 import Calendar from 'primevue/calendar';
@@ -49,7 +49,11 @@ export default {
   computed  : {},
   created   : function () {
   },
-  methods   : {}
+  methods   : {
+    onDeleteGameplay(event) {
+      console.log('DELETING GAMEPLAY requested', event);
+    }
+  }
 }
 
 </script>
