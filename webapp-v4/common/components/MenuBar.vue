@@ -1,20 +1,11 @@
 <!---
-  A Generic menu bar
+  A Generic menu bar using PrimeVue Menu elements
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 19.05.2024
 
-  The menu elements are not PrimeVue menu elements. Structure of one element:
-
-  title: M: String containing the name
-  href: O: URL to be opened when clicked
-  hide: O: Boolean, hide entry when true
-  event: O: Event to be raised when clicked, default is undefined (no event)
-  eventParam: O: Parameter of the event raised when clicked,
-  active: O: Element is THE active element in the bar
-
 -->
 <template lang="pug">
-  prime-menubar(:model="menuItems" exact=false)
+  prime-menubar(:model="elements" exact=false)
     template(#start)
       .flex.flex-row.flex-wrap.start
         .flex.justify-content-center.align-items-center
@@ -26,7 +17,7 @@
         a.v-ripple(:href="href" v-bind="props.action" @click="navigate")
           span(:class='item.icon')
           span {{ item.label }}
-      a(v-else).v-ripple.flex.align-items-center.menu-item(v-bind='props.action' :id="item.key")
+      a(v-else :href="item.url").v-ripple.flex.align-items-center.menu-item(v-bind='props.action' :id="item.key")
         span(:class='item.icon')
         span {{ item.label }}
         span.ml-auto.border-1.surface-border.border-round.surface-100.text-xs.p-1(v-if='item.shortcut') {{ item.shortcut }}
@@ -51,8 +42,6 @@ import PrimeMenubar from 'primevue/menubar';
 import PrimeMenu from 'primevue/menu';
 import PrimeButton from 'primevue/button';
 import TieredMenu from 'primevue/tieredmenu';
-import {kebabCase, get} from 'lodash';
-import $ from 'jquery';
 
 export default {
   name      : 'MenuBar',
@@ -124,68 +113,6 @@ export default {
   },
   computed  : {},
   created   : function () {
-    let self          = this;
-    const itemCreator = function (item) {
-      if (!item.event) {
-        item.event = 'panel-change';
-      }
-
-      item.key = item.key || `menu-${kebabCase(item.eventParam || item.route)}`
-
-      if (item.active) {
-        self.activeElement = item.key;
-      }
-
-      let newItem = {
-        label  : item.title,
-        url    : item.href,
-        visible: get(item, 'hide', true),
-        key    : item.key,
-        parent : item.parent,
-        route  : item.route,
-        command: (f) => {
-          // OnClick Handler: fires event
-          if (item.eventParam) {
-            console.log(`Menubar event "${item.event}" with param "${item.eventParam}"`);
-            self.$emit(item.event, item.eventParam);
-          }
-          // This sets the right class for the active menu
-          $(`.menu-item`).removeClass('menu-selected');
-          self.activeElement = f.item.key;
-          if (item.parent) {
-            $(`#${f.item.parent}`).addClass('menu-selected');
-          } else {
-            $(`#${f.item.key}`).addClass('menu-selected');
-          }
-
-        }
-      }
-      // Submenu
-      if (item.items) {
-        newItem.items = newItem.items || [];
-        item.items.forEach(e => {
-          e.parent = item.parent || item.key;
-          newItem.items.push(itemCreator(e));
-        })
-      }
-      return newItem;
-    }
-
-    // Create the menu items
-    this.elements.forEach(e => {
-      self.menuItems.push(itemCreator(e))
-    })
-
-
-    // Set initial menu item to bold
-    $(document).ready(function () {
-      let element = get(self, '$route.name', null);
-      if (element) {
-        self.activeElement = `menu-${kebabCase(element)}`
-      }
-
-      $(`#${self.activeElement}`).addClass('menu-selected');
-    })
   },
   methods   : {
     /**

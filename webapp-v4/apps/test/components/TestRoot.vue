@@ -24,18 +24,18 @@ export default {
   data      : function () {
     return {
       menuBarElements: [
-        {title: 'Test 1', route:'root'},
-        {title: 'Test 2', route:'about'},
+        {label: 'Test 1', route:'root'},
+        {label: 'Test 2', route:'about'},
         {
-          title: 'Components', eventParam: 'components',
-          items: [{title: 'Game-Card', route:'game-card'},
-                  {title: 'Ferro-Card', route: 'ferro-card'},
-                  {title: 'Welcome-Bar', route: 'welcome-bar'},
-                  {title: 'Submenu 3', eventParam: 'sub3', items: [
-                      {title: 'subsub1', eventParam: 'subsub1'},
-                      {title: 'subsub2', eventParam: 'subsub2'},
-                      {title: 'subsub3', eventParam: 'subsub3'},
-                      {title: 'subsub4', eventParam: 'subsub1'},
+          label: 'Components', eventParam: 'components',
+          items: [{label: 'Game-Card', route:'game-card'},
+                  {label: 'Ferro-Card', route: 'ferro-card'},
+                  {label: 'Welcome-Bar', route: 'welcome-bar'},
+                  {label: 'Submenu 3', eventParam: 'sub3', items: [
+                      {label: 'Goto Ferropoly', url: 'https://www.ferropoly.ch'},
+                      {label: 'subsub2', eventParam: 'subsub2'},
+                      {label: 'subsub3', eventParam: 'subsub3'},
+                      {label: 'subsub4', eventParam: 'subsub1'},
                     ]},
           ]
         },
