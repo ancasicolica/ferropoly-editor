@@ -4,6 +4,7 @@
   Created: 30.05.2024
 -->
 <template lang="pug">
+  //
   menu-bar(:elements="menuBarElements" show-user-box)
   welcome-bar(:user-name="userName" )
   .ml-3.mr-3
@@ -12,6 +13,7 @@
       | .
     game-collection
 
+  agb-confirmator
 
 </template>
 <script>
@@ -21,16 +23,18 @@ import {useUserStore} from '../../../common/store/userStore';
 import {mapStores, mapWritableState} from 'pinia';
 import {useGameSelectorStore} from '../store/gameSelectorStore';
 import GameCollection from './GameCollection.vue';
-
+import AgbConfirmator from '../../../common/components/AgbConfirmator.vue';
 export default {
   name      : 'GameSelectorRoot',
-  components: {GameCollection, MenuBar, WelcomeBar},
+  components: {AgbConfirmator, GameCollection, MenuBar, WelcomeBar, },
   filters   : {},
   mixins    : [],
   model     : {},
   props     : {},
   data      : function () {
-    return {}
+    return {
+      showAgbDialog: false
+    }
   },
   computed  : {
     ...mapStores(useUserStore, useGameSelectorStore),
@@ -53,7 +57,12 @@ export default {
           this.gameSelectorStore.init();
         })
   },
-  methods   : {}
+  mounted    : function () {
+    this.showAgbDialog = false;
+  },
+  methods   : {
+
+  }
 }
 
 </script>

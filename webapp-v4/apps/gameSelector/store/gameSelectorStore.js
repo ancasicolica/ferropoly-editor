@@ -14,15 +14,16 @@ export const useGameSelectorStore = defineStore('gameSelector', {
       {label: 'Neues Spiel', url: '/newgame', key: 'new-game', active: false},
       {label: 'Admin Dashboard', url: '/dashboard', key: 'dashboard', active: false},
     ],
-    gameplays      : []
+    gameplays      : [],
+    dataLoaded     : false,
   }),
   getters: {},
   actions: {
     async init() {
-      let self                        = this;
       const userStore                 = useUserStore();
       this.menuBarElements[1].visible = userStore.roles.admin;
-      this.gameplays                      = await readMyGames();
+      this.gameplays                  = await readMyGames();
+      this.dataLoaded                 = true;
     }
   }
 })

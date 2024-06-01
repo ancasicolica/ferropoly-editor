@@ -12,32 +12,33 @@ export const useUserStore = defineStore('user', {
     personalData: {
       forename: 'noy',
       surename: 'undefined',
-      email: undefined,
-      avatar: undefined
+      email   : undefined,
+      avatar  : undefined
     },
-    roles: {
-      admin: false,
-        editor: false,
-        player: true
+    roles       : {
+      admin : false,
+      editor: false,
+      player: true
     },
-    info: {
+    info        : {
       registrationDate: undefined,
-      lastLogin: undefined,
-      agbAccepted: undefined,
-      generatedAvatar: undefined,
-      facebook: {},
-      google: {}
-    }
+      lastLogin       : undefined,
+      agbAccepted     : undefined,
+      generatedAvatar : undefined,
+      facebook        : {},
+      google          : {}
+    },
+    dataLoaded  : false,
   }),
   getters: {},
   actions: {
-    async fetchUserData(){
-      let self = this;
+    async fetchUserData() {
       axios.get('/userinfo')
         .then(resp => {
           this.personalData = resp.data.info.personalData;
-          this.roles = resp.data.info.roles;
-          this.info = resp.data.info.info;
+          this.roles        = resp.data.info.roles;
+          this.info         = resp.data.info.info;
+          this.dataLoaded   = true;
         })
         .catch(err => {
           console.error(err);
