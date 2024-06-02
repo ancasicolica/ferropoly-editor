@@ -33,12 +33,6 @@ function getUserInfo(callback) {
           id    : get(info, 'info.google.id', ''),
           raw   : get(info, 'info.google', {})
         },
-        facebook    : {
-          email : get(info, 'info.facebook.emails[0].value', ''),
-          avatar: get(info, 'info.facebook.photos[0].value', ''),
-          id    : get(info, 'info.facebook.id', ''),
-          raw   : get(info, 'info.facebook', {})
-        },
         microsoft   : {
           email : get(info, 'info.microsoft.emails[0].value', ''),
           avatar: get(info, 'info.microsoft.photos[0].value', ''),
@@ -47,7 +41,6 @@ function getUserInfo(callback) {
         }
       };
       retVal.google.valid    = retVal.google.email.length > 0;
-      retVal.facebook.valid  = retVal.facebook.email.length > 0;
       retVal.microsoft.valid = retVal.microsoft.email.length > 0;
       console.log('userinfo', data, retVal);
       callback(null, retVal);

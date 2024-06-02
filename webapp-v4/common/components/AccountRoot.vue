@@ -8,7 +8,14 @@
   .grid.ml-3.mr-3.mt-3
     div(class="lg:col-4 md:col-8 sm:col-12")
       account-general(:info="getElement('personalData', {})" :avatarUrl="avatarUrl")
-
+    div(class="lg:col-4 md:col-8 sm:col-12" v-if="showGoogle")
+      account-google(:info="getElement('google', {})")
+    div(class="lg:col-4 md:col-8 sm:col-12" v-if="showMicrosoft")
+      account-microsoft(:info="getElement('microsoft', {})")
+    panel(v-if="!dataValid" header="Fehler" lead="Benutzerdaten konnten nicht geladen werden:")
+      h2 Die Benutzerdaten konnten nicht gelesen werden
+      p {{errorMessage}}
+      prime-button(@click="goToMain()" label="Zurück zur Hauptseite")
 
 </template>
 <script>
@@ -19,9 +26,12 @@ import AccountGeneral from './AccountGeneral.vue';
 import {get} from 'lodash';
 import {getUserInfo} from '../adapters/userInfo';
 
+import PrimeButton from 'primevue/button';
+import Panel from 'primevue/panel';
+
 export default {
   name: 'AccountRoot',
-  components: {MenuBar, AccountMicrosoft, AccountGeneral, AccountGoogle},
+  components: {MenuBar, AccountMicrosoft, AccountGeneral, AccountGoogle, Panel, PrimeButton},
   filters   : {},
   mixins    : [],
   model     : {},
@@ -38,9 +48,6 @@ export default {
   computed  : {
     showGoogle() {
       return get(this.userInfo, 'google.valid', false);
-    },
-    showFacebook() {
-      return get(this.userInfo, 'facebook.valid', false);
     },
     showMicrosoft() {
       return get(this.userInfo, 'microsoft.valid', false);
@@ -68,6 +75,9 @@ export default {
     getElement: function (e, def) {
       let d = def || '';
       return get(this.userInfo, e, d);
+    },
+    goToMain: function() {
+      window.location.href = '/'
     }
   }
 }

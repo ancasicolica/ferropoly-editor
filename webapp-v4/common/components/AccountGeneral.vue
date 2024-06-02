@@ -1,12 +1,12 @@
 <!---
-
+  General account information
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 02.06.2024
 -->
 <template lang="pug">
   ferro-card(title="Allgemein")
     .account-info-title Loginname
-    input-text(v-model="info.email" disabled)
+    .login-name {{info.email}}
     p Teile diesen Loginname der Spielleitung mit, damit Du mit Deinem Login auf sein Spiel zugreifen kannst.
     .account-info-title Zugang mit Loginname / Passwort
     div(v-if="!getElement('socialMediaActive')")
@@ -70,5 +70,10 @@ export default {      name: 'AccountGeneral',
   font-weight: bold;
   margin-top: 12px;
   margin-bottom: 4px;
+}
+
+.login-name {
+  margin-top: 12px;
+  font-family: Monospaced, Consolas, 'Courier New', Courier, monospace;
 }
 </style>

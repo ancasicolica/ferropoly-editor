@@ -39,14 +39,12 @@ const userSchema = mongoose.Schema({
     passwordHash      : String,
     verifiedEmail     : {type: Boolean, default: false},
     verificationText  : String,
-    facebookProfileId : String, // Legacy, to be removed in 2024
     googleProfileId   : String,
     microsoftProfileId: String,
   },
   info        : {
     registrationDate: Date,
     lastLogin       : Date,
-    facebook        : Object,  // Legacy, to be removed in 2024
     google          : Object,
     microsoft       : Object,
     agbAccepted     : {type: Number, default: 0}
