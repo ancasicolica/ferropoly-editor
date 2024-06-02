@@ -17,7 +17,7 @@ import AccountGoogle from './AccountGoogle.vue';
 import AccountMicrosoft from './AccountMicrosoft.vue';
 import AccountGeneral from './AccountGeneral.vue';
 import {get} from 'lodash';
-import {getUserInfo} from '../../common/adapters/userInfo';
+import {getUserInfo} from '../adapters/userInfo';
 
 export default {
   name: 'AccountRoot',

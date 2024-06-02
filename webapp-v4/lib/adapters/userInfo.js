@@ -2,7 +2,6 @@
  * Adapter to the user infp
  * 24.4.21 KC
  */
-import $ from 'jquery';
 import {get, isObject} from 'lodash';
 
 /**
