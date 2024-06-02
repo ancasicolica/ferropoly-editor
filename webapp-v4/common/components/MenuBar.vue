@@ -141,17 +141,21 @@ export default {
 <style scoped lang="scss">
 .menu-item {
   color: black;
-
 }
 
 .start-logo {
   height: 2rem;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .start-title {
   font-weight: bold;
   padding-right: 5px;
   padding-left: 5px;
+  cursor: pointer;
+
 }
 
 .menu-selected {
