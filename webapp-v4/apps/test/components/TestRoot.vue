@@ -4,15 +4,18 @@
   Created: 19.05.2024
 -->
 <template lang="pug">
-  menu-bar(:elements="menuBarElements" help-url="https://www.ferropoly.ch" show-user-box show-online-status
-  :online="online")
+  menu-bar(:elements="menuBarElements" :help-url="menubar.helpUrl" :help-text="menubar.helpText" show-user-box show-online-status
+  :online="menubar.online")
 
   // The different test pages
   router-view
+
 </template>
 <script>
 
 import MenuBar from '../../../common/components/MenuBar.vue'
+import {mapWritableState} from 'pinia';
+import {useTestStore} from '../store/testStore';
 
 export default {
   name      : 'TestRoot',
@@ -39,13 +42,15 @@ export default {
                     ]},
           ]
         },
-      ],
-      // Some Test data
-      online: true
+      ]
     }
 
   },
-  computed  : {},
+  computed  : {
+    ...mapWritableState(useTestStore, {
+      menubar: 'menubar'
+    })
+  },
   created   : function () {
   },
   methods   : {

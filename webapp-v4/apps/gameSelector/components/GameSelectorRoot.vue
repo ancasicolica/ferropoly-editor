@@ -5,8 +5,8 @@
 -->
 <template lang="pug">
   //
-  menu-bar(:elements="menuBarElements" show-user-box)
-  welcome-bar(:user-name="userName" )
+  menu-bar(:elements="menuBarElements" show-user-box  help-url="/about" help-text="Infos / Kontakt" )
+  welcome-bar(:user-name="userName")
   .ml-3.mr-3
     p.intro Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
       a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite

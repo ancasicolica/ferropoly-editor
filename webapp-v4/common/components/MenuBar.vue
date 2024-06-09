@@ -26,12 +26,14 @@
     template(#end)
       .flex.align-items-center.gap-2
         .flex(v-if="showOnlineStatus && online")
-          i.pi.pi-cloud.online(style="font-size:  2.3rem" v-tooltip.left="'Online Status OK!'")
+          i.pi.pi-cloud.online(style="font-size:  2rem" v-tooltip.left="'Online Status OK!'")
         .flex(v-if="showOnlineStatus && !online")
-          i.pi.pi-times-circle.offline(style="font-size:  2rem" v-tooltip.left="'Keine Verbindung zum Server!'")
+          i.pi.pi-times-circle.offline(style="font-size:  1.8rem" v-tooltip.left="'Keine Verbindung zum Server!'")
         .flex(v-if="helpUrl")
-          a.help-button(:href="helpUrl" target="_blank")
-            i.pi.pi-question-circle(style="font-size:  2rem")
+          a.help-button(v-if="!helpText" :href="helpUrl" target="_blank")
+            i.pi.pi-question-circle(style="font-size:  1.6rem")
+          a.no-underline(v-if="helpText" :href="helpUrl" target="_blank")
+            span {{helpText}}
         .flex(v-if="showUserBox")
           prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-user' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
           tiered-menu#overlay_menu(ref='menu' :model='menuUser' :popup='true')
@@ -80,6 +82,13 @@ export default {
     },
     helpUrl         : {
       // URL to help, shows (?)
+      type   : String,
+      default: function () {
+        return undefined;
+      }
+    },
+    helpText         : {
+      // Text to be shown instead of (?)
       type   : String,
       default: function () {
         return undefined;
