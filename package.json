@@ -16,7 +16,7 @@
   "homepage": "http://www.ferropoly.ch/",
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/christian_kuster/ferropoly_editor"
+    "url": "https://github.com/ancasicolica/ferropoly-editor"
   },
   "engines": {
     "node": ">= 20.0.0",

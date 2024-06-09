@@ -13,10 +13,6 @@
           b-button.no-print(@click="hideEz") zurück zum Hauptfenster
       b-row.mt-1(v-if="!ezActive")
         b-col(xs="12" md="4")
-          ferro-card(title="Hilfe & Infos")
-            div Hilfe zur Software, Spielregeln und weitere Infos zum Spiel sind auf der Ferropoly Webseite zu finden:&nbsp;
-              a(href="https://www.ferropoly.ch" target="_blank") www.ferropoly.ch
-
           ferro-card(title="Datenschutz")
             div Es werden nur für das Spiel notwendige Daten erfasst. Mit dem Login über Google und Microsoft sind die öffentlich zugänglichen Daten:
             ul

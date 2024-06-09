@@ -32,7 +32,7 @@
         .flex(v-if="helpUrl")
           a.help-button(v-if="!helpText" :href="helpUrl" target="_blank")
             i.pi.pi-question-circle(style="font-size:  1.6rem")
-          a.no-underline(v-if="helpText" :href="helpUrl" target="_blank")
+          a.no-underline(v-if="helpText" :href="helpUrl")
             span {{helpText}}
         .flex(v-if="showUserBox")
           prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-user' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
