@@ -27,13 +27,12 @@ export default {
   data      : function () {
     return {
       menuBarElements: [
-        {label: 'Test 1', route:'root'},
-        {label: 'Test 2', route:'about'},
         {
           label: 'Components', eventParam: 'components',
           items: [{label: 'Game-Card', route:'game-card'},
                   {label: 'Ferro-Card', route: 'ferro-card'},
                   {label: 'Welcome-Bar', route: 'welcome-bar'},
+                  {label: 'Input Text', route: 'input'},
                   {label: 'Submenu 3', eventParam: 'sub3', items: [
                       {label: 'Goto Ferropoly', url: 'https://www.ferropoly.ch'},
                       {label: 'subsub2', eventParam: 'subsub2'},
