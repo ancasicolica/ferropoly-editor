@@ -4,12 +4,16 @@
   Created: 23.06.2024
 -->
 <template lang="pug">
-  prime-input-text(
-    type="text"
-    v-model="value"
-    :maxlength="maxLength"
-    :invalid="invalid"
-  )
+  div.flex.flex-column.mt-1
+    label(v-if="label") {{label}}
+    prime-input-text(
+      type="text"
+      v-model="value"
+      :maxlength="maxLength"
+      :invalid="invalid"
+    )
+    small.error-text.mt-1(v-if="errorText") {{errorText}}
+    small.mt-1(v-if="!errorText") &nbsp;
 
 </template>
 <script>
@@ -23,6 +27,10 @@ export default {
   filters   : {},
   mixins    : [],
   props     : {
+    label: {
+      type: String,
+      default: ''
+    },
     modelValue: {
       type   : String,
       default: ''
@@ -55,12 +63,14 @@ export default {
       }
     },
     invalid() {
-      if (this.modelValue && this.modelValue.length < parseInt(this.minLength)) {
-        this.errorText = `Der Text muss mindestens ${this.minLength} Zeichen lang sein.`;
+      if ((!this.modelValue && parseInt(this.minLength) > 0) || (this.modelValue && this.modelValue.length < parseInt(this.minLength))) {
+
+    //    if (!this.modelValue && this.modelValue.length < parseInt(this.minLength)) {
+        this.errorText = `Das Feld muss mindestens ${this.minLength} Zeichen enthalten.`;
         return true;
       }
       if (this.modelValue && this.modelValue.length > this.maxLength) {
-        this.errorText = `Der Text darf maximal ${this.maxLength} Zeichen lang sein.`;
+        this.errorText = `Das Feld darf maximal ${this.maxLength} Zeichen enthalten.`;
         return true;
       }
       this.errorText = null;
@@ -76,5 +86,7 @@ export default {
 
 
 <style scoped lang="scss">
-
+.error-text {
+  color: red;
+}
 </style>

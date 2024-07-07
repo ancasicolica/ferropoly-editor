@@ -4,20 +4,29 @@
   Created: 23.06.2024
 -->
 <template lang="pug">
-  h2 Spielname
-  p Gib Deinem Spiel einen passenden Namen, diesen sehen später auch die Teilnehmer. Der Name kann jederzeit geändert werden.
-  input-text(type="text" v-model="gameName")
+  .block
+    .block
+      h1 Karte
+      p Es stehen verschiedene Karten zur Auswahl, diese unterscheiden sich in der Grösse und damit auch in der benötigten Spieldauer und dem Billetpreis:
+    .block
+      div.ml-5.mr-5(v-for="entry in maps" :key="entry.map")
+        radio-button.mt-2(v-model="gameMap" :input-id="entry.map" :value="entry.map")
+        label.ml-2(:for="entry.map")
+          span.title {{entry.name}}:
+          span &nbsp; {{entry.description}}
 
 </template>
 <script>
 
-import InputText from 'primevue/inputtext';
+import RadioButton from 'primevue/radiobutton';
 import {mapWritableState} from 'pinia';
 import {useNewGameStore} from '../store/newGameStore';
+import mapDefs from '../../../../common/lib/maps.json';
+import {filter} from 'lodash';
 
 export default {
-  name: 'NewGameMap',
-  components: {InputText},
+  name      : 'NewGameMap',
+  components: {RadioButton},
   filters   : {},
   mixins    : [],
   model     : {},
@@ -27,8 +36,11 @@ export default {
   },
   computed  : {
     ...mapWritableState(useNewGameStore, {
-      gameName: 'gameName'
-    })
+      gameMap: 'gameMap'
+    }),
+    maps() {
+      return filter(mapDefs.maps, {enabled: true});
+    }
   },
   created   : function () {
   },
@@ -39,5 +51,7 @@ export default {
 
 
 <style scoped lang="scss">
-
+.title {
+  font-weight: bold;
+}
 </style>

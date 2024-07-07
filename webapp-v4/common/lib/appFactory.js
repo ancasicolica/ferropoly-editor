@@ -6,9 +6,7 @@
 
 import {createApp} from 'vue'
 import PrimeVue from 'primevue/config';
-import Aura from '@primevue/themes/aura';
 import Lara from '@primevue/themes/lara';
-import Nora from '@primevue/themes/nora';
 import {definePreset} from '@primevue/themes';
 import Tooltip from 'primevue/tooltip';
 import {createRouter, createWebHashHistory} from 'vue-router'
@@ -86,7 +84,7 @@ function createWebApp(options) {
   })
   app.use(PrimeVue,
     {
-      //locale: locale['de-ch'],
+      locale: locale['de-ch'],
       theme: {
         preset : FerropolyDesign,
         options: {

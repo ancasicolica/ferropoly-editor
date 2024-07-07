@@ -6,11 +6,12 @@
 <template lang="pug">
   .m-4
     h1 Input Test
-    div
-      input-text.test(ref="test1" v-model = "text1" min-length="3" max-length="5" )
-    div
-      input-text.test2(v-model = "text2" max-length="30")
-    p Text: "{{text1}}"
+    form
+      div
+        input-text.test(label="Test 1" v-model="text1" min-length="3" max-length="5" )
+      div
+        input-text.test2(label="Test 2" v-model="text2" max-length="30")
+      p Text: "{{text1}}"
 
 
 </template>
@@ -42,7 +43,6 @@ export default {
 
 <style scoped lang="scss">
 .test {
-  background-color: darkseagreen;
   width:40%
 }
 .test2 {

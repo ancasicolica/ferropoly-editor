@@ -2,57 +2,56 @@
   "version": "1.2.1",
   "maps": [
     {
-      "map" :"sbb",
-      "name":"Ganze Schweiz",
-      "description": "Die grösste Karte des Ferropoly: das ganze Schweizer ÖV-Netz",
-      "enabled": true
-    },
-    {
-      "map" :"zvv",
-      "name":"Zürcher Verkehrsverbund",
+      "map": "zvv",
+      "name": "Zürcher Verkehrsverbund",
       "description": "Für ein kürzeres Spiel im preiswerten Zürcher Verkehrsverbund",
       "enabled": true
     },
     {
-      "map" :"ostwind",
-      "name":"Ostwind",
-      "description": "Ein Ferropoly in der Ostschweiz",
+      "map": "ostwind",
+      "name": "Ostwind",
+      "description": "Ein Ferropoly in der Ostschweiz auf dem Netz der Ostwind-Tarifverbundes",
       "enabled": true
     },
     {
-      "map" :"libero",
-      "name":"Libero",
+      "map": "libero",
+      "name": "Libero",
       "description": "Ferropoly Karte für die Region Bern - Solothurn - Biel",
       "enabled": false
     },
     {
-      "map" :"libero100",
-      "name":"Libero Stadt Bern, Zone 100/101",
+      "map": "libero100",
+      "name": "Libero Stadt Bern, Zone 100/101",
       "description": "Für ein schnelles Spiel in der Stadt Bern",
       "enabled": true
     },
     {
-      "map" :"tva",
-      "name":"A-Welle",
+      "map": "tva",
+      "name": "A-Welle",
       "description": "Tarifverbund des Kantons Aargau",
       "enabled": false
     },
     {
-      "map" :"tvlu",
-      "name":"Passepartout",
+      "map": "tvlu",
+      "name": "Passepartout",
       "description": "Tarifverbund der Kantone Luzern, Obwalden und Nidwalden",
       "enabled": false
     },
     {
-      "map" :"tnw",
-      "name":"Tarifverbund Nordostschweiz",
+      "map": "tnw",
+      "name": "Tarifverbund Nordostschweiz",
       "description": "Rund um Basel",
       "enabled": false
     },
     {
-      "map" :"zvv110",
-      "name":"Stadt Zürich, ZVV Zone 110",
+      "map": "zvv110",
+      "name": "Stadt Zürich, ZVV Zone 110",
       "description": "Für ein schnelles Spiel in der Stadt Zürich",
+      "enabled": true
+    }, {
+      "map": "sbb",
+      "name": "Ganze Schweiz",
+      "description": "Die grösste Karte des Ferropoly: das ganze Schweizer ÖV-Netz",
       "enabled": true
     }
   ]

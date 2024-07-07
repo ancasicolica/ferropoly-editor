@@ -8,7 +8,10 @@
   .grid.m1(v-if="gameplays.length === 0")
     .col-12
       p Du hast noch keine Spiele angelegt.&nbsp;
-        a(href='/newgame') Neues Spiel anlegen.
+      prime-button(
+        label="Neues Spiel anlegen"
+        as="a"
+        href="/newgame")
   .grid.m1(v-if="gameplays.length > 0")
     .col-4(v-for="gp in gameplays" :key="gp.internal.gameId")
       game-card(:gameplay="gp")
@@ -18,9 +21,10 @@
 import {mapState} from 'pinia';
 import {useGameSelectorStore} from '../store/gameSelectorStore';
 import GameCard from '../../../lib/components/GameCard.vue';
-
-export default {      name: 'GameCollection',
-  components: {GameCard},
+import PrimeButton from 'primevue/button';
+export default {
+  name: 'GameCollection',
+  components: {GameCard, PrimeButton},
   filters   : {},
   mixins    : [],
   model     : {},
