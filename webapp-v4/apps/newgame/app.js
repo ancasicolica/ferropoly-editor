@@ -5,7 +5,6 @@
  *
  **/
 import createWebApp from '../../common/lib/appFactory';
-import accountRoot from '../../common/components/AccountRoot.vue';
 import newGameRoot from './components/NewGameRoot.vue';
 
 

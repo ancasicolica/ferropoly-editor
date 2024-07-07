@@ -23,5 +23,8 @@ module.exports = merge(common, {
   devServer   : {
     contentBase: './dist'
   },
-  plugins     : plugins
+  plugins     : plugins,
+  stats: {
+    errorDetails: false
+  }
 });

@@ -6,19 +6,61 @@
 
 import {createApp} from 'vue'
 import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
+import Lara from '@primevue/themes/lara';
+import Nora from '@primevue/themes/nora';
+import {definePreset} from '@primevue/themes';
 import Tooltip from 'primevue/tooltip';
 import {createRouter, createWebHashHistory} from 'vue-router'
 
-import 'primevue/resources/themes/bootstrap4-light-blue/theme.css'            ;    //core css
 import 'primeicons/primeicons.css'                      ;    //icons
 import '/node_modules/primeflex/primeflex.css'          ;    //primeflex
 import 'primeicons/primeicons.css';
 import '../style/app.scss'            ;    //core css
 
+
 import locale from '../resources/de.json';
 
 import {createPinia} from 'pinia'
+
 const pinia = createPinia();
+
+
+const FerropolyDesign = definePreset(Lara, {
+  semantic  : {
+    primary    : {
+      50 : '{blue.50}',
+      100: '{blue.100}',
+      200: '{blue.200}',
+      300: '{blue.300}',
+      400: '{blue.400}',
+      500: '{blue.500}',
+      600: '{blue.600}',
+      700: '{blue.700}',
+      800: '{blue.800}',
+      900: '{blue.900}',
+      950: '{blue.950}'
+    },
+    colorScheme: {
+      light: {
+        primary  : {
+          color       : '{primary.500}',
+          inverseColor: '#ffffff',
+          hoverColor  : '{primary.700}',
+          activeColor : '{primary.500}'
+        },
+        highlight: {
+          background     : '{sky.950}',
+          focusBackground: '{sky.700}',
+          color          : '#ffffff',
+          focusColor     : '#ffffff'
+        }
+      }
+    }
+  },
+  components: {}
+});
+
 
 /**
  * Creates a web application with specified options.
@@ -34,15 +76,25 @@ function createWebApp(options) {
   if (options.routes) {
     const router = createRouter({
       history: createWebHashHistory(),
-      routes: options.routes,
+      routes : options.routes,
     })
     app.use(router)
   }
 
-  options.components.forEach(c=> {
+  options.components.forEach(c => {
     app.component(c.name, c.component)
   })
-  app.use(PrimeVue, {locale: locale['de-ch']});
+  app.use(PrimeVue,
+    {
+      //locale: locale['de-ch'],
+      theme: {
+        preset : FerropolyDesign,
+        options: {
+          darkModeSelector: '.my-app-dark',
+        }
+      }
+    }
+  );
   app.directive('tooltip', Tooltip);
 
   app.use(pinia);
