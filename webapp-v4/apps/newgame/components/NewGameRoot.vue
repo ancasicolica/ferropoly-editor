@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   menu-bar(:elements="menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/" )
-  stepper(value="4" linear)
+  stepper(value="5" linear)
     step-list
       step(value="1") Spielname
       step(value="2") Karte
@@ -46,7 +46,9 @@
           prime-button(label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('5')" iconPos="right")
       step-panel(v-slot="{activateCallback}" value="5")
         .flex.flex-col
-          h1 Abschluss
+          card
+            template(#content)
+              new-game-create
         .flex.pt-6.justify-content-between
           prime-button(label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')" severity="secondary" )
           prime-button(label="Spiel anlegen" @click="activateCallback('5')")
@@ -69,10 +71,12 @@ import NewGameDate from './NewGameDate.vue';
 import NewGamePricelist from './NewGamePricelist.vue';
 import Card from 'primevue/card';
 import FerroCard from '../../../../editor/webapp/common/components/ferro-card/ferro-card.vue';
+import NewGameCreate from './NewGameCreate.vue';
 
 export default {
   name      : 'NewGameRoot',
   components: {
+    NewGameCreate,
     FerroCard,
     NewGameDate,
     Card,

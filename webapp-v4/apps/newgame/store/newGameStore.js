@@ -9,12 +9,13 @@ import {DateTime} from 'luxon';
 
 export const useNewGameStore = defineStore('NewGame', {
   state  : () => ({
-    menuBarElements: [],
-    gameName       : 'Ferropoly',
-    gameMap        : 'zvv',
-    gameDate       : DateTime.now().plus({days: 7}).toJSDate(),
-    presets        : 'moderate',
-    randomNb       : 0
+    menuBarElements : [],
+    gameName        : 'Ferropoly',
+    proposedGameName: '',
+    gameMap         : 'zvv',
+    gameDate        : DateTime.now().plus({days: 7}).toJSDate(),
+    presets         : 'moderate',
+    randomNb        : 0,
   }),
   getters: {},
   actions: {}
