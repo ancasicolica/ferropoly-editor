@@ -7,7 +7,6 @@
 import createWebApp from '../../common/lib/appFactory';
 import GameSelectorRoot from './components/GameSelectorRoot.vue';
 
-
 createWebApp( {
   routes: [
     {path: '/', name: 'root', component: GameSelectorRoot },
@@ -19,3 +18,4 @@ createWebApp( {
   ],
   appMount: '#game-selector-app',
 })
+
