@@ -6,32 +6,33 @@
 <template lang="pug">
   FerroCard(:title="getGpProperty('gamename')")
     table(width="100%")
-      tr
-        td Spieldatum
-        td {{gameDate}}
-      tr
-        td Start
-        td {{getGpProperty('scheduling.gameStart')}}
-      tr
-        td Ende
-        td {{getGpProperty('scheduling.gameEnd')}}
-      tr
-        td Anmeldeschluss &nbsp;&nbsp;
-        td
-          span.registration-active(v-if="registrationActive") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
-          span.registration-soon(v-if="registrationEndingSoon") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
-          span.registration-finished(v-if="registrationFinished") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
-      tr
-        td Karte
-        td {{getMapName()}}
-      tr
-        td Spielbereit
-        td
-          span(v-if="getGpProperty('internal.finalized')") Ja
-          a.no-underline(v-if="!getGpProperty('internal.finalized')" :href="url.viewPricelist") Nein (noch nicht finalisiert)
-      tr
-        td Löschdatum
-        td {{deletionDate}}
+      tbody
+        tr
+          td Spieldatum
+          td {{gameDate}}
+        tr
+          td Start
+          td {{getGpProperty('scheduling.gameStart')}}
+        tr
+          td Ende
+          td {{getGpProperty('scheduling.gameEnd')}}
+        tr
+          td Anmeldeschluss &nbsp;&nbsp;
+          td
+            span.registration-active(v-if="registrationActive") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
+            span.registration-soon(v-if="registrationEndingSoon") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
+            span.registration-finished(v-if="registrationFinished") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
+        tr
+          td Karte
+          td {{getMapName()}}
+        tr
+          td Spielbereit
+          td
+            span(v-if="getGpProperty('internal.finalized')") Ja
+            a.no-underline(v-if="!getGpProperty('internal.finalized')" :href="url.viewPricelist") Nein (noch nicht finalisiert)
+        tr
+          td Löschdatum
+          td {{deletionDate}}
 
     p.id  Id: {{getGpProperty('internal.gameId')}}
 
