@@ -9,7 +9,7 @@
       tbody
         tr
           td Spieldatum
-          td {{gameDate}}
+          td {{gameDate || 'Kein Datum angegeben'}}
         tr
           td Start
           td {{getGpProperty('scheduling.gameStart')}}
@@ -77,12 +77,12 @@ export default {
   data      : function () {
     return {
       url: {
-        edit         : `/gameplay/edit/${this.gameplay.internal.gameId}`,
-        viewPricelist: `/pricelist/view/${this.gameplay.internal.gameId}`,
-        rules        : `/rules/${this.gameplay.internal.gameId}`,
-        editPlayer   : `/player/edit/${this.gameplay.internal.gameId}`,
-        editAdmins   : `/admins/edit/${this.gameplay.internal.gameId}`,
-        registration : `/registration/${this.gameplay.internal.gameId}`
+        edit         : `/gameplay/edit/${this.gameplay.internal.gameId || 'undefined'}`,
+        viewPricelist: `/pricelist/view/${this.gameplay.internal.gameId || 'undefined'}`,
+        rules        : `/rules/${this.gameplay.internal.gameId || 'undefined'}`,
+        editPlayer   : `/player/edit/${this.gameplay.internal.gameId || 'undefined'}`,
+        editAdmins   : `/admins/edit/${this.gameplay.internal.gameId || 'undefined'}`,
+        registration : `/registration/${this.gameplay.internal.gameId || 'undefined'}`
       }
     }
   },
