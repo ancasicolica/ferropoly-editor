@@ -108,7 +108,7 @@ function saveGameplay(gp, callback) {
 /**
  * Saves registration data for a gameplay.
  *
- * @param {Gameplay} gp - The gameplay object to be saved.
+ * @param gp - The gameplay object to be saved.
  * @returns {Promise<void>} - A promise that resolves when the data is saved successfully, or rejects with an error.
  */
 function saveRegistrationData(gp) {
@@ -219,10 +219,6 @@ function checkId(gameId, callback) {
     });
 }
 
-
-async function saveRegistration(info) {
-
-}
 
 export {
   saveGameplay,
