@@ -44,7 +44,8 @@ module.exports = function (settings, users) {
    * @type {LocalStrategy}
    */
   const localStrategy = new LocalStrategy(
-    function (username, password, done) {
+    function verify(username, password, done) {
+      console.log('XXXX');
       logger.info('Login attempt: ' + username);
       users.getUserByMailAddress(username, function (err, foundUser) {
         if (err || !foundUser) {

@@ -3,8 +3,6 @@
  *
  * Created by kc on 16.04.15.
  */
-
-
 const express  = require('express');
 const passport = require('passport');
 const router   = express.Router();
@@ -32,13 +30,40 @@ router.get('/fail', (req, res) => {
 /**
  * The login post route
  */
-router.post('/', function (req, res) {
-  let redirectUri = req.session.targetUrl || '/';
-  passport.authenticate('local', {
-    successRedirect: redirectUri,
-    failureRedirect: '/login/fail',
-    failureFlash   : true
-  })(req, res);
+router.post('/', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    // Error handling
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      // In case authtentication failed: no user is returned
+      return res.status(401).json({
+        success: false,
+        message: _.get(info,'message', 'Ungültige Anmeldedaten')
+      });
+    }
+
+    // Login into the session
+    req.login(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Sucessfully logged in
+      const redirectUri = req.session.targetUrl || '/';
+      logger.info(`User ${_.get(user, 'personalData.email')} logged in`);
+
+      res
+        .status(200)
+        .set('Location', redirectUri) // Location-Header setzen
+        .json({
+          success:     true,
+          message:     'Erfolgreich angemeldet',
+          redirectUrl: redirectUri,
+        });
+    });
+  })(req, res, next);
 });
 
 /**
@@ -105,7 +130,8 @@ module.exports = {
 
           res.render('error/401', {
             message: 'Zugriff nicht erlaubt',
-            error  : {status: 401, stack: {}}
+            target: uri,
+            error:   {status: 401, stack: {}}
           });
         }
 
