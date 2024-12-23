@@ -8,7 +8,9 @@ import {createApp} from 'vue'
 import PrimeVue from 'primevue/config';
 import Lara from '@primevue/themes/lara';
 import {definePreset} from '@primevue/themes';
+import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
+
 import {createRouter, createWebHashHistory} from 'vue-router'
 
 import 'primeicons/primeicons.css'                      ;    //icons
@@ -96,7 +98,7 @@ function createWebApp(options) {
   app.directive('tooltip', Tooltip);
 
   app.use(pinia);
-
+  app.use(ConfirmationService);
   app.mount(options.appMount)
 
   console.log(`app ${options.appMount} created`);

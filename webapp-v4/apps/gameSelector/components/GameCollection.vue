@@ -4,6 +4,7 @@
   Created: 01.06.2024
 -->
 <template lang="pug">
+  confirm-dialog
   h1 Meine Spiele
   .grid.m1(v-if="gameplays.length === 0")
     .col-12
@@ -14,34 +15,61 @@
         href="/newgame")
   .grid.m1(v-if="gameplays.length > 0")
     .col-4(v-for="gp in gameplays" :key="gp.internal.gameId")
-      game-card(:gameplay="gp")
+      game-card(:gameplay="gp" @delete-gameplay="onDeleteGameplay")
 </template>
 <script>
 
 import {mapState} from 'pinia';
 import {useGameSelectorStore} from '../store/gameSelectorStore';
-import GameCard from '../../../lib/components/GameCard.vue';
+import GameCard from './GameCard.vue';
 import PrimeButton from 'primevue/button';
+import ConfirmDialog from 'primevue/confirmdialog';
+
 export default {
-  name: 'GameCollection',
-  components: {GameCard, PrimeButton},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
+  name:       'GameCollection',
+  components: {GameCard, PrimeButton, ConfirmDialog},
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
     return {}
   },
-  computed  : {
-  ...mapState(useGameSelectorStore, {
-    gameplays: 'gameplays',
-  })
+  computed:   {
+    ...mapState(useGameSelectorStore, {
+      gameplays: 'gameplays',
+    })
   },
-  created   : function () {
+  created:    function () {
   },
-  methods   : {}
+  methods:    {
+    onDeleteGameplay(id) {
+      console.log('Event: require GP delete', id);
+      this.$confirm.require({
+        message:     `Soll das Spiel "${id}" für immer und alle Zeiten gelöscht werden?`,
+        header:      'Spiel löschen?',
+        icon:        'pi pi-exclamation-triangle',
+        rejectProps: {
+          label:    'Nein, abbrechen',
+          severity: 'primary',
+        },
+        acceptProps: {
+          label:    'Ja, löschen',
+          severity: 'danger',
+        },
+        accept:      () => {
+          console.log('YES');
+          useGameSelectorStore().deleteGameplay(id);
+        },
+        reject:      () => {
+          console.log('NO');
+        }
+      });
+      //
+      //useGameSelectorStore().deleteGameplay(id);
+    }
+  }
 }
-
 </script>
 
 

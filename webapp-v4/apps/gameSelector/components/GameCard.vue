@@ -53,11 +53,11 @@
 </template>
 <script>
 
-import FerroCard from '../../common/components/FerroCard.vue';
+import FerroCard from '../../../common/components/FerroCard.vue';
 import {get} from 'lodash';
-import {formatGameDate, formatTimestampAsAgo, createLuxonDate} from '../../common/lib/formatters'
+import {formatGameDate, formatTimestampAsAgo, createLuxonDate} from '../../../common/lib/formatters'
 import {DateTime} from 'luxon';
-import {getMapName} from '../../common/lib/mapTypes';
+import {getMapName} from '../../../common/lib/mapTypes';
 import PrimeButton from 'primevue/button';
 
 export default {

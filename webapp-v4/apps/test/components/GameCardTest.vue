@@ -28,7 +28,7 @@
 
 </template>
 <script>
-import GameCard from '../../../lib/components/GameCard.vue';
+import GameCard from '../../../apps/gameSelector/components/GameCard.vue'
 import fixtures from '../fixtures/edit-gameplay.json';
 
 import Calendar from 'primevue/calendar';

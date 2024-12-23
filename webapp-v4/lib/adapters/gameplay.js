@@ -2,28 +2,10 @@
  * This is the interface for the Game Plays on the server
  */
 import $ from 'jquery';
-import {DateTime} from 'luxon';
 import axios from 'axios';
 import {pick, get} from 'lodash';
 import {getAuthToken} from '../../common/adapters/authToken';
 
-/**
- * Retrieves and returns all games of the current user.
- *
- * @async
- * @function readMyGames
- * @returns {Array<object>} The array of gameplays representing the user's games.
- */
-async function readMyGames() {
-  let resp = await axios.get('/gameplay/mygames', {dataType: 'json'});
-
-  resp.data.gameplays.forEach(gp => {
-    gp.scheduling.deleteTs = DateTime.fromISO(gp.scheduling.deleteTs).toJSDate();
-    gp.scheduling.gameDate = DateTime.fromISO(gp.scheduling.gameDate).toJSDate();
-  });
-  console.log('GPS', resp.data);
-  return resp.data.gameplays;
-}
 
 /**
  * Returns informational data (basic) of a specific game
@@ -237,36 +219,6 @@ function checkId(gameId, callback) {
     });
 }
 
-/**
- * Creates a new game
- * @param settings
- * @param callback
- */
-function createGame(settings, callback) {
-  getAuthToken((err, authToken) => {
-    if (err) {
-      return callback(err);
-    }
-    $.post('/gameplay/createnew',
-      {
-        gamename: settings.name,
-        map     : settings.map,
-        gamedate: settings.date,
-        random  : settings.random,
-        presets : settings.presets,
-        gameId  : settings.selectedId,
-        authToken
-      })
-      .done(function (resp) {
-        console.log('createdGame');
-        callback(null, resp.gameId);
-      })
-      .fail(function (resp) {
-        console.error('Error while creating', resp);
-        callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
-      });
-  });
-}
 
 async function saveRegistration(info) {
 
@@ -274,8 +226,6 @@ async function saveRegistration(info) {
 
 export {
   saveGameplay,
-  createGame,
-  readMyGames,
   deleteGameplay,
   finalizeGameplay,
   getProposedGameIds,
