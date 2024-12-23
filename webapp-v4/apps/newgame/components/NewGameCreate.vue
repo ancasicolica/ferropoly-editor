@@ -1,5 +1,5 @@
 <!---
-
+  Element creating the game finally
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 25.08.2024
 -->
@@ -19,6 +19,14 @@
         aria-describedby="proposed-game-help" )
       small(id="proposed-game-help")  {{helptext}}
 
+    PrimeMessage(severity="error" v-if="errorMessage") {{errorMessage}}
+    p(v-if="proposedGameIds.length > 0") Keine Idee? Folgende Vorschläge stehen zur Auswahl:
+    PrimeButton.mr-2.mb-2(
+      v-for="(id, index) in proposedGameIds"
+      :key="index"
+      variant="outlined"
+      @click="selectId(id)") {{id}}
+
 </template>
 <script>
 
@@ -26,23 +34,27 @@ import InputText from 'primevue/inputtext';
 import {mapWritableState} from 'pinia';
 import {useNewGameStore} from '../store/newGameStore';
 import {kebabCase} from 'lodash';
+import PrimeMessage from 'primevue/message';
+import PrimeButton from 'primevue/button';
 
 export default {
-  name      : 'NewGameCreate',
-  components: {InputText},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
+  name:       'NewGameCreate',
+  components: {InputText, PrimeMessage, PrimeButton},
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
     return {}
   },
-  computed  : {
+  computed:   {
     ...mapWritableState(useNewGameStore, {
-      gameName        : 'gameName',
-      proposedGameName: 'proposedGameName'
+      gameName:         'gameName',
+      proposedGameName: 'proposedGameName',
+      errorMessage:     'errorMessage',
+      proposedGameIds:  'proposedGameIds',
     }),
-    helptext               : {
+    helptext:                {
       get() {
         if (this.proposedGameNameInvalid) {
           return 'Der Name muss mindestens 3 Zeichen lang sein.';
@@ -52,21 +64,30 @@ export default {
     },
     proposedGameNameInvalid: {
       get() {
-        return this.proposedGameName.length < 3;
+        const newGameStore = useNewGameStore();
+        return !newGameStore.proposedGameNameValid;
       }
     }
   },
-  created   : function () {
-    if (this.proposedGameName.length === 0) {
-      this.proposedGameName = kebabCase(this.gameName.substring(0, 60));
-    }
+  created:    function () {
+
+    const newGameStore = useNewGameStore();
+    newGameStore.checkId().then(() => {
+      console.log('Ids created');
+      if (this.proposedGameName.length === 0) {
+        this.proposedGameName = kebabCase(this.gameName.substring(0, 60));
+      }
+    })
   },
-  methods   : {
+  methods:    {
     onUpdate(input) {
       this.proposedGameName = kebabCase(input);
       if (input.length > 60) {
         this.proposedGameName = kebabCase(this.proposedGameName.substring(0, 60));
       }
+    },
+    selectId(id) {
+      this.proposedGameName = id;
     }
   }
 }

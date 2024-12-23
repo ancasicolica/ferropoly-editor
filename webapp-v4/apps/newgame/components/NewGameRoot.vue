@@ -1,11 +1,12 @@
 <!---
 
-  Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
+  Author: Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
+  File: New game setup component
   Created: 23.06.2024
 -->
 <template lang="pug">
   menu-bar(:elements="menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/" )
-  stepper(value="5" linear)
+  stepper(value="1" linear)
     step-list
       step(value="1") Spielname
       step(value="2") Karte
@@ -51,7 +52,7 @@
               new-game-create
         .flex.pt-6.justify-content-between
           prime-button(label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')" severity="secondary" )
-          prime-button(label="Spiel anlegen" @click="activateCallback('5')")
+          prime-button(label="Spiel anlegen" @click="createGame" :disabled="gameCreationActive || proposedGameNameInvalid")
 
 </template>
 <script>
@@ -73,8 +74,9 @@ import Card from 'primevue/card';
 import FerroCard from '../../../../editor/webapp/common/components/ferro-card/ferro-card.vue';
 import NewGameCreate from './NewGameCreate.vue';
 
+
 export default {
-  name      : 'NewGameRoot',
+  name:       'NewGameRoot',
   components: {
     NewGameCreate,
     FerroCard,
@@ -83,21 +85,70 @@ export default {
     NewGamePricelist,
     NewGameName, NewGameMap, MenuBar, Stepper, StepPanels, StepList, StepItem, Step, StepPanel, PrimeButton
   },
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
-    return {}
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
+    return {
+      gameCreationActive: false
+    }
   },
-  computed  : {
+  computed:   {
     ...mapWritableState(useNewGameStore, {
-      menuBarElements: 'menuBarElements'
-    })
+      menuBarElements: 'menuBarElements',
+    }),
+    proposedGameNameInvalid: {
+      get() {
+        const newGameStore = useNewGameStore();
+        return !newGameStore.proposedGameNameValid;
+      }
+    }
   },
-  created   : function () {
+  created:    function () {
   },
-  methods   : {}
+  methods:    {
+    /**
+     * Initiates the process of creating a new game. The method handles checking the game ID,
+     * creating the game if the ID is valid, and navigating to the game editing page if the
+     * game creation is successful. It also ensures proper handling of errors during the process.
+     *
+     * @return {void} Does not return a value. Handles game creation and navigation tasks internally.
+     */
+    createGame() {
+      console.log('Game creation process initiated.');
+      let self                = this;
+      self.gameCreationActive = true;
+      const newGameStore      = useNewGameStore();
+      newGameStore.checkId()
+          .then(result => {
+            console.log('OK', result);
+            if (result) {
+              newGameStore.createGame()
+                  .then(gamename => {
+                    console.log('New game created:', gamename);
+                    if (gamename) {
+                      window.location.href = `/gameplay/edit/${gamename}`;
+                    }
+                  })
+                  .catch(err => {
+                    console.error('Error while creating a new game', err);
+                  })
+                  .finally(() => {
+                    self.gameCreationActive = false;
+                  })
+            }
+            else {
+              self.gameCreationActive = false;
+            }
+          })
+          .catch(function (error) {
+            console.error('nope', error);
+            self.gameCreationActive = false;
+          });
+    }
+
+  }
 }
 
 </script>
