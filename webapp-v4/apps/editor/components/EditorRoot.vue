@@ -6,12 +6,14 @@
 <template lang="pug">
   menu-bar(:elements="menuBarElements"  show-user-box)
 
-  // the different panels
-  router-view
+  .ml-3.mr-3
+    // the different panels
+    router-view
 </template>
 <script>
 
 import MenuBar from '../../../common/components/MenuBar.vue'
+import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 
 export default {
   name:       'EditorRoot',
@@ -40,7 +42,12 @@ export default {
   },
   computed:   {},
   created:    function () {
-    console.log('Welcome to the editor!')
+
+    const pathPart = window.location.pathname.split('#')[0]; // before '#'
+    const segments = pathPart.split('/'); // split at '/'
+    const gameId = segments.pop(); // last element
+    console.log(`Welcome to the ${gameId} editor!`);
+    useGameplayStore().loadGameplay(gameId);
   },
   methods:    {}
 }

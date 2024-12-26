@@ -64,7 +64,7 @@
     "pinia": "2.3.0",
     "primeflex": "3.3.1",
     "primeicons": "7.0.0",
-    "primevue": "4.2.5",
+    "primevue": "^4.2.5",
     "pug": "3.0.3",
     "serve-favicon": "2.5.0",
     "uuid": "11.0.3",
@@ -80,7 +80,7 @@
     "@googlemaps/js-api-loader": "1.16.8",
     "@googlemaps/ogc": "1.0.27",
     "@primeuix/styled": "0.3.2",
-    "@primevue/forms": "4.2.5",
+    "@primevue/forms": "^4.2.5",
     "@primevue/themes": "4.2.5",
     "css-loader": "7.1.2",
     "eslint": "9.17.0",
@@ -110,7 +110,8 @@
     "webpack": "5.97.1",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "6.0.1",
-    "webpack-merge": "6.0.1"
+    "webpack-merge": "6.0.1",
+    "zod": "^3.24.1"
   },
   "bundleDependencies": []
 }

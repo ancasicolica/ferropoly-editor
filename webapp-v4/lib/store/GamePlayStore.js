@@ -7,9 +7,16 @@
 import {defineStore} from 'pinia'
 import {DateTime} from 'luxon';
 import axios from 'axios';
-import {assign} from 'lodash';
+import {merge} from 'lodash';
 
-import {gameplaySchema} from '../schemas/GamePlaySchemas';
+import {
+  gamenameSchema,
+  gameplaySchema,
+  organisationSchema,
+  organisatorEmailSchema,
+  organisatorPhoneSchema,
+  organisatorNameSchema
+} from '../schemas/GamePlaySchemas';
 
 export const useGameplayStore = defineStore('Gameplay', {
   state:   () => ({
@@ -77,20 +84,54 @@ export const useGameplayStore = defineStore('Gameplay', {
     }
   }),
   getters: {
+    /**
+     * Validates the provided gameplay state against a predefined schema.
+     *
+     * @param {Object} state - The gameplay state object to be validated.
+     * @return {undefined|Array} Returns undefined if the gameplay state is valid,
+     * or an array of validation issues if the state is invalid.
+     */
     gameplayInvalid(state) {
       const result = gameplaySchema.safeParse(state);
       if (result.success) {
-        return false;
+        return undefined;
       }
       console.log('GP is invalid', result);
       return result.error?.issues;
+    },
+    organisatorNameValidation(state) {
+      return organisatorNameSchema.safeParse(state.owner.organisatorName);
+    },
+    gamenameValidation(state) {
+      return gamenameSchema.safeParse(state.gamename);
+    },
+    organisationValidation(state) {
+      return organisationSchema.safeParse(state.owner.organisation);
+    },
+    organisatorEmailValidation(state) {
+      return organisatorEmailSchema.safeParse(state.owner.organisatorEmail);
+    },
+    organisatorPhonelValidation(state) {
+      return organisatorPhoneSchema.safeParse(state.owner.organisatorPhone);
     }
   },
   actions: {
+    /**
+     * Loads the gameplay data for the specified game ID.
+     *
+     * This method fetches gameplay data from the server, updates the current
+     * gameplay instance with the fetched data, and converts specific fields
+     * (like scheduling times) to JavaScript Date objects.
+     *
+     * Additionally, the loaded data is validated against the `gameplaySchema`.
+     *
+     * @param {string} gameId - The unique identifier of the game to load gameplay data for.
+     * @return {Promise<void>} A promise that resolves once the gameplay data has been successfully loaded and processed.
+     */
     async loadGameplay(gameId) {
       let resp = await axios.get(`/gameplay/load/${gameId}`);
       console.log('loaded', resp);
-      assign(this, resp.data.gameplay);
+      merge(this, resp.data.gameplay);
       // Convert Times to JS Date objects
       this.scheduling.deleteTs = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
       this.scheduling.gameDate = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
