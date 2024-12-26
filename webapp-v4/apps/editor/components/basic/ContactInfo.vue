@@ -8,7 +8,7 @@
   ferro-card(title="Allgemeines")
     ferropoly-input-text(v-model="gamename" label="Spielname" info="Das ist der Titel für die Preisliste" :zod-result="gamenameValidation" )
     ferropoly-input-text(v-model="organisatorName" label="Name Organisator*in" info="Dieser Name erscheint auf der Preisliste" :zod-result="organisatorNameValidation" )
-    ferropoly-input-text(v-model="organisation" label="Veranstaltende Organisation" info="Der Name der Organisation erscheint auf der Preisliste und ist optional" :zod-result="organisationValidation" )
+    ferropoly-input-text(v-model="organisation" label="Veranstaltende Organisation" info="Der Name der Organisation erscheint in der Ausschreibung und auf der Preisliste. Die Eingabe ist optional" :zod-result="organisationValidation" )
     ferropoly-input-text(v-model="organisatorEmail" label="Email-Adresse" info="Gib die Email-Adresse an, unter welcher die Teams Infos zum Spiel erhalten können" :zod-result="organisatorEmailValidation" )
     ferropoly-input-text(v-model="organisatorPhone" label="Telefonnummer während dem Spiel" info="Unter dieser Nummer erreichen die Teams während dem Spiel die Zentrale" :zod-result="organisatorPhonelValidation" )
 
