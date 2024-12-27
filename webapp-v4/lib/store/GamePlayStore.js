@@ -18,6 +18,8 @@ import {
   organisatorNameSchema
 } from '../schemas/GamePlaySchemas';
 
+import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
+
 export const useGameplayStore = defineStore('Gameplay', {
   state:   () => ({
     gamename:   '',
@@ -144,6 +146,30 @@ export const useGameplayStore = defineStore('Gameplay', {
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
+    },
+    /**
+     * Asynchronously saves the current gameplay data by sending a POST request to the server.
+     *
+     * Retrieves the authentication token and sends the gameplay data, along with the token,
+     * to the server endpoint constructed using the internal game ID.
+     *
+     * @returns {Promise<Object>} A promise that resolves with an object indicating the success status.
+     *          The object contains a `success` property (boolean) and, in case of failure, a `message`
+     *          property with the error details.
+     */
+    saveGameplay: async function() {
+      const self = this;
+
+      try {
+        const authToken =  await useAuthTokenStoreStore().getAuthToken();
+        let resp = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: self, authToken});
+        console.log('Gameplay saved', resp);
+        return {success: true}
+      }
+      catch(err) {
+        console.error('Error while saving gameplay', err);
+        return {success: false, message:`Fehler beim Speichern: ${err.message}`}
+      }
     }
   }
 })
