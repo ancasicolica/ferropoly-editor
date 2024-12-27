@@ -6,21 +6,24 @@
 <template lang="pug">
   .flex.flex-column.gap-1.mb-3
   label(for="inputbox") {{label}} {{modelValue}}
-  div.p-field
-    div.input-wrapper
-      span.p-input-icon-right
-        i(:class="[ 'pi',valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' :  'p-error']" v-if="validationIconsEnabled")
-        input-number#inputbox(
-          locale="de-CH"
-          v-model:="internalValue"
-          @input="onInput"
-          :invalid="!valid"
-          :class="{ 'p-invalid': !valid }"
-          :min="min"
-          :max="max"
-          :showButtons="showButtons"
-          :step="step"
-          )
+  .input-wrapper
+    input-number(
+      locale="de-CH"
+      v-model:="internalValue"
+      @input="onInput"
+      :invalid="!valid"
+      :class="[{ 'p-invalid': !valid }, 'with-icon']"
+      :min="min"
+      :max="max"
+      :showButtons="showButtons"
+      :step="step"
+
+    )
+    i.icon-inside-input(
+      :class="[{ 'with-buttons': showButtons }, 'pi', valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' : 'p-error' ]"
+      v-if="validationIconsEnabled"
+    )
+
   prime-message(
     v-if="valid"
     size="small"
@@ -36,13 +39,14 @@
 import PrimeMessage from 'primevue/message';
 import InputNumber from 'primevue/inputnumber';
 import {get, isNull, isObject, isString} from 'lodash';
+
 export default {
-  name:  "FerropolyInputNumber",
+  name:       'FerropolyInputNumber',
   components: {InputNumber, PrimeMessage},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {
     /**
      * Defines the model value for the component.
      * It is a required property and must be a string.
@@ -94,43 +98,43 @@ export default {
      * The default value is set to `false`, meaning validation icons are enabled by default.
      */
     validationIconsDisabled: {
-      type: Boolean,
-      default: ()=> {
-        return false;
-      }
-    },
-    min: {
-      type: Number,
-      default: ()=> {
-        return 0;
-      }
-    },
-    max: {
-      type: Number,
-      default: ()=> {
-        return 100000000;
-      }
-    },
-    showButtons: {
-      type: Boolean,
+      type:    Boolean,
       default: () => {
         return false;
       }
     },
-    step: {
-      type: Number,
-      default: ()=> {
+    min:                     {
+      type:    Number,
+      default: () => {
+        return 0;
+      }
+    },
+    max:                     {
+      type:    Number,
+      default: () => {
+        return 100000000;
+      }
+    },
+    showButtons:             {
+      type:    Boolean,
+      default: () => {
+        return false;
+      }
+    },
+    step:                    {
+      type:    Number,
+      default: () => {
         return 100;
       }
     }
   },
-  data      : function () {
+  data:       function () {
     return {
-      test:44,
+      test:          44,
       internalValue: this.modelValue,
     }
   },
-  computed  : {
+  computed:   {
     valid() {
       return get(this, 'zodResult.success', true)
     },
@@ -141,14 +145,14 @@ export default {
       return isObject(this.zodResult) && !this.validationIconsDisabled;
     }
   },
-  created   : function () {
-  },
-  watch: {
+  watch:      {
     modelValue(newValue) {
       this.internalValue = newValue;
     },
   },
-  methods   : {
+  created:    function () {
+  },
+  methods:    {
     onInput(e) {
       console.log('event', e);
       if (isNull(e.value)) {
@@ -158,15 +162,41 @@ export default {
         e.value = parseInt(e.value);
       }
       this.internalValue = e.value; // Lokalen Wert aktualisieren
-      this.$emit("update:modelValue", e.value); // Wert an die Elternkomponente weitergeben
+      this.$emit('update:modelValue', e.value); // Wert an die Elternkomponente weitergeben
     },
   }
 }
 
 </script>
 
-
 <style scoped lang="scss">
+.input-wrapper {
+  position: relative; /* Ermöglicht das absolute Positionieren des Icons */
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper .p-inputnumber {
+  width: 100%; /* Eingabefeld passt sich der Breite an */
+}
+
+/* Standard-Icon-Position */
+.icon-inside-input {
+  position: absolute; /* Absolut positioniertes Icon */
+  right: 0.8rem; /* Standard-Abstand vom Rand ohne Buttons */
+  top: 50%; /* Vertikale Zentrierung */
+  transform: translateY(-50%); /* Feine Zentrierung */
+  font-size: 1.2rem; /* Icon-Größe */
+  pointer-events: none; /* Icon soll nicht klickbar sein */
+}
+
+/* Icon-Position wenn Buttons aktiv sind */
+.icon-inside-input.with-buttons {
+  right: 2.8rem; /* Platz schaffen für die Buttons */
+}
+
+/* Farben der Icons */
 .p-success {
   color: green;
 }
@@ -174,22 +204,12 @@ export default {
   color: red;
 }
 
-.input-wrapper {
-  position: relative; /* Damit das Icon überlagert */
-  width: 100%;
+/* Platz für das Icon innerhalb der InputNumber */
+.with-icon .p-inputnumber-input {
+  padding-right: 2.5rem; /* Standard-Padding für das Icon */
 }
 
-.input-wrapper input {
-  width: 100%; /* Input passt sich an */
-  padding-right: 2rem; /* Platz für das Icon */
-}
-
-.input-wrapper i {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem; /* Icon-Größe anpassen */
-  pointer-events: none; /* Icon ist nicht klickbar */
+.with-icon .p-inputnumber-input.with-buttons {
+  padding-right: 4rem; /* Zusätzliches Padding für Buttons */
 }
 </style>

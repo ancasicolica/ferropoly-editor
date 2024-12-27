@@ -16,8 +16,6 @@ import {
   organisatorEmailSchema,
   organisatorPhoneSchema,
   organisatorNameSchema,
-  lowestPriceSchema,
-  highestPriceSchema,
   numberOfPriceLevelsSchema,
   numberOfPropertiesPerGroupSchema, pricelistPriceSchema
 } from '../schemas/GamePlaySchemas';
