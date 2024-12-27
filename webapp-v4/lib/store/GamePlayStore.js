@@ -15,7 +15,11 @@ import {
   organisationSchema,
   organisatorEmailSchema,
   organisatorPhoneSchema,
-  organisatorNameSchema
+  organisatorNameSchema,
+  lowestPriceSchema,
+  highestPriceSchema,
+  numberOfPriceLevelsSchema,
+  numberOfPropertiesPerGroupSchema, pricelistPriceSchema
 } from '../schemas/GamePlaySchemas';
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
@@ -117,7 +121,19 @@ export const useGameplayStore = defineStore('Gameplay', {
       return organisatorPhoneSchema.safeParse(state.owner.organisatorPhone);
     },
     gameTimesValidation(state) {
-    return {success: state.scheduling.gameEnd > state.scheduling.gameStart};
+      return {success: state.scheduling.gameEnd > state.scheduling.gameStart};
+    },
+    pricelistPriceValidation(state) {
+      return pricelistPriceSchema.safeParse({
+        lowestPrice:  state.gameParams.properties.lowestPrice,
+        highestPrice: state.gameParams.properties.highestPrice
+      });
+    },
+    numberOfPriceLevelsValidation(state) {
+      return numberOfPriceLevelsSchema.safeParse(state.gameParams.properties.numberOfPriceLevels);
+    },
+    numberOfPropertiesPerGroupValidation(state) {
+      return numberOfPropertiesPerGroupSchema.safeParse(state.gameParams.properties.numberOfPropertiesPerGroup);
     }
   },
   actions: {
@@ -157,18 +173,18 @@ export const useGameplayStore = defineStore('Gameplay', {
      *          The object contains a `success` property (boolean) and, in case of failure, a `message`
      *          property with the error details.
      */
-    saveGameplay: async function() {
+    saveGameplay: async function () {
       const self = this;
 
       try {
-        const authToken =  await useAuthTokenStoreStore().getAuthToken();
-        let resp = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: self, authToken});
+        const authToken = await useAuthTokenStoreStore().getAuthToken();
+        let resp        = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: self, authToken});
         console.log('Gameplay saved', resp);
         return {success: true}
       }
-      catch(err) {
+      catch (err) {
         console.error('Error while saving gameplay', err);
-        return {success: false, message:`Fehler beim Speichern: ${err.message}`}
+        return {success: false, message: `Fehler beim Speichern: ${err.message}`}
       }
     }
   }

@@ -4,13 +4,15 @@
   Created: 24.12.2024
 -->
 <template lang="pug">
-  h1 pricelist
+  pricelist-settings
 </template>
 <script>
 
+import PricelistSettings from './pricelist/PricelistSettings.vue';
+
 export default {
   name: "PanelPricelist",
-  components: {},
+  components: {PricelistSettings},
   filters   : {},
   mixins    : [],
   model     : {},

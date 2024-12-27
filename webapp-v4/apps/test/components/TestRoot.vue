@@ -33,6 +33,8 @@ export default {
                   {label: 'Ferro-Card', route: 'ferro-card'},
                   {label: 'Welcome-Bar', route: 'welcome-bar'},
                   {label: 'Input Text', route: 'input'},
+                  {label: 'Text input', route: 'input-text'},
+                  {label: 'Number input', route: 'input-number'},
                   {label: 'Submenu 3', eventParam: 'sub3', items: [
                       {label: 'Goto Ferropoly', url: 'https://www.ferropoly.ch'},
                       {label: 'subsub2', eventParam: 'subsub2'},

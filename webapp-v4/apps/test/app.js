@@ -12,6 +12,8 @@ import GameCardTest from './components/GameCardTest.vue';
 import FerroCardTest from './components/FerroCardTest.vue';
 import WelcomeBarTest from './components/WelcomeBarTest.vue';
 import FormInputTest from './components/FormInputTest.vue';
+import FerropolyInputNumberTest from './components/FerropolyInputNumberTest.vue';
+import FerropolyInputTextTest from './components/FerropolyInputTextTest.vue';
 
 createWebApp( {
   routes: [
@@ -19,6 +21,8 @@ createWebApp( {
     {path: '/ferrocard', name: 'ferro-card', component: FerroCardTest},
     {path: '/welcomebar', name: 'welcome-bar', component: WelcomeBarTest},
     {path: '/forminput', name: 'input', component: FormInputTest},
+    {path: '/form-input-text', name: 'input-text', component: FerropolyInputTextTest},
+    {path: '/form-input-number', name: 'input-number', component: FerropolyInputNumberTest},
     {path: '/', name: 'root', component: TestMenuBar},
   ],
   components: [

@@ -1,50 +1,54 @@
 <!---
   Ferropoly Style Input Text
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
-  Created: 26.12.2024
+  Created: 27.12.2024
 -->
 <template lang="pug">
   .flex.flex-column.gap-1.mb-3
-    label(for="inputbox") {{label}}
-    div.p-field
-      div.input-wrapper
-        span.p-input-icon-right
-          i(:class="[ 'pi',valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' :  'p-error']" v-if="validationIconsEnabled")
-          input-text(type="text"
-            :value="modelValue"
-            @valueChange="onValueChange"
-            :invalid="!valid"
-            :class="{ 'p-invalid': !valid }")
-    prime-message#organisatorName(
-      v-if="valid"
-      size="small"
-      variant="simple"
-      severity="secondary") {{info}}
-    prime-message(
-      v-for="err in errors"
-      severity="error"
-      size="small"
-      variant="simple") {{err.message}}
-
+  label(for="inputbox") {{label}} {{modelValue}}
+  div.p-field
+    div.input-wrapper
+      span.p-input-icon-right
+        i(:class="[ 'pi',valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' :  'p-error']" v-if="validationIconsEnabled")
+        input-number#inputbox(
+          locale="de-CH"
+          v-model:="internalValue"
+          @input="onInput"
+          :invalid="!valid"
+          :class="{ 'p-invalid': !valid }"
+          :min="min"
+          :max="max"
+          :showButtons="showButtons"
+          :step="step"
+          )
+  prime-message(
+    v-if="valid"
+    size="small"
+    variant="simple"
+    severity="secondary") {{info}}
+  prime-message(
+    v-for="err in errors"
+    severity="error"
+    size="small"
+    variant="simple") {{err.message}}
 </template>
 <script>
 import PrimeMessage from 'primevue/message';
-import InputText from 'primevue/inputtext';
-import {get, isObject} from 'lodash';
-
+import InputNumber from 'primevue/inputnumber';
+import {get, isNull, isObject, isString} from 'lodash';
 export default {
-  name:       'FerropolyInputText',
-  components: {PrimeMessage, InputText},
-  filters:    {},
-  mixins:     [],
-  model:      {},
-  props:      {
+  name:  "FerropolyInputNumber",
+  components: {InputNumber, PrimeMessage},
+  filters   : {},
+  mixins    : [],
+  model     : {},
+  props     : {
     /**
      * Defines the model value for the component.
      * It is a required property and must be a string.
      */
     modelValue: {
-      type:     String,
+      type:     Number,
       required: true
     },
     /**
@@ -94,13 +98,39 @@ export default {
       default: ()=> {
         return false;
       }
+    },
+    min: {
+      type: Number,
+      default: ()=> {
+        return 0;
+      }
+    },
+    max: {
+      type: Number,
+      default: ()=> {
+        return 100000000;
+      }
+    },
+    showButtons: {
+      type: Boolean,
+      default: () => {
+        return false;
+      }
+    },
+    step: {
+      type: Number,
+      default: ()=> {
+        return 100;
+      }
     }
   },
-  emits:      ['update:modelValue'],
-  data:       function () {
-    return {}
+  data      : function () {
+    return {
+      test:44,
+      internalValue: this.modelValue,
+    }
   },
-  computed:   {
+  computed  : {
     valid() {
       return get(this, 'zodResult.success', true)
     },
@@ -111,12 +141,25 @@ export default {
       return isObject(this.zodResult) && !this.validationIconsDisabled;
     }
   },
-  created:    function () {
+  created   : function () {
   },
-  methods:    {
-    onValueChange(e) {
-      this.$emit('update:modelValue', e);
-    }
+  watch: {
+    modelValue(newValue) {
+      this.internalValue = newValue;
+    },
+  },
+  methods   : {
+    onInput(e) {
+      console.log('event', e);
+      if (isNull(e.value)) {
+        e.value = 0;
+      }
+      if (isString(e.value)) {
+        e.value = parseInt(e.value);
+      }
+      this.internalValue = e.value; // Lokalen Wert aktualisieren
+      this.$emit("update:modelValue", e.value); // Wert an die Elternkomponente weitergeben
+    },
   }
 }
 
@@ -149,5 +192,4 @@ export default {
   font-size: 1.2rem; /* Icon-Größe anpassen */
   pointer-events: none; /* Icon ist nicht klickbar */
 }
-
 </style>
