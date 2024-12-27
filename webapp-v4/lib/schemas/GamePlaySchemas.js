@@ -8,21 +8,21 @@ import {z} from 'zod';
 
 const customErrorMap = (issue, _ctx) => {
   switch (issue.code) {
-    case "invalid_type":
-      if (issue.received === "undefined") {
-        return { message: "Benötigt" };
+    case 'invalid_type':
+      if (issue.received === 'undefined') {
+        return {message: 'Benötigt'};
       }
       break;
-    case "too_small":
+    case 'too_small':
       return {
         message: `Das Feld muss mindestens ${issue.minimum} Zeichen enthalten.`,
       };
-    case "too_big":
+    case 'too_big':
       return {
         message: `Das Feld darf maximal ${issue.maximum} Zeichen enthalten.`,
       };
     default:
-      return { message: "Ungültiger Wert" }; // Standardmeldung für alles andere
+      return {message: 'Ungültiger Wert'}; // Standardmeldung für alles andere
   }
 };
 
@@ -48,15 +48,29 @@ const organisatorPhoneSchema = z.string()
 const organisatorEmailSchema = z.string().email('Eine gültige Email-Adresse ist notwendig');
 
 const ownerSchema = z.object({
-  organisatorName: organisatorNameSchema,
-  organisation: organisationSchema,
+  organisatorName:  organisatorNameSchema,
+  organisation:     organisationSchema,
   organisatorEmail: organisatorEmailSchema,
   organisatorPhone: organisatorPhoneSchema
 });
 
+const gameDateSchema  = z.date();
+const deleteTsSchema  = z.date();
+const gameStartSchema = z.date();
+const gameEndSchema   = z.date();
+
+
+const schedulingSchema = z.object({
+  gameDate:  gameDateSchema,
+  gameStart: gameStartSchema,
+  gameEnd:   gameEndSchema,
+  deleteTs:  deleteTsSchema
+})
+
 const gameplaySchema = z.object({
-  gamename: gamenameSchema,
-  owner:    ownerSchema
+  gamename:   gamenameSchema,
+  scheduling: schedulingSchema,
+  owner:      ownerSchema
 });
 
 export {

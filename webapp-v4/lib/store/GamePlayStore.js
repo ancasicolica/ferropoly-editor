@@ -28,10 +28,10 @@ export const useGameplayStore = defineStore('Gameplay', {
       organisatorPhone: ''
     },
     scheduling: {
-      gameDate:  DateTime.now(),
-      gameStart: '',
-      gameEnd:   '',
-      deleteTs:  ''
+      gameDate:  new Date(),
+      gameStart: new Date(),
+      gameEnd:   new Date(),
+      deleteTs:  new Date(),
     },
     gameParams: {
       startCapital:              0,
@@ -113,6 +113,9 @@ export const useGameplayStore = defineStore('Gameplay', {
     },
     organisatorPhonelValidation(state) {
       return organisatorPhoneSchema.safeParse(state.owner.organisatorPhone);
+    },
+    gameTimesValidation(state) {
+    return {success: state.scheduling.gameEnd > state.scheduling.gameStart};
     }
   },
   actions: {
@@ -126,15 +129,18 @@ export const useGameplayStore = defineStore('Gameplay', {
      * Additionally, the loaded data is validated against the `gameplaySchema`.
      *
      * @param {string} gameId - The unique identifier of the game to load gameplay data for.
-     * @return {Promise<void>} A promise that resolves once the gameplay data has been successfully loaded and processed.
+     * @return {Promise<void>} A promise that resolves once the gameplay data has been successfully loaded and
+     *   processed.
      */
     async loadGameplay(gameId) {
       let resp = await axios.get(`/gameplay/load/${gameId}`);
       console.log('loaded', resp);
       merge(this, resp.data.gameplay);
       // Convert Times to JS Date objects
-      this.scheduling.deleteTs = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
-      this.scheduling.gameDate = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
+      this.scheduling.deleteTs  = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
+      this.scheduling.gameDate  = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
+      this.scheduling.gameStart = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
+      this.scheduling.gameEnd   = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
