@@ -6,11 +6,11 @@
 <template lang="pug">
 
   ferro-card(title="Spielzeit")
-    div Das Spiel ist für den {{gameDateFull}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden.
+    div Das Spiel ist für den {{gameDateFull}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden. Ein Spiel dauert mindestens zwei Stunden.
 
     .flex.flex-column.gap-1.mt-3
       label(for="inputbox") Spielstart
-      date-picker(v-model="gameStart" time-only fluid :invalid="!valid" :max-date="gameEnd")
+      date-picker(v-model="gameStart" time-only fluid :invalid="!valid" :max-date="maxGameStart")
       prime-message(
         v-if="valid"
         size="small"
@@ -23,7 +23,7 @@
         variant="simple") Die Startzeit muss vor dem Spielende liegen!
     .flex.flex-column.gap-1.mt-3.mb-3
       label(for="inputbox") Spielende
-      date-picker(v-model="gameEnd" time-only fluid :invalid="!valid" :min-date="gameStart")
+      date-picker(v-model="gameEnd" time-only fluid :invalid="!valid" :min-date="minGameEnd")
       prime-message(
         v-if="valid"
         size="small"
@@ -36,8 +36,9 @@
         variant="simple") Das Spielende muss nach dem Spielstart sein!
 
     prime-message(v-if="oddDurationMessage" severity="warn" ) {{oddDurationMessage}}
+    prime-message(v-if="tooShortGameMessage" severity="error" ) {{tooShortGameMessage}}
     p Sämtliche Spieldaten werden automatisch am {{gameDeleteFull}} gelöscht.
- </template>
+</template>
 
 <script>
 import FerroCard from '../../../../common/components/FerroCard.vue';
@@ -47,16 +48,16 @@ import {useGameplayStore} from '../../../../lib/store/GamePlayStore';
 import PrimeMessage from 'primevue/message';
 import DatePicker from 'primevue/datepicker';
 import {DateTime} from 'luxon';
+
 export default {
-  name: 'GameTiming',
+  name:       'GameTiming',
   components: {FerroCard, PrimeMessage, DatePicker},
-  data      : function () {
-    return {
-    }
+  data:       function () {
+    return {}
   },
-  computed: {
+  computed:   {
     ...mapWritableState(useGameplayStore, {
-      scheduling:                  'scheduling',
+      scheduling:          'scheduling',
       gameTimesValidation: 'gameTimesValidation'
     }),
     gameDateFull() {
@@ -68,6 +69,12 @@ export default {
     valid() {
       return this.gameTimesValidation.success;
     },
+    maxGameStart() {
+      return DateTime.fromJSDate(this.scheduling.gameEnd).minus({hours: 2}).toJSDate()
+    },
+    minGameEnd() {
+      return DateTime.fromJSDate(this.scheduling.gameStart).plus({hours: 2}).toJSDate()
+    },
     gameStart: {
       get() {
         return this.scheduling?.gameStart;
@@ -76,7 +83,7 @@ export default {
         this.scheduling.gameStart = value;
       }
     },
-    gameEnd: {
+    gameEnd:   {
       get() {
         return this.scheduling?.gameEnd;
       },
@@ -85,18 +92,25 @@ export default {
       }
     },
     oddDurationMessage() {
-      if (!(this.scheduling.gameStart instanceof Date)) return undefined;
+      if (!(this.scheduling.gameStart instanceof Date)) {
+        return undefined;
+      }
       const start = DateTime.fromJSDate(this.scheduling.gameStart).get('minute');
       if (![0, 15, 30, 45].includes(start)) {
-        return "Für den Start des Spiels werden volle, viertel und halbe Stunden empfohlen. Andere Zeiten funktionieren auch, können jedoch etwas seltsame Zeiten für die Startgeldausgabe zur Folge haben."
+        return 'Für den Start des Spiels werden volle, viertel und halbe Stunden empfohlen. Andere Zeiten funktionieren auch, können jedoch etwas seltsame Zeiten für die Startgeldausgabe zur Folge haben.'
+      }
+      return undefined;
+    },
+    tooShortGameMessage() {
+      if (!this.gameTimesValidation?.success) {
+        return 'Die Spieldauer muss mindestens zwei Stunden betragen, dies macht aber auch nur für Spiele in der Stadt Sinn. Für grössere Spiele sind mindestens 4 Stunden, für die ganze Schweiz mindestens 12 Stunden empfohlen.'
       }
       return undefined;
     }
   },
-  created   : function () {
+  created:    function () {
   },
-  methods   : {
-  }
+  methods:    {}
 }
 
 </script>
