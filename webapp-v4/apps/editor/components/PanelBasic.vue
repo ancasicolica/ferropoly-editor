@@ -53,7 +53,7 @@ export default {
       const result = await useGameplayStore().saveGameplay();
       if (!result?.success) {
         // ERROR
-        console.log('no good')
+        console.log('no good', result);
         this.errorMessage = result?.message;
         return;
       }

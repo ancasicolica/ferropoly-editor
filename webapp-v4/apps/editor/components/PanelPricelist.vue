@@ -4,26 +4,54 @@
   Created: 24.12.2024
 -->
 <template lang="pug">
-  pricelist-settings
+  .grid.mt-2
+    .col-6
+      pricelist-settings
+    .col-3
+      prime-button(severity="primary" @click="onSave") Speichern und weiter
+  .grid.m1(v-if="apiErrorMessage")
+    .col-12
+      prime-message(severity="error") {{apiErrorMessage}}
 </template>
 <script>
 
 import PricelistSettings from './pricelist/PricelistSettings.vue';
+import PrimeButton from 'primevue/button';
+import PrimeMessage from 'primevue/message';
+import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 
 export default {
-  name: "PanelPricelist",
-  components: {PricelistSettings},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
-    return {}
+  name:       'PanelPricelist',
+  components: {PricelistSettings, PrimeButton, PrimeMessage},
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
+    return {
+      errorMessage: undefined
+    }
   },
-  computed  : { },
-  created   : function () {
+  computed:   {
+    apiErrorMessage() {
+      return this.errorMessage;
+    }
   },
-  methods   : {}
+  created:    function () {
+  },
+  methods:    {
+    async onSave() {
+      console.log('save');
+      const result = await useGameplayStore().saveGameplay();
+      if (!result?.success) {
+        // ERROR
+        console.log('no good 2', result)
+        this.errorMessage = result?.message;
+        return;
+      }
+      this.$router.push('/rent');
+    }
+  }
 }
 
 </script>

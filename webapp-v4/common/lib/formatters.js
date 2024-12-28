@@ -47,6 +47,7 @@ function formatGameTime(value) {
   if (!value) {
     return '';
   }
+  value = createLuxonDate(value);
   return DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE);
 }
 
@@ -62,6 +63,7 @@ function formatTime(value) {
   if (!value) {
     return '';
   }
+  value = createLuxonDate(value);
   return DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_WITH_SECONDS);
 }
 
@@ -77,6 +79,7 @@ function formatDateTime(value) {
   if (!value) {
     return '';
   }
+  value = createLuxonDate(value);
   return DateTime.fromISO(value).setLocale('de').toLocaleString(DateTime.DATETIME_MED);
 }
 

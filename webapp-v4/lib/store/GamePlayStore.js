@@ -70,8 +70,8 @@ export const useGameplayStore = defineStore('Gameplay', {
       }
     },
     log:        {
-      created:    '',
-      lastEdited: ''
+      created:    new Date(),
+      lastEdited: new Date()
     },
     internal:   {
       gameId: '',
@@ -157,6 +157,8 @@ export const useGameplayStore = defineStore('Gameplay', {
       this.scheduling.gameDate  = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
       this.scheduling.gameStart = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
       this.scheduling.gameEnd   = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
+      this.log.created          = DateTime.fromISO(this.log.created).toJSDate();
+      this.log.lastEdited       = DateTime.fromISO(this.log.lastEdited).toJSDate();
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
@@ -178,7 +180,10 @@ export const useGameplayStore = defineStore('Gameplay', {
         const authToken = await useAuthTokenStoreStore().getAuthToken();
         let resp        = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: self, authToken});
         console.log('Gameplay saved', resp);
-        return {success: true}
+        this.log.lastEdited = new Date();
+        return ({
+          success: true
+        });
       }
       catch (err) {
         console.error('Error while saving gameplay', err);

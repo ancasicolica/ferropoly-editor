@@ -85,7 +85,7 @@ const numberOfPropertiesPerGroupSchema = z.number()
 const pricelistPriceSchema = z.object({
   lowestPrice: lowestPriceSchema,
   highestPrice: highestPriceSchema,
-}).refine(data => data.lowestPrice < data.highestPrice, {
+}).refine(data => data.lowestPrice <= data.highestPrice, {
   message: "Der tiefste Preis auf der Preisliste muss, logischerweise, kleiner sein als der höchste Preis.",
   path: ["lowestPrice"], // Optional: Specifies which field the error applies to
 });
