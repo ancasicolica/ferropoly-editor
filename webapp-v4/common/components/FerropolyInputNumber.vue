@@ -17,7 +17,7 @@
       :max="max"
       :showButtons="showButtons"
       :step="step"
-
+      :suffix="suffix"
     )
     i.icon-inside-input(
       :class="[{ 'with-buttons': showButtons }, 'pi', valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' : 'p-error' ]"
@@ -143,6 +143,12 @@ export default {
     step: {
       type:    Number,
       default: 100
+    },
+    suffix: {
+      type: String,
+      default: ()=> {
+        return undefined;
+      }
     }
   },
   data:       function () {
@@ -214,10 +220,10 @@ export default {
   right: 2.8rem; /* Platz schaffen für die Buttons */
 }
 
-.p-success.scoped-success {
+.p-success {
   color: green;
 }
-.p-error.scoped-error {
+.p-error {
   color: red;
 }
 

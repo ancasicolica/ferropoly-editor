@@ -17,7 +17,12 @@ import {
   organisatorPhoneSchema,
   organisatorNameSchema,
   numberOfPriceLevelsSchema,
-  numberOfPropertiesPerGroupSchema, pricelistPriceSchema
+  numberOfPropertiesPerGroupSchema,
+  pricelistPriceSchema,
+  startCapitalSchema,
+  interestSchema,
+  interestIntervalSchema,
+  interestCyclesAtEndOfGameSchema, debtInterestSchema
 } from '../schemas/GamePlaySchemas';
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
@@ -132,6 +137,21 @@ export const useGameplayStore = defineStore('Gameplay', {
     },
     numberOfPropertiesPerGroupValidation(state) {
       return numberOfPropertiesPerGroupSchema.safeParse(state.gameParams.properties.numberOfPropertiesPerGroup);
+    },
+    startCapitalValidation(state) {
+      return startCapitalSchema.safeParse(state.gameParams.startCapital);
+    },
+    interestlValidation(state) {
+      return interestSchema.safeParse(state.gameParams.startCapital);
+    },
+    interestIntervalValidation(state) {
+      return interestIntervalSchema.safeParse(state.gameParams.startCapital);
+    },
+    interestCyclesAtEndOfGameValidation(state) {
+      return interestCyclesAtEndOfGameSchema.safeParse(state.gameParams.startCapital);
+    },
+    debtInterestValidation(state) {
+      return debtInterestSchema.safeParse(state.gameParams.startCapital);
     }
   },
   actions: {

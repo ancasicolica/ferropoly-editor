@@ -16,6 +16,7 @@
         show-buttons
         :min="min"
         :max="max"
+        suffix=" %"
         :zod-result="testValidator")
       ferropoly-input-number(
         v-model="test1"
@@ -23,6 +24,7 @@
         info="Dies ist der erste Test. Wertbereich zwischen 1 und 1000."
         :min="min"
         :max="max"
+
         :zod-result="testValidator")
 
       p Aktueller Wert: {{ test1 }}

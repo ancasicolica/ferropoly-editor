@@ -83,11 +83,11 @@ const numberOfPropertiesPerGroupSchema = z.number()
   .max(4, 'Mehr als 4 Orte pro Ortsgruppe ist unmenschlich.');
 
 const pricelistPriceSchema = z.object({
-  lowestPrice: lowestPriceSchema,
+  lowestPrice:  lowestPriceSchema,
   highestPrice: highestPriceSchema,
 }).refine(data => data.lowestPrice <= data.highestPrice, {
-  message: "Der tiefste Preis auf der Preisliste muss, logischerweise, kleiner sein als der höchste Preis.",
-  path: ["lowestPrice"], // Optional: Specifies which field the error applies to
+  message: 'Der tiefste Preis auf der Preisliste muss, logischerweise, kleiner sein als der höchste Preis.',
+  path:    ['lowestPrice'], // Optional: Specifies which field the error applies to
 });
 
 const propertiesSchema = z.object({
@@ -97,8 +97,34 @@ const propertiesSchema = z.object({
   numberOfPropertiesPerGroup: numberOfPropertiesPerGroupSchema
 });
 
+
+const startCapitalSchema = z.number()
+  .min(0, 'Das Startguthaben muss grösser oder gleich 0 sein.')
+  .max(50000, 'Das Startguthaben muss kleiner oder gleich 50\'000 sein.');
+
+const interestSchema = z.number()
+  .min(1000, 'Minimales Startgeld pro Runde ist 1000.')
+  .max(10000, 'Maximales Startgeld pro Runde ist 10\'000.');
+
+const interestIntervalSchema = z.number().refine(value => [15, 20, 30, 60].includes(value), {
+  message: 'Eine Spielrunde muss 15, 20, 30 oder 60 Minuten dauern.',
+});
+
+const interestCyclesAtEndOfGameSchema = z.number()
+  .min(0, 'Die Anzahl Zinsrunden am Spielende müssen im Bereich von 0-4 liegen.')
+  .max(4, 'Die Anzahl Zinsrunden am Spielende müssen im Bereich von 0-4 liegen.');
+
+const debtInterestSchema = z.number()
+  .min(0, 'Der Strafzinssatz muss eine positive Zahl sein.')
+  .max(25, 'Der maximal mögliche Strafzinssatz ist 25%.');
+
 const gameParamsSchema = z.object({
-  properties: propertiesSchema,
+  properties:                propertiesSchema,
+  interestInterval:          interestIntervalSchema,
+  interest:                  interestSchema,
+  interestCyclesAtEndOfGame: interestCyclesAtEndOfGameSchema,
+  debtInterest:              debtInterestSchema,
+  startCapital:              startCapitalSchema
 }).partial();
 
 const gameplaySchema = z.object({
@@ -126,5 +152,10 @@ export {
   numberOfPropertiesPerGroupSchema,
   propertiesSchema,
   gameParamsSchema,
-  pricelistPriceSchema
+  pricelistPriceSchema,
+  startCapitalSchema,
+  interestSchema,
+  interestIntervalSchema,
+  interestCyclesAtEndOfGameSchema,
+  debtInterestSchema
 }

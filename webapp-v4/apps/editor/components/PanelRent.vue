@@ -1,16 +1,20 @@
 <!---
-
+  All Settings about
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
 <template lang="pug">
-  h1 rent
+  .grid.mt-2
+    .col-6
+      rent-settings
 </template>
 <script>
 
+import RentSettings from './rent/RentSettings.vue';
+
 export default {
   name: "PanelRent",
-  components: {},
+  components: {RentSettings},
   filters   : {},
   mixins    : [],
   model     : {},
