@@ -5,11 +5,11 @@
 -->
 <template lang="pug">
   .flex.flex-column.gap-1.mb-3
-  label(for="inputbox") {{label}} {{modelValue}}
+  label(for="inputbox") {{label || ''}}
   .input-wrapper
     input-number(
       locale="de-CH"
-      v-model:="internalValue"
+      v-model="internalValue"
       @input="onInput"
       :invalid="!valid"
       :class="[{ 'p-invalid': !valid }, 'with-icon']"
@@ -103,34 +103,50 @@ export default {
         return false;
       }
     },
-    min:                     {
+    /**
+     * Represents the minimum value configuration for a property.
+     *
+     * The `min` field is of type Number and specifies the minimum allowed value.
+     * If not explicitly provided, it defaults to 0.
+     */
+    min: {
       type:    Number,
-      default: () => {
-        return 0;
-      }
+      default: 0
     },
-    max:                     {
+    /**
+     * Represents the maximum value with a default limit.
+     *
+     * The `max` property is of type `Number` and serves as the upper boundary value.
+     * By default, it is set to 100,000,000 through a function returning this value.
+     */
+    max: {
       type:    Number,
-      default: () => {
-        return 100000000;
-      }
+      default: 100000000
     },
-    showButtons:             {
+    /**
+     * A configuration object for the "showButtons" property.
+     *
+     * This property dictates whether buttons are displayed or not.
+     *
+     * @type {Boolean}
+     * @default false
+     */
+    showButtons: {
       type:    Boolean,
       default: () => {
         return false;
       }
     },
-    step:                    {
+    /**
+     * Step for the buttons
+     */
+    step: {
       type:    Number,
-      default: () => {
-        return 100;
-      }
+      default: 100
     }
   },
   data:       function () {
     return {
-      test:          44,
       internalValue: this.modelValue,
     }
   },
@@ -154,15 +170,17 @@ export default {
   },
   methods:    {
     onInput(e) {
-      console.log('event', e);
+      let value = 0;
       if (isNull(e.value)) {
-        e.value = 0;
+        value = 0;
+      } else if (isString(e.value)) {
+        value = parseInt(e.value);
+      } else {
+        value = e.value;
       }
-      if (isString(e.value)) {
-        e.value = parseInt(e.value);
-      }
-      this.internalValue = e.value; // Lokalen Wert aktualisieren
-      this.$emit('update:modelValue', e.value); // Wert an die Elternkomponente weitergeben
+      // update local value
+      this.internalValue = value;
+      this.$emit('update:modelValue', value);
     },
   }
 }
@@ -196,11 +214,10 @@ export default {
   right: 2.8rem; /* Platz schaffen für die Buttons */
 }
 
-/* Farben der Icons */
-.p-success {
+.p-success.scoped-success {
   color: green;
 }
-.p-error {
+.p-error.scoped-error {
   color: red;
 }
 
