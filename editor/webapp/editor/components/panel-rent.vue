@@ -54,7 +54,7 @@
           b-alert(show variant="success") Im Spiel wird es {{nbInterestRounds}} Zinsrunden (plus {{interestCyclesAtEndOfGame}} am Spielende) geben.
             p Das ist ein guter Wert, empfohlen sind mindestens 10 Runden.
         div(v-if="toFewInterestRounds")
-          b-alert(v-model="toFewInterestRounds" variant="warning") Die Anzahl Zinsrunden ist mit {{nbInterestRounds}} tief angesetzt, es lohnt sich kaum Häuser zu bauen. Empfohlen sind mindestens 10 Zinsrunden
+          b-alert(v-model="toFewInterestRounds" variant="warning") Die Anzahl Zinsrunden ist mit {{nbInterestRounds}} zu tief angesetzt, es lohnt sich kaum Häuser zu bauen. Empfohlen sind mindestens 10 Zinsrunden
             p Lösung: entweder die Dauer einer Spielrunde verkürzen oder die Spieldauer verlängern.
         b-button(
           variant="primary"

@@ -7,7 +7,7 @@
 import {defineStore} from 'pinia'
 import {DateTime} from 'luxon';
 import axios from 'axios';
-import {merge} from 'lodash';
+import {merge, get} from 'lodash';
 
 import {
   gamenameSchema,
@@ -152,6 +152,14 @@ export const useGameplayStore = defineStore('Gameplay', {
     },
     debtInterestValidation(state) {
       return debtInterestSchema.safeParse(state.gameParams.startCapital);
+    },
+
+    numberOfInterestRounds(state)  {
+      let start    = DateTime.fromJSDate(state.scheduling.gameStart);
+      let end      = DateTime.fromJSDate(state.scheduling.gameEnd);
+      let duration = end.diff(start, 'minutes');
+      console.log('numberOfInterestRounds', start, end, duration, duration.minutes);
+      return Math.floor(duration.minutes / state.gameParams.interestInterval);
     }
   },
   actions: {
@@ -207,7 +215,8 @@ export const useGameplayStore = defineStore('Gameplay', {
       }
       catch (err) {
         console.error('Error while saving gameplay', err);
-        return {success: false, message: `Fehler beim Speichern: ${err.message}`}
+        let additionalInfo = get(err, 'response.data.message', '');
+        return {success: false, message: `Fehler beim Speichern: ${err.message}. ${additionalInfo}`}
       }
     }
   }
