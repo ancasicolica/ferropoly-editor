@@ -8,27 +8,27 @@
     div.mb-3 Mit den Faktoren in diesem Abschnitt wird der Ertrag pro Stunde (bzw. die Miete wenn eine andere Gruppe das Ort besucht) bestimmt. Im Normalfall sind keine Anpassungen nötig, die Standardwerte haben sich bewährt.
 
     label.mt-4(for="no") Unbebaut
-    prime-slider#no.mt-2(v-model="rentFactorNoHouse" float :min="min" :max="max" :step="step")
+    prime-slider#no.mt-2(v-model="rentFactorNoHouse" float :min="min" :max="rentFactorOneHouse" :step="step")
     div.flex.align-items-center.justify-content-center.mt-2.mb-3 {{rentFactorNoHouse}}
 
     label.mt-8(for="one") Ein Haus
-    prime-slider#one.mt-2(v-model="rentFactorOneHouse" float :min="min" :max="max" :step="step")
+    prime-slider#one.mt-2(v-model="rentFactorOneHouse" float :min="rentFactorNoHouse" :max="rentFactorTwoHouses" :step="step")
     div.flex.align-items-center.justify-content-center.mt-2.mb-3 {{rentFactorOneHouse}}
 
     label.mt-8(for="two") Zwei Häuser
-    prime-slider#two.mt-2(v-model="rentFactorTwoHouses" float :min="min" :max="max" :step="step")
+    prime-slider#two.mt-2(v-model="rentFactorTwoHouses" float :min="rentFactorOneHouse" :max="rentFactorThreeHouses" :step="step")
     div.flex.align-items-center.justify-content-center.mt-2.mb-3 {{rentFactorTwoHouses}}
 
     label.mt-8(for="three") Drei Häuser
-    prime-slider#three.mt-2(v-model="rentFactorThreeHouses" float :min="min" :max="max" :step="step")
+    prime-slider#three.mt-2(v-model="rentFactorThreeHouses" float :min="rentFactorTwoHouses" :max="rentFactorFourHouses" :step="step")
     div.flex.align-items-center.justify-content-center.mt-2.mb-3 {{rentFactorThreeHouses}}
 
     label.mt-8(for="four") Vier Häuser
-    prime-slider#four.mt-2(v-model="rentFactorFourHouses" float :min="min" :max="max" :step="step")
+    prime-slider#four.mt-2(v-model="rentFactorFourHouses" float :min="rentFactorThreeHouses" :max="rentFactorHotel" :step="step")
     div.flex.align-items-center.justify-content-center.mt-2.mb-3 {{rentFactorFourHouses}}
 
     label.mt-8(for="five") Hotel
-    prime-slider#five.mt-2(v-model="rentFactorHotel" float :min="min" :max="max" :step="step")
+    prime-slider#five.mt-2(v-model="rentFactorHotel" float :min="rentFactorFourHouses" :max="max" :step="step")
     div.flex.align-items-center.justify-content-center.mt-2 {{rentFactorHotel}}
 
 

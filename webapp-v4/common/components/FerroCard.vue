@@ -4,7 +4,7 @@
   Created: 20.05.2024
 -->
 <template lang="pug">
-  Panel(:header="title" :toggleable="toggleable")
+  Panel(:header="title" :toggleable="toggleable" class="full-size")
     slot
 
 </template>
@@ -53,5 +53,8 @@ export default {
 
 
 <style scoped lang="scss">
-
+.full-size {
+  width: 100%;
+  height: 100%;
+}
 </style>
