@@ -16,8 +16,11 @@
       .grid
         .col-12
           rent-preview
-
-
+  .grid.mt-1
+    .col-12.flex.align-items-center.justify-content-end
+      prime-button(severity="primary" @click="onSave") Speichern und weiter
+    .col-12(v-if="apiErrorMessage")
+      prime-message(severity="error") {{apiErrorMessage}}
 </template>
 <script>
 
@@ -25,21 +28,42 @@ import RentFactorSettings from './houses/RentFactorSettings.vue';
 import HouseCostSettings from './houses/HouseCostSettings.vue';
 import PropertyGroupSetting from './houses/PropertyGroupSetting.vue';
 import RentPreview from './houses/RentPreview.vue';
+import PrimeButton from 'primevue/button';
+import {useGameplayStore} from '../../../lib/store/GamePlayStore';
+import PrimeMessage from 'primevue/message';
 
 export default {
-  name: "PanelHouses",
-  components: {RentPreview, PropertyGroupSetting, HouseCostSettings, RentFactorSettings},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
-    return {}
+  name:       'PanelHouses',
+  components: {RentPreview, PropertyGroupSetting, HouseCostSettings, RentFactorSettings, PrimeButton, PrimeMessage},
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
+    return {
+      errorMessage: undefined
+    }
   },
-  computed  : { },
-  created   : function () {
+  computed:   {
+    apiErrorMessage() {
+      return this.errorMessage;
+    }
   },
-  methods   : {}
+  created:    function () {
+  },
+  methods:    {
+    async onSave() {
+      console.log('save');
+      const result = await useGameplayStore().saveGameplay();
+      if (!result?.success) {
+        // ERROR
+        console.log('no good', result);
+        this.errorMessage = result?.message;
+        return;
+      }
+      this.$router.push('/chance');
+    }
+  }
 }
 
 </script>
