@@ -4,7 +4,7 @@
   Created: 20.05.2024
 -->
 <template lang="pug">
-  Panel(:header="title" :toggleable="toggleable" class="full-size")
+  Panel(:header="title" :toggleable="toggleable" :class="class")
     slot
 
 </template>
@@ -15,38 +15,51 @@ import Card from 'primevue/card';
 import Panel from 'primevue/panel';
 
 export default {
-  name      : 'FerroCard',
+  name:       'FerroCard',
   components: {Card, Panel},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {
-    title: {
-      type   : String,
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {
+    title:      {
+      type:    String,
       default: function () {
         return 'Ferropoly';
       }
     },
-    size : {
-      type   : String,
+    size:       {
+      type:    String,
       default: function () {
         return 'md';
       }
     },
-    toggleable : {
-      type   : Boolean,
+    toggleable: {
+      type:    Boolean,
+      default: function () {
+        return false;
+      }
+    },
+    fullSize:   {
+      type:    Boolean,
       default: function () {
         return false;
       }
     }
   },
-  data      : function () {
+  data:       function () {
     return {}
   },
-  computed  : {},
-  created   : function () {
+  computed:   {
+    class() {
+      if (this.fullSize) {
+        return 'full-size';
+      }
+      return 'normal-size';
+    }
   },
-  methods   : {}
+  created:    function () {
+  },
+  methods:    {}
 }
 
 </script>
@@ -56,5 +69,9 @@ export default {
 .full-size {
   width: 100%;
   height: 100%;
+}
+
+.normal-size {
+
 }
 </style>

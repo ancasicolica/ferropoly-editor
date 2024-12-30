@@ -4,7 +4,7 @@
   Created: 29.12.2024
 -->
 <template lang="pug">
-  ferro-card(title="Ortsgruppen-Faktor")
+  ferro-card(title="Ortsgruppen-Faktor" full-size)
     div.mb-3 Mit diesem Wert wird der Faktor eingestellt, mit welchem sich die Miete vervielfacht, wenn eine Spielgruppe alle Orte einer Ortsgruppe besitzt.
     label.mt-4(for="price") Haus- / Hotelpreis
     prime-slider#price.mt-2(v-model="allPropertiesOfGroup" float :min="min" :max="max" :step="step" :disabled="disabled")

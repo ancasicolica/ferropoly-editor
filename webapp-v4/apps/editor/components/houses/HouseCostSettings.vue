@@ -4,7 +4,7 @@
   Created: 29.12.2024
 -->
 <template lang="pug">
-  ferro-card(title="Hauspreise")
+  ferro-card(title="Hauspreise" full-size)
     div.mb-3 Hier bestimmst Du, wie teuer ein Haus oder Hotel im Vergleich zum Kaufpreis ist.
     label.mt-4(for="price") Haus- / Hotelpreis
     prime-slider#price.mt-2(v-model="housePrice" float :min="min" :max="max" :step="step")

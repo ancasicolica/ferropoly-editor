@@ -4,7 +4,7 @@
   Created: 29.12.2024
 -->
 <template lang="pug">
-  ferro-card(title="Faktoren Mietpreise")
+  ferro-card(title="Faktoren Mietpreise" full-size)
     div.mb-3 Mit den Faktoren in diesem Abschnitt wird der Ertrag pro Stunde (bzw. die Miete wenn eine andere Gruppe das Ort besucht) bestimmt. Im Normalfall sind keine Anpassungen nötig, die Standardwerte haben sich bewährt.
 
     label.mt-4(for="no") Unbebaut
