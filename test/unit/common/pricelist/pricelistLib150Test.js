@@ -7,30 +7,30 @@
 'use strict';
 
 const expect = require('expect.js');
-const pll    = require('../../../../editor/lib/pricelist');
+const pll    = require('../../../../editor/lib/pricelistlib');
 
-var properties; // The faked properties
-var ranges;
-var pricelist;
+let properties; // The faked properties
+let ranges;
+let pricelist;
 
 describe('Pricelist lib 150 Tests', function () {
   before(function () {
     properties = [];
-    for (var i = 0; i < 150; i++) {
+    for (let i = 0; i < 150; i++) {
       properties.push({
         location : {name: 'prop' + i},
         pricelist: {priceRange: i % 6, positionInPriceRange: 1000 / (i + 1)}
       })
     }
-    ranges    = pll.internal.extractRanges(properties);
-    pricelist = pll.internal.createPriceListArray(ranges);
+    ranges    = pll.extractRanges(properties);
+    pricelist = pll.createPriceListArray(ranges);
   });
 
   describe('Calcluating the prices', function () {
     it('should work with a separate price for each property (with settings 1)', function () {
-      var lp = 1000;
-      var hp = 8000;
-      var l  = pll.internal.setPropertyPrices({
+      let lp = 1000;
+      let hp = 8000;
+      let l  = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 8,
@@ -50,9 +50,9 @@ describe('Pricelist lib 150 Tests', function () {
 
   describe('Calcluating the prices', function () {
     it('should work with a separate price for each property (with settings 1)', function () {
-      var lp = 1000;
-      var hp = 8000;
-      var l  = pll.internal.setPropertyPrices({
+      let lp = 1000;
+      let hp = 8000;
+      let l  = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 32,

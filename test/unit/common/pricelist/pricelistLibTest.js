@@ -7,7 +7,7 @@
 
 
 const expect = require('expect.js');
-const pll = require('../../../../editor/lib/pricelist');
+const pll = require('../../../../editor/lib/pricelistlib');
 
 var properties; // The faked properties
 var ranges;
@@ -26,7 +26,7 @@ describe('Pricelist lib Tests', function () {
 
   describe('Extracting the ranges from the properties', function () {
     it('should result in sorted price ranges', function () {
-      ranges = pll.internal.extractRanges(properties);
+      ranges = pll.extractRanges(properties);
       expect(ranges.length).to.be(6);
 
       for (var i = 0; i < 6; i++) {
@@ -41,7 +41,7 @@ describe('Pricelist lib Tests', function () {
 
   describe('Concatenate all ranges to one list', function () {
     it('should create the pricelist in correct order', function () {
-      pricelist = pll.internal.createPriceListArray(ranges);
+      pricelist = pll.createPriceListArray(ranges);
       expect(pricelist.length).to.be(120);
 
       var z = 0;
@@ -59,7 +59,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with a separate price for each property (with settings 1)', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 1,
@@ -78,7 +78,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with a separate price for each property (with settings 2: min bounds)', function () {
       var lp = 100;
       var hp = 1000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 1,
@@ -97,7 +97,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with a separate price for each property (with settings 3: max bounds)', function () {
       var lp = 100;
       var hp = 10000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 1,
@@ -117,7 +117,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with 2 price groups', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 2,
@@ -135,7 +135,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with 4 price groups', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 4,
@@ -157,7 +157,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with 7 price groups', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 7,
@@ -179,7 +179,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with 8 price groups', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 8,
@@ -202,7 +202,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with 32 price groups (max)', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 32,
@@ -226,7 +226,7 @@ describe('Pricelist lib Tests', function () {
     it('should work with the standard setting', function () {
       var lp = 1000;
       var hp = 8000;
-      var l = pll.internal.setPropertyPrices({
+      var l = pll.setPropertyPrices({
         gameParams: {
           properties: {
             numberOfPriceLevels: 8,
@@ -236,7 +236,7 @@ describe('Pricelist lib Tests', function () {
         }
       }, pricelist);
 
-      l = pll.internal.setPropertyHousePricing({
+      l = pll.setPropertyHousePricing({
         gameParams: {
           housePrices: 0.5, rentFactors: {
             noHouse: 0.125, oneHouse: 0.5, twoHouses: 2, threeHouses: 3, fourHouses: 4, hotel: 5
@@ -258,7 +258,7 @@ describe('Pricelist lib Tests', function () {
 
   describe('Setting the property groups', function () {
     it('should work with standard settings (2 party groups)', function () {
-      var l = pll.internal.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 2}}}, pricelist);
+      var l = pll.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 2}}}, pricelist);
       expect(l[0].pricelist.propertyGroup).to.be(1);
       expect(l[1].pricelist.propertyGroup).to.be(1);
       expect(l[2].pricelist.propertyGroup).to.be(2);
@@ -266,7 +266,7 @@ describe('Pricelist lib Tests', function () {
 
     });
     it('should work with standard settings (3 party groups)', function () {
-      var l = pll.internal.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 3}}}, pricelist);
+      var l = pll.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 3}}}, pricelist);
       expect(l[0].pricelist.propertyGroup).to.be(1);
       expect(l[1].pricelist.propertyGroup).to.be(1);
       expect(l[2].pricelist.propertyGroup).to.be(1);
@@ -274,7 +274,7 @@ describe('Pricelist lib Tests', function () {
 
     });
     it('should work with standard settings (3 party groups)', function () {
-      var l = pll.internal.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 4}}}, pricelist);
+      var l = pll.setPropertyGroups({gameParams: {properties: {numberOfPropertiesPerGroup: 4}}}, pricelist);
       expect(l[0].pricelist.propertyGroup).to.be(1);
       expect(l[1].pricelist.propertyGroup).to.be(1);
       expect(l[2].pricelist.propertyGroup).to.be(1);
