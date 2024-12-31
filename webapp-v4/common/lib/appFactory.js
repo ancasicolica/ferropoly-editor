@@ -81,6 +81,11 @@ function createWebApp(options) {
     app.use(router)
   }
 
+  const plugins = options.plugins || [];
+  plugins.forEach(plugin => {
+    app.use(plugin);
+  })
+
   options.components.forEach(c => {
     app.component(c.name, c.component)
   })

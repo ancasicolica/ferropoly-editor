@@ -35,6 +35,7 @@ export default {
                   {label: 'Input Text', route: 'input'},
                   {label: 'Text input', route: 'input-text'},
                   {label: 'Number input', route: 'input-number'},
+                  {label: 'Sorting', route: 'sorting'},
                   {label: 'Submenu 3', eventParam: 'sub3', items: [
                       {label: 'Goto Ferropoly', url: 'https://www.ferropoly.ch'},
                       {label: 'subsub2', eventParam: 'subsub2'},

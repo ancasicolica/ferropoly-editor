@@ -5,6 +5,7 @@
  **/
 
 import createWebApp from '../../common/lib/appFactory';
+import { plugin as Slicksort } from 'vue-slicksort';
 
 import TestRoot from './components/TestRoot.vue';
 import TestMenuBar from './components/TestMenuBar.vue';
@@ -14,6 +15,7 @@ import WelcomeBarTest from './components/WelcomeBarTest.vue';
 import FormInputTest from './components/FormInputTest.vue';
 import FerropolyInputNumberTest from './components/FerropolyInputNumberTest.vue';
 import FerropolyInputTextTest from './components/FerropolyInputTextTest.vue';
+import TestSorting from './components/TestSorting.vue';
 
 createWebApp( {
   routes: [
@@ -23,10 +25,14 @@ createWebApp( {
     {path: '/forminput', name: 'input', component: FormInputTest},
     {path: '/form-input-text', name: 'input-text', component: FerropolyInputTextTest},
     {path: '/form-input-number', name: 'input-number', component: FerropolyInputNumberTest},
+    {path: '/sorting', name: 'sorting', component: TestSorting},
     {path: '/', name: 'root', component: TestMenuBar},
   ],
   components: [
     {name: 'test-root', component: TestRoot},
+  ],
+  plugins: [
+    Slicksort
   ],
   appMount: '#test-app',
 })

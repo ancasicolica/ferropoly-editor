@@ -26,6 +26,7 @@ import {
 } from '../schemas/GamePlaySchemas';
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
+import {useEditorPropertiesStore} from './EditorPropertiesStore';
 
 export const useGameplayStore = defineStore('Gameplay', {
   state:   () => ({
@@ -154,7 +155,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       return debtInterestSchema.safeParse(state.gameParams.startCapital);
     },
 
-    numberOfInterestRounds(state)  {
+    numberOfInterestRounds(state) {
       let start    = DateTime.fromJSDate(state.scheduling.gameStart);
       let end      = DateTime.fromJSDate(state.scheduling.gameEnd);
       let duration = end.diff(start, 'minutes');
@@ -188,6 +189,9 @@ export const useGameplayStore = defineStore('Gameplay', {
       this.log.created          = DateTime.fromISO(this.log.created).toJSDate();
       this.log.lastEdited       = DateTime.fromISO(this.log.lastEdited).toJSDate();
 
+      //  Save properties
+      useEditorPropertiesStore().setProperties(resp.data.properties);
+
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
     },
@@ -218,6 +222,10 @@ export const useGameplayStore = defineStore('Gameplay', {
         let additionalInfo = get(err, 'response.data.message', '');
         return {success: false, message: `Fehler beim Speichern: ${err.message}. ${additionalInfo}`}
       }
+    },
+    getRawGameplay() {
+      return JSON.parse(JSON.stringify(this.$state));
     }
+
   }
 })
