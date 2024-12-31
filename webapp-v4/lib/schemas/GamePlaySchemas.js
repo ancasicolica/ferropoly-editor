@@ -97,6 +97,81 @@ const propertiesSchema = z.object({
   numberOfPropertiesPerGroup: numberOfPropertiesPerGroupSchema
 });
 
+const rentFactorNoHouse = z.number()
+  .min(0.1, 'Der Mietfaktor ohne Haus muss mindestens 0.1 sein.')
+  .max(10, 'Der Mietfaktor ohne Haus darf nicht grösser 10 sein.')
+
+const rentFactorOneHouseSchema = z.number()
+  .min(0.1, 'Der Mietfaktor für ein Haus muss mindestens 0.1 sein.')
+  .max(10, 'Der Mietfaktor für ein Haus darf nicht grösser 10 sein.')
+
+const rentFactorTwoHouseSchema = z.number()
+  .min(0.1, 'Der Mietfaktor für zwei Häuser muss mindestens 0.1 sein.')
+  .max(10, 'Der Mietfaktor für zwei Häuser darf nicht grösser 10 sein.')
+
+const rentFactorThreeHouseSchema = z.number()
+  .min(0.1, 'Der Mietfaktor für drei Häuser muss mindestens 0.1 sein.')
+  .max(10, 'Der Mietfaktor für zwei Häuser darf nicht grösser 10 sein.')
+
+const rentFactorFourHouseSchema = z.number()
+  .min(0.1, 'Der Mietfaktor für vier Häuser muss mindestens 0.1 sein.')
+  .max(10, 'Der Mietfaktor für vier Häuser darf nicht grösser 10 sein.')
+
+const rentFactorHotelSchema = z.number()
+  .min(0.1, 'Der Mietfaktor für ein Hotel muss mindestens 0.1 sein.')
+  .max(10, 'Der Mietfaktor für ein Hotel darf nicht grösser 10 sein.')
+
+const allPropertiesOfGroupSchema = z.number()
+  .min(1.1, 'Der Faktor für alle Orte in einer Ortsgrippe muss grösser 1 sein.')
+  .max(4, 'Der Faktor für alle Orte in einer Ortsgruppe muss kleiner oder gleich 4 sein.')
+
+const rentFactorsSchema = z.object({
+  noHouse:              rentFactorNoHouse,
+  oneHouse:             rentFactorOneHouseSchema,
+  twoHouses:            rentFactorTwoHouseSchema,
+  threeHouses:          rentFactorThreeHouseSchema,
+  fourHouses:           rentFactorFourHouseSchema,
+  hotel:                rentFactorHotelSchema,
+  allPropertiesOfGroup: allPropertiesOfGroupSchema
+})
+
+const chancelleryMinGamblingSchema = z.number()
+  .min(100, 'Der Mindestbetrag für das Gambling ist 100.')
+  .max(100000, 'Der Maximalbetrag für das Gambling ist 100\'000.')
+
+const chancelleryMaxGamblingSchema = z.number()
+  .min(100, 'Der Mindestbetrag für das Gambling ist 100.')
+  .max(100000, 'Der Maximalbetrag für das Gambling ist 100\'000.')
+
+const chancelleryMinLotterySchema = z.number()
+  .min(1000, 'Der minimale Mindestbetrag in der Lotterie ist 1\'000')
+  .max(20000, 'Der maximale Mindestbetrag in der Lotterie ist 20\'000.')
+
+const chancelleryMaxLotterySchema = z.number()
+  .min(1000, 'Der minimale Maximalbetrag in der Lotterie ist 1\'000')
+  .max(20000, 'Der maximale Maximalbetrag in der Lotterie ist 20\'000.')
+
+const chancelleryMaxJackpotSizeSchema = z.number()
+  .min(10000, 'Die kleinste Parkplatzgrösse ist 10\'000')
+  .max(200000, 'Die grösste Parkplatzgrösse ist 200\'000 und macht wenig Sinn.')
+
+const chancelleryProbabilityWinSchema = z.number()
+  .min(0, 'Die Chance auf einen Gewinn muss grösser 0% sein.')
+  .max(1, 'Die Chance auf einen Gewinn muss kleiner 100% sein.')
+
+const chancelleryProbabilityLooseSchema = z.number()
+  .min(0, 'Die Chance zu verlieren muss grösser 0% sein.')
+  .max(1, 'Die Chance zu verlieren muss kleiner 100% sein.')
+
+const chancellerySchema = z.object({
+  minGambling:      chancelleryMinGamblingSchema,
+  maxGambling:      chancelleryMaxGamblingSchema,
+  minLottery:       chancelleryMinLotterySchema,
+  maxLottery:       chancelleryMaxLotterySchema,
+  maxJackpotSize:   chancelleryMaxJackpotSizeSchema,
+  probabilityWin:   chancelleryProbabilityWinSchema,
+  probabilityLoose: chancelleryProbabilityLooseSchema
+})
 
 const startCapitalSchema = z.number()
   .min(0, 'Das Startguthaben muss grösser oder gleich 0 sein.')
@@ -120,6 +195,8 @@ const debtInterestSchema = z.number()
 
 const gameParamsSchema = z.object({
   properties:                propertiesSchema,
+  rentFactors:               rentFactorsSchema,
+  chancellery:               chancellerySchema,
   interestInterval:          interestIntervalSchema,
   interest:                  interestSchema,
   interestCyclesAtEndOfGame: interestCyclesAtEndOfGameSchema,
