@@ -27,7 +27,6 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {void} No return value.
      */
     setProperties(properties) {
-      const self = this;
       console.log('Add properties to list...');
       const newProperties = properties.map(p => new EditorProperty(p));
       this.propertyList.setList(newProperties);

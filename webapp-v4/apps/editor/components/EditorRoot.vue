@@ -13,7 +13,6 @@
 <script>
 
 import MenuBar from '../../../common/components/MenuBar.vue'
-import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {useEditorStore} from '../store/editorStore';
 
 export default {
