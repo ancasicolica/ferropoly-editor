@@ -4,21 +4,26 @@
   Created: 31.12.2024
 -->
 <template lang="pug">
-  h1 Range {{range}}
-  prime-button(@click="test") Preisliste erstellen
-  slick-list(axys="y" v-model:list="properties")
-    slick-item.property(v-for="(p, i) in properties" :key="p" :index="i") {{p.location.name}} {{p.pricelist.positionInPriceRange}} {{p.pricelist.position}}
+  div.flex.justify-content-left.align-items-center
+    slick-list(axis="y" v-model:list="properties" useDragHandle)
+      slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
+        div.slick-item-content.flex.justify-content-between.align-items-center
+          drag-handle.draghandle
+            i(class="pi pi-bars")
+          | &nbsp;{{p.location.name}}
+          a(:href="createLink(p)" target="_blank")
+            i.right-icon(class="pi pi-external-link")
 </template>
 <script>
 
 import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesStore';
 import {mapWritableState} from 'pinia';
 import PrimeButton from 'primevue/button';
-import {SlickList, SlickItem} from 'vue-slicksort'
+import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 
 export default {
   name:       'PropertySorting',
-  components: {PrimeButton, SlickList, SlickItem},
+  components: {PrimeButton, SlickList, SlickItem, DragHandle},
   filters:    {},
   mixins:     [],
   model:      {},
@@ -53,6 +58,7 @@ export default {
           properties[i].pricelist.positionInPriceRange = i;
         }
         this.editorStore.updateProperties(properties);
+        this.editorStore.createPriceList();
       }
 
     }
@@ -66,6 +72,9 @@ export default {
   methods: {
     test() {
       this.editorStore.createPriceList();
+    },
+    createLink(property) {
+      return `https://www.google.ch/maps/place/${property.location.position.lat}+${property.location.position.lng}/@${property.location.position.lat},${property.location.position.lng},12.00z`
     }
   }
 }
@@ -75,13 +84,30 @@ export default {
 
 <style scoped lang="scss">
 .property {
-  width: 200px;
-  height: 48px;
   margin-bottom: 4px;
-  margin-right: 4px;
-  padding-left: 3px;
-  border-style: solid;
   border-width: thin;
   border-color: #a6a6aa;
+  border-bottom: solid;
+  width: 120%;
 }
+
+.draghandle {
+  cursor: grab;
+}
+.slick-item-content {
+  padding-left: 4px;
+  padding-right: 2px;
+  padding-top: 2px;
+}
+
+.property-list {
+  width: 400px;
+}
+.group-0 {
+  background-color: #b8f8a3;
+}
+.group-1 {
+  background-color: #faec76;
+}
+
 </style>
