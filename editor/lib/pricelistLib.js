@@ -4,26 +4,68 @@
  * Created: 31.12.2024
  **/
 
-const _      = require('lodash');
+const _ = require('lodash');
+
+let loggerFunction = null;
 
 /**
  * This is the internal (but exposed for unit tests) calculation for the price list
  * @param gp       Gameplay
  * @param props    Properties
- * @param callback
+ * @param loggerFct Function where strings and objects can be logged to
  */
-function createPriceList(gp, props, callback) {
+function createPriceList(gp, props, loggerFct) {
 
-  let priceRangeLists = extractRanges(props);
-  let priceList       = createPriceListArray(priceRangeLists);
-  priceList           = setPropertyPrices(gp, priceList);
-  priceList           = setPropertyHousePricing(gp, priceList);
-  priceList           = setPropertyGroups(gp, priceList);
-  if (!priceList) {
-    return callback(new Error('error while creating pricelist'));
+  if (_.isFunction(loggerFct)) {
+    loggerFunction = loggerFct;
+  } else {
+    loggerFunction = console.log;
   }
-  callback(null, priceList);
+  const gpName = _.get(gp, 'internal.gameId', 'none');
+  loggerFunction(`${gpName}: Pricelist creation, extract ranges`);
+  let priceRangeLists = extractRanges(props);
+  loggerFunction(`${gpName}: Pricelist creation, create array`);
+  let priceList = createPriceListArray(priceRangeLists);
+  loggerFunction(`${gpName}: Pricelist creation, set property prices`);
+  priceList = setPropertyPrices(gp, priceList);
+  loggerFunction(`${gpName}: Pricelist creation, set house pricing`);
+  priceList = setPropertyHousePricing(gp, priceList);
+  loggerFunction(`${gpName}: Pricelist creation, set property groups`);
+  priceList = setPropertyGroups(gp, priceList);
+  if (!priceList) {
+    return null;
+  }
+  return priceList
 }
+
+/**
+ * This is the internal (but exposed for unit tests) calculation for the price list
+ * @param gp       Gameplay
+ * @param props    Properties
+ * @param loggerFct Function where strings and objects can be logged to
+ */
+function createPropertyList(gp, props, loggerFct) {
+
+  if (_.isFunction(loggerFct)) {
+    loggerFunction = loggerFct;
+  } else {
+    loggerFunction = console.log;
+  }
+  const gpName = _.get(gp, 'internal.gameId', 'none');
+  loggerFunction(`${gpName}: Pricelist creation, extract ranges`);
+  let priceRangeLists = extractRanges(props);
+  loggerFunction(`${gpName}: Pricelist creation, create array`);
+  let priceList = createPriceListArray(priceRangeLists);
+  loggerFunction(`${gpName}: Pricelist creation, set property prices`);
+  priceList = setPropertyPrices(gp, priceList);
+  loggerFunction(`${gpName}: Pricelist creation, set property groups`);
+  priceList = setPropertyGroups(gp, priceList);
+  if (!priceList) {
+    return null;
+  }
+  return priceList
+}
+
 
 /**
  * Extract the properties for each price range into one array each
@@ -191,6 +233,7 @@ let setPropertyGroups = function (gameplay, pricelist) {
 
 module.exports = {
   createPriceList:         createPriceList,
+  createPropertyList:      createPropertyList,
   extractRanges:           extractRanges,
   createPriceListArray:    createPriceListArray,
   setPropertyPrices:       setPropertyPrices,

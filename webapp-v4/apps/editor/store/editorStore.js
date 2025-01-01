@@ -5,12 +5,23 @@
  **/
 
 import {defineStore} from 'pinia'
+import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 
 export const useEditorStore = defineStore('Editor', {
-  state: ()=> ({
+  state:   () => ({
+    ready: false
   }),
-  getters: {
-  },
+  getters: {},
   actions: {
+    async loadData(gameId) {
+      useGameplayStore().loadGameplay(gameId)
+        .then(() => {
+          this.ready = true;
+        })
+        .catch(err => {
+          console.error('Error while loading gameplay', err);
+        });
+
+    }
   }
 })

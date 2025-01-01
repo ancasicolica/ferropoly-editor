@@ -5,7 +5,8 @@
 -->
 <template lang="pug">
   h1 Reihenfolge
-  tabs(value="0")
+  progress-spinner(v-if="!ready")
+  tabs(value="0" v-if="ready")
     tab-list
       tab(value="0") Sehr billig
       tab(value="1") Billig
@@ -35,19 +36,37 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
-import PropertySorting from './sorting/PropertySorting.vue';
+import ProgressSpinner from 'primevue/progressspinner';
+import {mapWritableState} from 'pinia';
+import { defineAsyncComponent } from 'vue';
+import {useEditorStore} from '../store/editorStore';
 
 export default {
   name:       'PanelSorting',
-  components: {PropertySorting, Tabs, TabList, Tab, TabPanels, TabPanel},
+  components: {PropertySorting: defineAsyncComponent(() =>
+        import('./sorting/PropertySorting.vue')
+    ), Tabs, TabList, Tab, TabPanels, TabPanel, ProgressSpinner},
   filters:    {},
   mixins:     [],
   model:      {},
   props:      {},
   data:       function () {
-    return {}
+    return {
+    }
   },
-  computed:   {},
+  computed:   {
+    /**
+     * Important issue about the panels and stores:
+     * The property-sorting elements must not be loaded before the editor store property is set to ready.
+     * Reason: the initialisation of the property store fires a bloody high number of update events as
+     * more than 1000 properties are being initialized. Avoid loading the store before this initialisation
+     * is over under any circumstances, it would take about 10 to 20 seconds otherwise (for a task needing
+     * less than a second)
+     */
+    ...mapWritableState(useEditorStore, {
+      ready: 'ready'
+    }),
+  },
   created:    function () {
   },
   methods:    {}

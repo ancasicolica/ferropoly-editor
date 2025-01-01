@@ -14,22 +14,26 @@ import PanelPricelist from './components/PanelPricelist.vue';
 import PanelProperties from './components/PanelProperties.vue';
 import PanelRent from './components/PanelRent.vue'
 import PanelSorting from './components/PanelSorting.vue';
+import {plugin as Slicksort} from 'vue-slicksort';
 
-createWebApp( {
-  routes: [
-    {path: '/', name: 'root', component: PanelBasic },
-    {path: '/basic', name: 'basic', component: PanelBasic },
-    {path: '/chance', name: 'chance', component: PanelChance },
-    {path: '/create', name: 'create', component: PanelCreate },
-    {path: '/houses', name: 'houses', component: PanelHouses },
-    {path: '/pricelist', name: 'pricelist', component: PanelPricelist },
-    {path: '/poperties', name: 'properties', component: PanelProperties },
-    {path: '/rent', name: 'rent', component: PanelRent },
-    {path: '/sorting', name: 'sorting', component: PanelSorting },
+createWebApp({
+  routes:     [
+    {path: '/', name: 'root', component: PanelBasic},
+    {path: '/basic', name: 'basic', component: PanelBasic},
+    {path: '/chance', name: 'chance', component: PanelChance},
+    {path: '/create', name: 'create', component: PanelCreate},
+    {path: '/houses', name: 'houses', component: PanelHouses},
+    {path: '/pricelist', name: 'pricelist', component: PanelPricelist},
+    {path: '/poperties', name: 'properties', component: PanelProperties},
+    {path: '/rent', name: 'rent', component: PanelRent},
+    {path: '/sorting', name: 'sorting', component: PanelSorting},
   ],
   components: [
     {name: 'editor-root', component: EditorRoot},
   ],
-  appMount: '#editor-app',
+  plugins:    [
+    Slicksort
+  ],
+  appMount:   '#editor-app',
 })
 

@@ -14,6 +14,7 @@
 
 import MenuBar from '../../../common/components/MenuBar.vue'
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
+import {useEditorStore} from '../store/editorStore';
 
 export default {
   name:       'EditorRoot',
@@ -47,7 +48,10 @@ export default {
     const segments = pathPart.split('/'); // split at '/'
     const gameId = segments.pop(); // last element
     console.log(`Welcome to the ${gameId} editor!`);
-    useGameplayStore().loadGameplay(gameId);
+    useEditorStore().loadData(gameId)
+        .finally(()=>{
+          console.log('ready');
+        });
   },
   methods:    {}
 }

@@ -9,12 +9,14 @@ import {defineStore} from 'pinia'
 import PropertyList from '../../lib/propertyList'
 import EditorProperty from '../editorProperty';
 import {filter, sortBy} from 'lodash';
-import {createPriceList} from '../../../editor/lib/pricelistLib';
+import {createPriceList, createPropertyList} from '../../../editor/lib/pricelistLib';
 import {useGameplayStore} from './GamePlayStore';
+
 export const useEditorPropertiesStore = defineStore('EditorProperties', {
   state:   () => ({
-    propertyList: new PropertyList(),
-    selectedProperty: null
+    propertyList:     new PropertyList(),
+    selectedProperty: null,
+    ready:            false
   }),
   getters: {},
   actions: {
@@ -36,18 +38,28 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
         this.getPropertiesOfRange(i);
       }
 
+      this.createPriceList();
+      this.ready = true;
+
+    },
+    createPriceList() {
       console.log('Create Pricelist');
       const gp = useGameplayStore().getRawGameplay();
-      createPriceList(gp, this.propertyList.properties, (err, info) => {
-        console.log('Pricelist created', err, info);
+      createPropertyList(gp, this.propertyList.properties)
+      console.log('Pricelist created', this.propertyList.properties);
+    },
+    updateProperties(properties) {
+      const self = this;
+      properties.forEach(p => {
+        self.propertyList.updateProperty(p, p);
       })
     },
-    getPropertiesOfRange(range){
+    getPropertiesOfRange(range) {
       console.log('getPropertiesOfRange', range);
 
       // First get all properties of the given range
       const list = this.propertyList.getProperties()
-      let f = filter(list, {'pricelist': {'priceRange': range}});
+      let f      = filter(list, {'pricelist': {'priceRange': range}});
       // First get all properties of the given range
       console.log('  f');
       let sorted = sortBy(f, 'pricelist.positionInPriceRange');

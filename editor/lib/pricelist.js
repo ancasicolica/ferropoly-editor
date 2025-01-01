@@ -29,26 +29,26 @@ function createPriceList(gameId, ownerEmail, callback) {
         logger.error('getPropertiesForGameplay failed', err);
         return callback(err);
       }
-      pricelistLib.createPriceList(gp, props, function (err, pricelist) {
+      const pricelist = pricelistLib.createPriceList(gp, props)
+      if (!pricelist) {
+        logger.error('createPriceListInternal failed');
+        return callback(new Error('createPriceListInternal failed'));
+      }
+      properties.updateProperties(pricelist, function (err) {
         if (err) {
-          logger.error('createPriceListInternal failed', err);
+          logger.error('updateProperties failed', err);
           return callback(err);
         }
-        properties.updateProperties(pricelist, function (err) {
+        gameplays.saveNewPriceListRevision(gp, function (err) {
           if (err) {
-            logger.error('updateProperties failed', err);
-            return callback(err);
+            logger.error('saveNewPriceListRevision failed', err);
           }
-          gameplays.saveNewPriceListRevision(gp, function (err) {
-            if (err) {
-              logger.error('saveNewPriceListRevision failed', err);
-            }
-            return callback(err);
-          });
+          return callback(err);
         });
       });
     });
   });
+
 }
 
 
