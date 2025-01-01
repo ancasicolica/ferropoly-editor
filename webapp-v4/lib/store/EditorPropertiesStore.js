@@ -15,8 +15,7 @@ import {useGameplayStore} from './GamePlayStore';
 export const useEditorPropertiesStore = defineStore('EditorProperties', {
   state:   () => ({
     propertyList:     new PropertyList(),
-    selectedProperty: null,
-    ready:            false
+    selectedProperty: null
   }),
   getters: {},
   actions: {
@@ -31,7 +30,6 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       const newProperties = properties.map(p => new EditorProperty(p));
       this.propertyList.setList(newProperties);
 
-      console.log('Set initial properties values...');
       // Set initial values for the property ranges
       for (let i = 0; i < 6; i++) {
         this.getPropertiesOfRange(i);
@@ -39,36 +37,50 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
 
       this.createPriceList();
       this.ready = true;
-
     },
+    /**
+     * Generates and initializes a price list based on the current gameplay data.
+     *
+     * The method retrieves raw gameplay data, processes it, and creates a list of properties
+     * with associated pricing information.
+     *
+     * @return {void} Does not return a value.
+     */
     createPriceList() {
       console.log('Create Pricelist');
       const gp = useGameplayStore().getRawGameplay();
       createPropertyList(gp, this.propertyList.properties)
-      console.log('Pricelist created', this.propertyList.properties);
     },
+    /**
+     * Updates the properties in the property list with the provided values.
+     *
+     * @param {Array} properties - An array of property objects to be updated.
+     * @return {void} This method does not return a value.
+     */
     updateProperties(properties) {
       const self = this;
       properties.forEach(p => {
         self.propertyList.updateProperty(p, p);
       })
     },
+    /**
+     * Retrieves and sorts properties within the specified price range.
+     *
+     * @param {Object} range - The price range for filtering properties.
+     * @return {Array} An array of properties sorted by their position within the specified price range.
+     */
     getPropertiesOfRange(range) {
       console.log('getPropertiesOfRange', range);
-
       // First get all properties of the given range
       const list = this.propertyList.getProperties()
       let f      = filter(list, {'pricelist': {'priceRange': range}});
       // First get all properties of the given range
-      console.log('  f');
       let sorted = sortBy(f, 'pricelist.positionInPriceRange');
-      console.log('  sorted', sorted.length);
-      let i = 0;
+      let i      = 0;
 
       sorted.forEach(e => {
         e.pricelist.positionInPriceRange = i++;
       });
-      console.log('  done');
       // Finally sort and return array
       return sorted;
     },

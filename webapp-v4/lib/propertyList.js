@@ -67,7 +67,7 @@ class PropertyList extends EventEmitter {
       console.error('Property not found!', property);
     }
     merge(p, data);
-    console.log('Updated', property);
+    //console.log('Updated', property);
   }
 
   /**

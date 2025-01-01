@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   div.flex.justify-content-left.align-items-center
-    slick-list(axis="y" v-model:list="properties" useDragHandle)
+    slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
       slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
         div.slick-item-content.flex.justify-content-between.align-items-center
           drag-handle.draghandle
@@ -20,6 +20,7 @@ import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesSt
 import {mapWritableState} from 'pinia';
 import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
+import $ from 'jquery';
 
 export default {
   name:       'PropertySorting',
@@ -53,21 +54,23 @@ export default {
         return this.editorStore.getPropertiesOfRange(parseInt(this.range));
       },
       set(properties) {
-        console.log(properties);
         for (let i = 0; i < properties.length; i++) {
           properties[i].pricelist.positionInPriceRange = i;
         }
         this.editorStore.updateProperties(properties);
         this.editorStore.createPriceList();
       }
-
     }
   },
   created:    function () {
-    console.log('created', this.range, this.ready);
+    window.addEventListener('resize', this.resizeHandler);
+    this.resizeHandler();
   },
   mounted() {
-    console.log('mounted', this.range, this.ready);
+    this.resizeHandler();
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {
     test() {
@@ -75,7 +78,18 @@ export default {
     },
     createLink(property) {
       return `https://www.google.ch/maps/place/${property.location.position.lat}+${property.location.position.lng}/@${property.location.position.lat},${property.location.position.lng},12.00z`
-    }
+    },
+    /**
+     * Creates the maximum Size of the list
+     */
+    resizeHandler() {
+      let element       = $('#property-list');
+      let hDoc          = $(window).height();
+      let offsetElement = element.offset();
+      if (offsetElement) {
+        element.height(hDoc - offsetElement.top);
+      }
+    },
   }
 }
 
@@ -88,26 +102,33 @@ export default {
   border-width: thin;
   border-color: #a6a6aa;
   border-bottom: solid;
-  width: 120%;
+  width: 400px;
 }
 
 .draghandle {
   cursor: grab;
 }
+
 .slick-item-content {
   padding-left: 4px;
   padding-right: 2px;
   padding-top: 2px;
 }
 
-.property-list {
-  width: 400px;
-}
+
 .group-0 {
   background-color: #b8f8a3;
 }
+
 .group-1 {
   background-color: #faec76;
 }
 
+#property-list {
+  overflow: auto;
+  font-size: 12px;
+  height: 200px;
+  width: 420px;
+
+}
 </style>

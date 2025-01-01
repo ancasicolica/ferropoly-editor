@@ -39,7 +39,8 @@ function createPriceList(gp, props, loggerFct) {
 }
 
 /**
- * This is the internal (but exposed for unit tests) calculation for the price list
+ * Creates a list of properties of the pricelist, but not setting the complete data. This function is
+ * used in the web UI.
  * @param gp       Gameplay
  * @param props    Properties
  * @param loggerFct Function where strings and objects can be logged to
@@ -56,8 +57,6 @@ function createPropertyList(gp, props, loggerFct) {
   let priceRangeLists = extractRanges(props);
   loggerFunction(`${gpName}: Pricelist creation, create array`);
   let priceList = createPriceListArray(priceRangeLists);
-  loggerFunction(`${gpName}: Pricelist creation, set property prices`);
-  priceList = setPropertyPrices(gp, priceList);
   loggerFunction(`${gpName}: Pricelist creation, set property groups`);
   priceList = setPropertyGroups(gp, priceList);
   if (!priceList) {

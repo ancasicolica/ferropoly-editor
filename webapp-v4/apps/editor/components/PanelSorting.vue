@@ -6,7 +6,7 @@
 <template lang="pug">
   h1 Reihenfolge
   progress-spinner(v-if="!ready")
-  tabs(value="0" v-if="ready")
+  tabs(value="0" v-if="ready" lazy)
     tab-list
       tab(value="0") Sehr billig
       tab(value="1") Billig
