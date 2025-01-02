@@ -71,6 +71,16 @@ class PropertyList extends EventEmitter {
   }
 
   /**
+   * Retrieves properties that belong to a specific group.
+   *
+   * @param {string} group - The name of the property group to filter by.
+   * @return {Array} An array of properties that match the specified group.
+   */
+  getPropertiesOfGroup(group) {
+    return filter(this.properties, {'pricelist': {'propertyGroup': group}});
+  }
+
+  /**
    * Applies the filter over all properties. See property-filter.vue for details
    * @param f
    */

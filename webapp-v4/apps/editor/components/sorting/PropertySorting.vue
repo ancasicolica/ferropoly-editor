@@ -4,15 +4,21 @@
   Created: 31.12.2024
 -->
 <template lang="pug">
-  div.flex.justify-content-left.align-items-center
-    slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
-      slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
-        div.slick-item-content.flex.justify-content-between.align-items-center
-          drag-handle.draghandle
-            i(class="pi pi-bars")
-          | &nbsp;{{p.location.name}}
-          a(:href="createLink(p)" target="_blank")
-            i.right-icon(class="pi pi-external-link")
+  .grid
+    .col-4
+      slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
+        slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
+          div.slick-item-content.flex.justify-content-between.align-items-center
+            drag-handle.draghandle
+              i(class="pi pi-bars")
+            span(@click="selectProperty(p)") &nbsp;{{p.location.name}}
+            a(:href="createLink(p)" target="_blank")
+              i.right-icon(class="pi pi-external-link")
+    .col-8
+      div(v-if="selectedProperty")
+        h1 {{selectedPropertyName}}
+        div Orte in Ortsgruppe:&nbsp;
+          span(v-for="(p, i) in selectedPropertyGroup" :key="p" :index="i") {{p.location.name}};&nbsp;
 </template>
 <script>
 
@@ -21,6 +27,7 @@ import {mapWritableState} from 'pinia';
 import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 import $ from 'jquery';
+import {get} from 'lodash'
 
 export default {
   name:       'PropertySorting',
@@ -43,14 +50,22 @@ export default {
   },
   computed:   {
     ...mapWritableState(useEditorPropertiesStore, {
-      ready: 'ready'
+      selectedProperty: 'selectedProperty'
     }),
+    selectedPropertyName() {
+      if (this.selectedProperty === null) {
+        return 'Kein Ort ausgewählt';
+      }
+      return get(this.selectedProperty, 'location.name', 'Ortsname fehlt');
+    },
+    selectedPropertyGroup() {
+      if (this.selectedProperty === null) {
+        return [];
+      }
+      return this.editorStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+    },
     properties: {
       get() {
-        if (!this.ready) {
-          console.log('not ready yet')
-          return [];
-        }
         return this.editorStore.getPropertiesOfRange(parseInt(this.range));
       },
       set(properties) {
@@ -90,6 +105,10 @@ export default {
         element.height(hDoc - offsetElement.top);
       }
     },
+    selectProperty(property) {
+      console.log('Selected property', property);
+      this.selectedProperty = property;
+    }
   }
 }
 
@@ -102,7 +121,7 @@ export default {
   border-width: thin;
   border-color: #a6a6aa;
   border-bottom: solid;
-  width: 400px;
+
 }
 
 .draghandle {
@@ -128,7 +147,6 @@ export default {
   overflow: auto;
   font-size: 12px;
   height: 200px;
-  width: 420px;
 
 }
 </style>

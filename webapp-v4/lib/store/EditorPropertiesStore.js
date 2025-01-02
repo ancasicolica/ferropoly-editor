@@ -84,5 +84,14 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       // Finally sort and return array
       return sorted;
     },
+    /**
+     * Retrieves the properties associated with a specific group.
+     *
+     * @param {string} group - The name or identifier of the group whose properties need to be retrieved.
+     * @return {Array} - An array containing the properties of the specified group.
+     */
+    getPropertiesOfGroup(group) {
+      return this.propertyList.getPropertiesOfGroup(group);
+    }
   }
 })
