@@ -4,8 +4,9 @@
   Created: 20.05.2024
 -->
 <template lang="pug">
-  Panel(:header="title" :toggleable="toggleable" :class="class")
-    slot
+  div(:class="class")
+    Panel(:header="title" :toggleable="toggleable" :class="class")
+      slot
 
 </template>
 <script>
@@ -44,17 +45,32 @@ export default {
       default: function () {
         return false;
       }
-    }
+    },
+    condensed: {
+      type:    Boolean,
+      default: function () {
+        return false;
+      }
+    },
   },
   data:       function () {
     return {}
   },
   computed:   {
     class() {
+      const classes = [];
+      // Basis-Klassen
       if (this.fullSize) {
-        return 'full-size';
+        classes.push('full-size');
+      } else {
+        classes.push('normal-size');
       }
-      return 'normal-size';
+      // Optionales Hinzufügen von 'is-condensed'
+      if (this.condensed) {
+        classes.push('is-condensed');
+      }
+      console.log('classes', classes);
+      return classes;
     }
   },
   created:    function () {
@@ -72,6 +88,18 @@ export default {
 }
 
 .normal-size {
-
+  width: 100%;
 }
+
+::v-deep(.is-condensed  .p-panel-header) {
+  background-color: #2aabd2;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+::v-deep(.is-condensed  .p-panel-content) {
+  background-color: rgba(245, 244, 239, 0.99);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 </style>
