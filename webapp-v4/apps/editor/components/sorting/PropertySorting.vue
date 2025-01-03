@@ -12,13 +12,16 @@
             drag-handle.draghandle
               i(class="pi pi-bars")
             span(@click="selectProperty(p)") &nbsp;{{p.location.name}}
-            a(:href="createLink(p)" target="_blank")
-              i.right-icon(class="pi pi-external-link")
+            span &nbsp;
     .col-8
-      div(v-if="selectedProperty")
-        h1 {{selectedPropertyName}}
-        div Orte in Ortsgruppe:&nbsp;
-          span(v-for="(p, i) in selectedPropertyGroup" :key="p" :index="i") {{p.location.name}};&nbsp;
+      div
+        h1(v-if="selectedProperty")
+          span(v-for="(p, i) in selectedPropertyGroup" :key="p" :index="i") {{p.location.name}} &nbsp;
+        h1(v-if="!selectedProperty") Bitte Ort aus Liste auswählen
+
+        ferropoly-map(ref="map"
+          :map-options="mapOptions"
+          @map="onNewMap")
 </template>
 <script>
 
@@ -28,10 +31,11 @@ import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 import $ from 'jquery';
 import {get} from 'lodash'
+import FerropolyMap from '../../../../../editor/webapp/common/components/ferropoly-map/ferropoly-map.vue';
 
 export default {
   name:       'PropertySorting',
-  components: {PrimeButton, SlickList, SlickItem, DragHandle},
+  components: {FerropolyMap, PrimeButton, SlickList, SlickItem, DragHandle},
   filters:    {},
   mixins:     [],
   model:      {},
@@ -45,13 +49,21 @@ export default {
   },
   data:       function () {
     return {
-      editorStore: useEditorPropertiesStore()
+      editorStore:           useEditorPropertiesStore(),
+      map:                   null,
+      activePropertiesOnMap: []
     }
   },
   computed:   {
     ...mapWritableState(useEditorPropertiesStore, {
       selectedProperty: 'selectedProperty'
     }),
+    mapOptions() {
+      let opts = {
+        zoom: 14
+      }
+      return opts;
+    },
     selectedPropertyName() {
       if (this.selectedProperty === null) {
         return 'Kein Ort ausgewählt';
@@ -74,6 +86,7 @@ export default {
         }
         this.editorStore.updateProperties(properties);
         this.editorStore.createPriceList();
+        this.selectProperty(this.selectedProperty);
       }
     }
   },
@@ -91,9 +104,6 @@ export default {
     test() {
       this.editorStore.createPriceList();
     },
-    createLink(property) {
-      return `https://www.google.ch/maps/place/${property.location.position.lat}+${property.location.position.lng}/@${property.location.position.lat},${property.location.position.lng},12.00z`
-    },
     /**
      * Creates the maximum Size of the list
      */
@@ -105,10 +115,40 @@ export default {
         element.height(hDoc - offsetElement.top);
       }
     },
+    /**
+     * A property was selected
+     * @param property
+     */
     selectProperty(property) {
       console.log('Selected property', property);
+      if (property === null) {
+        return;
+      }
+      const self            = this;
+      const propertyList    = this.editorStore.getPropertyList();
       this.selectedProperty = property;
-    }
+
+      self.activePropertiesOnMap.forEach(p => {
+        propertyList.showPropertyOnMap(p, null);
+      })
+      self.activePropertiesOnMap = [];
+
+      const props = this.editorStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+      props.forEach(p => {
+        propertyList.showPropertyOnMap(p, this.map);
+        self.activePropertiesOnMap.push(p);
+      })
+    },
+    /**
+     * A new map instance was created, we're using this one now
+     */
+    onNewMap(map) {
+      console.log('new Map!', map);
+      this.map           = map;
+      const propertyList = this.editorStore.getPropertyList();
+      this.$refs.map.setCenter(propertyList.getCenter());
+      this.$refs.map.fitBounds(propertyList.getBounds());
+    },
   }
 }
 

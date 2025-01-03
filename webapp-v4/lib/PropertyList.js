@@ -128,6 +128,31 @@ class PropertyList extends EventEmitter {
   }
 
   /**
+   * Shows all properties on a map
+   * @param map
+   */
+  showAllPropertiesOnMap(map) {
+    const self = this;
+    this.properties.forEach(p => {
+      self.aux[p.uuid].setMap(map);
+    })
+  }
+
+  /**
+   * Deletes all properties on a map
+   */
+  clearAllPropertiesOnMap() {
+    const self = this;
+    this.properties.forEach(p => {
+      self.aux[p.uuid].setMap(null);
+    })
+  }
+
+  showPropertyOnMap(property, map) {
+    this.aux[property.uuid].setMap(map);
+  }
+
+  /**
    * Applies the filter over all properties. See property-filter.vue for details
    * @param f
    */

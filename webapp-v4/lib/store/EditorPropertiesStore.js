@@ -96,15 +96,6 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       return propertyList.getPropertiesOfGroup(group);
     },
     /**
-     * Shows all properties on a map. Maybe better in the PropertyList?
-     * @param map
-     */
-    showAllPropertiesOnMap(map) {
-      this.properties.forEach(p => {
-        propertyList.aux[p.uuid].setMap(map);
-      })
-    },
-    /**
      * Provides direct access to the property list
      * @return {PropertyList}
      */

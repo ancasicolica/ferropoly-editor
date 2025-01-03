@@ -33,7 +33,8 @@ export default {
   data:       function () {
     return {
       map:         null,
-      editorStore: useEditorPropertiesStore()
+      editorStore: useEditorPropertiesStore(),
+
     }
   },
   computed:   {
@@ -43,9 +44,6 @@ export default {
     mapOptions() {
       let opts = {
         zoom: 14
-      }
-      if (this.selectedProperty) {
-        opts.center = this.selectedProperty.getGoogleMapsLocation();
       }
       return opts;
     },
@@ -59,10 +57,11 @@ export default {
     onNewMap(map) {
       console.log('new Map!', map);
       this.map = map;
-      this.editorStore.showAllPropertiesOnMap(map);
+      const propertyList =  this.editorStore.getPropertyList();
+      propertyList.showAllPropertiesOnMap(map);
       //this.$store.dispatch({type: 'applyFilter', gameId: this.gameId});
-      this.$refs.map.setCenter(this.editorStore.getPropertyList().getCenter());
-      this.$refs.map.fitBounds(this.editorStore.getPropertyList().getBounds());
+      this.$refs.map.setCenter(propertyList.getCenter());
+      this.$refs.map.fitBounds(propertyList.getBounds());
     },
   }
 }
