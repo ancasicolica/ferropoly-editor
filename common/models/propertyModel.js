@@ -33,16 +33,16 @@ const propertySchema = mongoose.Schema({
     priceRange          : {type: Number, default: -1},
     positionInPriceRange: {type: Number, default: -1},
     position            : {type: Number, default: -1},// Position inside complete price list
-    propertyGroup       : Number,
-    price               : Number,
-    pricePerHouse       : Number,
+    propertyGroup       : {type: Number, default: -1},
+    price               : {type: Number, default: -1},
+    pricePerHouse       : {type: Number, default: -1},
     rents               : {
-      noHouse    : Number,
-      oneHouse   : Number,
-      twoHouses  : Number,
-      threeHouses: Number,
-      fourHouses : Number,
-      hotel      : Number
+      noHouse    : {type: Number, default: -1},
+      oneHouse   : {type: Number, default: -1},
+      twoHouses  : {type: Number, default: -1},
+      threeHouses: {type: Number, default: -1},
+      fourHouses : {type: Number, default: -1},
+      hotel      : {type: Number, default: -1}
     }
   }
 
@@ -301,6 +301,7 @@ async function getPropertiesForGameplay(gameId, options, callback) {
       docs = await Property
         .find()
         .where('gameId').equals(gameId)
+        .select('uuid location pricelist')
         .lean()
         .exec();
     } else if (options && options.propertyGroup) {

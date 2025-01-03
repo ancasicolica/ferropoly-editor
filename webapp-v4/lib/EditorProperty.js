@@ -4,7 +4,7 @@
  * Created: 30.10.21
  **/
 
-import Property from '../common/lib/property.js';
+import Property from '../common/lib/Property.js';
 
 class EditorProperty extends Property {
 
@@ -72,7 +72,7 @@ class EditorProperty extends Property {
       if (editMode) {
         this.marker.setIcon(this.ICON_EDIT_LOCATION);
       } else {
-        switch (this.location.accessibility) {
+        switch (this.data.location.accessibility) {
           case 'train':
             if (x === -1) {
               this.marker.setIcon(this.ICON_TRAIN_LOCATION);

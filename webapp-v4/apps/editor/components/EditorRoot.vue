@@ -8,12 +8,13 @@
 
   .ml-3.mr-3
     // the different panels
-    router-view
+    router-view(v-if="ready")
 </template>
 <script>
 
 import MenuBar from '../../../common/components/MenuBar.vue'
 import {useEditorStore} from '../store/editorStore';
+import {mapWritableState} from 'pinia';
 
 export default {
   name:       'EditorRoot',
@@ -40,7 +41,11 @@ export default {
       ]
     }
   },
-  computed:   {},
+  computed:   {
+    ...mapWritableState(useEditorStore, {
+      ready: 'ready'
+    }),
+  },
   created:    function () {
 
     const pathPart = window.location.pathname.split('#')[0]; // before '#'

@@ -20,7 +20,7 @@ router.get('/edit/:gameId', function (req, res) {
     if (err) {
       return res.render('error/403', {
         message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error  : {status: 403, stack: {}}
+        error:   {status: 403, stack: {}}
       });
     }
     res.sendFile(path.join(__dirname, '..', 'public', 'html', 'editor.html'));
@@ -47,7 +47,7 @@ router.get('/load/:gameId', function (req, res) {
       return res.status(401).send({message: 'Zugriff nicht erlaubt'});
     }
     // Now get all properties of this gameplay
-    return properties.getPropertiesForGameplay(req.params.gameId, null, function (err, propertyData) {
+    return properties.getPropertiesForGameplay(req.params.gameId, {lean: true}, function (err, propertyData) {
       if (err) {
         logger.error('getPropertiesForGameplay fails', err);
         return res.status(500).send({message: 'Fehler beim Laden der Orte: ' + err.message});
@@ -217,7 +217,7 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
   if (props.length === 0) {
     return res.send({
       success: true,
-      status : 'ok',
+      status:  'ok',
       message: 'Orte sind aktuell',
       nbSaved: 0
     });
@@ -245,7 +245,7 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
         gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
           res.send({
             success: true,
-            status : 'ok',
+            status:  'ok',
             message: props.length + ' Orte gespeichert',
             nbSaved: props.length
           });

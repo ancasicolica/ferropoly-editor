@@ -17,7 +17,7 @@ class Property extends EventEmitter {
    */
   constructor(p) {
     super();
-    merge(this, p);
+    this.data = p;
     this.marker          = null;
     this.map             = null;
     this.isVisibleInList = true; // Flag indicating if the property is in the list or not
@@ -83,11 +83,11 @@ class Property extends EventEmitter {
     if (!this.marker) {
       this.marker = new google.maps.Marker({
         position: {
-          lat: parseFloat(this.location.position.lat),
-          lng: parseFloat(this.location.position.lng)
+          lat: parseFloat(this.data.location.position.lat),
+          lng: parseFloat(this.data.location.position.lng)
         },
         map     : null,
-        title   : this.location.name,
+        title   : this.data.location.name,
       });
       this.marker.addListener('click', () => {
         this.emit('property-selected', this);

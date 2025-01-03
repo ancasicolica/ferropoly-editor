@@ -6,15 +6,17 @@
 
 import {defineStore} from 'pinia'
 
-import PropertyList from '../../lib/propertyList'
-import EditorProperty from '../editorProperty';
+import PropertyList from '../PropertyList'
+import EditorProperty from '../EditorProperty';
 import {filter, sortBy} from 'lodash';
 import {createPriceList, createPropertyList} from '../../../editor/lib/pricelistLib';
 import {useGameplayStore} from './GamePlayStore';
 
+const propertyList                    = new PropertyList();
 export const useEditorPropertiesStore = defineStore('EditorProperties', {
   state:   () => ({
-    propertyList:     new PropertyList(),
+
+    properties:       propertyList.properties, // Not the complete list due to performance reasons
     selectedProperty: null
   }),
   getters: {},
@@ -28,7 +30,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
     setProperties(properties) {
       console.log('Add properties to list...');
       const newProperties = properties.map(p => new EditorProperty(p));
-      this.propertyList.setList(newProperties);
+      propertyList.setList(newProperties);
 
       // Set initial values for the property ranges
       for (let i = 0; i < 6; i++) {
@@ -49,7 +51,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
     createPriceList() {
       console.log('Create Pricelist');
       const gp = useGameplayStore().getRawGameplay();
-      createPropertyList(gp, this.propertyList.properties)
+      createPropertyList(gp, this.properties)
     },
     /**
      * Updates the properties in the property list with the provided values.
@@ -60,7 +62,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
     updateProperties(properties) {
       const self = this;
       properties.forEach(p => {
-        self.propertyList.updateProperty(p, p);
+        propertyList.updateProperty(p, p);
       })
     },
     /**
@@ -72,7 +74,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
     getPropertiesOfRange(range) {
       console.log('getPropertiesOfRange', range);
       // First get all properties of the given range
-      const list = this.propertyList.getProperties()
+      const list = this.properties;
       let f      = filter(list, {'pricelist': {'priceRange': range}});
       // First get all properties of the given range
       let sorted = sortBy(f, 'pricelist.positionInPriceRange');
@@ -91,7 +93,23 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {Array} - An array containing the properties of the specified group.
      */
     getPropertiesOfGroup(group) {
-      return this.propertyList.getPropertiesOfGroup(group);
+      return propertyList.getPropertiesOfGroup(group);
+    },
+    /**
+     * Shows all properties on a map. Maybe better in the PropertyList?
+     * @param map
+     */
+    showAllPropertiesOnMap(map) {
+      this.properties.forEach(p => {
+        propertyList.aux[p.uuid].setMap(map);
+      })
+    },
+    /**
+     * Provides direct access to the property list
+     * @return {PropertyList}
+     */
+    getPropertyList() {
+      return propertyList;
     }
   }
 })

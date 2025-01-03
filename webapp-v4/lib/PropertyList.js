@@ -5,7 +5,7 @@
  **/
 
 import EventEmitter from '../common/lib/eventEmitter';
-import {find, merge, filter} from 'lodash';
+import {find, merge, filter, maxBy, minBy} from 'lodash';
 
 class PropertyList extends EventEmitter {
   /**
@@ -14,6 +14,13 @@ class PropertyList extends EventEmitter {
   constructor() {
     super();
     this.properties = [];
+    this.aux        = {};
+    this.bounds     = {
+      north: 0,
+      south: 0,
+      east:  0,
+      west:  0
+    };
   }
 
   /**
@@ -21,12 +28,14 @@ class PropertyList extends EventEmitter {
    * @param property
    */
   addProperty(property) {
-    this.properties.push(property);
+    this.properties.push(property.data);
+    this.aux[property.data.uuid] = property;
 
     property.on('property-selected', p => {
       this.emit('property-selected', p);
     });
   }
+
 
   /**
    * Sets the complete property list in one step
@@ -34,7 +43,9 @@ class PropertyList extends EventEmitter {
    */
   setList(properties) {
     console.log('Setting complete property list');
-    this.properties = properties;
+    properties.forEach(p => {
+      this.addProperty(p);
+    })
   }
 
   /**
@@ -78,6 +89,42 @@ class PropertyList extends EventEmitter {
    */
   getPropertiesOfGroup(group) {
     return filter(this.properties, {'pricelist': {'propertyGroup': group}});
+  }
+
+  /**
+   * Returns the bounds of the properties, the most north, east, west and south point
+   * @return {*|{north: number, south: number, east: number, west: number}}
+   */
+  getBounds() {
+    if (this.bounds.north === 0) {
+      this.bounds.north = parseFloat(maxBy(this.properties, p => {
+        return parseFloat(p.location.position.lat);
+      }).location.position.lat);
+      this.bounds.south = parseFloat(minBy(this.properties, p => {
+        return parseFloat(p.location.position.lat);
+      }).location.position.lat);
+      this.bounds.east  = parseFloat(maxBy(this.properties, p => {
+        return parseFloat(p.location.position.lng);
+      }).location.position.lng);
+      this.bounds.west  = parseFloat(minBy(this.properties, p => {
+        return parseFloat(p.location.position.lng);
+      }).location.position.lng);
+    }
+    return this.bounds;
+  }
+
+  /**
+   * Returns the center of the properties
+   * @return {{lat: number, lng: number}}
+   */
+  getCenter() {
+    if (this.bounds.north === 0) {
+      this.getBounds();
+    }
+    return {
+      lat: this.bounds.south + (this.bounds.north - this.bounds.south) / 2,
+      lng: this.bounds.west + (this.bounds.east - this.bounds.west) / 2
+    }
   }
 
   /**
