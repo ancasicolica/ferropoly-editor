@@ -31,7 +31,8 @@ const mapOptionsDefaults = {
   maxZoom:           18,
   streetViewControl: false,
   fullscreenControl: false,
-  restriction:       {
+  mapId: 'ef99df0ba107dc42',
+  restriction: {
     latLngBounds: {
       north: 48.2,
       south: 45.6,
@@ -80,9 +81,12 @@ export default {
 
     console.log('Google API loaded, creating map...', this.googleInstance);
 
+    let googleInstance = this.googleInstance;
+    console.log('GI', googleInstance);
+
     self.mapOptions.mapTypeControlOptions = {
-      mapTypeIds: [this.googleInstance.maps.MapTypeId.ROADMAP, this.googleInstance.maps.MapTypeId.TERRAIN, 'swisstopo',
-                   this.googleInstance.maps.MapTypeId.SATELLITE]
+      mapTypeIds: [this.googleInstance.MapTypeId.ROADMAP, this.googleInstance.MapTypeId.TERRAIN, 'swisstopo',
+                   this.googleInstance.MapTypeId.SATELLITE]
     };
 
     let mapOptions = assign(mapOptionsDefaults, self.mapOptions);
@@ -90,9 +94,10 @@ export default {
     if (!self.mapOptions.center) {
       self.mapOptions.center = mapOptionsDefaults.center;
     }
-    console.log('mapOptions', mapOptions);
 
-    self.map = new this.googleInstance.maps.Map(document.getElementById('map'), mapOptions);
+    self.map = new this.googleInstance.Map(document.getElementById('map'), mapOptions);
+
+    console.log('Map created', mapOptions, self.map);
 
     // Saving map-types to the local storage
     self.map.addListener('maptypeid_changed', () => {
@@ -149,21 +154,21 @@ export default {
     },
     /**
      * Sets the maps bounds
-     * @param bounds is a this.googleInstance.maps.LatLngBoundsLiteral
+     * @param bounds is a this.googleInstance.Map.LatLngBoundsLiteral
      */
     panToBounds(bounds) {
       this.map.panToBounds(bounds);
     },
     /**
      * Sets the maps bounds including zoom
-     * @param bounds is a this.googleInstance.maps.LatLngBoundsLiteral
+     * @param bounds is a this.googleInstance.Map.LatLngBoundsLiteral
      */
     fitBounds(bounds) {
       this.map.fitBounds(bounds);
     },
     /**
      * Sets the map center
-     * @param center is a this.googleInstance.maps.LatLngLiteral
+     * @param center is a this.googleInstance.Map.LatLngLiteral
      */
     setCenter(center) {
       this.map.setCenter(center);

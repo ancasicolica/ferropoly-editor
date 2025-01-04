@@ -15,9 +15,8 @@
             span &nbsp;
     .col-8
       div
-        h1(v-if="selectedProperty")
-          span(v-for="(p, i) in selectedPropertyGroup" :key="p" :index="i") {{p.location.name}} &nbsp;
-        h1(v-if="!selectedProperty") Bitte Ort aus Liste auswählen
+        .title.mb-2(v-if="selectedProperty") {{selectedPropertyGroupItemCaption}}
+        .title.mb-2(v-if="!selectedProperty") Bitte Ort aus Liste auswählen
 
         ferropoly-map(ref="map"
           :map-options="mapOptions"
@@ -30,8 +29,7 @@ import {mapWritableState} from 'pinia';
 import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 import $ from 'jquery';
-import {get} from 'lodash'
-import FerropolyMap from '../../../../../editor/webapp/common/components/ferropoly-map/ferropoly-map.vue';
+import FerropolyMap from '../../../../common/components/FerropolyMap.vue';
 
 export default {
   name:       'PropertySorting',
@@ -64,11 +62,16 @@ export default {
       }
       return opts;
     },
-    selectedPropertyName() {
+    selectedPropertyGroupItemCaption() {
       if (this.selectedProperty === null) {
-        return 'Kein Ort ausgewählt';
+        return '';
       }
-      return get(this.selectedProperty, 'location.name', 'Ortsname fehlt');
+      const props = this.editorStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+      let retVal = `Orte in Gruppe: ${props[0].location.name}`;
+      for (let i = 1; i < props.length; i++) {
+        retVal += ` / ${props[i].location.name}`;
+      }
+      return retVal;
     },
     selectedPropertyGroup() {
       if (this.selectedProperty === null) {
@@ -187,6 +190,9 @@ export default {
   overflow: auto;
   font-size: 12px;
   height: 200px;
+}
 
+.title {
+  font-size: large;
 }
 </style>

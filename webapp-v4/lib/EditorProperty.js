@@ -64,56 +64,59 @@ class EditorProperty extends Property {
    * @param editMode true if editing the item
    */
   setMarkerIcon(editMode) {
+    const htmlElement = document.createElement('img');
     if (this.marker) {
       let x = -1;
       if (this.pricelist) {
         x = this.pricelist.priceRange;
       }
       if (editMode) {
-        this.marker.setIcon(this.ICON_EDIT_LOCATION);
+        htmlElement.src = this.ICON_EDIT_LOCATION
+
       } else {
         switch (this.data.location.accessibility) {
           case 'train':
             if (x === -1) {
-              this.marker.setIcon(this.ICON_TRAIN_LOCATION);
+              htmlElement.src = this.ICON_TRAIN_LOCATION;
             } else {
-              this.marker.setIcon(this.ICON_TRAIN_LOCATION_USED + this.getPriceIconIndex(x));
+              htmlElement.src = this.ICON_TRAIN_LOCATION_USED + this.getPriceIconIndex(x);
             }
             break;
 
           case 'bus':
             if (x === -1) {
-              this.marker.setIcon(this.ICON_BUS_LOCATION);
+              htmlElement.src = this.ICON_BUS_LOCATION;
             } else {
-              this.marker.setIcon(this.ICON_BUS_LOCATION_USED + this.getPriceIconIndex(x));
+              htmlElement.src = this.ICON_BUS_LOCATION_USED + this.getPriceIconIndex(x);
             }
             break;
 
           case 'boat':
             if (x === -1) {
-              this.marker.setIcon(this.ICON_BOAT_LOCATION);
+              htmlElement.src = this.ICON_BOAT_LOCATION;
             } else {
-              this.marker.setIcon(this.ICON_BOAT_LOCATION_USED + this.getPriceIconIndex(x));
+              htmlElement.src = this.ICON_BOAT_LOCATION_USED + this.getPriceIconIndex(x);
             }
             break;
 
           case 'cablecar':
             if (x === -1) {
-              this.marker.setIcon(this.ICON_CABLECAR_LOCATION);
+              htmlElement.src = this.ICON_CABLECAR_LOCATION;
             } else {
-              this.marker.setIcon(this.ICON_CABLECAR_LOCATION_USED + this.getPriceIconIndex(x));
+              htmlElement.src = this.ICON_CABLECAR_LOCATION_USED + this.getPriceIconIndex(x);
             }
             break;
 
           default:
             if (x === -1) {
-              this.marker.setIcon(this.ICON_OTHER_LOCATION);
+              htmlElement.src = this.ICON_OTHER_LOCATION;
             } else {
-              this.marker.setIcon(this.ICON_OTHER_LOCATION_USED + this.getPriceIconIndex(x));
+              htmlElement.src = this.ICON_OTHER_LOCATION_USED + this.getPriceIconIndex(x);
             }
             break;
         }
       }
+      this.marker.content = htmlElement;
     }
   };
 }

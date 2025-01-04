@@ -7,7 +7,8 @@
 
 import {merge, get} from 'lodash';
 import EventEmitter from './eventEmitter';
-
+import mapLoader from './googleLoader';
+import {toRaw} from 'vue'
 
 class Property extends EventEmitter {
 
@@ -17,7 +18,7 @@ class Property extends EventEmitter {
    */
   constructor(p) {
     super();
-    this.data = p;
+    this.data            = p;
     this.marker          = null;
     this.map             = null;
     this.isVisibleInList = true; // Flag indicating if the property is in the list or not
@@ -40,6 +41,9 @@ class Property extends EventEmitter {
 
     // Info Windows
     this.infoWindow = null;
+
+    this.googleInstance = null;
+
   }
 
 
@@ -73,21 +77,21 @@ class Property extends EventEmitter {
    * A marker is mandatory for the property in order to be displayed
    * on the map
    */
-  createMarker() {
-    if (!google) {
-      return;
+  async createMarker() {
+    if (!this.googleInstance) {
+      this.googleInstance = await mapLoader.getInstance();
     }
     if (this.marker) {
       return;
     }
     if (!this.marker) {
-      this.marker = new google.maps.Marker({
+      this.marker = new this.googleInstance.AdvancedMarkerElement({
         position: {
           lat: parseFloat(this.data.location.position.lat),
           lng: parseFloat(this.data.location.position.lng)
         },
-        map     : null,
-        title   : this.data.location.name,
+        map:      null,
+        title:    this.data.location.name,
       });
       this.marker.addListener('click', () => {
         this.emit('property-selected', this);
@@ -100,10 +104,10 @@ class Property extends EventEmitter {
    * Sets the map of the Marker (makes it visible or not)
    * @param map Map object or null if not displaying on the map
    */
-  setMap(map) {
-    this.createMarker();
+  async setMap(map) {
+    await this.createMarker();
     if (this.marker) {
-      this.marker.setMap(map);
+      this.marker.map = toRaw(map);
     }
     this.map = map;
   }

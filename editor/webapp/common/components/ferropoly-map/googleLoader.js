@@ -27,7 +27,7 @@ class GoogleLoader {
     loader
       .load()
       .then((google) => {
-        console.log('Google APIs loaded');
+        console.log('Google APIs loaded OBSOLETE!!!');
         this.google = google;
         callback(null, this.google);
       })
