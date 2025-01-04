@@ -218,7 +218,7 @@ let setPropertyGroups = function (gameplay, pricelist) {
 
     for (let i = 0; i < pricelist.length; i += nbOfPropertiesInGroup) {
       for (let t = 0; t < nbOfPropertiesInGroup; t++) {
-        pricelist[i + t].pricelist.propertyGroup = n;
+        _.set(pricelist[i + t], 'pricelist.propertyGroup', n);
       }
       n++;
     }
