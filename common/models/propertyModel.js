@@ -215,7 +215,7 @@ async function updatePositionInPriceList(gameId, propertyId, position) {
   if (!gameId) {
     throw new Error('No gameId supplied');
   }
-  let savedProperty, err;
+  let savedProperty;
 
   const docs = await Property
     .findOne({gameId: gameId, uuid: propertyId})

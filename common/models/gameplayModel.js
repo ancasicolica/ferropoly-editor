@@ -591,7 +591,10 @@ async function updateRegistrationData(gameId, data) {
  * @param ownerId
  */
 async function invalidatePricelist(gameId, ownerId) {
-  let gp = await Gameplay.findOne({'internal.gameId': gameId});
+  let gp = await Gameplay.findOne({
+    $or:               [{'internal.owner': ownerId}, {'admins.logins': ownerId}],
+    'internal.gameId': gameId
+  });
   if (!gp) {
     throw (`Gameplay ${gameId} not found`);
   }
