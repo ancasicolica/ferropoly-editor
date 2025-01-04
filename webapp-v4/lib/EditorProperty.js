@@ -1,5 +1,5 @@
 /**
- * Extends the Ferropoly Porperty object for the editor
+ * Extends the Ferropoly Property object for the editor
  * Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
  * Created: 30.10.21
  **/

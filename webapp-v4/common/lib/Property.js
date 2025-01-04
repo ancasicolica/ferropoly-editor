@@ -5,12 +5,25 @@
  * Created: 12.08.21
  **/
 
-import {merge, get} from 'lodash';
+import {get} from 'lodash';
 import EventEmitter from './eventEmitter';
 import mapLoader from './googleLoader';
 import {toRaw} from 'vue'
 
 class Property extends EventEmitter {
+
+  static infoWindow = null;
+  static googleInstance = null;
+  /**
+   * Closes the currently open info window, if it exists.
+   *
+   * @return {void} Does not return a value.
+   */
+  static closeInfoWindow() {
+    if (Property.infoWindow) {
+      Property.infoWindow.close();
+    }
+  }
 
   /**
    * Constructor
@@ -39,14 +52,21 @@ class Property extends EventEmitter {
     this.ICON_CABLECAR_LOCATION_USED = '/images/markers/32-b/v-';
     this.ICON_OTHER_LOCATION_USED    = '/images/markers/32-b/v-';
 
-    // Info Windows
+    // Obsolete
     this.infoWindow = null;
-
-    this.googleInstance = null;
-
   }
 
-
+  async showInfoWindow(info) {
+    if (!Property.infoWindow) {
+      Property.infoWindow = new Property.googleInstance.InfoWindow();
+    }
+    if (!this.marker) {
+      return;
+    }
+    Property.infoWindow.close();
+    Property.infoWindow.setContent(info);
+    Property.infoWindow.open(this.marker.map, this.marker);
+  }
   /**
    * Opens an InfoWindow on a specified marker.
    *
@@ -56,6 +76,7 @@ class Property extends EventEmitter {
    */
   openInfoWindow(marker) {
     this.emit('info-window-opened', this);
+    console.warn('OBSOLETE: Property.openInfoWindow');
     if (this.infoWindow) {
       this.infoWindow.open(this.map, marker);
     }
@@ -70,6 +91,7 @@ class Property extends EventEmitter {
     if (this.infoWindow) {
       this.infoWindow.close();
     }
+    console.warn('OBSOLETE: Property.closeInfoWindow');
   }
 
   /**
@@ -78,14 +100,14 @@ class Property extends EventEmitter {
    * on the map
    */
   async createMarker() {
-    if (!this.googleInstance) {
-      this.googleInstance = await mapLoader.getInstance();
+    if (!Property.googleInstance) {
+      Property.googleInstance = await mapLoader.getInstance();
     }
     if (this.marker) {
       return;
     }
     if (!this.marker) {
-      this.marker = new this.googleInstance.AdvancedMarkerElement({
+      this.marker = new Property.googleInstance.AdvancedMarkerElement({
         position: {
           lat: parseFloat(this.data.location.position.lat),
           lng: parseFloat(this.data.location.position.lng)

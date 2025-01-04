@@ -30,7 +30,8 @@ import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 import $ from 'jquery';
 import FerropolyMap from '../../../../common/components/FerropolyMap.vue';
-
+import googleInstance from '../../../../common/lib/googleLoader';
+import Property from '../../../../common/lib/Property';
 export default {
   name:       'PropertySorting',
   components: {FerropolyMap, PrimeButton, SlickList, SlickItem, DragHandle},
@@ -47,7 +48,7 @@ export default {
   },
   data:       function () {
     return {
-      editorStore:           useEditorPropertiesStore(),
+      editorPropertyStore:   useEditorPropertiesStore(),
       map:                   null,
       activePropertiesOnMap: []
     }
@@ -66,8 +67,8 @@ export default {
       if (this.selectedProperty === null) {
         return '';
       }
-      const props = this.editorStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
-      let retVal = `Orte in Gruppe: ${props[0].location.name}`;
+      const props = this.editorPropertyStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+      let retVal  = `Orte in Gruppe: ${props[0].location.name}`;
       for (let i = 1; i < props.length; i++) {
         retVal += ` / ${props[i].location.name}`;
       }
@@ -77,18 +78,18 @@ export default {
       if (this.selectedProperty === null) {
         return [];
       }
-      return this.editorStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+      return this.editorPropertyStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
     },
     properties: {
       get() {
-        return this.editorStore.getPropertiesOfRange(parseInt(this.range));
+        return this.editorPropertyStore.getPropertiesOfRange(parseInt(this.range));
       },
       set(properties) {
         for (let i = 0; i < properties.length; i++) {
           properties[i].pricelist.positionInPriceRange = i;
         }
-        this.editorStore.updateProperties(properties);
-        this.editorStore.createPriceList();
+        this.editorPropertyStore.updateProperties(properties);
+        this.editorPropertyStore.createPriceList();
         this.selectProperty(this.selectedProperty);
       }
     }
@@ -96,16 +97,22 @@ export default {
   created:    function () {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler();
-  },
+   },
   mounted() {
     this.resizeHandler();
+    this.editorPropertyStore.getPropertyList().on('property-selected', this.propertySelected);
+
+  },
+  unmounted() {
+    Property.closeInfoWindow();
+    this.editorPropertyStore.getPropertyList().removeListener('property-selected', this.propertySelected);
   },
   destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {
     test() {
-      this.editorStore.createPriceList();
+      this.editorPropertyStore.createPriceList();
     },
     /**
      * Creates the maximum Size of the list
@@ -128,7 +135,7 @@ export default {
         return;
       }
       const self            = this;
-      const propertyList    = this.editorStore.getPropertyList();
+      const propertyList    = this.editorPropertyStore.getPropertyList();
       this.selectedProperty = property;
 
       self.activePropertiesOnMap.forEach(p => {
@@ -136,7 +143,7 @@ export default {
       })
       self.activePropertiesOnMap = [];
 
-      const props = this.editorStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+      const props = this.editorPropertyStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
       props.forEach(p => {
         propertyList.showPropertyOnMap(p, this.map);
         self.activePropertiesOnMap.push(p);
@@ -148,10 +155,13 @@ export default {
     onNewMap(map) {
       console.log('new Map!', map);
       this.map           = map;
-      const propertyList = this.editorStore.getPropertyList();
+      const propertyList = this.editorPropertyStore.getPropertyList();
       this.$refs.map.setCenter(propertyList.getCenter());
       this.$refs.map.fitBounds(propertyList.getBounds());
     },
+    propertySelected(property) {
+      property.showInfoWindow(property.data.location.name);
+    }
   }
 }
 
