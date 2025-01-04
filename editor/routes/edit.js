@@ -55,6 +55,10 @@ router.get('/load/:gameId', function (req, res) {
       if (!propertyData) {
         return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
       }
+      propertyData.forEach(p=> {
+        delete p._id;
+        delete p.location.uuid;
+      })
       res.send({
         gameplay: gameplayData, properties: propertyData, settings: {
           publicServer: settings.publicServer
@@ -204,7 +208,7 @@ router.post('/dataChanged/:gameId', function (req, res) {
 /**
  * Saves _ONLY_ the position in the pricelist of all properties supplied
  */
-router.post('/savePositionInPricelist/:gameId', function (req, res) {
+router.post('/savePositionInPricelist/:gameId', async function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
@@ -224,7 +228,7 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
   }
 
   // Load gameplay, check if finalized
-  gameplays.isFinalized(req.params.gameId, function (err, finalized) {
+  gameplays.isFinalized(req.params.gameId, async function (err, finalized) {
     if (err) {
       return res.status(500).send({message: 'Abfrage isFinalized schlug fehl ' + err.message});
     }
@@ -232,26 +236,22 @@ router.post('/savePositionInPricelist/:gameId', function (req, res) {
       return res.status(403).send({message: 'Spiel ist bereits finalisiert'});
     }
 
-    async.each(props,
-      function (p, cb) {
-        properties.updatePositionInPriceList(req.params.gameId, p.uuid, p.positionInPriceRange, cb);
-      },
-      function (err) {
-        if (err) {
-          logger.error('Saving properties fails', err);
-          return res.status(500).send({message: 'Speichern schlug fehl: ' + err.message});
-        }
-        // This also invalidates the pricelist
-        gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
-          res.send({
-            success: true,
-            status:  'ok',
-            message: props.length + ' Orte gespeichert',
-            nbSaved: props.length
-          });
-        });
+    try {
+      for (const p of props) {
+        await properties.updatePositionInPriceList(req.params.gameId, p.uuid, p.positionInPriceRange);
       }
-    );
+      await gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user);
+      res.send({
+        success: true,
+        status:  'ok',
+        message: props.length + ' Orte gespeichert',
+        nbSaved: props.length
+      });
+    }
+    catch (err) {
+      logger.error('Saving properties fails', err);
+      return res.status(500).send({message: 'Speichern schlug fehl: ' + err.message});
+    }
   });
 });
 

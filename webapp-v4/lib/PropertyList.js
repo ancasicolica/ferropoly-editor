@@ -5,7 +5,7 @@
  **/
 
 import EventEmitter from '../common/lib/eventEmitter';
-import {find, merge, filter, maxBy, minBy} from 'lodash';
+import {get, find, merge, filter, maxBy, minBy} from 'lodash';
 
 class PropertyList extends EventEmitter {
   /**
@@ -14,7 +14,6 @@ class PropertyList extends EventEmitter {
   constructor() {
     super();
     this.properties = [];
-    this.aux        = {};
     this.bounds     = {
       north: 0,
       south: 0,
@@ -28,8 +27,7 @@ class PropertyList extends EventEmitter {
    * @param property
    */
   addProperty(property) {
-    this.properties.push(property.data);
-    this.aux[property.data.uuid] = property;
+    this.properties.push(property);
 
     property.on('property-selected', p => {
       this.emit('property-selected', p);
@@ -88,7 +86,25 @@ class PropertyList extends EventEmitter {
    * @return {Array} An array of properties that match the specified group.
    */
   getPropertiesOfGroup(group) {
-    return filter(this.properties, {'pricelist': {'propertyGroup': group}});
+    let g = filter(this.properties, {'pricelist': {'propertyGroup': group}});
+    console.log('Properties of group ' + group, g);
+    return g;
+  }
+
+  /**
+   * Sets the position of a specific property within a price range.
+   *
+   * @param {string} uuid - The unique identifier of the property to update.
+   * @param {number} pos - The new position of the property within the price range.
+   * @return {void} - No return value.
+   */
+  setPositionInPriceRange(uuid, pos) {
+    let element = find(this.properties, {'uuid': uuid});
+    if (!element) {
+      console.warn(`Property with ${uuid} not found`);
+      return;
+    }
+    element.setPositionInPriceRange(pos);
   }
 
   /**
@@ -98,16 +114,16 @@ class PropertyList extends EventEmitter {
   getBounds() {
     if (this.bounds.north === 0) {
       this.bounds.north = parseFloat(maxBy(this.properties, p => {
-        return parseFloat(p.location.position.lat);
+        return parseFloat(get(p, 'location.position.lat', 45.82));
       }).location.position.lat);
       this.bounds.south = parseFloat(minBy(this.properties, p => {
-        return parseFloat(p.location.position.lat);
+        return parseFloat(get(p, 'location.position.lat', 47.8));
       }).location.position.lat);
       this.bounds.east  = parseFloat(maxBy(this.properties, p => {
-        return parseFloat(p.location.position.lng);
+        return parseFloat(get(p, 'location.position.lng', 5.8));
       }).location.position.lng);
       this.bounds.west  = parseFloat(minBy(this.properties, p => {
-        return parseFloat(p.location.position.lng);
+        return parseFloat(get(p, 'location.position.lng', 10.5));
       }).location.position.lng);
     }
     return this.bounds;
@@ -134,7 +150,7 @@ class PropertyList extends EventEmitter {
   showAllPropertiesOnMap(map) {
     const self = this;
     this.properties.forEach(p => {
-      self.aux[p.uuid].setMap(map);
+      p.setMap(map);
     })
   }
 
@@ -142,14 +158,29 @@ class PropertyList extends EventEmitter {
    * Deletes all properties on a map
    */
   clearAllPropertiesOnMap() {
-    const self = this;
     this.properties.forEach(p => {
-      self.aux[p.uuid].setMap(null);
+      p.setMap(null);
     })
   }
 
-  showPropertyOnMap(property, map) {
-    this.aux[property.uuid].setMap(map);
+  showPropertyOnMap(uuid, map) {
+    let e = find(this.properties, {'uuid': uuid});
+    if (!e) {
+      console.log(`Element ${uuid} not found`);
+      return;
+    }
+    e.setMap(map);
+  }
+
+  /**
+   * Sets the marker property of all properties to null
+   */
+  clearAllMarkers() {
+    this.properties.forEach(property => {
+      if (property.marker) {
+        property.marker.map = null
+      }
+    });
   }
 
   /**

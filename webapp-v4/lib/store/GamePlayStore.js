@@ -154,13 +154,15 @@ export const useGameplayStore = defineStore('Gameplay', {
     debtInterestValidation(state) {
       return debtInterestSchema.safeParse(state.gameParams.startCapital);
     },
-
     numberOfInterestRounds(state) {
       let start    = DateTime.fromJSDate(state.scheduling.gameStart);
       let end      = DateTime.fromJSDate(state.scheduling.gameEnd);
       let duration = end.diff(start, 'minutes');
       console.log('numberOfInterestRounds', start, end, duration, duration.minutes);
       return Math.floor(duration.minutes / state.gameParams.interestInterval);
+    },
+    gameId(state) {
+      return state.internal.gameId;
     }
   },
   actions: {

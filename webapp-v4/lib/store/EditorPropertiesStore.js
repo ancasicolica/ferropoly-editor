@@ -8,15 +8,17 @@ import {defineStore} from 'pinia'
 
 import PropertyList from '../PropertyList'
 import EditorProperty from '../EditorProperty';
-import {filter, sortBy} from 'lodash';
+import {filter, find, findIndex, set, sortBy} from 'lodash';
 import {createPriceList, createPropertyList} from '../../../editor/lib/pricelistLib';
 import {useGameplayStore} from './GamePlayStore';
+import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
+import axios from 'axios';
 
-const propertyList                    = new PropertyList();
+const propertyAuxData = new PropertyList();
+
 export const useEditorPropertiesStore = defineStore('EditorProperties', {
   state:   () => ({
-
-    properties:       propertyList.properties, // Not the complete list due to performance reasons
+    properties:       [],
     selectedProperty: null
   }),
   getters: {},
@@ -28,9 +30,12 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {void} No return value.
      */
     setProperties(properties) {
+      const self = this;
       console.log('Add properties to list...');
-      const newProperties = properties.map(p => new EditorProperty(p));
-      propertyList.setList(newProperties);
+      properties.forEach(p => {
+        this.properties.push(p);
+        propertyAuxData.addProperty(new EditorProperty(p));
+      })
 
       // Set initial values for the property ranges
       for (let i = 0; i < 6; i++) {
@@ -39,6 +44,49 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
 
       this.createPriceList();
       this.ready = true;
+    },
+    /**
+     * Saves the positions of the provided properties in the pricelist.
+     * Updates internal states and sends the new positioning to the server.
+     *
+     * @param {Array} properties - An array of property objects that need to be positioned in the pricelist.
+     * @return {Promise<void>} A promise that resolves once the position data has been successfully saved or rejects in
+     *   case of an error.
+     */
+    async savePositionsInPricelist(properties) {
+      const gameId = useGameplayStore().gameId;
+      for (let i = 0; i < properties.length; i++) {
+        propertyAuxData.setPositionInPriceRange(properties[i].uuid, i);
+        let index = findIndex(this.properties, {'uuid': properties[i].uuid});
+        if (index < 0) {
+          console.warn(`property not found`, properties[i]);
+        }
+        else {
+          this.properties[index].pricelist.positionInPriceRange = i;
+          //console.log('update', index, i, properties[i]);
+        }
+      }
+
+      let saveSet = [];
+      propertyAuxData.properties.forEach(p => {
+        let s = p.getPricelistPositionSaveSet();
+        if (s) {
+          saveSet.push(s);
+        }
+      })
+
+      try {
+        const authToken = await useAuthTokenStoreStore().getAuthToken();
+        const resp      = await axios.post(`/gameplay/savePositionInPricelist/${gameId}`, {
+          properties: saveSet,
+          authToken
+        });
+        console.log('Updated positions in backend', resp.data);
+        this.createPriceList();
+      }
+      catch (ex) {
+        console.error('Error in savePositionsInPricelist', ex);
+      }
     },
     /**
      * Generates and initializes a price list based on the current gameplay data.
@@ -61,7 +109,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      */
     updateProperties(properties) {
       properties.forEach(p => {
-        propertyList.updateProperty(p, p);
+        //  this.propertyList.updateProperty(p, p);
       })
     },
     /**
@@ -74,14 +122,18 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       console.log('getPropertiesOfRange', range);
       // First get all properties of the given range
       const list = this.properties;
-      let f      = filter(list, {'pricelist': {'priceRange': range}});
+      let f      = filter(list, obj => {
+        return obj.pricelist.priceRange === range
+      });
+
       // First get all properties of the given range
       let sorted = sortBy(f, 'pricelist.positionInPriceRange');
       let i      = 0;
 
       sorted.forEach(e => {
-        e.pricelist.positionInPriceRange = i++;
+        set(e, 'pricelist.positionInPriceRange', i++);
       });
+
       // Finally sort and return array
       return sorted;
     },
@@ -92,14 +144,14 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {Array} - An array containing the properties of the specified group.
      */
     getPropertiesOfGroup(group) {
-      return propertyList.getPropertiesOfGroup(group);
+      return filter(this.properties, {'pricelist': {'propertyGroup': group}});
     },
     /**
      * Provides direct access to the property list
      * @return {PropertyList}
      */
     getPropertyList() {
-      return propertyList;
+      return propertyAuxData;
     }
   }
 })

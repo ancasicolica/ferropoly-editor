@@ -30,8 +30,9 @@ import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 import $ from 'jquery';
 import FerropolyMap from '../../../../common/components/FerropolyMap.vue';
-import googleInstance from '../../../../common/lib/googleLoader';
 import Property from '../../../../common/lib/Property';
+let activeMap = null;
+
 export default {
   name:       'PropertySorting',
   components: {FerropolyMap, PrimeButton, SlickList, SlickItem, DragHandle},
@@ -49,7 +50,6 @@ export default {
   data:       function () {
     return {
       editorPropertyStore:   useEditorPropertiesStore(),
-      map:                   null,
       activePropertiesOnMap: []
     }
   },
@@ -84,12 +84,9 @@ export default {
       get() {
         return this.editorPropertyStore.getPropertiesOfRange(parseInt(this.range));
       },
-      set(properties) {
-        for (let i = 0; i < properties.length; i++) {
-          properties[i].pricelist.positionInPriceRange = i;
-        }
-        this.editorPropertyStore.updateProperties(properties);
-        this.editorPropertyStore.createPriceList();
+      async set(properties) {
+        // Saving the property data online
+        await this.editorPropertyStore.savePositionsInPricelist(properties);
         this.selectProperty(this.selectedProperty);
       }
     }
@@ -101,7 +98,6 @@ export default {
   mounted() {
     this.resizeHandler();
     this.editorPropertyStore.getPropertyList().on('property-selected', this.propertySelected);
-
   },
   unmounted() {
     Property.closeInfoWindow();
@@ -139,13 +135,13 @@ export default {
       this.selectedProperty = property;
 
       self.activePropertiesOnMap.forEach(p => {
-        propertyList.showPropertyOnMap(p, null);
+        propertyList.showPropertyOnMap(p.uuid, null);
       })
       self.activePropertiesOnMap = [];
 
       const props = this.editorPropertyStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
       props.forEach(p => {
-        propertyList.showPropertyOnMap(p, this.map);
+        propertyList.showPropertyOnMap(p.uuid, activeMap);
         self.activePropertiesOnMap.push(p);
       })
     },
@@ -154,13 +150,13 @@ export default {
      */
     onNewMap(map) {
       console.log('new Map!', map);
-      this.map           = map;
+      activeMap = map;
       const propertyList = this.editorPropertyStore.getPropertyList();
       this.$refs.map.setCenter(propertyList.getCenter());
       this.$refs.map.fitBounds(propertyList.getBounds());
     },
     propertySelected(property) {
-      property.showInfoWindow(property.data.location.name);
+      property.showInfoWindow(property.location.name);
     }
   }
 }

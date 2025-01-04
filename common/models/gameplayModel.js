@@ -26,93 +26,93 @@ let finalizedGameplays = [];
  * The mongoose schema for an user
  */
 const gameplaySchema = mongoose.Schema({
-  _id       : {type: String, index: true},
-  gamename  : String, // name of the game
-  owner     : {
-    organisatorName : String,
-    organisation    : String,
+  _id:        {type: String, index: true},
+  gamename:   String, // name of the game
+  owner:      {
+    organisatorName:  String,
+    organisation:     String,
     organisatorEmail: String,
     organisatorPhone: String
   },
-  admins    : {
+  admins:     {
     logins: {type: Array, default: []}
   },
   scheduling: {
-    gameDate   : Date,
-    gameStart  : String, // hh:mm
-    gameEnd    : String, // hh:mm
+    gameDate:    Date,
+    gameStart:   String, // hh:mm
+    gameEnd:     String, // hh:mm
     gameStartTs: Date,   // Is set during finalization
-    gameEndTs  : Date,   // Is set during finalization
-    deleteTs   : Date    // Timestamp when the game is deleted
+    gameEndTs:   Date,   // Is set during finalization
+    deleteTs:    Date    // Timestamp when the game is deleted
   },
   gameParams: {
-    presets                  : {type: String, default: 'custom'},
-    interestInterval         : {type: Number, default: 60},   // Interval in minutes of the interests
-    interest                 : {type: Number, default: 4000}, // "Startgeld"
+    presets:                   {type: String, default: 'custom'},
+    interestInterval:          {type: Number, default: 60},   // Interval in minutes of the interests
+    interest:                  {type: Number, default: 4000}, // "Startgeld"
     interestCyclesAtEndOfGame: {type: Number, default: 2},    // number of interests at end of game
-    startCapital             : {type: Number, default: 4000}, // "Startkapital"
-    debtInterest             : {type: Number, default: 20},   // fee on debts
-    housePrices              : {type: Number, default: .5},
-    properties               : {
-      lowestPrice               : {type: Number, default: 1000},
-      highestPrice              : {type: Number, default: 8000},
-      numberOfPriceLevels       : {type: Number, default: 8},
+    startCapital:              {type: Number, default: 4000}, // "Startkapital"
+    debtInterest:              {type: Number, default: 20},   // fee on debts
+    housePrices:               {type: Number, default: .5},
+    properties:                {
+      lowestPrice:                {type: Number, default: 1000},
+      highestPrice:               {type: Number, default: 8000},
+      numberOfPriceLevels:        {type: Number, default: 8},
       numberOfPropertiesPerGroup: {type: Number, default: 2}
     },
-    rentFactors              : {
-      noHouse             : {type: Number, default: .125},
-      oneHouse            : {type: Number, default: .5},
-      twoHouses           : {type: Number, default: 2},
-      threeHouses         : {type: Number, default: 3},
-      fourHouses          : {type: Number, default: 4},
-      hotel               : {type: Number, default: 5},
+    rentFactors:               {
+      noHouse:              {type: Number, default: .125},
+      oneHouse:             {type: Number, default: .5},
+      twoHouses:            {type: Number, default: 2},
+      threeHouses:          {type: Number, default: 3},
+      fourHouses:           {type: Number, default: 4},
+      hotel:                {type: Number, default: 5},
       allPropertiesOfGroup: {type: Number, default: 2}
     },
-    chancellery              : {
-      minLottery      : {type: Number, default: 1000},   // amount to loose or win each call
-      maxLottery      : {type: Number, default: 5000},
-      minGambling     : {type: Number, default: 1000},   // amount to bet in the individual games
-      maxGambling     : {type: Number, default: 50000},
-      maxJackpotSize  : {type: Number, default: 50000}, // max jackpot size
-      probabilityWin  : {type: Number, default: 0.4},
+    chancellery:               {
+      minLottery:       {type: Number, default: 1000},   // amount to loose or win each call
+      maxLottery:       {type: Number, default: 5000},
+      minGambling:      {type: Number, default: 1000},   // amount to bet in the individual games
+      maxGambling:      {type: Number, default: 50000},
+      maxJackpotSize:   {type: Number, default: 50000}, // max jackpot size
+      probabilityWin:   {type: Number, default: 0.4},
       probabilityLoose: {type: Number, default: 0.5}
     }
   },
-  mobile    : {
+  mobile:     {
     level: {type: Number, default: MOBILE_NONE}
   },
-  internal  : {
-    gameId                 : {type: String, index: true},     // Identifier of the game
-    owner                  : String,                          // Owner of the game. This is the ID of the user!
-    map                    : String,                          // map to use
-    finalized              : {type: Boolean, default: false}, // finalized means no edits anymore,
+  internal:   {
+    gameId:                  {type: String, index: true},     // Identifier of the game
+    owner:                   String,                          // Owner of the game. This is the ID of the user!
+    map:                     String,                          // map to use
+    finalized:               {type: Boolean, default: false}, // finalized means no edits anymore,
     priceListPendingChanges: {type: Boolean, default: false}, // Are there pending changes?
-    creatingInstance       : String,                          // Instance creating this gameplay
-    gameDataPublic         : {type: Boolean, default: false}, // After the game, the complete game is "public"
-    isDemo                 : {type: Boolean, default: false}, // Demo games have some special behaviour
-    autopilot              : {
-      active   : {type: Boolean, default: false},             // Autopilot active
+    creatingInstance:        String,                          // Instance creating this gameplay
+    gameDataPublic:          {type: Boolean, default: false}, // After the game, the complete game is "public"
+    isDemo:                  {type: Boolean, default: false}, // Demo games have some special behaviour
+    autopilot:               {
+      active:    {type: Boolean, default: false},             // Autopilot active
       picBucket: {type: Boolean, default: false},             // Generating pics for picbucket with autopilot
-      interval : {type: Number, default: (5 * 60 * 1000)}     // Interval in ms between rounds
+      interval:  {type: Number, default: (5 * 60 * 1000)}     // Interval in ms between rounds
     }
   },
-  joining   : {
+  joining:    {
     possibleUntil: {type: Date},
-    infotext     : String,
-    url          : String, // This is the URL for joining the game
+    infotext:      String,
+    url:           String, // This is the URL for joining the game
   },
-  rules     : {
+  rules:      {
     // The rules are currently part of the gameplay. In a next version, the rules are probably
     // a separate model with versioning (allowing to show old rules), but this has currently
     // no priority
-    version  : {type: Number, default: -1},
-    text     : String,
+    version:   {type: Number, default: -1},
+    text:      String,
     changelog: {type: Array, default: []},
-    date     : Date
+    date:      Date
   },
-  log       : {
-    created         : {type: Date, default: Date.now},
-    lastEdited      : {type: Date, default: Date.now},
+  log:        {
+    created:          {type: Date, default: Date.now},
+    lastEdited:       {type: Date, default: Date.now},
     priceListCreated: Date,
     priceListVersion: {type: Number, default: 0}
   }
@@ -143,11 +143,11 @@ function createGameplay(gpOptions, callback) {
   gp.scheduling.gameStart      = gpOptions.gameStart;
   gp.scheduling.gameEnd        = gpOptions.gameEnd;
   gp.scheduling.deleteTs       = DateTime.fromJSDate(dateTimeLib.getJsDate(gpOptions.gameDate)).plus({days: 30}).set({
-    hour  : 23,
+    hour:   23,
     minute: 59
   }).toJSDate();
   gp.joining.possibleUntil     = gpOptions.joiningUntilDate || DateTime.fromJSDate(dateTimeLib.getJsDate(gp.scheduling.gameDate)).minus({days: 5}).set({
-    hour  : 20,
+    hour:   20,
     minute: 0,
     second: 0
   }).toJSDate();
@@ -565,7 +565,8 @@ function setAdmins(gameId, ownerId, logins, callback) {
  *
  * @param {string} gameId - The unique identifier of the game.
  * @param {object} data - The updated registration data.
- * @param {string} [data.joining.possibleUntil='2024-01-01T00:00:00Z'] - The new possible until date for joining the game.
+ * @param {string} [data.joining.possibleUntil='2024-01-01T00:00:00Z'] - The new possible until date for joining the
+ *   game.
  * @param {string} [data.joining.infotext=''] - The new information text for joining the game.
  *
  * @throws {string} Throws an error if the gameplay with the given gameId is not found.
@@ -588,27 +589,19 @@ async function updateRegistrationData(gameId, data) {
  * being built before
  * @param gameId
  * @param ownerId
- * @param callback
  */
-function invalidatePricelist(gameId, ownerId, callback) {
-  getGameplay(gameId, ownerId, (err, gameplay) => {
-    if (err) {
-      return callback(err);
-    }
-    if (gameplay.internal.priceListPendingChanges) {
-      return callback();
-    }
-    if (!gameplay.internal.priceListPendingChanges) {
-      // Save only if the value was false before
-      gameplay.internal.priceListPendingChanges = true;
+async function invalidatePricelist(gameId, ownerId) {
+  let gp = await Gameplay.findOne({'internal.gameId': gameId});
+  if (!gp) {
+    throw (`Gameplay ${gameId} not found`);
+  }
 
-      gameplay.save().then(() => {
-        callback(null, gameplay);
-      }).catch(err => {
-        callback(err);
-      });
-    }
-  });
+  if (!gp.internal.priceListPendingChanges) {
+    // Save only if the value was false before
+    gp.internal.priceListPendingChanges = true;
+
+    return await gp.save();
+  }
 }
 
 /**
@@ -675,7 +668,7 @@ function updateRules(gameId, ownerId, info, callback) {
           version: 0, text: info.text, date: new Date(), changelog: []
         };
         gp.rules.changelog.push({
-          ts     : new Date(),
+          ts:      new Date(),
           version: gp.rules.version,
           changes: 'Automatisch erstellte Grundversion'
         });
@@ -734,9 +727,9 @@ async function getAutopilotGameplays() {
   let tomorrow  = DateTime.now().plus({days: 1}).toJSDate();
   return await Gameplay
     .find({
-      'internal.isDemo'          : true,
+      'internal.isDemo':           true,
       'internal.autopilot.active': true,
-      'scheduling.gameDate'      : {$gt: yesterday, $lt: tomorrow}
+      'scheduling.gameDate':       {$gt: yesterday, $lt: tomorrow}
     })
     .lean()
     .exec();
@@ -756,36 +749,37 @@ async function makeGameplayPublic(gameId) {
 
 /**
  * Exports of this module
- * @type {{init: Function, close: Function, Model: (*|Model), createGameplay: Function, getGameplaysForUser: Function, removeGameplay: Function, updateGameplay: Function, getGameplay: Function}}
+ * @type {{init: Function, close: Function, Model: (*|Model), createGameplay: Function, getGameplaysForUser: Function,
+ *   removeGameplay: Function, updateGameplay: Function, getGameplay: Function}}
  */
 module.exports = {
 
-  Model                         : Gameplay,
-  createGameplay                : createGameplay,
-  createNewGameId               : createNewGameId,
-  getGameplaysForUser           : getGameplaysForUser,
-  removeGameplay                : removeGameplay,
-  removeGameplaysForUser        : removeGameplaysForUser,
-  updateGameplay                : updateGameplay,
-  setAdmins                     : setAdmins,
-  getGameplay                   : getGameplay,
+  Model:                          Gameplay,
+  createGameplay:                 createGameplay,
+  createNewGameId:                createNewGameId,
+  getGameplaysForUser:            getGameplaysForUser,
+  removeGameplay:                 removeGameplay,
+  removeGameplaysForUser:         removeGameplaysForUser,
+  updateGameplay:                 updateGameplay,
+  setAdmins:                      setAdmins,
+  getGameplay:                    getGameplay,
   updateGameplayLastChangedField: updateGameplayLastChangedField,
-  updateRules                   : updateRules,
-  saveNewPriceListRevision      : saveNewPriceListRevision,
-  isFinalized                   : isFinalized,
-  countGameplaysForUser         : countGameplaysForUser,
-  countGameplays                : countGameplays,
-  checkIfGameIdExists           : checkIfGameIdExists,
-  finalize                      : finalize,
-  getAllGameplays               : getAllGameplays,
-  invalidatePricelist           : invalidatePricelist,
-  updateGameplayPartial         : updateGameplayPartial,
-  getAutopilotGameplays         : getAutopilotGameplays,
-  makeGameplayPublic            : makeGameplayPublic,
-  updateRegistrationData        : updateRegistrationData,
+  updateRules:                    updateRules,
+  saveNewPriceListRevision:       saveNewPriceListRevision,
+  isFinalized:                    isFinalized,
+  countGameplaysForUser:          countGameplaysForUser,
+  countGameplays:                 countGameplays,
+  checkIfGameIdExists:            checkIfGameIdExists,
+  finalize:                       finalize,
+  getAllGameplays:                getAllGameplays,
+  invalidatePricelist:            invalidatePricelist,
+  updateGameplayPartial:          updateGameplayPartial,
+  getAutopilotGameplays:          getAutopilotGameplays,
+  makeGameplayPublic:             makeGameplayPublic,
+  updateRegistrationData:         updateRegistrationData,
   // Constants
-  MOBILE_NONE : MOBILE_NONE,
+  MOBILE_NONE:  MOBILE_NONE,
   MOBILE_BASIC: MOBILE_BASIC,
-  MOBILE_FULL : MOBILE_FULL
+  MOBILE_FULL:  MOBILE_FULL
 
 };

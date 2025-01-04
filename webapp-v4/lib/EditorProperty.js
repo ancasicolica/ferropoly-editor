@@ -25,6 +25,7 @@ class EditorProperty extends Property {
   setPositionInPriceRange(pos) {
     this.positionInPriceRangeChanged = (this.pricelist.positionInPriceRange !== pos);
     this.pricelist.positionInPriceRange = pos;
+    this.location.name += pos;
   }
 
   /**
@@ -74,7 +75,7 @@ class EditorProperty extends Property {
         htmlElement.src = this.ICON_EDIT_LOCATION
 
       } else {
-        switch (this.data.location.accessibility) {
+        switch (this.location.accessibility) {
           case 'train':
             if (x === -1) {
               htmlElement.src = this.ICON_TRAIN_LOCATION;
