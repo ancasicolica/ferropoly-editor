@@ -60,7 +60,6 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {void} This method does not return a value.
      */
     updateProperties(properties) {
-      const self = this;
       properties.forEach(p => {
         propertyList.updateProperty(p, p);
       })
