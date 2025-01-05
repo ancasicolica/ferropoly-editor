@@ -8,10 +8,10 @@
     .col-4
       slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
         slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
-          div.slick-item-content.flex.justify-content-between.align-items-center
+          div.slick-item-content.flex.justify-content-between.align-items-center(@click="selectProperty(p)")
             drag-handle.draghandle
               i(class="pi pi-bars")
-            span(@click="selectProperty(p)") &nbsp;{{p.location.name}}
+            span &nbsp;{{p.location.name}}
             span &nbsp;
     .col-8
       div
@@ -166,10 +166,9 @@ export default {
 
 <style scoped lang="scss">
 .property {
-  margin-bottom: 4px;
-  border-width: thin;
-  border-color: #a6a6aa;
-  border-bottom: solid;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  border-bottom: 1px solid gray; // Make border gray and thin
 
 }
 
@@ -194,7 +193,7 @@ export default {
 
 #property-list {
   overflow: auto;
-  font-size: 12px;
+
   height: 200px;
 }
 
