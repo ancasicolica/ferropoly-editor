@@ -28,7 +28,6 @@ class PropertyList extends EventEmitter {
    */
   addProperty(property) {
     this.properties.push(property);
-
     property.on('property-selected', p => {
       this.emit('property-selected', p);
     });
@@ -41,6 +40,7 @@ class PropertyList extends EventEmitter {
    */
   setList(properties) {
     console.log('Setting complete property list');
+    console.warn('Check if obsolete (from V3)');
     properties.forEach(p => {
       this.addProperty(p);
     })
@@ -51,6 +51,7 @@ class PropertyList extends EventEmitter {
    * @returns {[]}
    */
   getProperties() {
+    console.warn('Check if obsolete (from V3)');
     return this.properties;
   }
 
@@ -62,6 +63,7 @@ class PropertyList extends EventEmitter {
     let used = filter(this.properties, p => {
       return p.pricelist.priceRange >= 0;
     });
+    console.warn('Check if obsolete (from V3)');
     return used.length;
   }
 
@@ -71,6 +73,7 @@ class PropertyList extends EventEmitter {
    * @param data
    */
   updateProperty(property, data) {
+    console.warn('Check if obsolete (from V3)');
     let p = find(this.properties, {uuid: property.uuid});
     if (!p) {
       console.error('Property not found!', property);
@@ -86,6 +89,7 @@ class PropertyList extends EventEmitter {
    * @return {Array} An array of properties that match the specified group.
    */
   getPropertiesOfGroup(group) {
+    console.warn('Check if obsolete (from V3)');
     let g = filter(this.properties, {'pricelist': {'propertyGroup': group}});
     console.log('Properties of group ' + group, g);
     return g;
@@ -158,6 +162,7 @@ class PropertyList extends EventEmitter {
    * Deletes all properties on a map
    */
   clearAllPropertiesOnMap() {
+    console.warn('Check if obsolete (from V3)');
     this.properties.forEach(p => {
       p.setMap(null);
     })
@@ -176,6 +181,7 @@ class PropertyList extends EventEmitter {
    * Sets the marker property of all properties to null
    */
   clearAllMarkers() {
+    console.warn('Check if obsolete (from V3)');
     this.properties.forEach(property => {
       if (property.marker) {
         property.marker.map = null

@@ -10,14 +10,12 @@
         :map-options="mapOptions"
         @map="onNewMap")
     .col-6
-      property-selected
-      property-filter
-      property-list
+      property-selected.mt-1
+      property-list.mt-1
 </template>
 <script>
 
 import PropertySelected from './properties/PropertySelected.vue';
-import PropertyFilter from './properties/PropertyFilter.vue';
 import PropertyList from './properties/PropertyList.vue';
 import FerropolyMap from '../../../common/components/FerropolyMap.vue';
 import {useEditorPropertiesStore} from '../../../lib/store/EditorPropertiesStore';
@@ -25,7 +23,7 @@ import {mapWritableState} from 'pinia';
 
 export default {
   name:       'PanelProperties',
-  components: {FerropolyMap, PropertyList, PropertyFilter, PropertySelected},
+  components: {FerropolyMap, PropertyList, PropertySelected},
   filters:    {},
   mixins:     [],
   model:      {},

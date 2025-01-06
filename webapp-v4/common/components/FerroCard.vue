@@ -92,12 +92,10 @@ export default {
 }
 
 ::v-deep(.is-condensed  .p-panel-header) {
-  background-color: #2aabd2;
   padding-top: 8px;
   padding-bottom: 8px;
 }
 ::v-deep(.is-condensed  .p-panel-content) {
-  background-color: rgba(245, 244, 239, 0.99);
   padding-top: 8px;
   padding-bottom: 8px;
 }
