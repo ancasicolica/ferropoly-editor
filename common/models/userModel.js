@@ -11,7 +11,7 @@
  */
 const mongoose   = require('mongoose');
 const crypto     = require('crypto');
-const pbkdf2     = require('pbkdf2-sha256');
+const pbkdf2     = require('pbkdf2');
 const logger     = require('../lib/logger').getLogger('userModel');
 const _          = require('lodash');
 const {v4: uuid} = require('uuid');
@@ -107,7 +107,7 @@ function createPasswordHash(salt, password) {
     logger.error(new Error('Invalid params supplied', salt, password));
     return 'not-a-valid-hash-' + _.random(0, 100000000);
   }
-  return pbkdf2(password, salt, 1, 64).toString('base64');
+  return pbkdf2.pbkdf2Sync(password, salt, 1, 64, 'sha256').toString('base64');
 }
 
 /**
