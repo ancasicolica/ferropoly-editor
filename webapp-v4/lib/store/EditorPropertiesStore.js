@@ -8,7 +8,7 @@ import {defineStore} from 'pinia'
 
 import PropertyList from '../PropertyList'
 import EditorProperty from '../EditorProperty';
-import {filter, find, findIndex, set, sortBy} from 'lodash';
+import {filter, findIndex, set, sortBy} from 'lodash';
 import {createPriceList, createPropertyList} from '../../../editor/lib/pricelistLib';
 import {useGameplayStore} from './GamePlayStore';
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
@@ -34,7 +34,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       const self = this;
       console.log('Add properties to list...');
       properties.forEach(p => {
-        this.properties.push(p);
+        self.properties.push(p);
         propertyAuxData.addProperty(new EditorProperty(p));
       })
 

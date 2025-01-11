@@ -20,7 +20,6 @@ import PropertyList from './properties/PropertyList.vue';
 import FerropolyMap from '../../../common/components/FerropolyMap.vue';
 import {useEditorPropertiesStore} from '../../../lib/store/EditorPropertiesStore';
 import {mapWritableState} from 'pinia';
-import {get} from 'lodash';
 
 export default {
   name:       'PanelProperties',

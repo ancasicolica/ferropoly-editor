@@ -53,7 +53,6 @@ import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesSt
 import {FilterMatchMode} from '@primevue/core/api';
 import {formatAccessibility, formatPriceRange} from '../../../../common/lib/formatters';
 import {toRaw} from 'vue';
-import {get} from 'lodash';
 
 export default {
   name:       'PropertyList',
@@ -108,7 +107,7 @@ export default {
      */
     filters: {
       deep: true,
-      handler(newFilters, oldFilters) {
+      handler(newFilters) {
         const rawFilters = toRaw(newFilters);
         console.log(rawFilters);
         console.log(rawFilters['location.name'].value);

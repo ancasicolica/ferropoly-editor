@@ -152,7 +152,6 @@ class PropertyList extends EventEmitter {
    * @param map
    */
   showAllPropertiesOnMap(map) {
-    const self = this;
     this.properties.forEach(p => {
       p.setMap(map);
     })
