@@ -60,6 +60,8 @@ export default {
       //this.$store.dispatch({type: 'applyFilter', gameId: this.gameId});
       this.$refs.map.setCenter(propertyList.getCenter());
       this.$refs.map.fitBounds(propertyList.getBounds());
+
+      this.editorStore.applyFilter({filterType: 'all'});
     },
     onFilterChanged(filters) {
 

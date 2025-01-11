@@ -109,11 +109,6 @@ export default {
       deep: true,
       handler(newFilters) {
         const rawFilters = toRaw(newFilters);
-        console.log(rawFilters);
-        console.log(rawFilters['location.name'].value);
-
-        console.log('Filtering changed', rawFilters);
-
         // Converting the (primevue-) filter to our internal type
         const f = {
           filterType: 'none',
@@ -130,10 +125,9 @@ export default {
           f.filterType = 'priceRange';
         }
         else {
-          console.log('Unknown filter, applying "all"', f);
           f.filterType = 'all';
         }
-
+        console.log('Filtering changed', rawFilters, f);
         this.$emit('filter-changed', f);
       }
     }

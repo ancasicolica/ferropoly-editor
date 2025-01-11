@@ -158,16 +158,16 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      */
     applyFilter(f) {
       if (f.filterType === 'all') {
-        f.entries = toRaw(this.properties);
+        f.entries = this.properties;
       } else if (f.filterType === 'accessibility') {
-        f.entries = toRaw(filter(this.properties, {'location': {'accessibility': f.filter}}));
+        f.entries = filter(this.properties, {'location': {'accessibility': f.filter}});
       } else if (f.filterType === 'location') {
-        f.entries = toRaw(filter(this.properties, p => {
+        f.entries = filter(this.properties, p => {
           return p.location.name.toLowerCase().includes(f.filter);
-        }));
+        });
       } else if (f.filterType === 'priceRange') {
         // This has to be filtered with the vue data
-        f.entries = toRaw(filter(this.properties, {'pricelist': {'priceRange': f.filter}}));
+        f.entries = filter(this.properties, {'pricelist': {'priceRange': f.filter}});
       }
       propertyAuxData.applyFilter(f);
     }

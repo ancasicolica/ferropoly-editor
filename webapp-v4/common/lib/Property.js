@@ -14,7 +14,6 @@ class Property extends EventEmitter {
 
   static infoWindow     = null;
   static googleInstance = null;
-  static map            = null;
 
   /**
    * Closes the currently open info window, if it exists.
@@ -52,9 +51,7 @@ class Property extends EventEmitter {
     this.ICON_CABLECAR_LOCATION_USED = '/images/markers/32-b/v-';
     this.ICON_OTHER_LOCATION_USED    = '/images/markers/32-b/v-';
 
-    // Obsolete
-    this.infoWindow = null;
-
+    this.map = null;
     merge(this, p);
   }
 
@@ -81,7 +78,7 @@ class Property extends EventEmitter {
     this.emit('info-window-opened', this);
     console.warn('OBSOLETE: Property.openInfoWindow');
     if (this.infoWindow) {
-      this.infoWindow.open(Property.map, marker);
+      this.infoWindow.open(this.map, marker);
     }
   }
 
@@ -131,9 +128,9 @@ class Property extends EventEmitter {
    */
   async setMap(map) {
     await this.createMarker();
-    Property.map = toRaw(map);
+    this.map = toRaw(map);
     if (this.marker) {
-      this.marker.map = Property.map;
+      this.marker.map = this.map;
     }
 
   }
@@ -146,7 +143,7 @@ class Property extends EventEmitter {
 
     if (show && !this.isVisibleInList) {
       if (this.marker) {
-        this.marker.map = Property.map;
+        this.marker.map = this.map;
       }
       this.isVisibleInList = true;
     } else if (!show && this.isVisibleInList) {
