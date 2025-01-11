@@ -10,13 +10,11 @@ import EventEmitter from './eventEmitter';
 import mapLoader from './googleLoader';
 import {toRaw} from 'vue'
 
-const markerKey = Symbol('marker');
-const mapKey    = Symbol('map');
-
 class Property extends EventEmitter {
 
   static infoWindow     = null;
   static googleInstance = null;
+  static map            = null;
 
   /**
    * Closes the currently open info window, if it exists.
@@ -35,8 +33,7 @@ class Property extends EventEmitter {
    */
   constructor(p) {
     super();
-    this.marker     = null;
-    this.map       = null;
+    this.marker          = null;
     this.isVisibleInList = true; // Flag indicating if the property is in the list or not
 
     // The Icons to use
@@ -70,7 +67,7 @@ class Property extends EventEmitter {
     }
     Property.infoWindow.close();
     Property.infoWindow.setContent(info);
-    Property.infoWindow.open(this.marker[mapKey], this.marker);
+    Property.infoWindow.open(this.marker.map, this.marker);
   }
 
   /**
@@ -84,7 +81,7 @@ class Property extends EventEmitter {
     this.emit('info-window-opened', this);
     console.warn('OBSOLETE: Property.openInfoWindow');
     if (this.infoWindow) {
-      this.infoWindow.open(this[mapKey], marker);
+      this.infoWindow.open(Property.map, marker);
     }
   }
 
@@ -113,7 +110,7 @@ class Property extends EventEmitter {
       return;
     }
     if (!this.marker) {
-      this.marker= toRaw(new Property.googleInstance.AdvancedMarkerElement({
+      this.marker = toRaw(new Property.googleInstance.AdvancedMarkerElement({
         position: {
           lat: parseFloat(this.location.position.lat),
           lng: parseFloat(this.location.position.lng)
@@ -134,10 +131,11 @@ class Property extends EventEmitter {
    */
   async setMap(map) {
     await this.createMarker();
+    Property.map = toRaw(map);
     if (this.marker) {
-      this.marker.map = toRaw(map);
+      this.marker.map = Property.map;
     }
-    this[mapKey] = map;
+
   }
 
   /**
@@ -145,14 +143,15 @@ class Property extends EventEmitter {
    * @param show
    */
   applyFilter(show) {
+
     if (show && !this.isVisibleInList) {
       if (this.marker) {
-        this.marker.setMap(this[mapKey]);
+        this.marker.map = Property.map;
       }
       this.isVisibleInList = true;
     } else if (!show && this.isVisibleInList) {
       if (this.marker) {
-        this.marker.setMap(null);
+        this.marker.map = null;
       }
       this.isVisibleInList = false;
     }

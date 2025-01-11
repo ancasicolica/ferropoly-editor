@@ -52,6 +52,8 @@ import {mapWritableState} from 'pinia';
 import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesStore';                   // optional
 import {FilterMatchMode} from '@primevue/core/api';
 import {formatAccessibility, formatPriceRange} from '../../../../common/lib/formatters';
+import {toRaw} from 'vue';
+import {get} from 'lodash';
 
 export default {
   name:       'PropertyList',
@@ -68,7 +70,7 @@ export default {
         'location.accessibility': {value: null, matchMode: FilterMatchMode.EQUALS},
         'pricelist.priceRange':   {value: null, matchMode: FilterMatchMode.EQUALS},
       },
-      filterMode:  'use',
+      filterMode:  'name',
       filterModes: [
         {name: 'Alle Orte anzeigen', value: 'all'},
         {name: 'Filtern nach Name', value: 'name'},
@@ -101,11 +103,39 @@ export default {
     }),
   },
   watch: {
+    /**
+     * this one is a watch over the filters field: will be triggered when an element changes
+     */
     filters: {
       deep: true,
       handler(newFilters, oldFilters) {
-        console.log('Filters changed', oldFilters, newFilters);
-        this.$emit('filter-changed', newFilters);
+        const rawFilters = toRaw(newFilters);
+        console.log(rawFilters);
+        console.log(rawFilters['location.name'].value);
+
+        console.log('Filtering changed', rawFilters);
+
+        // Converting the (primevue-) filter to our internal type
+        const f = {
+          filterType: 'none',
+          filter:     'none'
+        }
+        if (rawFilters['location.accessibility']?.value) {
+          f.filter     = rawFilters['location.accessibility']?.value;
+          f.filterType = 'accessibility';
+        } else if (rawFilters['location.name']?.value) {
+          f.filter     = rawFilters['location.name']?.value.toLowerCase();
+          f.filterType = 'location';
+        } else if (rawFilters['pricelist.priceRange']?.value !== null) {
+          f.filter     = rawFilters['pricelist.priceRange']?.value
+          f.filterType = 'priceRange';
+        }
+        else {
+          console.log('Unknown filter, applying "all"', f);
+          f.filterType = 'all';
+        }
+
+        this.$emit('filter-changed', f);
       }
     }
   },

@@ -13,6 +13,7 @@ import {createPriceList, createPropertyList} from '../../../editor/lib/pricelist
 import {useGameplayStore} from './GamePlayStore';
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
 import axios from 'axios';
+import {toRaw} from 'vue';
 
 const propertyAuxData = new PropertyList();
 
@@ -60,8 +61,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
         let index = findIndex(this.properties, {'uuid': properties[i].uuid});
         if (index < 0) {
           console.warn(`property not found`, properties[i]);
-        }
-        else {
+        } else {
           this.properties[index].pricelist.positionInPriceRange = i;
           //console.log('update', index, i, properties[i]);
         }
@@ -152,6 +152,24 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      */
     getPropertyList() {
       return propertyAuxData;
+    },
+    /**
+     * Applies a filter to the given data based on the specified filter type.
+     */
+    applyFilter(f) {
+      if (f.filterType === 'all') {
+        f.entries = toRaw(this.properties);
+      } else if (f.filterType === 'accessibility') {
+        f.entries = toRaw(filter(this.properties, {'location': {'accessibility': f.filter}}));
+      } else if (f.filterType === 'location') {
+        f.entries = toRaw(filter(this.properties, p => {
+          return p.location.name.toLowerCase().includes(f.filter);
+        }));
+      } else if (f.filterType === 'priceRange') {
+        // This has to be filtered with the vue data
+        f.entries = toRaw(filter(this.properties, {'pricelist': {'priceRange': f.filter}}));
+      }
+      propertyAuxData.applyFilter(f);
     }
   }
 })

@@ -5,7 +5,7 @@
  **/
 
 import EventEmitter from '../common/lib/eventEmitter';
-import {get, find, merge, filter, maxBy, minBy} from 'lodash';
+import {get, find, merge, filter, maxBy, minBy, findIndex} from 'lodash';
 
 class PropertyList extends EventEmitter {
   /**
@@ -194,29 +194,11 @@ class PropertyList extends EventEmitter {
    * @param f
    */
   applyFilter(f) {
-    if (f.filterType === 'all') {
-      this.properties.forEach(p => {
-        p.applyFilter(true);
-      });
-    } else if (f.filterType === 'accessibility') {
-      this.properties.forEach(p => {
-        p.applyFilter(p.location.accessibility === f.filter);
-      });
-    } else if (f.filterType === 'location') {
-      this.properties.forEach(p => {
-        p.applyFilter(p.location.name.toLowerCase().includes(f.filter));
-      });
-    } else if (f.filterType === 'priceRange') {
-      if (f.filter === 'allInList') {
-        this.properties.forEach(p => {
-          p.applyFilter(p.pricelist.priceRange >= 0);
-        });
-      } else {
-        this.properties.forEach(p => {
-          p.applyFilter(p.pricelist.priceRange.toString() === f.filter);
-        });
-      }
-    }
+    console.log('applyFilter', f);
+
+    this.properties.forEach(p => {
+      p.applyFilter(findIndex(f.entries, {'uuid': p.uuid}) >= 0);
+    });
   }
 }
 
