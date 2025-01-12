@@ -23,7 +23,7 @@ class EditorProperty extends Property {
    * @param pos
    */
   setPositionInPriceRange(pos) {
-    this.positionInPriceRangeChanged = (this.pricelist.positionInPriceRange !== pos);
+    this.positionInPriceRangeChanged    = (this.pricelist.positionInPriceRange !== pos);
     this.pricelist.positionInPriceRange = pos;
     this.location.name += pos;
   }
@@ -38,13 +38,13 @@ class EditorProperty extends Property {
     }
 
     return {
-      uuid: this.uuid,
+      uuid:                 this.uuid,
       positionInPriceRange: this.pricelist.positionInPriceRange
     };
   };
 
   getPriceIconIndex(priceRange) {
-    switch(priceRange) {
+    switch (priceRange) {
       case 0:
         return this.iconPriceLabels[0];
       case 1:
@@ -72,47 +72,57 @@ class EditorProperty extends Property {
         x = this.pricelist.priceRange;
       }
       if (editMode) {
-        htmlElement.src = this.ICON_EDIT_LOCATION
-
+        htmlElement.src    = this.ICON_EDIT_LOCATION
+        this.marker.zIndex = 1000;
       } else {
         switch (this.location.accessibility) {
           case 'train':
             if (x === -1) {
               htmlElement.src = this.ICON_TRAIN_LOCATION;
+              this.marker.zIndex = 1;
             } else {
               htmlElement.src = this.ICON_TRAIN_LOCATION_USED + this.getPriceIconIndex(x);
+              this.marker.zIndex = 20;
             }
             break;
 
           case 'bus':
             if (x === -1) {
               htmlElement.src = this.ICON_BUS_LOCATION;
+              this.marker.zIndex = 1;
             } else {
               htmlElement.src = this.ICON_BUS_LOCATION_USED + this.getPriceIconIndex(x);
+              this.marker.zIndex = 15;
             }
             break;
 
           case 'boat':
             if (x === -1) {
               htmlElement.src = this.ICON_BOAT_LOCATION;
+              this.marker.zIndex = 1;
             } else {
               htmlElement.src = this.ICON_BOAT_LOCATION_USED + this.getPriceIconIndex(x);
+              this.marker.zIndex = 18;
             }
             break;
 
           case 'cablecar':
             if (x === -1) {
               htmlElement.src = this.ICON_CABLECAR_LOCATION;
+              this.marker.zIndex = 1;
             } else {
               htmlElement.src = this.ICON_CABLECAR_LOCATION_USED + this.getPriceIconIndex(x);
+              this.marker.zIndex = 20;
             }
             break;
 
           default:
             if (x === -1) {
               htmlElement.src = this.ICON_OTHER_LOCATION;
+              this.marker.zIndex = 1;
             } else {
               htmlElement.src = this.ICON_OTHER_LOCATION_USED + this.getPriceIconIndex(x);
+              this.marker.zIndex = 5;
             }
             break;
         }

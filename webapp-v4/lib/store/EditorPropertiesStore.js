@@ -8,12 +8,11 @@ import {defineStore} from 'pinia'
 
 import PropertyList from '../PropertyList'
 import EditorProperty from '../EditorProperty';
-import {filter, findIndex, set, sortBy} from 'lodash';
+import {filter, find, findIndex, set, sortBy} from 'lodash';
 import {createPriceList, createPropertyList} from '../../../editor/lib/pricelistLib';
 import {useGameplayStore} from './GamePlayStore';
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
 import axios from 'axios';
-import {toRaw} from 'vue';
 
 const propertyAuxData = new PropertyList();
 
@@ -137,6 +136,9 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       // Finally sort and return array
       return sorted;
     },
+    getPropertyByUuid(uuid) {
+      return find(this.properties, {'uuid': uuid});
+    },
     /**
      * Retrieves the properties associated with a specific group.
      *
@@ -170,6 +172,10 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
         f.entries = filter(this.properties, {'pricelist': {'priceRange': f.filter}});
       }
       propertyAuxData.applyFilter(f);
+    },
+
+    selectPropertyAsActive(uuid) {
+      propertyAuxData.selectPropertyAsActive(uuid);
     }
   }
 })

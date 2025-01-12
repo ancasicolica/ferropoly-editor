@@ -20,6 +20,7 @@ class PropertyList extends EventEmitter {
       east:  0,
       west:  0
     };
+    this.activeProperty = null; // currently selected property, only one possible
   }
 
   /**
@@ -82,18 +83,6 @@ class PropertyList extends EventEmitter {
     //console.log('Updated', property);
   }
 
-  /**
-   * Retrieves properties that belong to a specific group.
-   *
-   * @param {string} group - The name of the property group to filter by.
-   * @return {Array} An array of properties that match the specified group.
-   */
-  getPropertiesOfGroup(group) {
-    console.warn('Check if obsolete (from V3)');
-    let g = filter(this.properties, {'pricelist': {'propertyGroup': group}});
-    console.log('Properties of group ' + group, g);
-    return g;
-  }
 
   /**
    * Sets the position of a specific property within a price range.
@@ -198,6 +187,28 @@ class PropertyList extends EventEmitter {
     this.properties.forEach(p => {
       p.applyFilter(findIndex(f.entries, {'uuid': p.uuid}) >= 0);
     });
+  }
+
+  /**
+   * Sets the property with the given UUID as the active property and updates its marker icon.
+   * If there is an already active property, its marker icon will be reset.
+   *
+   * @param {string} uuid - The unique identifier of the property to be set as active.
+   * @return {void} Does not return a value.
+   */
+  selectPropertyAsActive(uuid) {
+    if (this.activeProperty) {
+      this.activeProperty.setMarkerIcon(false);
+    }
+    
+    let e = find(this.properties, {'uuid': uuid});
+    if (!e) {
+      console.log(`Element ${uuid} not found`);
+      return;
+    }
+
+    e.setMarkerIcon(true);
+    this.activeProperty = e;
   }
 }
 

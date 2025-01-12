@@ -11,7 +11,7 @@
         @map="onNewMap")
     .col-6
       property-selected.mt-1
-      property-list.mt-1(@filter-changed="onFilterChanged")
+      property-list.mt-1(ref="list" @filter-changed="onFilterChanged" @property-selected="onPropertySelected")
 </template>
 <script>
 
@@ -48,7 +48,13 @@ export default {
   },
   created:    function () {
   },
-  methods:    {
+  mounted() {
+    this.editorStore.getPropertyList().on('property-selected', this.onPropertyOnMapSelected);
+  },
+  unmounted() {
+    this.editorStore.getPropertyList().removeListener('property-selected', this.onPropertyOnMapSelected);
+  },
+  methods: {
     /**
      * A new map instance was created, we're using this one now
      */
@@ -63,9 +69,20 @@ export default {
 
       this.editorStore.applyFilter({filterType: 'all'});
     },
+    /**
+     * Filter changed in list view
+     * @param filters
+     */
     onFilterChanged(filters) {
-
       useEditorPropertiesStore().applyFilter(filters);
+    },
+    onPropertySelected(options) {
+      useEditorPropertiesStore().selectPropertyAsActive(options?.uuid);
+    },
+    onPropertyOnMapSelected(property) {
+      console.log('Property selected', property);
+       useEditorPropertiesStore().selectPropertyAsActive(property?.uuid);
+
     }
   }
 }

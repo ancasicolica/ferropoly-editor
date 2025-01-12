@@ -5,7 +5,15 @@
 -->
 <template lang="pug">
   #property-list
-    data-table(:value="properties" v-model:filters="filters" ref="dataTable" paginator :rows="rows")
+    data-table(
+      :value="properties"
+      v-model:filters="filters"
+      ref="dataTable"
+      paginator
+      :rows="rows"
+      sort-field="location.name"
+      :sort-order="1"
+    )
       template(#header)
         .flex
           .flex-1.mr-1
@@ -26,7 +34,7 @@
 
       column(field = "location.name" sortable header="Ort")
         template(#body="slotProps")
-          span(@click="selectProperty(slotProps.data.uuid)") {{slotProps.data.location.name}}
+          span.location-name(@click="selectProperty(slotProps.data)") {{slotProps.data.location.name}}
       column(field="location.accessibility" sortable header="Erreichbarkeit")
         template(#body="slotProps")
           span {{formatAccessibility(slotProps.data.location.accessibility)}}
@@ -100,8 +108,16 @@ export default {
     ...mapWritableState(useEditorPropertiesStore, {
       properties: 'properties'
     }),
+    selectedProperty: {
+      get() {
+        return null;
+      },
+      set (p) {
+        console.log(p);
+      }
+    }
   },
-  watch: {
+  watch:      {
     /**
      * this one is a watch over the filters field: will be triggered when an element changes
      */
@@ -110,7 +126,7 @@ export default {
       handler(newFilters) {
         const rawFilters = toRaw(newFilters);
         // Converting the (primevue-) filter to our internal type
-        const f = {
+        const f          = {
           filterType: 'none',
           filter:     'none'
         }
@@ -123,8 +139,7 @@ export default {
         } else if (rawFilters['pricelist.priceRange']?.value !== null) {
           f.filter     = rawFilters['pricelist.priceRange']?.value
           f.filterType = 'priceRange';
-        }
-        else {
+        } else {
           f.filterType = 'all';
         }
         console.log('Filtering changed', rawFilters, f);
@@ -143,8 +158,9 @@ export default {
     window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {
-    selectProperty(uuid) {
-      console.log('Property selected', uuid);
+    selectProperty(p) {
+      this.selected = p;
+      this.$emit('property-selected', {uuid: p.uuid});
     },
     formatPriceRange(r) {
       return formatPriceRange(r);
@@ -190,5 +206,14 @@ export default {
   overflow: auto;
   font-size: 12px;
   height: 200px;
+}
+
+.location-name {
+  color: cornflowerblue;
+  cursor: pointer;
+}
+
+::v-deep(.p-datatable-hoverable .p-datatable-selectable-row) {
+  cursor: default;
 }
 </style>
