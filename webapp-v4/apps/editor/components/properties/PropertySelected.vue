@@ -3,21 +3,20 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 02.01.2025
 -->
-<template lang="pug">
-  ferro-card(title="Ausgewähltes Ort" condensed)
-    div.title {{name}}
-    div(v-if="propertySelected")
-      div Erreichbarkeit: {{formatAccessibility(accessiblity)}}
-      div
-        select-button.mt-2(v-model="selectedProperty.pricelist.priceRange"
-          :options="priceRanges"
-          optionLabel="name"
-          optionValue="value"
-          size="small"
-          @value-change="onPriceRangeChanged")
-    div(v-if="!propertySelected")
-      div &nbsp;
-      div &nbsp;
+<template>
+  <ferro-card title="Ausgewähltes Ort" condensed>
+    <div class="title">{{ name }}</div>
+    <div v-if="propertySelected">
+      <div>Erreichbarkeit: {{ formatAccessibility(accessibility) }}</div>
+      <select-button class="mt-2" v-model="selectedProperty.pricelist.priceRange"
+                     :options="priceRanges" option-label="name"
+                     option-value="value" size="small" @value-change="onPriceRangeChanged"></select-button>
+    </div>
+    <div v-if="propertySelected">
+      <div>&nbsp;</div>
+      <div>&nbsp;</div>
+    </div>
+  </ferro-card>¬
 </template>
 <script setup>
 
@@ -61,7 +60,7 @@ const propertySelected = computed(() => {
   return props.property !== null;
 });
 
-const accessiblity = computed(() => {
+const accessibility = computed(() => {
   return get(props.property, 'location.accessibility', 'Bitte Ort auswählen');
 });
 
