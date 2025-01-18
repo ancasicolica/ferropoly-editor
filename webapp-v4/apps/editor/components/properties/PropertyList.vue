@@ -160,7 +160,7 @@ export default {
   methods: {
     selectProperty(p) {
       this.selected = p;
-      this.$emit('property-selected', {uuid: p.uuid});
+      this.$emit('property-selected', {uuid: p.uuid, property: p});
     },
     formatPriceRange(r) {
       return formatPriceRange(r);

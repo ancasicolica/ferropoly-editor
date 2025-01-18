@@ -175,7 +175,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
     },
 
     selectPropertyAsActive(uuid) {
-      propertyAuxData.selectPropertyAsActive(uuid);
+      return propertyAuxData.selectPropertyAsActive(uuid);
     }
   }
 })

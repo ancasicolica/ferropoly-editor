@@ -147,8 +147,9 @@ export default {
      * it is centered to the map
      */
     setFocusOnProperty(property) {
-      let pos = property.marker.getPosition();
-      if (!this.map.getBounds().contains(pos)) {
+      console.log('Focus on property', property)
+      let pos = property.marker?.position;
+      if (pos && !this.map.getBounds().contains(pos)) {
         this.map.panTo(pos);
       }
     },

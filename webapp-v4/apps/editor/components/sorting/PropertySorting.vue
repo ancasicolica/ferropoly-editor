@@ -11,7 +11,7 @@
           div.slick-item-content.flex.justify-content-between.align-items-center(@click="selectProperty(p)")
             drag-handle.draghandle
               i(class="pi pi-bars")
-            span &nbsp;{{p.location.name}}
+            span.location-name &nbsp;{{p.location.name}}
             span &nbsp;
     .col-8
       div
@@ -98,6 +98,7 @@ export default {
   mounted() {
     this.resizeHandler();
     this.editorPropertyStore.getPropertyList().on('property-selected', this.propertySelected);
+    this.editorPropertyStore.createPriceList();
   },
   unmounted() {
     Property.closeInfoWindow();
@@ -200,4 +201,10 @@ export default {
 .title {
   font-size: large;
 }
+
+.location-name {
+  color: blue;
+  cursor: pointer;
+}
+
 </style>

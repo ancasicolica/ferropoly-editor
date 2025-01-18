@@ -10,7 +10,7 @@
         :map-options="mapOptions"
         @map="onNewMap")
     .col-6
-      property-selected.mt-1
+      property-selected.mt-1(:property="selectedProperty")
       property-list.mt-1(ref="list" @filter-changed="onFilterChanged" @property-selected="onPropertySelected")
 </template>
 <script>
@@ -77,12 +77,15 @@ export default {
       useEditorPropertiesStore().applyFilter(filters);
     },
     onPropertySelected(options) {
-      useEditorPropertiesStore().selectPropertyAsActive(options?.uuid);
+      this.$refs.map.setFocusOnProperty(useEditorPropertiesStore().selectPropertyAsActive(options?.uuid));
+
+      this.selectedProperty = options.property;
     },
     onPropertyOnMapSelected(property) {
       console.log('Property selected', property);
-       useEditorPropertiesStore().selectPropertyAsActive(property?.uuid);
-
+      const store = useEditorPropertiesStore();
+      store.selectPropertyAsActive(property?.uuid);
+      this.selectedProperty = store.getPropertyByUuid(property?.uuid);
     }
   }
 }

@@ -194,7 +194,7 @@ class PropertyList extends EventEmitter {
    * If there is an already active property, its marker icon will be reset.
    *
    * @param {string} uuid - The unique identifier of the property to be set as active.
-   * @return {void} Does not return a value.
+   * @return {object} Does not return a value.
    */
   selectPropertyAsActive(uuid) {
     if (this.activeProperty) {
@@ -204,11 +204,12 @@ class PropertyList extends EventEmitter {
     let e = find(this.properties, {'uuid': uuid});
     if (!e) {
       console.log(`Element ${uuid} not found`);
-      return;
+      return null;
     }
 
     e.setMarkerIcon(true);
     this.activeProperty = e;
+    return e;
   }
 }
 

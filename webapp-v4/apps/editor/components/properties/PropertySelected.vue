@@ -4,19 +4,21 @@
   Created: 02.01.2025
 -->
 <template>
-  <ferro-card title="Ausgewähltes Ort" condensed>
-    <div class="title">{{ name }}</div>
-    <div v-if="propertySelected">
-      <div>Erreichbarkeit: {{ formatAccessibility(accessibility) }}</div>
-      <select-button class="mt-2" v-model="selectedProperty.pricelist.priceRange"
-                     :options="priceRanges" option-label="name"
-                     option-value="value" size="small" @value-change="onPriceRangeChanged"></select-button>
-    </div>
-    <div v-if="propertySelected">
-      <div>&nbsp;</div>
-      <div>&nbsp;</div>
-    </div>
-  </ferro-card>¬
+  <div>
+    <ferro-card title="Ausgewähltes Ort" condensed>
+      <div class="title">{{ name }}</div>
+      <div v-if="propertySelected">
+        <div>Erreichbarkeit: {{ formatAccessibility(accessibility) }}</div>
+        <select-button class="mt-2" v-model="selectedProperty.pricelist.priceRange"
+                       :options="priceRanges" option-label="name"
+                       option-value="value" size="small" @value-change="onPriceRangeChanged"></select-button>
+      </div>
+      <div v-if="propertySelected">
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+      </div>
+    </ferro-card>
+  </div>
 </template>
 <script setup>
 
