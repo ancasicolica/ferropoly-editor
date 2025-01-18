@@ -55,9 +55,8 @@ router.get('/load/:gameId', function (req, res) {
       if (!propertyData) {
         return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
       }
-      propertyData.forEach(p=> {
+      propertyData.forEach(p => {
         delete p._id;
-        delete p.location.uuid;
       })
       res.send({
         gameplay: gameplayData, properties: propertyData, settings: {
@@ -174,9 +173,13 @@ router.post('/saveProperty/:gameId', function (req, res) {
         return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
       }
       // Updating a property invalidates the pricelist!
-      gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, () => {
-        return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
-      });
+      gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user)
+        .then(() => {
+          return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+        })
+        .catch(err => {
+          return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
+        });
     });
   });
 });

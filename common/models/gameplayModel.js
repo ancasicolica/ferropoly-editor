@@ -605,6 +605,7 @@ async function invalidatePricelist(gameId, ownerId) {
 
     return await gp.save();
   }
+  return {};
 }
 
 /**

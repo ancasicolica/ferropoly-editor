@@ -137,7 +137,7 @@ async function updateProperty(gameId, property, callback) {
   if (!gameId) {
     return callback(new Error('No gameId supplied'));
   }
-  if (!property.location || !property.uuid) {
+  if (!property.location || !property.location.uuid) {
     // this one is pretty useless!
     return callback(new Error('No location added, can not save property'));
   }

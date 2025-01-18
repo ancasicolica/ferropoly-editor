@@ -119,14 +119,13 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {Array} An array of properties sorted by their position within the specified price range.
      */
     getPropertiesOfRange(range) {
-      console.log('getPropertiesOfRange', range);
       // First get all properties of the given range
       const list = this.properties;
       let f      = filter(list, obj => {
         return obj.pricelist.priceRange === range
       });
 
-      // First get all properties of the given range
+      // Then get all properties of the given range
       let sorted = sortBy(f, 'pricelist.positionInPriceRange');
       let i      = 0;
 
@@ -136,6 +135,13 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
 
       // Finally sort and return array
       return sorted;
+    },
+    getNumberOfPropertiesInPricelist() {
+      const list = this.properties;
+      let f      = filter(list, obj => {
+        return obj.pricelist.priceRange > -1;
+      });
+      return f.length;
     },
     getPropertyByUuid(uuid) {
       return find(this.properties, {'uuid': uuid});
