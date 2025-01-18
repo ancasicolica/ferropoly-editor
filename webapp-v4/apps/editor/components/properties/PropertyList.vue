@@ -10,6 +10,7 @@
       v-model:filters="filters"
       ref="dataTable"
       paginator
+      :page-link-size="pageLinkSize"
       :rows="rows"
       sort-field="location.name"
       :sort-order="1"
@@ -71,27 +72,28 @@ export default {
   props:      {},
   data:       function () {
     return {
-      rows:        5,
-      filters:     {
+      rows:         5,
+      pageLinkSize: 10,
+      filters:      {
         'location.name':          {value: null, matchMode: FilterMatchMode.CONTAINS},
         'location.accessibility': {value: null, matchMode: FilterMatchMode.EQUALS},
         'pricelist.priceRange':   {value: null, matchMode: FilterMatchMode.EQUALS},
       },
-      filterMode:  'name',
-      filterModes: [
+      filterMode:   'name',
+      filterModes:  [
         {name: 'Alle Orte anzeigen', value: 'all'},
         {name: 'Filtern nach Name', value: 'name'},
         {name: 'Filtern nach Erreichbarkeit', value: 'access'},
         {name: 'Filtern nach Verwendung', value: 'use'},
       ],
-      accessModes: [
+      accessModes:  [
         {name: 'Alle Orte anzeigen', value: null},
         {name: 'Bahn', value: 'train'},
         {name: 'Bus', value: 'bus'},
         {name: 'Schiff', value: 'boat'},
         {name: 'Seilbahn / Standseilbahn', value: 'cablecar'},
       ],
-      priceRanges: [
+      priceRanges:  [
         {name: 'Alle Orte anzeigen', value: null},
         {name: 'unbenutzt', value: -1},
         {name: 'sehr billig', value: 0},
@@ -112,7 +114,7 @@ export default {
       get() {
         return null;
       },
-      set (p) {
+      set(p) {
         console.log(p);
       }
     }
@@ -154,7 +156,7 @@ export default {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler();
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {

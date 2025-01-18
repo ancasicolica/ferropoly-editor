@@ -10,10 +10,11 @@
       <div v-if="propertySelected">
         <div>Erreichbarkeit: {{ formatAccessibility(accessibility) }}</div>
         <select-button class="mt-2" v-model="selectedProperty.pricelist.priceRange"
-                       :options="priceRanges" option-label="name"
+                       :options="priceRanges" option-label="name" :allow-empty="allowEmpty"
                        option-value="value" size="small" @value-change="onPriceRangeChanged"></select-button>
       </div>
-      <div v-if="propertySelected">
+      <div v-if="!propertySelected">
+        <div>&nbsp;</div>
         <div>&nbsp;</div>
         <div>&nbsp;</div>
       </div>
@@ -42,6 +43,8 @@ const props = defineProps({
   }
 })
 
+const allowEmpty = false;
+
 const priceRanges = [
   {name: 'unbenutzt', value: -1},
   {name: 'sehr billig', value: 0},
@@ -58,6 +61,9 @@ const name = computed(
     }
 );
 
+const editorPropertiesStore = useEditorPropertiesStore();
+const {selectedProperty}    = storeToRefs(editorPropertiesStore);
+
 const propertySelected = computed(() => {
   return props.property !== null;
 });
@@ -67,12 +73,16 @@ const accessibility = computed(() => {
 });
 
 
+/**
+ * Handles the event when the price range is changed.
+ *
+ * @param {Object} info - The information related to the price range change.
+ * @return {void} This function does not return a value.
+ */
 function onPriceRangeChanged(info) {
-  console.log('PR changed', info);
+  editorPropertiesStore.saveSelectedProperty();
 }
 
-const editorPropertiesStore = useEditorPropertiesStore();
-const {selectedProperty}    = storeToRefs(editorPropertiesStore);
 
 
 </script>

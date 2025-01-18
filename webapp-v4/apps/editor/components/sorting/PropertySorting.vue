@@ -64,7 +64,7 @@ export default {
       return opts;
     },
     selectedPropertyGroupItemCaption() {
-      if (this.selectedProperty === null) {
+      if (this.selectedProperty === null || this.selectedProperty.pricelist.propertyGroup < 0) {
         return '';
       }
       const props = this.editorPropertyStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
@@ -94,6 +94,7 @@ export default {
   created:    function () {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler();
+    this.selectedProperty = null;
    },
   mounted() {
     this.resizeHandler();
@@ -103,8 +104,6 @@ export default {
   unmounted() {
     Property.closeInfoWindow();
     this.editorPropertyStore.getPropertyList().removeListener('property-selected', this.propertySelected);
-  },
-  destroyed() {
     window.removeEventListener('resize', this.resizeHandler);
   },
   methods: {

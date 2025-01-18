@@ -13,6 +13,7 @@ import {createPriceList, createPropertyList} from '../../../editor/lib/pricelist
 import {useGameplayStore} from './GamePlayStore';
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
 import axios from 'axios';
+import {toRaw} from 'vue';
 
 const propertyAuxData = new PropertyList();
 
@@ -173,9 +174,39 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       }
       propertyAuxData.applyFilter(f);
     },
-
+    /**
+     * Selects a property as active based on the provided UUID.
+     *
+     * @param {string} uuid - The unique identifier of the property to be marked as active.
+     * @return {Object} Returns the result of the operation from the `selectPropertyAsActive` method on `propertyAuxData`.
+     */
     selectPropertyAsActive(uuid) {
       return propertyAuxData.selectPropertyAsActive(uuid);
+    },
+    /**
+     * Saves the currently selected property to the backend.
+     * The method retrieves the selected property, appends the game ID, retrieves the authentication token,
+     * and makes a POST request to save the property.
+     *
+     * @return {Promise<void>} A promise that resolves when the property is successfully saved
+     *                         or logs an error if saving fails.
+     */
+    async saveSelectedProperty() {
+      const rawProperty = toRaw(this.selectedProperty);
+      console.log('save property', rawProperty);
+      try {
+        const gameId       = useGameplayStore().gameId;
+        rawProperty.gameId = gameId;
+        const authToken    = await useAuthTokenStoreStore().getAuthToken();
+        const resp         = await axios.post(`/gameplay/saveProperty/${gameId}`, {
+          property: rawProperty,
+          authToken
+        });
+        console.log('Updated Property in backend', resp.data);
+      }
+      catch (ex) {
+        console.error('Error in saveSelectedProperty', ex);
+      }
     }
   }
 })
