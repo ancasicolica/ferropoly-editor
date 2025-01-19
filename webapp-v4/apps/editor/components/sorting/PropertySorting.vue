@@ -6,13 +6,16 @@
 <template lang="pug">
   .grid
     .col-4
-      slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
-        slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
-          div.slick-item-content.flex.justify-content-between.align-items-center(@click="selectProperty(p)")
-            drag-handle.draghandle
-              i(class="pi pi-bars")
-            span.location-name &nbsp;{{p.location.name}}
-            span &nbsp;
+      div(v-if="properties.length > 0")
+        slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
+          slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
+            div.slick-item-content.flex.justify-content-between.align-items-center(@click="selectProperty(p)")
+              drag-handle.draghandle
+                i(class="pi pi-bars")
+              span.location-name &nbsp;{{p.location.name}}
+              span &nbsp;
+      div(v-if="properties.length === 0")
+        p Aktuell sind keine Orte dieser Preisklasse vorhanden.
     .col-8
       div
         .title.mb-2(v-if="selectedProperty") {{selectedPropertyGroupItemCaption}}

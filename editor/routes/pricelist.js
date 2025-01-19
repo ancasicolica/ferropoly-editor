@@ -24,7 +24,7 @@ router.get('/view/:gameId', function (req, res) {
     if (err) {
       return res.render('error/403', {
         message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error  : {status: 403, stack: {}}
+        error:   {status: 403, stack: {}}
       });
     }
     res.sendFile(path.join(__dirname, '..', 'public', 'html', 'pricelist.html'));
@@ -40,7 +40,7 @@ router.post('/create', function (req, res) {
 
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
+    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
   pricelistLib.create(req.body.gameId, req.session.passport.user, function (err) {
     if (err) {

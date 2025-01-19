@@ -225,8 +225,37 @@ export const useGameplayStore = defineStore('Gameplay', {
         return {success: false, message: `Fehler beim Speichern: ${err.message}. ${additionalInfo}`}
       }
     },
+    /**
+     * Retrieves a raw and unaltered gameplay state object.
+     * The returned object is a deep copy of the current `$state`, ensuring immutability.
+     *
+     * @return {Object} A deep copy of the gameplay state.
+     */
     getRawGameplay() {
       return JSON.parse(JSON.stringify(this.$state));
+    },
+    /**
+     * Creates a pricelist for the specified game using the provided authentication token.
+     * Sends a request to the server to create a new pricelist and handles success or error responses.
+     *
+     * @return {Promise<Object>} Resolves to an object containing the result of the operation.
+     *                           If successful, the object includes `success: true` and the `gameId`.
+     *                           In case of an error, the object includes `success: false` and an error message.
+     */
+    async createPricelist() {
+      const self = this;
+      try {
+        const authToken = await useAuthTokenStoreStore().getAuthToken();
+        let resp        = await axios.post('/pricelist/create',
+          {gameId: self.internal.gameId, authToken});
+        console.log('Pricelist created', resp);
+        return {success: true, gameId: self.internal.gameId};
+      }
+      catch (err) {
+        console.error('Error while creating pricelist', err);
+        let additionalInfo = get(err, 'response.data.message', '');
+        return {success: false, message: `Fehler beim Erstellen der Preisliste: ${err.message}. ${additionalInfo}`}
+      }
     }
 
   }

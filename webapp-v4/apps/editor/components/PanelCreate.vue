@@ -7,8 +7,13 @@
   h1 Preisliste erstellen
   p Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
   p Um ein versehentliches Bearbeiten zu verhindern, kann eine kontrollierte und für gut befundene Preisliste finalisiert werden. Dann sind keine Änderungen mehr möglich.
-  div(v-if="gameplayConflicts.length === 0") In der Preisliste sind {{numberOfPropertiesInPricelist}} Orte vorhanden.
-  div(v-if="gameplayConflicts.length > 0") Folgende Probleme sind vorhanden:
+  div(v-if="gameplayConflicts.length === 0")
+    prime-message(severity="success") Super! Die Spieldaten sind soweit komplett und gültig, die Preisliste kann erstellt werden.
+    prime-button.mt-5(@click="createPricelist" :disabled="priceListCreationPending") Preisliste erstellen
+    prime-message.mt-5(severity="error" v-if="errorMessage") {{errorMessage}}
+
+  div(v-if="gameplayConflicts.length > 0")
+    prime-message(severity="error") Folgende Probleme sind vorhanden und müssen vor der Erstellung einer Preisliste behoben werden:
     ul
       li(v-for="item in gameplayConflicts") {{item.message}}
 </template>
@@ -17,16 +22,21 @@
 import {mapState} from 'pinia';
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {useEditorPropertiesStore} from '../../../lib/store/EditorPropertiesStore';
+import PrimeMessage from 'primevue/message';
+import PrimeButton from 'primevue/button';
 
 export default {
   name:       'PanelCreate',
-  components: {},
+  components: {PrimeMessage, PrimeButton},
   filters:    {},
   mixins:     [],
   model:      {},
   props:      {},
   data:       function () {
-    return {}
+    return {
+      priceListCreationPending: false,
+      errorMessage:             null
+    }
   },
   computed:   {
     ...mapState(useGameplayStore, {
@@ -39,7 +49,6 @@ export default {
     gameplayConflicts() {
       let issues                = this.gameplayInvalid || [];
       const editorPropertyStore = useEditorPropertiesStore();
-      const gamePlayStore       = useGameplayStore();
       const numberOfProperties  = editorPropertyStore.getNumberOfPropertiesInPricelist();
       console.log('x', this.gameParams, this.gameParams.properties);
       if ((numberOfProperties < 20)) {
@@ -49,16 +58,39 @@ export default {
         issues.push({message: `Die Anzahl Orte (${numberOfProperties}) muss durch die Grösse der Ortsgruppen (${this.gameParams.properties.numberOfPropertiesPerGroup}) teilbar sein.`});
       }
 
-      console.log('issues', issues, (numberOfProperties % this.gameParams.properties.priceLevels) );
+      console.log('issues', issues, (numberOfProperties % this.gameParams.properties.priceLevels));
       return issues;
-    },
-    numberOfPropertiesInPricelist() {
-      return useEditorPropertiesStore().getNumberOfPropertiesInPricelist();
     }
   },
   created:    function () {
   },
-  methods:    {}
+  methods:    {
+    /**
+     * Initiates the creation of a pricelist by interacting with the gameplay store.
+     * Handles success and error responses accordingly and updates the component state.
+     *
+     * @return {void} Does not return a value.
+     */
+    createPricelist() {
+      this.priceListCreationPending = true;
+      console.log('create pricelist');
+      const gamePlayStore = useGameplayStore();
+      gamePlayStore.createPricelist()
+          .then(info => {
+            if (info.success) {
+              window.location = '/pricelist/view/' + info.gameId;
+            } else {
+              this.errorMessage = info.message;
+            }
+          })
+          .catch(err => {
+            this.errorMessage = err.message;
+          })
+          .finally(()=> {
+            this.priceListCreationPending = false;
+          })
+    }
+  }
 }
 
 </script>
