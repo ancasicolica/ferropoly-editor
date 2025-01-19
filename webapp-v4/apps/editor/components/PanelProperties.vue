@@ -45,10 +45,9 @@ export default {
       selectedProperty: 'selectedProperty'
     }),
     mapOptions() {
-      let opts = {
+      return {
         zoom: 14
-      }
-      return opts;
+      };
     },
   },
   created:    function () {
@@ -111,7 +110,7 @@ export default {
     onSizeUpdate() {
       const self = this;
       // Not nice, but don't see a better way
-      delay( ()=> {
+      delay(() => {
         self.$refs.list.resizeHandler();
       }, 250)
 
