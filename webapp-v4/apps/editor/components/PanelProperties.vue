@@ -11,6 +11,7 @@
         :map-options="mapOptions"
         @map="onNewMap")
     .col-6
+      property-count.mt-1
       property-selected.mt-1(:property="selectedProperty" @save-selected-property="onSaveSelectedProperty")
       property-list.mt-1(ref="list" @filter-changed="onFilterChanged" @property-selected="onPropertySelected")
 </template>
@@ -23,10 +24,11 @@ import PropertyList from './properties/PropertyList.vue';
 import FerropolyMap from '../../../common/components/FerropolyMap.vue';
 import {useEditorPropertiesStore} from '../../../lib/store/EditorPropertiesStore';
 import {mapWritableState} from 'pinia';
+import PropertyCount from './properties/PropertyCount.vue';
 
 export default {
   name:       'PanelProperties',
-  components: {FerropolyMap, PropertyList, PropertySelected, PrimeToast},
+  components: {PropertyCount, FerropolyMap, PropertyList, PropertySelected, PrimeToast},
   filters:    {},
   mixins:     [],
   model:      {},

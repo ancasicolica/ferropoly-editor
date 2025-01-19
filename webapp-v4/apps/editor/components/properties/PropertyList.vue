@@ -12,6 +12,8 @@
       paginator
       :page-link-size="pageLinkSize"
       :rows="rows"
+      striped-rows
+      size="small"
       sort-field="location.name"
       :sort-order="1"
     )
@@ -182,7 +184,7 @@ export default {
       const element           = $('#property-list');
       const hDoc              = $(window).height();
       const offsetElement     = element.offset();
-      const rowHeight         = 40;
+      const rowHeight         = 27;
       const tableHeaderHeight = 120;
       const paginatorHeight   = 40;
 
