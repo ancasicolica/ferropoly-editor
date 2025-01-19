@@ -5,7 +5,7 @@
 -->
 <template lang="pug">
   prime-panel(:header="panelHeader" toggleable collapsed)
-    meter-group(:value="meterValue")
+    meter-group(:value="meterValue" :max="nbOfProperties")
 </template>
 <script>
 
@@ -29,6 +29,9 @@ export default {
       let nb = useEditorPropertiesStore().getNumberOfPropertiesInPricelist();
       console.log('ORTE', nb);
       return 'Orte in Preisliste:' + nb;
+    },
+    nbOfProperties() {
+      return useEditorPropertiesStore().getNumberOfPropertiesInPricelist();
     },
     meterValue() {
       const store = useEditorPropertiesStore();
