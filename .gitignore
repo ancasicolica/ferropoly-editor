@@ -49,3 +49,4 @@ yarn.lock
 .pnp*
 .yarn
 /.yarnrc.yml
+/public/build/report.html
