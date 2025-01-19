@@ -5,6 +5,7 @@ const BundleAnalyzerPlugin  = require('webpack-bundle-analyzer').BundleAnalyzerP
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const ferropolyApps         = require('./ferropolyApps.js');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const webpack           = require('webpack');
 
 // Build the webpack list
 let plugins = [
@@ -19,6 +20,12 @@ ferropolyApps.forEach(app => {
     publicPath: '/build/',
     minify    : true
   })));
+
+  plugins.push(  new webpack.DefinePlugin({
+    __VUE_OPTIONS_API__  : true,
+    __VUE_PROD_DEVTOOLS__: false,
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
+  }))
 });
 
 module.exports = merge(common, {
@@ -27,16 +34,11 @@ module.exports = merge(common, {
   output : {
     filename     : '[name].min.js',
     chunkFilename: '[name].bundle.js',
-    path         : path.resolve(__dirname, '..', 'public', 'build')
+    path    : path.resolve(__dirname, '..', 'editor', 'public', 'build')
   },
   stats  : {
     preset  : 'normal',
     children: true
-  },
-  resolve     : {
-    alias: {
-      vue: 'vue/dist/vue.min.js'
-    }
   },
   optimization: {
     splitChunks: {

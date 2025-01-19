@@ -3,6 +3,7 @@ const common            = require('./webpack.common.js');
 const path              = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ferropolyApps     = require('./ferropolyApps.js');
+const webpack           = require('webpack');
 
 // Build the webpack list
 let plugins = [];
@@ -15,6 +16,12 @@ ferropolyApps.forEach(app => {
     publicPath: '/js/test/',
     minify    : false
   })));
+
+  plugins.push(  new webpack.DefinePlugin({
+    __VUE_OPTIONS_API__  : true,
+    __VUE_PROD_DEVTOOLS__: true,
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true
+  }))
 });
 
 module.exports = merge(common, {
@@ -23,8 +30,8 @@ module.exports = merge(common, {
   devServer   : {
     contentBase: './dist'
   },
-  plugins     : plugins,
   stats: {
     errorDetails: false
-  }
+  },
+  plugins:  plugins
 });
