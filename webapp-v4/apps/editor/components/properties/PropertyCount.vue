@@ -4,8 +4,12 @@
   Created: 19.01.2025
 -->
 <template lang="pug">
-  prime-panel(:header="panelHeader" toggleable collapsed)
+  prime-panel(:header="panelHeader" toggleable collapsed @update:collapsed="onCollapsedChanged")
     meter-group(:value="meterValue" :max="nbOfProperties")
+      template(#label="{value, percentages}")
+        .flex.flex-row.flex-wrap
+          property-count-label(v-for="v in value" :label="v.label" :value="v.value" :color="v.color")
+
 </template>
 <script>
 
@@ -13,10 +17,11 @@ import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesSt
 
 import MeterGroup from 'primevue/metergroup';
 import PrimePanel from 'primevue/panel';
+import PropertyCountLabel from './PropertyCountLabel.vue';
 
 export default {
   name:       'PropertyCount',
-  components: {MeterGroup, PrimePanel},
+  components: {PropertyCountLabel, MeterGroup, PrimePanel},
   filters:    {},
   mixins:     [],
   model:      {},
@@ -27,8 +32,7 @@ export default {
   computed:   {
     panelHeader() {
       let nb = useEditorPropertiesStore().getNumberOfPropertiesInPricelist();
-      console.log('ORTE', nb);
-      return 'Orte in Preisliste:' + nb;
+      return 'Orte in Preisliste: ' + nb;
     },
     nbOfProperties() {
       return useEditorPropertiesStore().getNumberOfPropertiesInPricelist();
@@ -48,6 +52,9 @@ export default {
   created:    function () {
   },
   methods:    {
+    onCollapsedChanged() {
+      this.$emit('size-update');
+    }
   }
 }
 
@@ -59,6 +66,7 @@ export default {
   padding-top: 8px;
   padding-bottom: 8px;
 }
+
 ::v-deep(.p-panel-content) {
   padding-top: 8px;
   padding-bottom: 8px;

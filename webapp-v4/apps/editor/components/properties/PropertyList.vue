@@ -194,10 +194,10 @@ export default {
         const maxRows         = Math.floor(contentHeight / rowHeight); // Max number of visible cells
 
         element.height(availableHeight);
-
-        // Dynamisch die Anzahl Zeilen setzen
+        // Set number of rows dynamically
         this.rows = Math.max(maxRows, 1); // show at least one row
       }
+      //console.log('resizeHandler was active');
     }
   }
 }

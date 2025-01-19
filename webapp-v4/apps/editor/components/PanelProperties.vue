@@ -11,14 +11,14 @@
         :map-options="mapOptions"
         @map="onNewMap")
     .col-6
-      property-count.mt-1
+      property-count.mt-1(@size-update="onSizeUpdate")
       property-selected.mt-1(:property="selectedProperty" @save-selected-property="onSaveSelectedProperty")
       property-list.mt-1(ref="list" @filter-changed="onFilterChanged" @property-selected="onPropertySelected")
 </template>
 <script>
 
 import PrimeToast from 'primevue/toast';
-
+import {delay} from 'lodash';
 import PropertySelected from './properties/PropertySelected.vue';
 import PropertyList from './properties/PropertyList.vue';
 import FerropolyMap from '../../../common/components/FerropolyMap.vue';
@@ -104,6 +104,16 @@ export default {
               )
             }
           });
+    },
+    /**
+     * When the size of the collapsable panel changes, change also the size of the list
+     */
+    onSizeUpdate() {
+      const self = this;
+      delay( ()=> {
+        this.$refs.list.resizeHandler();
+      }, 250)
+
     }
   }
 }
