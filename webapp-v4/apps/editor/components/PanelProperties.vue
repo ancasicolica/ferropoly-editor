@@ -110,8 +110,9 @@ export default {
      */
     onSizeUpdate() {
       const self = this;
+      // Not nice, but don't see a better way
       delay( ()=> {
-        this.$refs.list.resizeHandler();
+        self.$refs.list.resizeHandler();
       }, 250)
 
     }
