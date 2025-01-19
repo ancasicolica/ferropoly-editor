@@ -8,7 +8,7 @@ import {defineStore} from 'pinia'
 
 import PropertyList from '../PropertyList'
 import EditorProperty from '../EditorProperty';
-import {filter, find, findIndex, set, sortBy} from 'lodash';
+import {filter, find, findIndex, get, set, sortBy} from 'lodash';
 import {createPriceList, createPropertyList} from '../../../editor/lib/pricelistLib';
 import {useGameplayStore} from './GamePlayStore';
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
@@ -20,7 +20,8 @@ const propertyAuxData = new PropertyList();
 export const useEditorPropertiesStore = defineStore('EditorProperties', {
   state:   () => ({
     properties:       [],
-    selectedProperty: null
+    selectedProperty: null,
+    authToken:        null,
   }),
   getters: {},
   actions: {
@@ -76,10 +77,12 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
       })
 
       try {
-        const authToken = await useAuthTokenStoreStore().getAuthToken();
-        const resp      = await axios.post(`/gameplay/savePositionInPricelist/${gameId}`, {
+        if (!this.authToken) {
+          this.authToken = await useAuthTokenStoreStore().getAuthToken();
+        }
+        const resp = await axios.post(`/gameplay/savePositionInPricelist/${gameId}`, {
           properties: saveSet,
-          authToken
+          authToken:  this.authToken
         });
         console.log('Updated positions in backend', resp.data);
         this.createPriceList();
@@ -184,34 +187,41 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * Selects a property as active based on the provided UUID.
      *
      * @param {string} uuid - The unique identifier of the property to be marked as active.
-     * @return {Object} Returns the result of the operation from the `selectPropertyAsActive` method on `propertyAuxData`.
+     * @return {Object} Returns the result of the operation from the `selectPropertyAsActive` method on
+     *   `propertyAuxData`.
      */
     selectPropertyAsActive(uuid) {
       return propertyAuxData.selectPropertyAsActive(uuid);
     },
+
     /**
-     * Saves the currently selected property to the backend.
-     * The method retrieves the selected property, appends the game ID, retrieves the authentication token,
-     * and makes a POST request to save the property.
+     * Saves the selected property to the backend server.
+     * Prepares the property data including the associated game ID and authentication token.
+     * Sends the property data to the backend using an HTTP POST request.
+     * Logs the success or failure of the operation.
      *
-     * @return {Promise<void>} A promise that resolves when the property is successfully saved
-     *                         or logs an error if saving fails.
+     * @return {Promise<{success: boolean, message?: string}>} An object indicating
+     *         success or failure. If the operation fails, includes an error message.
      */
     async saveSelectedProperty() {
       const rawProperty = toRaw(this.selectedProperty);
-      console.log('save property', rawProperty);
       try {
         const gameId       = useGameplayStore().gameId;
         rawProperty.gameId = gameId;
-        const authToken    = await useAuthTokenStoreStore().getAuthToken();
-        const resp         = await axios.post(`/gameplay/saveProperty/${gameId}`, {
-          property: rawProperty,
-          authToken
+        if (!this.authToken) {
+          this.authToken = await useAuthTokenStoreStore().getAuthToken();
+        }
+        const resp = await axios.post(`/gameplay/saveProperty/${gameId}`, {
+          property:  rawProperty,
+          authToken: this.authToken
         });
         console.log('Updated Property in backend', resp.data);
+        return {success: true};
       }
-      catch (ex) {
-        console.error('Error in saveSelectedProperty', ex);
+      catch (err) {
+        let additionalInfo = get(err, 'response.data.message', '');
+        return {success: false, message: `${err.message}. ${additionalInfo}`}
+
       }
     }
   }

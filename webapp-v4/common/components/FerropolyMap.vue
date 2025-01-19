@@ -191,7 +191,6 @@ export default {
 
       let hDoc      = $(window).height();
       let offsetMap = this.mapElement.offset();
-      console.log(hDoc, offsetMap);
 
       if (this.mapElement && offsetMap) {
         this.mapElement.height(hDoc - offsetMap.top - parseInt(this.ySizeReduction));

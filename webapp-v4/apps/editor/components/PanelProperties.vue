@@ -5,15 +5,18 @@
 -->
 <template lang="pug">
   .grid
+    prime-toast
     .col-6
       ferropoly-map(ref="map"
         :map-options="mapOptions"
         @map="onNewMap")
     .col-6
-      property-selected.mt-1(:property="selectedProperty")
+      property-selected.mt-1(:property="selectedProperty" @save-selected-property="onSaveSelectedProperty")
       property-list.mt-1(ref="list" @filter-changed="onFilterChanged" @property-selected="onPropertySelected")
 </template>
 <script>
+
+import PrimeToast from 'primevue/toast';
 
 import PropertySelected from './properties/PropertySelected.vue';
 import PropertyList from './properties/PropertyList.vue';
@@ -23,7 +26,7 @@ import {mapWritableState} from 'pinia';
 
 export default {
   name:       'PanelProperties',
-  components: {FerropolyMap, PropertyList, PropertySelected},
+  components: {FerropolyMap, PropertyList, PropertySelected, PrimeToast},
   filters:    {},
   mixins:     [],
   model:      {},
@@ -78,7 +81,6 @@ export default {
     },
     onPropertySelected(options) {
       this.$refs.map.setFocusOnProperty(useEditorPropertiesStore().selectPropertyAsActive(options?.uuid));
-
       this.selectedProperty = options.property;
     },
     onPropertyOnMapSelected(property) {
@@ -86,6 +88,20 @@ export default {
       const store = useEditorPropertiesStore();
       store.selectPropertyAsActive(property?.uuid);
       this.selectedProperty = store.getPropertyByUuid(property?.uuid);
+    },
+    onSaveSelectedProperty() {
+      useEditorPropertiesStore().saveSelectedProperty()
+          .then(info => {
+            if (!info.success) {
+              this.$toast.add({
+                    severity: 'error',
+                    summary:  'Fehler beim Speichern der Daten',
+                    detail:   info.message,
+                    life:     5000
+                  },
+              )
+            }
+          });
     }
   }
 }

@@ -73,14 +73,10 @@ const accessibility = computed(() => {
 });
 
 
-/**
- * Handles the event when the price range is changed.
- *
- * @param {Object} info - The information related to the price range change.
- * @return {void} This function does not return a value.
- */
-function onPriceRangeChanged(info) {
-  editorPropertiesStore.saveSelectedProperty();
+const emit = defineEmits(['save-selected-property']);
+
+function onPriceRangeChanged() {
+  emit('save-selected-property')
 }
 
 

@@ -69,7 +69,6 @@ export default {
       if (this.condensed) {
         classes.push('is-condensed');
       }
-      console.log('classes', classes);
       return classes;
     }
   },
