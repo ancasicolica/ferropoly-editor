@@ -182,7 +182,15 @@ export const useGameplayStore = defineStore('Gameplay', {
     async loadGameplay(gameId) {
       let resp = await axios.get(`/gameplay/load/${gameId}`);
       console.log('loaded', resp);
-      merge(this, resp.data.gameplay);
+
+      // Save GamePlay data
+      this.setGameplayData(resp.data.gameplay);
+
+      //  Save properties
+      useEditorPropertiesStore().setProperties(resp.data.properties);
+    },
+    setGameplayData(gameplay) {
+      merge(this, gameplay);
       // Convert Times to JS Date objects
       this.scheduling.deleteTs  = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
       this.scheduling.gameDate  = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
@@ -190,9 +198,6 @@ export const useGameplayStore = defineStore('Gameplay', {
       this.scheduling.gameEnd   = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
       this.log.created          = DateTime.fromISO(this.log.created).toJSDate();
       this.log.lastEdited       = DateTime.fromISO(this.log.lastEdited).toJSDate();
-
-      //  Save properties
-      useEditorPropertiesStore().setProperties(resp.data.properties);
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);

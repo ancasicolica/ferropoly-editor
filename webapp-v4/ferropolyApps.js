@@ -39,5 +39,10 @@ module.exports = [
     entry   : path.join(__dirname, 'apps', 'editor', 'app.js'),
     htmlFile: 'editor.html'
   },
+  {
+    name    : 'pricelist',
+    entry   : path.join(__dirname, 'apps', 'pricelist', 'app.js'),
+    htmlFile: 'pricelist.html'
+  },
 
 ];
