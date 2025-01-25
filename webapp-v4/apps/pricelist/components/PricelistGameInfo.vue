@@ -6,9 +6,7 @@
 
 <template>
   <div>
-    <ferro-card title="Spielinfo">
-
-      <data-table :value="[
+    <data-table :value="[
           { title: 'Organisator*in', content: owner.organisatorName },
           { title: 'Organisation', content: owner.organisation },
           { title: 'Email', content: owner.organisatorEmail },
@@ -17,20 +15,19 @@
           { title: 'Spielstart', content: formatGameTime(scheduling.gameStart) },
           { title: 'Spielende', content: formatGameTime(scheduling.gameEnd) },
           ]">
-        <column field="title"></column>
-        <column field="content"></column>
-      </data-table>
+      <column field="title"></column>
+      <column field="content"></column>
+    </data-table>
 
-      <prime-button
-          as="a"
-          class="mt-2"
-          icon="pi pi-download"
-          label="Preisliste als Excel-Datei laden"
-          severity="info"
-          :href="downloadUrl"
-          target="_blank">
-      </prime-button>
-    </ferro-card>
+    <prime-button
+        as="a"
+        class="mt-2"
+        icon="pi pi-download"
+        label="Preisliste als Excel-Datei laden"
+        severity="info"
+        :href="downloadUrl"
+        target="_blank">
+    </prime-button>
   </div>
 </template>
 
@@ -40,20 +37,13 @@ import PrimeButton from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
-import FerroCard from '../../../common/components/FerroCard.vue';
 import {storeToRefs} from 'pinia';
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
-import {computed, onMounted, ref} from 'vue';
+import {computed} from 'vue';
 import {formatGameDate, formatGameTime} from '../../../common/lib/formatters';
 
-const gameplayStore  = useGameplayStore();
-const {gamename, scheduling, owner, internal} = storeToRefs(gameplayStore);
-const gameInfo = ref([]);
-onMounted(() => {
-  gameInfo.value = [
-    {title: 'ss', content: owner.organisatorEmail}
-  ];
-});
+const gameplayStore                 = useGameplayStore();
+const {scheduling, owner, internal} = storeToRefs(gameplayStore);
 
 /**
  * Computed property representing the download URL for a game's price list.

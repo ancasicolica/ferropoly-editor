@@ -105,6 +105,7 @@ function formatPrice(val) {
   return val;
 }
 
+
 /**
  * Formatter for "how can a property be accessed?"
  * @param val
