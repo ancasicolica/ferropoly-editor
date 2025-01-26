@@ -87,5 +87,10 @@ const {pricelist}            = storeToRefs(pricelistStore);
 </script>
 
 <style scoped lang="scss">
-
+/* Make whole page printable with smaller fonts*/
+@media print {
+  ::v-global( body) {
+    font-size: 10px;
+  }
+}
 </style>

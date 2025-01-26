@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <menu-bar :elements="menuBarElements">
+  <menu-bar :elements="menuBarElements" class="no-print">
   </menu-bar>
   <div class="ml-3 mr-3">
     <router-view></router-view>
@@ -15,27 +15,56 @@
 <script setup>
 import MenuBar from '../../../common/components/MenuBar.vue'
 import {last, split} from 'lodash';
-import {onBeforeMount, ref} from 'vue';
+import {computed, onBeforeMount, ref, watch} from 'vue';
 import {usePricelistStore} from '../../../lib/store/pricelistStore';
+import {useRoute} from 'vue-router';
 
-const gameId = ref('');
+const gameId         = ref('');
+const visible        = ref(false);
+const route          = useRoute();
+const pricelistStore = usePricelistStore();
+
+const isPricelistRoute = computed(() => route.name === 'pricelist');
 
 const menuBarElements = [
   {label: 'Preisliste', route: 'pricelist'},
-  {label: 'Spiel', route: 'summary'},
-]
-const pricelistStore  = usePricelistStore();
+  {
+    label: 'Preisliste drucken',
+    command: ()=> {
+      console.log('command');
+      window.print();
+    },
+    visible: () => {
+      return isPricelistRoute.value;
+
+    }
+  },
+  {label: 'Spielinfo', route: 'summary'},
+];
 
 onBeforeMount(() => {
   // Retrieve GameId for this page
   const elements = split(window.location.pathname, '/');
   gameId.value   = last(elements);
   pricelistStore.fetchPricelist(gameId.value);
-})
+});
 
+watch(
+    () => route.name, // Watcher auf den Routen-Namen
+    () => {
+      visible.value = isPricelistRoute.value;
+    },
+    {immediate: true} // Führt den Watcher auch beim Laden aus
+);
 
 </script>
 
 <style scoped lang="scss">
-
+@media print
+{
+  .no-print, .no-print *
+  {
+    display: none !important;
+  }
+}
 </style>
