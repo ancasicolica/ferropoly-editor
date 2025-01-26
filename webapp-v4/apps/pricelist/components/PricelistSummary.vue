@@ -7,14 +7,14 @@
 <template>
   <div>
     <h1>{{ gamename }}</h1>
-    <div class="grid">
-      <div class="col-3">
+    <div class="flex flex-row flex-wrap">
+      <div class="flex ml-2 mr-2 mb-8">
         <pricelist-game-info></pricelist-game-info>
       </div>
-      <div class="col-6">
+      <div class="flex ml-2 mr-2 mb-8">
         <pricelist-info></pricelist-info>
       </div>
-      <div class="col-3">
+      <div class="flex ml-2 mr-2" v-if="!finalized">
         <pricelist-finalize></pricelist-finalize>
       </div>
     </div>
@@ -30,7 +30,10 @@ import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {storeToRefs} from 'pinia';
 
 const gameplayStore  = useGameplayStore();
-const {gamename} = storeToRefs(gameplayStore);
+const {gamename, finalized} = storeToRefs(gameplayStore);
+
+
+
 </script>
 
 <style scoped lang="scss">

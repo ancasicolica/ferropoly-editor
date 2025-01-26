@@ -164,6 +164,9 @@ export const useGameplayStore = defineStore('Gameplay', {
     gameId(state) {
       return state.internal.gameId;
     },
+    finalized(state) {
+      return state.internal.finalized;
+    }
 
   },
   actions: {

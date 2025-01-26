@@ -14,6 +14,7 @@
           { title: 'Spieldatum', content: formatGameDate(scheduling.gameDate) },
           { title: 'Spielstart', content: formatGameTime(scheduling.gameStart) },
           { title: 'Spielende', content: formatGameTime(scheduling.gameEnd) },
+          { title: 'Finalisiert (spielbereit)', content: booleanYesNo(internal.finalized) },
           ]">
       <column field="title"></column>
       <column field="content"></column>
@@ -40,7 +41,7 @@ import Column from 'primevue/column';
 import {storeToRefs} from 'pinia';
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {computed} from 'vue';
-import {formatGameDate, formatGameTime} from '../../../common/lib/formatters';
+import {booleanYesNo, formatGameDate, formatGameTime} from '../../../common/lib/formatters';
 
 const gameplayStore                 = useGameplayStore();
 const {scheduling, owner, internal} = storeToRefs(gameplayStore);

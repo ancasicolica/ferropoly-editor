@@ -127,6 +127,11 @@ router.post('/finalize', function (req, res) {
         });
       }
 
+      if (gp.internal.finalized) {
+        logger.info(`Gameplay ${gp.internal.gameId} was already finalized, quit`);
+        return res.status(200).send({});
+      }
+
       // Only the owner is allowed to finalize the game, not admins!
       if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
         return res.status(403).send('Not allowed');
