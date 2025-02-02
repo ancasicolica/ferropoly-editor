@@ -12,10 +12,10 @@
           td {{gameDate || 'Kein Datum angegeben'}}
         tr
           td Start
-          td {{getGpProperty('scheduling.gameStart')}}
+          td {{gameStart}}
         tr
           td Ende
-          td {{getGpProperty('scheduling.gameEnd')}}
+          td {{gameEnd}}
         tr
           td Anmeldeschluss &nbsp;&nbsp;
           td
@@ -55,7 +55,7 @@
 
 import FerroCard from '../../../common/components/FerroCard.vue';
 import {get} from 'lodash';
-import {formatGameDate, formatTimestampAsAgo, createLuxonDate} from '../../../common/lib/formatters'
+import {formatGameDate, formatGameTime, formatTimestampAsAgo, createLuxonDate} from '../../../common/lib/formatters'
 import {DateTime} from 'luxon';
 import {getMapName} from '../../../common/lib/mapTypes';
 import PrimeButton from 'primevue/button';
@@ -89,6 +89,12 @@ export default {
   computed  : {
     gameDate() {
       return formatGameDate(this.getGpProperty('scheduling.gameDate'));
+    },
+    gameStart() {
+      return formatGameTime(this.getGpProperty('scheduling.gameStart'));
+    },
+    gameEnd() {
+      return formatGameTime(this.getGpProperty('scheduling.gameEnd'));
     },
     deletionDate() {
       return createLuxonDate(this.getGpProperty('scheduling.deleteTs')).toLocaleString(DateTime.DATE_MED);

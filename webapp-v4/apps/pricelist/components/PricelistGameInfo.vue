@@ -11,10 +11,10 @@
           { title: 'Organisation', content: owner.organisation },
           { title: 'Email', content: owner.organisatorEmail },
           { title: 'Telefon', content: owner.organisatorPhone },
-          { title: 'Spieldatum', content: formatGameDate(scheduling.gameDate) },
-          { title: 'Spielstart', content: formatGameTime(scheduling.gameStart) },
-          { title: 'Spielende', content: formatGameTime(scheduling.gameEnd) },
-          { title: 'Finalisiert (spielbereit)', content: booleanYesNo(internal.finalized) },
+          { title: 'Spieldatum', content: formatGameDateEx(scheduling.gameDate) },
+          { title: 'Spielstart', content: formatGameTimeEx(scheduling.gameStart) },
+          { title: 'Spielende', content: formatGameTimeEx(scheduling.gameEnd) },
+          { title: 'Finalisiert (spielbereit)', content: booleanYesNoEx(internal.finalized) },
           ]">
       <column field="title"></column>
       <column field="content"></column>
@@ -41,9 +41,22 @@ import Column from 'primevue/column';
 import {storeToRefs} from 'pinia';
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {computed} from 'vue';
+import {formatGameDate, formatGameTime, booleanYesNo} from '../../../common/lib/formatters'
 
 const gameplayStore                 = useGameplayStore();
 const {scheduling, owner, internal} = storeToRefs(gameplayStore);
+
+function booleanYesNoEx(finalized) {
+  return booleanYesNo(finalized);
+}
+
+function formatGameTimeEx(gameStart) {
+  return formatGameTime(gameStart);
+}
+
+function formatGameDateEx(gameDate) {
+  return formatGameDate(gameDate);
+}
 
 /**
  * Computed property representing the download URL for a game's price list.
