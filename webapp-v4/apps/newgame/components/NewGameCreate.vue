@@ -70,7 +70,6 @@ export default {
     }
   },
   created:    function () {
-
     const newGameStore = useNewGameStore();
     newGameStore.checkId().then(() => {
       console.log('Ids created');
