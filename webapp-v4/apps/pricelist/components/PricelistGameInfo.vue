@@ -41,7 +41,6 @@ import Column from 'primevue/column';
 import {storeToRefs} from 'pinia';
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {computed} from 'vue';
-import {booleanYesNo, formatGameDate, formatGameTime} from '../../../common/lib/formatters';
 
 const gameplayStore                 = useGameplayStore();
 const {scheduling, owner, internal} = storeToRefs(gameplayStore);

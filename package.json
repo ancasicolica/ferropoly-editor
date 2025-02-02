@@ -25,7 +25,6 @@
   "private": true,
   "scripts": {
     "start": "node server.js"
-
   },
   "main": "server.js",
   "dependencies": {
@@ -100,6 +99,7 @@
     "mocha": "11.0.1",
     "nyc": "17.1.0",
     "pug-plain-loader": "1.1.0",
+    "quill": "^2.0.3",
     "raw-loader": "4.0.2",
     "sass": "1.83.1",
     "sass-loader": "16.0.4",

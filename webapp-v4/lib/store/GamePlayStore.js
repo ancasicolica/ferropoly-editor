@@ -85,7 +85,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       owner:  ''
     },
     joining:    {
-      possibleUntil: '',
+      possibleUntil: new Date(),
       infotext:      '',
       url:           ''
     },
@@ -166,8 +166,24 @@ export const useGameplayStore = defineStore('Gameplay', {
     },
     finalized(state) {
       return state.internal.finalized;
+    },
+    latestJoiningDate(state) {
+      return DateTime.fromISO(state.scheduling.gameDate).minus({day: 1}).toISO();
+    },
+    registrationActive(state) {
+      const limit = DateTime.fromJSDate(state.joining.possibleUntil).startOf('day').minus({days: 1});
+      return DateTime.local() <= limit.startOf('day');
+    },
+    registrationFinished(state) {
+      return DateTime.local() > DateTime.fromJSDate(state.joining.possibleUntil);
+    },
+    registrationEndingSoon() {
+      return !(this.registrationActive || this.registrationFinished);
+    },
+    joiningInfotext(state) {
+      console.log('xxxxx', state.joining, state.joining.infotext);
+      return state.joining.infotext;
     }
-
   },
   actions: {
     /**
@@ -185,7 +201,7 @@ export const useGameplayStore = defineStore('Gameplay', {
      */
     async loadGameplay(gameId) {
       let resp = await axios.get(`/gameplay/load/${gameId}`);
-      console.log('loaded', resp);
+      console.log('loaded', resp, resp.status);
 
       // Save GamePlay data
       this.setGameplayData(resp.data.gameplay);
@@ -196,12 +212,13 @@ export const useGameplayStore = defineStore('Gameplay', {
     setGameplayData(gameplay) {
       merge(this, gameplay);
       // Convert Times to JS Date objects
-      this.scheduling.deleteTs  = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
-      this.scheduling.gameDate  = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
-      this.scheduling.gameStart = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
-      this.scheduling.gameEnd   = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
-      this.log.created          = DateTime.fromISO(this.log.created).toJSDate();
-      this.log.lastEdited       = DateTime.fromISO(this.log.lastEdited).toJSDate();
+      this.scheduling.deleteTs   = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
+      this.scheduling.gameDate   = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
+      this.scheduling.gameStart  = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
+      this.scheduling.gameEnd    = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
+      this.joining.possibleUntil = DateTime.fromISO(this.joining.possibleUntil).toJSDate();
+      this.log.created           = DateTime.fromISO(this.log.created).toJSDate();
+      this.log.lastEdited        = DateTime.fromISO(this.log.lastEdited).toJSDate();
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
@@ -265,6 +282,9 @@ export const useGameplayStore = defineStore('Gameplay', {
         let additionalInfo = get(err, 'response.data.message', '');
         return {success: false, message: `Fehler beim Erstellen der Preisliste: ${err.message}. ${additionalInfo}`}
       }
+    },
+    setJoiningInfotext(text) {
+      this.joining.infotext = text;
     }
 
   }
