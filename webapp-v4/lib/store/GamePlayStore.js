@@ -31,6 +31,9 @@ import {useEditorPropertiesStore} from './EditorPropertiesStore';
 export const useGameplayStore = defineStore('Gameplay', {
   state:   () => ({
     gamename:   '',
+    admins:     {
+      logins: []
+    },
     owner:      {
       organisatorName:  '',
       organisation:     '',
@@ -285,7 +288,9 @@ export const useGameplayStore = defineStore('Gameplay', {
     },
     setJoiningInfotext(text) {
       this.joining.infotext = text;
-    }
+    },
+
+
 
   }
 })
