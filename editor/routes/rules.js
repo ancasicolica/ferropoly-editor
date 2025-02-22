@@ -6,10 +6,11 @@
 const express       = require('express');
 const router        = express.Router();
 const gameplayModel = require('../../common/models/gameplayModel');
+const rulesModel    = require('../../common/models/rulesModel');
 const logger        = require('../../common/lib/logger').getLogger('routes:rules');
 const path          = require('path');
 const _             = require('lodash');
-const { DateTime } = require("luxon");
+const {DateTime}    = require('luxon');
 
 /* GET Page with rules. */
 router.get('/:gameId', function (req, res) {
@@ -19,14 +20,15 @@ router.get('/:gameId', function (req, res) {
 /* GET Rules. */
 router.get('/data/:gameId', function (req, res) {
 
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
+  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
     if (err) {
       return res.status(500).send({message: err.message});
     }
-    let gameStart =  _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
-    let now = DateTime.now();
+    let gameStart     = _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
+    let now           = DateTime.now();
     const editAllowed = now < gameStart;
-    let rules         = gp.toObject().rules;
+    const rules       = await rulesModel.getRules(req.params.gameId);
+
     res.send({editAllowed, rules});
   });
 });
@@ -44,7 +46,7 @@ router.post('/:gameId', function (req, res) {
     logger.info(`Updating rules for ${req.params.gameId}`);
     let info = {
       changes: req.body.changes || 'Keine Angaben',
-      text   : req.body.text
+      text:    req.body.text
     };
     gameplayModel.updateRules(req.params.gameId, req.session.passport.user, info, function (err) {
       if (err) {

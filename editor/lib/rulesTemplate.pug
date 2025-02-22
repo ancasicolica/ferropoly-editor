@@ -3,18 +3,17 @@ h1 Spielregeln Ferropoly
 h2 Spielzeit
 
 p.
-  Das Spiel beginnt Punkt $scheduling.gameStart$ Uhr, ab diesem Zeitpunkt werden Anrufe entgegen genommen. Spielende ist
-  $scheduling.gameEnd$ Uhr.
+  Das Spiel beginnt Punkt {{ gameStartTime }} Uhr, ab diesem Zeitpunkt werden Anrufe entgegen genommen. Spielende ist
+  {{ gameEndTime }} Uhr.
 
-h2 Geld
+h2 Startgeld
 
 p.
-  Jede Gruppe hat zu Beginn des Spiels $gameParams.startCapital$ CHF auf ihrem Konto. Das Startgeld von
-  $gameParams.interest$ CHF wird zu jeder neuen Spielrunde zusammen mit dem Zins (das ist die Summe der Mietpreise  all
+  Jede Gruppe hat zu Beginn des Spiels {{ startCapital }} CHF auf ihrem Konto. Das Startgeld von
+  {{ interest }} CHF wird zu jeder neuen Spielrunde zusammen mit dem Zins (das ist die Summe der Mietpreise  all
   eurer Liegenschaften) ausbezahlt. (Erste Auszahlung des
-  Startgeldes bei Spielbeginn, eine Spielrunde dauert $gameParams.interestInterval$ Minuten.)
-if interestCyclesAtEndOfGame
-  p Bei Spielende wird das Startgeld noch $gameParams.interestCyclesAtEndOfGame$ mal ausbezahlt.
+  Startgeldes bei Spielbeginn, eine Spielrunde dauert {{ interestInterval }} Minuten.)
+p Bei Spielende wird das Startgeld noch {{ interestCyclesAtEndOfGame }} mal ausbezahlt.
 
 h2 Grundstück kaufen
 
@@ -31,7 +30,7 @@ p.
   Ruft eine Gruppe aus einem bereits verkauften Ort an, muss sie die aktuelle Miete an die Eigentümergruppe bezahlen.
   Dies muss sie aber nur, wenn sie versucht das betreffende Ort zu kaufen. Wer nur anruft um Häuser zu bauen
   bezahlt nichts, erfährt aber auch nichts über die nächsten Orte. Die Miete vervielfacht sich (Faktor
-  $gameParams.rentFactors.allPropertiesOfGroup$) falls die Eigentümergruppe die ganze Ortsgruppe besitzt.
+  {{ allPropertiesOfGroup }}) falls die Eigentümergruppe die ganze Ortsgruppe besitzt.
 
 h2 Häuser
 
@@ -45,13 +44,13 @@ h2 Chance-Kanzlei-Parkplatz
 
 p.
   Bei jedem Anruf hat man die Chance Geld zu gewinnen - oder zu verlieren. Es handelt sich dabei um Zufallsbeträge
-  zwischen $gameParams.chancellery.minLottery$ CHF bis $gameParams.chancellery.maxLottery$ CHF. Beim
+  zwischen {{ minLottery }} CHF bis {{ maxLottery }} CHF. Beim
   Parkplatzgewinn erhält die Gruppe dessen ganzen Inhalt.
 
   Die Spielleitung hat keinen Einfluss auf diese Beträge - ob ihr gewinnt oder verliert, ist reiner Zufall.
 
 p.
-  Ab und zu stellen wir Euch am Telephon eine Aufgabe. Ihr könnt einen Betrag bis $gameParams.chancellery.maxGambling$ CHF
+  Ab und zu stellen wir Euch am Telephon eine Aufgabe. Ihr könnt einen Betrag bis {{ maxGambling }} CHF
   als Einsatz setzen. Ist die Antwort dann richtig, gewinnt ihr denselben Betrag. Im andern Fall verliert ihr den Einsatz.
 p Sämtliche Bankgewinne (ausser Häuserbau) landen auf dem Parkplatz.
 
@@ -63,7 +62,7 @@ p.
 
 h2 Zentrale
 if organisatorPhoneKnown
-  p Die Telefonnummer der Zentrale während dem Spiel ist $owner.organisatorPhone$.
+  p Die Telefonnummer der Zentrale während dem Spiel ist {{ organisatorPhone }}.
 else
   p Die Telefonnummer der Zentrale wird vor dem Spiel den Teams noch bekannt gegeben.
 

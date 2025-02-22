@@ -6,6 +6,7 @@
 
 const gameplays                  = require('../../common/models/gameplayModel');
 const properties                 = require('../../common/models/propertyModel');
+const rules                      = require('../../common/models/rulesModel');
 const propertyMap                = require('../../common/lib/propertyMap');
 const locations                  = require('../../common/models/locationModel');
 const travelLog                  = require('../../common/models/travelLogModel');
@@ -21,12 +22,15 @@ const userModel                  = require('../../common/models/userModel');
 const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
 const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
+const pugToHtml                  = require('./pugToHtml');
 const settings                   = require('../settings');
 const rulesGenerator             = require('./rulesGenerator');
 const needle                     = require('needle');
 const moment                     = require('moment');
 const _                          = require('lodash');
 const async                      = require('async');
+const fs                         = require('fs');
+const path                       = require('path');
 
 const demoGameId          = 'play-a-demo-game';
 const demoOrganisatorMail = 'demo@ferropoly.ch';
@@ -89,7 +93,8 @@ function createRandomGameplay(gameId, props, nb, callback) {
         return callback(err);
       }
     );
-  } catch (e) {
+  }
+  catch (e) {
     console.error(e);
     callback(e);
   }
@@ -149,78 +154,78 @@ function getGameParamsPresetSet(presets) {
   switch (presets) {
     case 'easy':
       return {
-        presets                  : 'easy',
-        interestInterval         : 60,
-        interest                 : 4000,
+        presets:                   'easy',
+        interestInterval:          60,
+        interest:                  4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital             : 4000,
-        debtInterest             : 20,
-        housePrices              : 0.5,
-        properties               : {
-          lowestPrice               : 1000,
-          highestPrice              : 2000,
-          numberOfPriceLevels       : 6,
+        startCapital:              4000,
+        debtInterest:              20,
+        housePrices:               0.5,
+        properties:                {
+          lowestPrice:                1000,
+          highestPrice:               2000,
+          numberOfPriceLevels:        6,
           numberOfPropertiesPerGroup: 2
         },
-        rentFactors              : {
-          noHouse             : 0.25,
-          oneHouse            : 2,
-          twoHouses           : 2.75,
-          threeHouses         : 3,
-          fourHouses          : 3.5,
-          hotel               : 4,
+        rentFactors:               {
+          noHouse:              0.25,
+          oneHouse:             2,
+          twoHouses:            2.75,
+          threeHouses:          3,
+          fourHouses:           3.5,
+          hotel:                4,
           allPropertiesOfGroup: 2
         }
       };
 
     case 'moderate':
       return {
-        presets                  : 'moderate',
-        interestInterval         : 60,
-        interest                 : 4000,
+        presets:                   'moderate',
+        interestInterval:          60,
+        interest:                  4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital             : 4000,
-        debtInterest             : 20,
-        housePrices              : 0.5,
-        properties               : {
-          lowestPrice               : 1000,
-          highestPrice              : 4000,
-          numberOfPriceLevels       : 7,
+        startCapital:              4000,
+        debtInterest:              20,
+        housePrices:               0.5,
+        properties:                {
+          lowestPrice:                1000,
+          highestPrice:               4000,
+          numberOfPriceLevels:        7,
           numberOfPropertiesPerGroup: 2
         },
-        rentFactors              : {
-          noHouse             : 0.2,
-          oneHouse            : 0.8,
-          twoHouses           : 2.5,
-          threeHouses         : 3.5,
-          fourHouses          : 4,
-          hotel               : 5,
+        rentFactors:               {
+          noHouse:              0.2,
+          oneHouse:             0.8,
+          twoHouses:            2.5,
+          threeHouses:          3.5,
+          fourHouses:           4,
+          hotel:                5,
           allPropertiesOfGroup: 2
         }
       };
 
     default:
       return {
-        presets                  : 'classic',
-        interestInterval         : 60,
-        interest                 : 4000,
+        presets:                   'classic',
+        interestInterval:          60,
+        interest:                  4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital             : 4000,
-        debtInterest             : 20,
-        housePrices              : 0.5,
-        properties               : {
-          lowestPrice               : 1000,
-          highestPrice              : 8000,
-          numberOfPriceLevels       : 8,
+        startCapital:              4000,
+        debtInterest:              20,
+        housePrices:               0.5,
+        properties:                {
+          lowestPrice:                1000,
+          highestPrice:               8000,
+          numberOfPriceLevels:        8,
           numberOfPropertiesPerGroup: 2
         },
-        rentFactors              : {
-          noHouse             : 0.125,
-          oneHouse            : 0.5,
-          twoHouses           : 2,
-          threeHouses         : 3,
-          fourHouses          : 4,
-          hotel               : 5,
+        rentFactors:               {
+          noHouse:              0.125,
+          oneHouse:             0.5,
+          twoHouses:            2,
+          threeHouses:          3,
+          fourHouses:           4,
+          hotel:                5,
           allPropertiesOfGroup: 2
         }
       };
@@ -247,29 +252,34 @@ function createNewGameplay(gpOptions, callback) {
     user = user || {id: gpOptions.email};
 
     gameplays.createGameplay({
-      gameId          : gpOptions.gameId || '',
-      map             : gpOptions.map,
-      name            : gpOptions.gamename,
-      ownerEmail      : gpOptions.email,
-      organisatorName : gpOptions.organisatorName,
-      ownerId         : user.id,
-      gameStart       : gpOptions.gameStart || '05:00',
-      gameEnd         : gpOptions.gameEnd || '18:00',
-      gameDate        : gpOptions.gamedate,
-      instance        : settings.server.serverId,
-      mobile          : gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
-      gameParams      : getGameParamsPresetSet(gpOptions.presets),
+      gameId:           gpOptions.gameId || '',
+      map:              gpOptions.map,
+      name:             gpOptions.gamename,
+      ownerEmail:       gpOptions.email,
+      organisatorName:  gpOptions.organisatorName,
+      ownerId:          user.id,
+      gameStart:        gpOptions.gameStart || '05:00',
+      gameEnd:          gpOptions.gameEnd || '18:00',
+      gameDate:         gpOptions.gamedate,
+      instance:         settings.server.serverId,
+      mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
+      gameParams:       getGameParamsPresetSet(gpOptions.presets),
       interestInterval: gpOptions.interestInterval,
-      isDemo          : gpOptions.isDemo,
-      mainInstances   : settings.mainInstances,
-      autopilot       : gpOptions.autopilot
+      isDemo:           gpOptions.isDemo,
+      mainInstances:    settings.mainInstances,
+      autopilot:        gpOptions.autopilot
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
         return callback(err);
       }
-      logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
-      return copyLocationsToProperties(gpOptions, gameplay, callback);
+      // Create also the rules
+      let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
+      rules.createRules(gpOptions.gameId, pugToHtml(template))
+        .finally(() => {
+          logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
+          return copyLocationsToProperties(gpOptions, gameplay, callback);
+        });
     });
   });
 
@@ -304,7 +314,9 @@ function deleteGameplay(gpOptions, callback) {
         await gameplays.removeGameplay(gp);
         await travelLog.deleteAllEntries(gpOptions.gameId);
         await gameLog.deleteAllEntries(gpOptions.gameId);
-      } catch (err) {
+        await rules.deleteRules(gpOptions.gameId);
+      }
+      catch (err) {
         if (err) {
           logger.error('Error while deleting gameplays', err);
         }
@@ -329,12 +341,12 @@ function createDemoTeamEntry(gameId, entry) {
 
   return {
     gameId: gameId,
-    data  : {
-      name        : entry[0],
+    data:   {
+      name:         entry[0],
       organization: entry[1],
-      teamLeader  : {name: entry[2], email: entry[3], phone: entry[4]},
-      remarks     : '',
-      members     : entry[5] || []
+      teamLeader:   {name: entry[2], email: entry[3], phone: entry[4]},
+      remarks:      '',
+      members:      entry[5] || []
     }
   };
 }
@@ -354,53 +366,53 @@ async function createDemoTeams(gp, teamNb, callback) {
 
   let referenceData = [
     createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0),
-      demoUsers.getTeamLeaderEmail(0), '079 000 00 01',
-      [demoUsers.getTeamLeaderEmail(20), demoUsers.getTeamLeaderEmail(21)]]),
+                                             demoUsers.getTeamLeaderEmail(0), '079 000 00 01',
+                                             [demoUsers.getTeamLeaderEmail(20), demoUsers.getTeamLeaderEmail(21)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
-      demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
-      [demoUsers.getTeamLeaderEmail(22), demoUsers.getTeamLeaderEmail(23),
-        demoUsers.getTeamLeaderEmail(24)]]),
+                                             demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
+                                             [demoUsers.getTeamLeaderEmail(22), demoUsers.getTeamLeaderEmail(23),
+                                              demoUsers.getTeamLeaderEmail(24)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
-      demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
-      [demoUsers.getTeamLeaderEmail(20)]]),
+                                             demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
+                                             [demoUsers.getTeamLeaderEmail(20)]]),
     createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3),
-      demoUsers.getTeamLeaderEmail(3), '079 000 00 04',
-      'Siegerteam letztes Jahr']),
+                                             demoUsers.getTeamLeaderEmail(3), '079 000 00 04',
+                                             'Siegerteam letztes Jahr']),
     createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', demoUsers.getTeamLeaderName(4),
-      demoUsers.getTeamLeaderEmail(4), '079 000 00 05']),
+                                             demoUsers.getTeamLeaderEmail(4), '079 000 00 05']),
     createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', demoUsers.getTeamLeaderName(5),
-      demoUsers.getTeamLeaderEmail(5), '079 000 00 06']),
+                                             demoUsers.getTeamLeaderEmail(5), '079 000 00 06']),
     createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', demoUsers.getTeamLeaderName(6),
-      demoUsers.getTeamLeaderEmail(6), '079 000 00 07']),
+                                             demoUsers.getTeamLeaderEmail(6), '079 000 00 07']),
     createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', demoUsers.getTeamLeaderName(7),
-      demoUsers.getTeamLeaderEmail(7), '079 000 00 08']),
+                                             demoUsers.getTeamLeaderEmail(7), '079 000 00 08']),
     createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', demoUsers.getTeamLeaderName(8),
-      demoUsers.getTeamLeaderEmail(8), '079 000 00 09']),
+                                             demoUsers.getTeamLeaderEmail(8), '079 000 00 09']),
     createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern',
-      demoUsers.getTeamLeaderName(9), demoUsers.getTeamLeaderEmail(9),
-      '079 000 00 10']),
+                                             demoUsers.getTeamLeaderName(9), demoUsers.getTeamLeaderEmail(9),
+                                             '079 000 00 10']),
     createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', demoUsers.getTeamLeaderName(10),
-      demoUsers.getTeamLeaderEmail(10), '079 000 00 11']),
+                                             demoUsers.getTeamLeaderEmail(10), '079 000 00 11']),
     createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', demoUsers.getTeamLeaderName(11),
-      demoUsers.getTeamLeaderEmail(11), '079 000 00 12']),
+                                             demoUsers.getTeamLeaderEmail(11), '079 000 00 12']),
     createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', demoUsers.getTeamLeaderName(12),
-      demoUsers.getTeamLeaderEmail(12), '079 000 00 13']),
+                                             demoUsers.getTeamLeaderEmail(12), '079 000 00 13']),
     createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', demoUsers.getTeamLeaderName(13),
-      demoUsers.getTeamLeaderEmail(13), '079 000 00 14']),
+                                             demoUsers.getTeamLeaderEmail(13), '079 000 00 14']),
     createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', demoUsers.getTeamLeaderName(14),
-      demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
+                                             demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
     createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', demoUsers.getTeamLeaderName(15),
-      demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
+                                             demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
     createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', demoUsers.getTeamLeaderName(16),
-      demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
+                                             demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
     createDemoTeamEntry(gp.internal.gameId, ['Know-Nothing Bozo the Non-Wonder Dog & Wonko the sane',
-      'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17),
-      demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
+                                             'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17),
+                                             demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
     createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms',
-      demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18),
-      '079 000 00 19']),
+                                             demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18),
+                                             '079 000 00 19']),
     createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', demoUsers.getTeamLeaderName(19),
-      demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
+                                             demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
   ];
   for (i = 0; i < teamNb; i++) {
     await teams.createTeam(referenceData[i], gp.internal.gameId);
@@ -431,26 +443,27 @@ function createDemoGameplay(p1, p2) {
   let gameId = settings.gameId || demoGameId;
 
   let options = {
-    map             : settings.map || 'sbb',
-    email           : settings.email || demoOrganisatorMail,
-    ownerEmail      : settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with email
-    organisatorName : 'Max Muster',
-    gamedate        : settings.gameDate || new Date(),
-    gameStart       : settings.gameStart || '06:00',
-    gameEnd         : settings.gameEnd || '21:00',
-    gamename        : settings.gamename || 'Demo Spiel',
-    gameId          : gameId,
-    random          : settings.random || 120,
-    teamNb          : settings.teamNb || 8,
-    doNotNotifyMain : settings.doNotNotifyMain,
+    map:        settings.map || 'sbb',
+    email:      settings.email || demoOrganisatorMail,
+    ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with
+                                                       // email
+    organisatorName:  'Max Muster',
+    gamedate:         settings.gameDate || new Date(),
+    gameStart:        settings.gameStart || '06:00',
+    gameEnd:          settings.gameEnd || '21:00',
+    gamename:         settings.gamename || 'Demo Spiel',
+    gameId:           gameId,
+    random:           settings.random || 120,
+    teamNb:           settings.teamNb || 8,
+    doNotNotifyMain:  settings.doNotNotifyMain,
     interestInterval: settings.interestInterval,
-    mobile          : settings.mobile || {level: 5},
-    presets         : settings.presets,
-    isDemo          : true,
-    autopilot       : {
-      active   : _.get(settings, 'autopilot.active', false),
+    mobile:           settings.mobile || {level: 5},
+    presets:          settings.presets,
+    isDemo:           true,
+    autopilot:        {
+      active:    _.get(settings, 'autopilot.active', false),
       picBucket: _.get(settings, 'autopilot.picBucket', false),
-      interval : _.get(settings, 'autopilot.interval', (30 * 60 * 1000))
+      interval:  _.get(settings, 'autopilot.interval', (30 * 60 * 1000))
     }
   };
 

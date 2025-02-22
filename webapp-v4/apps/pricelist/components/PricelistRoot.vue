@@ -14,12 +14,12 @@
 
 <script setup>
 import MenuBar from '../../../common/components/MenuBar.vue'
-import {last, split} from 'lodash';
 import {computed, onBeforeMount, ref, watch} from 'vue';
 import {usePricelistStore} from '../../../lib/store/pricelistStore';
 import {useRoute} from 'vue-router';
+import {gameIdExtractor} from '../../../common/lib/gameIdExtractor';
 
-const gameId         = ref('');
+const {gameId}       = gameIdExtractor();
 const visible        = ref(false);
 const route          = useRoute();
 const pricelistStore = usePricelistStore();
@@ -29,8 +29,8 @@ const isPricelistRoute = computed(() => route.name === 'pricelist');
 const menuBarElements = [
   {label: 'Preisliste', route: 'pricelist'},
   {
-    label: 'Preisliste drucken',
-    command: ()=> {
+    label:   'Preisliste drucken',
+    command: () => {
       console.log('command');
       window.print();
     },
@@ -43,9 +43,7 @@ const menuBarElements = [
 ];
 
 onBeforeMount(() => {
-  // Retrieve GameId for this page
-  const elements = split(window.location.pathname, '/');
-  gameId.value   = last(elements);
+  console.log('onBeforeMount Root');
   pricelistStore.fetchPricelist(gameId.value);
 });
 
@@ -60,10 +58,8 @@ watch(
 </script>
 
 <style scoped lang="scss">
-@media print
-{
-  .no-print, .no-print *
-  {
+@media print {
+  .no-print, .no-print * {
     display: none !important;
   }
 }
