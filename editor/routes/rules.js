@@ -33,6 +33,22 @@ router.get('/data/:gameId', function (req, res) {
   });
 });
 
+router.post('/raw/:gameId', async (req, res) => {
+  try {
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
+    }
+    await rulesModel.updateRawRules(req.params.gameId, req.body.raw);
+    res.send({});
+  }
+  catch (e) {
+    logger.error('Exception in /rules/raw', e);
+    return res.status(500).send({message: e.message});
+  }
+})
+
+// ------ OLD -----
 
 /**
  * Update the rules

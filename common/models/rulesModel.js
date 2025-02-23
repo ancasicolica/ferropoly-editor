@@ -19,6 +19,13 @@ const rulesSchema = mongoose.Schema({
 
 const Rules = mongoose.model('Rules', rulesSchema);
 
+/**
+ * Creates and saves a set of rules for a specific game based on the provided template.
+ *
+ * @param {string} gameId - The unique identifier for the game for which the rules are being created.
+ * @param {Object} template - The template object containing the rules structure or details.
+ * @return {Promise<void>} A promise that resolves when the rules have been successfully saved.
+ */
 async function createRules(gameId, template) {
   const rules  = new Rules();
   rules.gameId = gameId;
@@ -27,11 +34,24 @@ async function createRules(gameId, template) {
   await rules.save();
 }
 
+/**
+ * Deletes the rules associated with a specific game.
+ *
+ * @param {string} gameId - The unique identifier of the game whose rules are to be deleted.
+ * @return {Promise<object>} A promise that resolves to the result of the delete operation.
+ */
 async function deleteRules(gameId) {
   logger.info(`${gameId}: removing rules`);
   return await Rules.deleteOne({'gameId': gameId}).exec();
 }
 
+/**
+ * Retrieves the rules for a specific game based on the provided gameId.
+ *
+ * @param {string} gameId - The unique identifier for the game whose rules are to be retrieved.
+ * @return {Promise<Object>} A promise that resolves to an object containing the game's rules.
+ * If no rules are found, returns an empty object.
+ */
 async function getRules(gameId) {
   const rules = await Rules.findOne({'gameId': gameId}).exec();
   if (rules) {
@@ -40,8 +60,22 @@ async function getRules(gameId) {
   return {};
 }
 
+/**
+ * Updates the raw rules for a specific game in the database.
+ *
+ * @param {string} gameId - The unique identifier of the game for which the rules should be updated.
+ * @param {string} raw - The new raw rules content to be saved for the specified game.
+ * @return {Promise<void>} A promise that resolves when the raw rules are successfully updated.
+ */
+async function updateRawRules(gameId, raw) {
+  const rules = await Rules.findOne({'gameId': gameId}).exec();
+  rules.raw   = raw;
+  await rules.save();
+}
+
 module.exports = {
   createRules,
   deleteRules,
-  getRules
+  getRules,
+  updateRawRules
 }

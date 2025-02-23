@@ -1,0 +1,38 @@
+[
+  {"tag": "gameStart", "description": "Startzeit des Spiels", "property": "scheduling.gameStart"},
+  {"tag": "gameEnd", "description": "Zeit des Spielendes", "property": "scheduling.gameEnd"},
+  {
+    "tag": "startCapital", "description": "Startguthaben zu Beginn des Spiels", "property": "gameParams.startCapital",
+    "formatter": "formatAmount"
+  },
+  {
+    "tag": "interest", "description": "Startgeld pro Runde", "property": "gameParams.interest",
+    "formatter": "formatAmount"
+  },
+  {"tag": "interestInterval", "description": "Dauer einer Spielrunde", "property": "gameParams.interestInterval"},
+  {
+    "tag": "interestCyclesAtEndOfGame", "description": "Anzahl Zinsrunden bei Spielende",
+    "property": "gameParams.interestCyclesAtEndOfGame"
+  },
+  {
+    "tag": "allPropertiesOfGroup",
+    "description": "Faktor auf die Miete, falls alle Orte einer Ortsgruppe im Besitz des Teams sind ",
+    "property": "gameParams.rentFactors.allPropertiesOfGroup"
+  },
+  {
+    "tag": "minLottery", "description": "Mindestbetrag, welcher bei Chance/Kanzlei gewonnen oder verloren werden kann",
+    "property": "gameParams.chancellery.minLottery", "formatter": "formatAmount"
+  },
+  {
+    "tag": "maxLottery", "description": "Maximalbetrag, welcher bei Chance/Kanzlei gewonnen oder verloren werden kann",
+    "property": "gameParams.chancellery.maxLottery", "formatter": "formatAmount"
+  },
+  {
+    "tag": "maxGambling", "description": "Maximalbetrag, welcher beim Gambling gesetzt werden kann",
+    "property": "gameParams.chancellery.maxGambling", "formatter": "formatAmount"
+  },
+  {
+    "tag": "organisatorPhone", "description": "Telefonnummer der Zentrale während dem Spiel",
+    "property": "owner.organisatorPhone"
+  }
+]
