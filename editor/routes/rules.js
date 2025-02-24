@@ -8,9 +8,12 @@ const router        = express.Router();
 const gameplayModel = require('../../common/models/gameplayModel');
 const rulesModel    = require('../../common/models/rulesModel');
 const logger        = require('../../common/lib/logger').getLogger('routes:rules');
+const pugToHtml     = require('../lib/pugToHtml');
 const path          = require('path');
 const _             = require('lodash');
 const {DateTime}    = require('luxon');
+const rulesCompiler = require('../lib/rulesCompiler');
+const fs            = require('fs');
 
 /* GET Page with rules. */
 router.get('/:gameId', function (req, res) {
@@ -33,14 +36,24 @@ router.get('/data/:gameId', function (req, res) {
   });
 });
 
+/**
+ * Saves the raw rules, editing currently the rules
+ */
 router.post('/raw/:gameId', async (req, res) => {
   try {
     if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
       logger.info('Auth token missing, access denied');
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
-    await rulesModel.updateRawRules(req.params.gameId, req.body.raw);
-    res.send({});
+    gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
+      if (err) {
+        return res.status(500).send({message: 'Spiel nicht gefunden'});
+      }
+      const compiledRules = rulesCompiler({gp, raw: req.body.raw});
+      const rules         = await rulesModel.updateEditedRules(req.params.gameId, req.body.raw, compiledRules);
+      res.send({text: rules.text, raw: rules.raw});
+    })
+
   }
   catch (e) {
     logger.error('Exception in /rules/raw', e);
@@ -48,34 +61,33 @@ router.post('/raw/:gameId', async (req, res) => {
   }
 })
 
-// ------ OLD -----
-
 /**
- * Update the rules
+ * Resets the rules to the default settings
  */
-router.post('/:gameId', function (req, res) {
+router.post('/reset/:gameId', async (req, res) => {
   try {
     if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
       logger.info('Auth token missing, access denied');
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
-    logger.info(`Updating rules for ${req.params.gameId}`);
-    let info = {
-      changes: req.body.changes || 'Keine Angaben',
-      text:    req.body.text
-    };
-    gameplayModel.updateRules(req.params.gameId, req.session.passport.user, info, function (err) {
+
+    gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
       if (err) {
-        return res.status(500).send(err.message);
+        return res.status(500).send({message: 'Spiel nicht gefunden'});
       }
-      return res.send();
-    });
+      const template      = fs.readFileSync(path.join(__dirname, '..', 'lib', 'rulesTemplate.pug'), 'utf8');
+      const raw           = pugToHtml(template);
+      const compiledRules = rulesCompiler({gp, raw: raw});
+      const rules         = await rulesModel.updateEditedRules(req.params.gameId, raw, compiledRules);
+      res.send({text: rules.text, raw: rules.raw});
+    })
+
   }
   catch (e) {
-    logger.error('Exception in gameplay.finalize.post', e);
+    logger.error('Exception in /rules/reset', e);
     return res.status(500).send({message: e.message});
   }
-});
+})
 
 
 module.exports = router;

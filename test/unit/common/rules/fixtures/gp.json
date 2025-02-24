@@ -1,7 +1,7 @@
 {
   "_id": "observant-stamp", "owner": {"organisatorEmail": "demo@ferropoly.ch", "organisatorName": "Heinz Muster"},
   "admins": {"logins": []}, "scheduling": {
-  "gameDate": {"$date": "2021-04-27T00:00:00.000Z"}, "gameStart": "05:00", "gameEnd": "18:00",
+  "gameDate": {"$date": "2021-04-27T00:00:00.000Z"}, "gameStart": "2025-02-24T04:00:00.000Z", "gameEnd": "18:00",
   "deleteTs": {"$date": "2021-05-27T21:59:00.000Z"}
 }, "gameParams": {
   "properties": {"lowestPrice": 1000, "highestPrice": 4000, "numberOfPriceLevels": 7, "numberOfPropertiesPerGroup": 2},

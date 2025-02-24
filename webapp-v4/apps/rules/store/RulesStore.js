@@ -12,7 +12,9 @@ export const useRulesStore = defineStore('Rules', {
   state:   () => ({
     editAllowed: false,
     raw:         '',
-    gameId:      ''
+    rawOriginal: '',
+    gameId:      '',
+    text:        '',
   }),
   getters: {},
   actions: {
@@ -27,6 +29,8 @@ export const useRulesStore = defineStore('Rules', {
       console.log(loadedRules.data);
       this.editAllowed = loadedRules.data.editAllowed || false;
       this.raw         = loadedRules.data?.rules.raw;
+      this.rawOriginal = loadedRules.data?.rules.raw;
+      this.text        = loadedRules.data?.rules.text;
       this.gameId      = gameId;
     },
     /**
@@ -41,11 +45,27 @@ export const useRulesStore = defineStore('Rules', {
         console.warn('Saving not allowed');
         return;
       }
-      const authToken = await getAuthToken();
-      await axios.post(`/rules/raw/${this.gameId}`, {
+      const authToken  = await getAuthToken();
+      const res        = await axios.post(`/rules/raw/${this.gameId}`, {
         raw: this.raw,
         authToken
-      }, {headers: {Authorization: `Bearer ${authToken}`}})
+      });
+      this.rawOriginal = this.raw;
+      this.text        = res.data?.text;
+    },
+
+    async resetRules() {
+      if (!this.editAllowed) {
+        console.warn('resetting not allowed');
+        return;
+      }
+      const authToken  = await getAuthToken();
+      const res        = await axios.post(`/rules/reset/${this.gameId}`, {
+        authToken
+      });
+      this.raw         = res.data?.raw;
+      this.rawOriginal = res.data?.raw;
+      this.text        = res.data?.text;
     }
-  }
+  },
 })

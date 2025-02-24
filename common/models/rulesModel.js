@@ -11,7 +11,8 @@ const rulesSchema = mongoose.Schema({
   _id:       {type: String, index: true},
   gameId:    String,
   version:   {type: Number, default: -1},  // version, just counting up
-  text:      String, // The compiled rules as HTML text
+  released:  {type: String, default: ''}, // The released rules
+  text:      {type: String, default: ''}, // The compiled rules as HTML text
   raw:       String, // The work in progress text, containing {{ placeholders }}
   changelog: {type: Array, default: []}, // changelog, Object contains info and current version of the rules
   date:      Date, // Date when changed
@@ -60,22 +61,18 @@ async function getRules(gameId) {
   return {};
 }
 
-/**
- * Updates the raw rules for a specific game in the database.
- *
- * @param {string} gameId - The unique identifier of the game for which the rules should be updated.
- * @param {string} raw - The new raw rules content to be saved for the specified game.
- * @return {Promise<void>} A promise that resolves when the raw rules are successfully updated.
- */
-async function updateRawRules(gameId, raw) {
+
+async function updateEditedRules(gameId, raw, compiled) {
   const rules = await Rules.findOne({'gameId': gameId}).exec();
   rules.raw   = raw;
+  rules.text  = compiled;
   await rules.save();
+  return rules;
 }
 
 module.exports = {
   createRules,
   deleteRules,
   getRules,
-  updateRawRules
+  updateEditedRules
 }

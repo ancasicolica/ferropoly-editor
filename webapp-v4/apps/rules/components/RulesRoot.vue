@@ -24,6 +24,7 @@ const rulesStore = useRulesStore();
 
 const menuBarElements = [
   {label: 'Info', route: 'rules-info'},
+  {label: 'Spielregeln Vorschau', route: 'rules-preview'},
   {label: 'Spielregeln bearbeiten', route: 'rules-edit'},
 ];
 

@@ -1,6 +1,6 @@
 [
-  {"tag": "gameStart", "description": "Startzeit des Spiels", "property": "scheduling.gameStart"},
-  {"tag": "gameEnd", "description": "Zeit des Spielendes", "property": "scheduling.gameEnd"},
+  {"tag": "gameStartTime", "description": "Startzeit des Spiels", "property": "scheduling.gameStart", "formatter": "gameTime"},
+  {"tag": "gameEndTime", "description": "Zeit des Spielendes", "property": "scheduling.gameEnd", "formatter": "gameTime"},
   {
     "tag": "startCapital", "description": "Startguthaben zu Beginn des Spiels", "property": "gameParams.startCapital",
     "formatter": "formatAmount"
