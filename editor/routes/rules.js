@@ -31,8 +31,15 @@ router.get('/data/:gameId', function (req, res) {
     let now           = DateTime.now();
     const editAllowed = now < gameStart;
     const rules       = await rulesModel.getRules(req.params.gameId);
+    const text        = rulesCompiler({gp, raw: rules.raw});
 
-    res.send({editAllowed, rules});
+    res.send({
+      editAllowed, rules: {
+        raw:      rules.raw,
+        released: rules.released,
+        text:     text
+      }
+    });
   });
 });
 
@@ -45,13 +52,15 @@ router.post('/raw/:gameId', async (req, res) => {
       logger.info('Auth token missing, access denied');
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
+    logger.info(`${req.params.gameId} : updating raw rules`);
+
     gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
       if (err) {
         return res.status(500).send({message: 'Spiel nicht gefunden'});
       }
       const compiledRules = rulesCompiler({gp, raw: req.body.raw});
       const rules         = await rulesModel.updateEditedRules(req.params.gameId, req.body.raw, compiledRules);
-      res.send({text: rules.text, raw: rules.raw});
+      res.send({text: rules.text, raw: rules.raw, released: rules.released});
     })
 
   }
@@ -70,6 +79,7 @@ router.post('/reset/:gameId', async (req, res) => {
       logger.info('Auth token missing, access denied');
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
+    logger.info(`${req.params.gameId} : resetting rules`);
 
     gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
       if (err) {
@@ -79,9 +89,38 @@ router.post('/reset/:gameId', async (req, res) => {
       const raw           = pugToHtml(template);
       const compiledRules = rulesCompiler({gp, raw: raw});
       const rules         = await rulesModel.updateEditedRules(req.params.gameId, raw, compiledRules);
-      res.send({text: rules.text, raw: rules.raw});
+      res.send({text: rules.text, raw: rules.raw, released: rules.released});
     })
 
+  }
+  catch (e) {
+    logger.error('Exception in /rules/reset', e);
+    return res.status(500).send({message: e.message});
+  }
+})
+
+/**
+ * Releases the rules
+ */
+router.post('/release/:gameId', async (req, res) => {
+  try {
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
+    }
+    logger.info(`${req.params.gameId} : releasing rules`);
+
+    const rules = await rulesModel.releaseRules(req.params.gameId, req.body.text, 'Neue Version');
+    // Temporary, until Game is on the same level like the editor
+    gameplayModel.updateRules(req.params.gameId, req.session.passport.user, {
+      text:    rules.released,
+      changes: 'Aktualisiert'
+    }, err => {
+      if (err) {
+        return res.status(500).send({message: 'Fehler beim Speichern der Regeln'});
+      }
+      res.send({text: rules.text, raw: rules.raw, released: rules.released});
+    })
   }
   catch (e) {
     logger.error('Exception in /rules/reset', e);

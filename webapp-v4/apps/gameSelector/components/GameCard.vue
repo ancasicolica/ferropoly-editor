@@ -42,7 +42,7 @@
 
     prime-button.btn-gameplay(label="Preisliste" icon="pi pi-list" severity="secondary"  @click="gotoUrl(url.viewPricelist)" v-if="getGpProperty('log.priceListVersion') > 0")
 
-    prime-button.btn-gameplay(label="Spielregeln" icon="pi pi-pencil"  severity="secondary" @click="gotoUrl(url.rules)" v-if="getGpProperty('isOwner')")
+    prime-button.btn-gameplay(label="Spielregeln" :badge="badge" badge-severity="danger" icon="pi pi-pencil"  severity="secondary" @click="gotoUrl(url.rules)" v-if="getGpProperty('isOwner')")
 
     prime-button.btn-gameplay(label="Gruppen" icon="pi pi-users" severity="secondary" @click="gotoUrl(url.editPlayer)" v-if="getGpProperty('isOwner')")
 
@@ -108,6 +108,12 @@ export default {
     },
     registrationEndingSoon() {
       return !(this.registrationActive || this.registrationFinished);
+    },
+    badge() {
+      if (this.gameplay?.rulesUpdateNeeded) {
+        return '!'
+      }
+      return null;
     }
   },
   created   : function () {

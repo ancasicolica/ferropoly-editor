@@ -10,28 +10,31 @@ const async         = require('async');
 const gameplayLib   = require('../lib/gameplayLib');
 const gameplayModel = require('../../common/models/gameplayModel');
 const userModel     = require('../../common/models/userModel');
+const rulesModel    = require('../../common/models/rulesModel');
 const moment        = require('moment');
 const logger        = require('../../common/lib/logger').getLogger('routes:gameplay');
 const _             = require('lodash');
 
 /* GET all games for the current user as a summary for the main page */
 router.get('/mygames', function (req, res) {
-  gameplayModel.getGameplaysForUser(req.session.passport.user, function (err, gameplays) {
+  gameplayModel.getGameplaysForUser(req.session.passport.user, async function (err, gameplays) {
     if (err) {
       return res.status(500).send({message: 'DB read error: ' + err.message});
     }
     let retVal = {gameplays: []};
     if (gameplays) {
-      gameplays.forEach(function (gameplay) {
+      for (const gameplay of gameplays) {
+        const rules = await rulesModel.getRules(gameplay.internal.gameId)
         retVal.gameplays.push({
-          internal  : gameplay.internal,
-          gamename  : gameplay.gamename,
-          scheduling: gameplay.scheduling,
-          joining   : gameplay.joining,
-          log       : gameplay.log,
-          isOwner   : _.get(gameplay, 'internal.owner') === req.session.passport.user
+          internal:          gameplay.internal,
+          gamename:          gameplay.gamename,
+          scheduling:        gameplay.scheduling,
+          joining:           gameplay.joining,
+          log:               gameplay.log,
+          rulesUpdateNeeded: rules.text !== rules?.released,
+          isOwner:           _.get(gameplay, 'internal.owner') === req.session.passport.user
         });
-      });
+      }
     }
 
     return res.send(retVal);
@@ -85,14 +88,14 @@ router.post('/createnew', function (req, res) {
 
         // Use the unit-test tested gameplay lib for this
         gameplayLib.createNewGameplay({
-            email          : user.personalData.email,
+            email:           user.personalData.email,
             organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
-            map            : req.body.map,
-            gamename       : req.body.gamename,
-            gamedate       : req.body.gamedate,
-            gameId         : req.body.gameId || '',
-            presets        : req.body.presets || 'classic',
-            random         : req.body.random
+            map:             req.body.map,
+            gamename:        req.body.gamename,
+            gamedate:        req.body.gamedate,
+            gameId:          req.body.gameId || '',
+            presets:         req.body.presets || 'classic',
+            random:          req.body.random
           },
           function (err, gp) {
             if (err) {
@@ -102,7 +105,8 @@ router.post('/createnew', function (req, res) {
           });
       });
     });
-  } catch (e) {
+  }
+  catch (e) {
     logger.error('Exception in gameplay.createnew.post', e);
     return res.status(500).send({message: e.message});
   }
@@ -137,14 +141,17 @@ router.post('/finalize', function (req, res) {
         return res.status(403).send('Not allowed');
       }
 
-      gameplayLib.finalizeGameplay(gp, req.session.passport.user, function (err) {
+      gameplayLib.finalizeGameplay(gp, req.session.passport.user, async function (err) {
         if (err) {
           return res.status(500).send({message: 'Error while finalizing gameplay: ' + err.message});
         }
+        // Now create also first rules
+        await rulesModel.releaseRules(gp.internal.gameId, 'Automatisch bei Finalisierung erzeugt');
         return res.send({});
       });
     });
-  } catch (e) {
+  }
+  catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);
     return res.status(500).send({message: e.message});
   }
@@ -227,7 +234,8 @@ router.delete('/:gameId', function (req, res) {
         return res.send({gameId: gp.internal.gameId, name: gp.gamename});
       });
     });
-  } catch (e) {
+  }
+  catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);
     return res.status(500).send({message: e.message});
   }

@@ -25,6 +25,11 @@ function formatGameTime(time) {
   return date.toLocaleString(DateTime.TIME_24_SIMPLE);
 }
 
+function formatGameDate(date) {
+  console.log('XXX', date);
+  return  DateTime.fromJSDate(date).setLocale('de').toLocaleString(DateTime.DATE_HUGE);
+}
+
 module.exports = function (options) {
   if (!options.gp || !options.raw) {
     return;
@@ -39,6 +44,8 @@ module.exports = function (options) {
         formatter = formatAmount;
       } else if (t.formatter === 'gameTime') {
         formatter = formatGameTime;
+      }else if (t.formatter === 'gameDate') {
+        formatter = formatGameDate;
       }
     } else {
       formatter = function (e) {

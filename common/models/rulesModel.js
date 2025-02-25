@@ -4,8 +4,9 @@
  * Created: 15.02.2025
  **/
 
-const mongoose = require('mongoose');
-const logger   = require('../lib/logger').getLogger('rulesModel');
+const mongoose   = require('mongoose');
+const logger     = require('../lib/logger').getLogger('rulesModel');
+const {DateTime} = require('luxon');
 
 const rulesSchema = mongoose.Schema({
   _id:       {type: String, index: true},
@@ -61,7 +62,14 @@ async function getRules(gameId) {
   return {};
 }
 
-
+/**
+ * Updates the raw and compiled rules of a specific game in the database and saves the changes.
+ *
+ * @param {string} gameId - The unique identifier for the game whose rules need to be updated.
+ * @param {string} raw - The raw version of the rules to be updated.
+ * @param {string} compiled - The compiled version of the rules to be updated.
+ * @return {Promise<Object>} A promise that resolves to the updated rules object after saving.
+ */
 async function updateEditedRules(gameId, raw, compiled) {
   const rules = await Rules.findOne({'gameId': gameId}).exec();
   rules.raw   = raw;
@@ -70,9 +78,35 @@ async function updateEditedRules(gameId, raw, compiled) {
   return rules;
 }
 
+/**
+ * Updates and releases the rules for a specific game by adding new text, incrementing the version,
+ * and appending a changelog entry based on provided information.
+ *
+ * @param {string} gameId - The unique identifier of the game whose rules are being updated.
+ * @param {string} text - The new rules text to be released.
+ * @param {string} info - Additional information related to the rule changes.
+ * @return {Object} A promise that resolves to the updated rules document.
+ */
+async function releaseRules(gameId, text, info) {
+  const rules    = await Rules.findOne({'gameId': gameId}).exec();
+  rules.released = text;
+  rules.text     = text;
+  rules.version  = rules.version + 1;
+  rules.changelog.push(
+    {
+      date: DateTime.now().toJSDate(),
+      text: rules.text,
+      info: info
+    }
+  )
+  await rules.save();
+  return rules;
+}
+
 module.exports = {
   createRules,
   deleteRules,
   getRules,
-  updateEditedRules
+  updateEditedRules,
+  releaseRules
 }

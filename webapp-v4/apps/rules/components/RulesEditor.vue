@@ -9,13 +9,16 @@
     <Toast/>
     <ConfirmDialog></ConfirmDialog>
     <div class="col-12 md:col-7 lg:col-7 xl:col-8">
-      <Editor v-model="rulesStore.raw"></Editor>
+      <Editor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed"></Editor>
     </div>
-    <div class="col-12 md:col-5 lg:col-5 xl:col-4">
+    <div v-if="rulesStore.editAllowed" class="col-12 md:col-5 lg:col-5 xl:col-4">
       <Button label="Speichern" :disabled="saveDisabled" @click="onSaveRules"></Button>
       <Button label="Spielregeln zurücksetzen" severity="secondary" @click="onResetRules" class="ml-5"></Button>
       <Divider/>
       <editor-help></editor-help>
+    </div>
+    <div class="mt-2" v-if="!rulesStore.editAllowed">
+      <message severity="error">Die Spielregeln können nicht mehr bearbeitet werden.</message>
     </div>
   </div>
 
@@ -25,6 +28,7 @@
 import Button from 'primevue/button';
 import Editor from 'primevue/editor';
 import Divider from 'primevue/divider';
+import Message from 'primevue/message';
 import {useRulesStore} from '../store/RulesStore';
 import EditorHelp from './editor/EditorHelp.vue';
 import Toast from 'primevue/toast';
@@ -57,8 +61,13 @@ const onResetRules = function () {
       label: 'Ja'
     },
     accept:      () => {
-      rulesStore.resetRules().then(()=> {
-        toast.add({severity: 'info', summary: 'Spielregeln zurücksetzen', detail: 'Die Spielregeln wurden zurückgesetzt', life: 4000});
+      rulesStore.resetRules().then(() => {
+        toast.add({
+          severity: 'info',
+          summary:  'Spielregeln zurücksetzen',
+          detail:   'Die Spielregeln wurden zurückgesetzt',
+          life:     4000
+        });
       })
 
     },

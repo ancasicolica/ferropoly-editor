@@ -14,6 +14,7 @@ export const useRulesStore = defineStore('Rules', {
     raw:         '',
     rawOriginal: '',
     gameId:      '',
+    released:    '',
     text:        '',
   }),
   getters: {},
@@ -31,6 +32,7 @@ export const useRulesStore = defineStore('Rules', {
       this.raw         = loadedRules.data?.rules.raw;
       this.rawOriginal = loadedRules.data?.rules.raw;
       this.text        = loadedRules.data?.rules.text;
+      this.released    = loadedRules.data?.rules.released;
       this.gameId      = gameId;
     },
     /**
@@ -54,6 +56,13 @@ export const useRulesStore = defineStore('Rules', {
       this.text        = res.data?.text;
     },
 
+    /**
+     * Resets the rules for the current game if editing is allowed.
+     * Sends a request to reset the rules on the server and updates the relevant properties with the response data.
+     * Logs a warning if resetting is not allowed.
+     *
+     * @return {Promise<void>} A promise that resolves when the rules have been reset and the data has been updated.
+     */
     async resetRules() {
       if (!this.editAllowed) {
         console.warn('resetting not allowed');
@@ -66,6 +75,26 @@ export const useRulesStore = defineStore('Rules', {
       this.raw         = res.data?.raw;
       this.rawOriginal = res.data?.raw;
       this.text        = res.data?.text;
+      this.released    = res.data?.released;
+    },
+    /**
+     * Releases the rules for the current game identified by `this.gameId`.
+     * Sends a POST request to the `/rules/release` endpoint with the necessary authentication token and text data.
+     * Updates internal properties such as `raw`, `rawOriginal`, `text`, and `released` based on the response received.
+     *
+     * @return {Promise<void>} Resolves when the rules release is successfully completed.
+     */
+    async releaseRules() {
+      const authToken  = await getAuthToken();
+      const res        = await axios.post(`/rules/release/${this.gameId}`, {
+        authToken,
+        text: this.text
+      });
+      this.raw         = res.data?.raw;
+      this.rawOriginal = res.data?.raw;
+      this.text        = res.data?.text;
+      this.released    = res.data?.released;
     }
+
   },
 })

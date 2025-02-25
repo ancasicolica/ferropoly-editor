@@ -3,7 +3,7 @@ h1 Spielregeln Ferropoly
 h2 Spielzeit
 
 p.
-  Das Spiel beginnt Punkt {{ gameStartTime }} Uhr, ab diesem Zeitpunkt werden Anrufe entgegen genommen. Spielende ist
+  Das Spiel beginnt am {{ gameDate }}, punkt {{ gameStartTime }} Uhr, ab diesem Zeitpunkt werden Anrufe entgegen genommen. Spielende ist
   {{ gameEndTime }} Uhr.
 
 h2 Startgeld
@@ -61,11 +61,7 @@ p.
   Treffpunkt ist.
 
 h2 Zentrale
-if organisatorPhoneKnown
-  p Die Telefonnummer der Zentrale während dem Spiel ist {{ organisatorPhone }}.
-else
-  p Die Telefonnummer der Zentrale wird vor dem Spiel den Teams noch bekannt gegeben.
-
+p Die Telefonnummer der Zentrale während dem Spiel ist {{ organisatorPhone }}.
 p Folgende Infos werden den anrufenden Teams auf Wunsch bekannt gegeben:
 
 ul

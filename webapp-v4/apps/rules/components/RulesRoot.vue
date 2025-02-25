@@ -17,16 +17,16 @@
 import MenuBar from '../../../common/components/MenuBar.vue';
 import {gameIdExtractor} from '../../../common/lib/gameIdExtractor';
 import {useRulesStore} from '../store/RulesStore';
-import {onBeforeMount} from 'vue';
+import {onBeforeMount, ref} from 'vue';
 
 const {gameId}   = gameIdExtractor();
 const rulesStore = useRulesStore();
 
-const menuBarElements = [
+const menuBarElements = ref([
   {label: 'Info', route: 'rules-info'},
   {label: 'Spielregeln Vorschau', route: 'rules-preview'},
   {label: 'Spielregeln bearbeiten', route: 'rules-edit'},
-];
+]);
 
 onBeforeMount(() => {
   rulesStore.fetchRules(gameId.value);

@@ -1,4 +1,5 @@
 [
+  {"tag": "gameDate", "description": "Datum und Wochentag des Spieles", "property": "scheduling.gameDate", "formatter": "gameDate"},
   {"tag": "gameStartTime", "description": "Startzeit des Spiels", "property": "scheduling.gameStart", "formatter": "gameTime"},
   {"tag": "gameEndTime", "description": "Zeit des Spielendes", "property": "scheduling.gameEnd", "formatter": "gameTime"},
   {
