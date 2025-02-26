@@ -9,7 +9,8 @@
     <Toast/>
     <ConfirmDialog></ConfirmDialog>
     <div class="col-12 md:col-7 lg:col-7 xl:col-8">
-      <Editor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed"></Editor>
+      <Editor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed">
+      </Editor>
     </div>
     <div v-if="rulesStore.editAllowed" class="col-12 md:col-5 lg:col-5 xl:col-4">
       <Button label="Speichern" :disabled="saveDisabled" @click="onSaveRules"></Button>

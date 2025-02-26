@@ -11,10 +11,12 @@
     <p>Für die angemeldeten Gruppen sind die Spielregeln sichtbar, sobald Du eine Version freigibst, spätestens jedoch
       nach der Finalisierung des Spiels.
     </p>
-    <message v-if="noRulesYet" severity="warn">Aktuell gibt es keine Spielregeln für die Teams. Finalisiere das Spiel oder
+    <message v-if="noRulesYet" severity="warn">Aktuell gibt es keine Spielregeln für die Teams. Finalisiere das Spiel
+      oder
       gib die aktuellen Regeln frei.
     </message>
-    <message v-if="outdatedRules" severity="error">Die für die Teams sichtbaren Spielregeln wurden verändert. Gib diese
+    <message v-if="outdatedRules" severity="error">Die für die Teams freigegebenen Spielregeln sind älter als die
+      bearbeitete Version. Gib die bearbeiteten
       Regeln frei, sobald Du mit den Änderungen fertig bist.
     </message>
     <message v-if="rulesUpToDate" severity="success">Die aktuellen Spielregeln wurden den Teams freigegeben.</message>
@@ -51,7 +53,7 @@ const rulesUpToDate = computed(() => {
 const onReleaseClicked = function () {
   releaseInProcess.value = true;
   rulesStore.releaseRules()
-      .then(()=> {
+      .then(() => {
         toast.add({
           severity: 'info',
           summary:  'Spielregeln',
