@@ -24,7 +24,7 @@ createWebApp({
     {path: '/create', name: 'create', component: PanelCreate},
     {path: '/houses', name: 'houses', component: PanelHouses},
     {path: '/pricelist', name: 'pricelist', component: PanelPricelist},
-    {path: '/poperties', name: 'properties', component: PanelProperties},
+    {path: '/properties', name: 'properties', component: PanelProperties},
     {path: '/rent', name: 'rent', component: PanelRent},
     {path: '/sorting', name: 'sorting', component: PanelSorting},
   ],

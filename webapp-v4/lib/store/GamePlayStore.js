@@ -27,6 +27,7 @@ import {
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
 import {useEditorPropertiesStore} from './EditorPropertiesStore';
+import {toRaw} from 'vue';
 
 export const useGameplayStore = defineStore('Gameplay', {
   state:   () => ({
@@ -241,7 +242,21 @@ export const useGameplayStore = defineStore('Gameplay', {
 
       try {
         const authToken = await useAuthTokenStoreStore().getAuthToken();
-        let resp        = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: self, authToken});
+        console.log('self', self, toRaw(self));
+        let saveObj = {
+          gamename: toRaw(self.gamename),
+          admins: toRaw(self.admins),
+          owner: toRaw(self.owner),
+          scheduling: toRaw(self.scheduling),
+          gameParams: toRaw(self.gameParams),
+          rentFactors: toRaw(self.rentFactors),
+          chancellery: toRaw(self.chancellery),
+          log: toRaw(self.log),
+          internal: toRaw(self.internal),
+          joining: toRaw(self.joining),
+          mobile: toRaw(self.mobile),
+        };
+        let resp        = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
         console.log('Gameplay saved', resp);
         this.log.lastEdited = new Date();
         return ({
