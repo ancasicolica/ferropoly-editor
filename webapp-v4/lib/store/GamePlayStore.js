@@ -23,7 +23,7 @@ import {
   interestSchema,
   interestIntervalSchema,
   interestCyclesAtEndOfGameSchema, debtInterestSchema
-} from '../schemas/GamePlaySchemas';
+} from '../../common/schemas/GamePlaySchemas';
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
 import {useEditorPropertiesStore} from './EditorPropertiesStore';
@@ -304,8 +304,5 @@ export const useGameplayStore = defineStore('Gameplay', {
     setJoiningInfotext(text) {
       this.joining.infotext = text;
     },
-
-
-
   }
 })
