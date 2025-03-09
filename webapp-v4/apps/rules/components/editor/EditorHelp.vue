@@ -8,7 +8,7 @@
   <div>
     <h3>Platzhalter</h3>
     <p>Die Platzhalter werden beim Generieren der Spielregeln durch die Werte aus den Spieleigenschaften automatisch
-      gesetzt. Es wird empfohlen, diese Platzhalter zu verenden und diese nicht durch eigenen Text zu ersetzen.</p>
+      gesetzt. Es wird empfohlen, diese Platzhalter zu verwenden und diese nicht durch eigenen Text zu ersetzen.</p>
     <div class="mb-3">Folgende Platzhalter sind definiert:</div>
     <div v-for="p in placeholders" v-bind:key="p.tag" class="mb-2">
       <span>&#123;&#123; {{ p.tag }} &#125;&#125;</span>
