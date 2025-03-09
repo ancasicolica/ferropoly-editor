@@ -20,7 +20,7 @@
         <template #body="slotProps">
           <div v-if="!isUrl(slotProps.data.content)">{{ slotProps.data.content }}</div>
           <div v-if="isUrl(slotProps.data.content)">
-            <a :href="slotProps.data.content">{{ slotProps.data.content }}</a>
+            <a :href="slotProps.data.content" target="_blank">{{ slotProps.data.content }}</a>
           </div>
         </template>
       </column>
