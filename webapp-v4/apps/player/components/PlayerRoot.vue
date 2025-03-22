@@ -6,7 +6,7 @@
 
 <template>
   <div>
-    <menu-bar :elements="menuBarElements"></menu-bar>
+    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected"></menu-bar>
     <div class="grid mr-2 ml-2">
       <registered-players class="col-6"></registered-players>
       <div class="col-6">
@@ -29,20 +29,33 @@ import PlayerEdit from './PlayerEdit.vue';
 import {gameIdExtractor} from '../../../common/lib/gameIdExtractor';
 import {usePlayerStore} from '../store/PlayerStore';
 
-
-const menuBarElements = ref([]);
 const {gameId}        = gameIdExtractor();
 const playerStore     = usePlayerStore();
+const newTeamsAllowed = ref(false);
+const menuBarElements = ref([
+  {label: 'Gruppe hinzufügen',  key: 'new-team', visible:  newTeamsAllowed},
+]);
 
 onBeforeMount(() => {
   playerStore.fetchData(gameId.value)
       .then(() => {
         console.log('Player data loaded');
+        newTeamsAllowed.value = playerStore.newTeamsAllowed;
       })
       .catch(err => {
         console.error('Error while fetching player data', err);
       })
 })
+
+const onItemSelected = function(item) {
+  if (item === 'new-team') {
+    console.log('adding new team');
+    playerStore.createPlayer()
+    newTeamsAllowed.value = playerStore.newTeamsAllowed;
+    return;
+  }
+  console.log(item);
+}
 
 </script>
 

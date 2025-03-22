@@ -17,7 +17,7 @@
         a.v-ripple(:href="href" v-bind="props.action" @click="navigate")
           span(:class='item.icon')
           span {{ item.label }}
-      a(v-else :href="item.url").v-ripple.flex.align-items-center.menu-item(v-bind='props.action' :id="item.key")
+      a(v-else :href="item.url").v-ripple.flex.align-items-center.menu-item(v-bind='props.action' :id="item.key" @click="onItem(item)")
         span(:class='item.icon')
         span {{ item.label }}
         span.ml-auto.border-1.surface-border.border-round.surface-100.text-xs.p-1(v-if='item.shortcut') {{ item.shortcut }}
@@ -46,84 +46,84 @@ import PrimeButton from 'primevue/button';
 import TieredMenu from 'primevue/tieredmenu';
 
 export default {
-  name      : 'MenuBar',
+  name:       'MenuBar',
   components: {PrimeMenubar, PrimeMenu, PrimeButton, TieredMenu},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {
-    favicon         : {
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {
+    favicon:          {
       // Fav-Icon displayed in the menu bar
-      type   : String,
+      type:    String,
       default: function () {
         return '/favicon/apple-touch-icon-180x180.png';
       }
     },
-    title           : {
+    title:            {
       // Title of the menu bar which is the name of the app
-      type   : String,
+      type:    String,
       default: function () {
         return 'Ferropoly';
       }
     },
-    elements        : {
+    elements:         {
       // Elements of the menu bar. Contains different types of elements
-      type   : Array,
+      type:    Array,
       default: function () {
         return [];
       }
     },
-    elementsRight   : {
+    elementsRight:    {
       // Elements of the menu bar on the right side
-      type   : Array,
+      type:    Array,
       default: function () {
         return [];
       }
     },
-    helpUrl         : {
+    helpUrl:          {
       // URL to help, shows (?)
-      type   : String,
+      type:    String,
       default: function () {
         return undefined;
       }
     },
-    helpText         : {
+    helpText:         {
       // Text to be shown instead of (?)
-      type   : String,
+      type:    String,
       default: function () {
         return undefined;
       }
     },
-    showUserBox     : {
+    showUserBox:      {
       // show logout box / about user
-      type   : Boolean,
+      type:    Boolean,
       default: false
     },
     showOnlineStatus: {
       // show cloud symbol
-      type   : Boolean,
+      type:    Boolean,
       default: false
     },
-    online          : {
+    online:           {
       // Status of the connection if online
-      type   : Boolean,
+      type:    Boolean,
       default: false
     }
   },
-  data      : function () {
+  data:       function () {
     return {
-      menuItems    : [],
-      menuUser     : [
+      menuItems:     [],
+      menuUser:      [
         {label: 'Mein Account', command: this.onMyAccount},
         {label: 'Abmelden', command: this.onLogout}
       ],
       activeElement: null,
     }
   },
-  computed  : {},
-  created   : function () {
+  computed:   {},
+  created:    function () {
   },
-  methods   : {
+  methods:    {
     /**
      * Redirects the user to the logout page.
      *
@@ -140,6 +140,10 @@ export default {
     },
     toggle(event) {
       this.$refs.menu.toggle(event);
+    },
+    onItem(item) {
+      console.log('item', item);
+      this.$emit('item-selected', item.key);
     }
   }
 }

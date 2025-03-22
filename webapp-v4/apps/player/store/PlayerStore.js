@@ -11,7 +11,8 @@ import {get} from 'lodash';
 export const usePlayerStore = defineStore('Player', {
   state:   () => ({
     gameId: '',
-    teams:  []
+    teams:  [],
+    newTeamsAllowed : true
   }),
   getters: {},
   actions: {
@@ -22,6 +23,10 @@ export const usePlayerStore = defineStore('Player', {
       let players = await axios.get(`/player/get/${gameId}`);
       console.log('players', players.data);
       this.teams = get(players, 'data.teams', []);
+    },
+    createPlayer() {
+      this.teams.push({});
+      this.newTeamsAllowed = this.teams.length < 20;
     }
   }
 })
