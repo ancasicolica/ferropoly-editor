@@ -7,7 +7,7 @@
 <template>
   <div>
     <ferro-card :title="title">
-      <player-card v-for="player in playerStore.teams" :player="player" :key="player.uuid"></player-card>
+      <player-card v-for="player in playerStore.teams" :player="player" :key="player.uuid" @card-selected="onCardSelected"></player-card>
     </ferro-card>
   </div>
 
@@ -16,14 +16,20 @@
 <script setup>
 
 import FerroCard from '../../../common/components/FerroCard.vue';
-import {ref} from 'vue';
+import {computed} from 'vue';
 import {usePlayerStore} from '../store/PlayerStore';
 import PlayerCard from './PlayerCard.vue';
 
 const playerStore = usePlayerStore();
 
-const title = ref('Angemeldete Gruppen');
+const title = computed( ()=> {
+  return `Angemeldete Gruppen (${playerStore.teamsNb} / max 20)`
+})
 
+const onCardSelected = function(team) {
+  console.log('TEAM', team);
+  playerStore.editTeam(team);
+}
 
 </script>
 
