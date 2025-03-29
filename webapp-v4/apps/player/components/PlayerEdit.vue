@@ -8,7 +8,7 @@
   <div v-if="playerStore.currentTeam">
     <Toast/>
     <ferro-card title="Gruppe bearbeiten">
-      <ferropoly-input-text label="Team-Name" v-model="teamName"></ferropoly-input-text>
+      <ferropoly-input-text label="Team-Name" v-model="teamName" :resolver="teamNameResolver" ></ferropoly-input-text>
       <ferropoly-input-text label="Kontaktperson" v-model="teamLeaderName"></ferropoly-input-text>
       <ferropoly-input-text label="Organisation" v-model="organization"></ferropoly-input-text>
       <ferropoly-input-text label="Telefon" v-model="teamLeaderPhone"></ferropoly-input-text>
@@ -28,6 +28,10 @@ import {computed} from 'vue';
 import {get, set} from 'lodash';
 import Toast from 'primevue/toast';
 import {useToast} from 'primevue/usetoast';
+import {teamLeaderNameSchema, teamNameSchema} from '../../../common/schemas/PlayerSchema';
+import {zodResolver} from '@primevue/forms/resolvers/zod';
+
+const teamNameResolver = zodResolver(teamNameSchema);
 
 const playerStore = usePlayerStore();
 const toast           = useToast();

@@ -8,9 +8,9 @@
   <div>
     <Card>
       <template #content>
-        <div class="flex">
+        <div class="flex" @click="onPlayerSelected">
           <div class="flex mr-5">
-            <Avatar :image="avatar" size="xlarge" shape="circle"></Avatar>
+            <Avatar :label="avatar" size="xlarge" shape="circle"></Avatar>
           </div>
           <div class="flex flex-column">
             <div class="team-name">{{ teamName }}</div>
@@ -30,14 +30,14 @@
 </template>
 
 <script setup>
-import {computed, defineProps} from 'vue';
+import {computed, defineProps, defineEmits} from 'vue';
 import {get} from 'lodash';
 import Avatar from 'primevue/avatar';
 import Card from 'primevue/card';
 
 import Message from 'primevue/message';
 import {playerSchema} from '../../../common/schemas/PlayerSchema';
-
+const emit = defineEmits(['cardSelected'])
 const props = defineProps({
   player: {
     type:    Object,
@@ -47,8 +47,10 @@ const props = defineProps({
   }
 })
 
+
+
 const avatar              = computed(() => {
-  return get(props, 'player.login.personalData.avatar', '/');
+  return get(props, 'player.label', '/');
 })
 const teamName            = computed(() => {
   return get(props, 'player.data.name');
@@ -62,11 +64,16 @@ const organization        = computed(() => {
 const playerToBeConfirmed = computed(() => {
   return get(props, 'player.data.onlineRegistration', false) && !get(props, 'player.data.confirmed', true);
 })
+
 const playerDataInvalid   = computed(() => {
   const res = playerSchema.safeParse(props.player.data);
   console.log('RES', res);
   return !res.success;
 })
+
+const onPlayerSelected = function() {
+  emit('cardSelected', props.player);
+}
 
 
 </script>
