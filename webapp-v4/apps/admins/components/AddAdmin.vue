@@ -7,18 +7,22 @@
 <template>
   <ferro-card class="mr-2 ml-2" title="Spielleiter*in hinzufügen">
     <Toast position="center"/>
-    <Form @submit="onFormSubmit" class="flex flex-col gap-4 w-full sm:w-56">
-      <FormField v-slot="$field" :validate-on-submit="true" :resolver="emailResolver" class="field">
-        <label for="username">Email-Adresse</label>
-        <InputText id="username" class="w-full" v-model="newAdmin" aria-describedby="username-help"/>
-        <Message size="small" severity="secondary" variant="simple">Muss dieselbe Email-Adresse sein, mit der sich die
-          Person einloggt. Die Person wird nicht benachrichtigt.
-        </Message>
-        <Message v-if="$field?.invalid" severity="error">Bitte gültige Email-Adresse eingeben.</Message>
-        <Button :disabled="submitDisabled($field?.invalid)" type="submit" severity="primary" class="mt-2"
-                label="Submit"/>
-      </FormField>
-    </Form>
+    <div v-if="newAdminAllowed">
+      <Form :resolver @submit="onFormSubmit" class="flex flex-col gap-4 w-full sm:w-56" :validate-on-submit="true"
+            ref="formRef">
+        <FormField v-slot="$field" name="username" initial-value="" class="field">
+          <label for="username">Email-Adresse</label>
+          <InputText id="username" class="w-full" aria-describedby="username-help" placeholder="Login Email-Adresse"/>
+          <Message size="small" severity="secondary" variant="simple">Muss dieselbe Email-Adresse sein, mit der sich die
+            Person einloggt. Die Person wird nicht benachrichtigt.
+          </Message>
+          <Message v-if="$field?.invalid" severity="error">{{ $field.error?.message }}</Message>
+          <Button type="submit" severity="primary" class="mt-2"
+                  label="Hinzufügen"/>
+        </FormField>
+      </Form>
+    </div>
+    <div v-if="!newAdminAllowed">Es sind maximal drei weitere Spielleiter*innen möglich.</div>
   </ferro-card>
 </template>
 
@@ -40,36 +44,40 @@ import {useToast} from 'primevue/usetoast';
 
 const toast = useToast();
 
-const emailResolver = zodResolver(
-    z.string().email().min(5).max(50)
+const resolver = zodResolver(
+    z.object({
+      username: z.string()
+                    .email({message: 'Bitte gültige Email-Adresse eingeben.'})
+                    .min(6, {message: 'Mindestlänge ist 7 Zeichen.'})
+                    .max(50, {message: 'Maximallänge ist 50 Zeichen.'})
+    })
 )
-const newAdmin      = ref('')
 
 const nbOfAdmins = computed(() => {
   return adminStore.adminList.length;
 })
 
-const submitDisabled = function (resolverInvalid) {
-  if (resolverInvalid) {
-    return true;
-  }
-  if (newAdmin.value.length < 5) {
-    return true;
-  }
-  return nbOfAdmins.value > 2;
-}
+const newAdminAllowed = computed(() => {
+  return adminStore.adminList.length < 3;
+})
 
-const onFormSubmit = async () => {
-  const result = await adminStore.addAdmin(newAdmin.value);
-  if (result.success) {
-    newAdmin.value = '';
-  } else {
-    toast.add({
-      severity: 'error',
-      summary:  'Fehler',
-      detail:   result.message,
-      life:     6000
-    });
+const formRef = ref(null); // Reference to the form
+
+const onFormSubmit = async ({valid, values}) => {
+  if (valid) {
+    const result = await adminStore.addAdmin(values.username);
+    if (result.success) {
+      if (formRef.value) {
+        formRef.value.reset(); // Resets the entire form
+      }
+    } else {
+      toast.add({
+        severity: 'error',
+        summary:  'Fehler',
+        detail:   result.message,
+        life:     6000
+      });
+    }
   }
 }
 </script>
