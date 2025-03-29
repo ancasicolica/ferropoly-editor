@@ -33,4 +33,4 @@ const playerSchema = z.object({
   name:         teamNameSchema
 })
 
-export {playerSchema, teamLeaderNameSchema, teamNameSchema};
+export {playerSchema, teamLeaderNameSchema, teamNameSchema, organizationNameSchema, teamLeaderEmailSchema};

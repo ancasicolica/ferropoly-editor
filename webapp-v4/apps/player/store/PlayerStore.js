@@ -9,6 +9,13 @@ import axios from 'axios';
 import {get, findIndex} from 'lodash';
 import Team from '../../../common/lib/Team';
 import {getAuthToken} from '../../../common/adapters/authToken';
+import {
+  organizationNameSchema,
+  teamLeaderEmailSchema,
+  teamLeaderNameSchema,
+  teamNameSchema
+} from '../../../common/schemas/PlayerSchema';
+import {organisatorPhoneSchema} from '../../../common/schemas/GamePlaySchemas';
 
 export const usePlayerStore = defineStore('Player', {
   state:       () => ({
@@ -20,7 +27,23 @@ export const usePlayerStore = defineStore('Player', {
   getters: {
     teamsNb() {
       return this.teams.length;
-    }
+    },
+    teamNameValidation(state) {
+      return teamNameSchema.safeParse(state.currentTeam.data.name);
+    },
+    teamLeaderNameValidation(state) {
+      return teamLeaderNameSchema.safeParse(state.currentTeam.data.teamLeader.name);
+    },
+    organizationValidation(state) {
+      return organizationNameSchema.safeParse(state.currentTeam.data.organization);
+    },
+    phoneValidation(state) {
+      return organisatorPhoneSchema.safeParse(state.currentTeam.data.teamLeader.phone);
+    },
+    emailValidation(state) {
+      return teamLeaderEmailSchema.safeParse(state.currentTeam.data.teamLeader.email);
+    },
+
   },
   actions:  {
     /**

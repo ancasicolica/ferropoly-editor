@@ -8,12 +8,19 @@
   <div v-if="playerStore.currentTeam">
     <Toast/>
     <ferro-card title="Gruppe bearbeiten">
-      <ferropoly-input-text label="Team-Name" v-model="teamName" :resolver="teamNameResolver" ></ferropoly-input-text>
-      <ferropoly-input-text label="Kontaktperson" v-model="teamLeaderName"></ferropoly-input-text>
-      <ferropoly-input-text label="Organisation" v-model="organization"></ferropoly-input-text>
-      <ferropoly-input-text label="Telefon" v-model="teamLeaderPhone"></ferropoly-input-text>
-      <ferropoly-input-text label="Email" v-model="teamLeaderEmail"></ferropoly-input-text>
-      <Button label="Gruppe speichern" icon="pi pi-check" icon-pos="right" @click="onSave"></Button>
+      <ferropoly-input-text label="Team-Name" v-model="teamName"
+                            :zod-result="playerStore.teamNameValidation"></ferropoly-input-text>
+      <ferropoly-input-text label="Kontaktperson" v-model="teamLeaderName"
+                            :zod-result="playerStore.teamLeaderNameValidation"></ferropoly-input-text>
+      <ferropoly-input-text label="Organisation" v-model="organization"
+                            :zod-result="playerStore.organizationValidation"></ferropoly-input-text>
+      <ferropoly-input-text label="Telefon" v-model="teamLeaderPhone"
+                            :zod-result="playerStore.phoneValidation"></ferropoly-input-text>
+      <ferropoly-input-text label="Email" v-model="teamLeaderEmail"
+                            :zod-result="playerStore.emailValidation"></ferropoly-input-text>
+      <ferropoly-text-area v-model="remarks" label="Bemerkungen (Austausch Team und Spielleitung)"></ferropoly-text-area>
+      <Button v-if="!confirmationRequired" label="Gruppe speichern" icon="pi pi-check" icon-pos="right" @click="onSave"></Button>
+      <Button v-if="confirmationRequired" label="Gruppe bestätigen" icon="pi pi-check" icon-pos="right" @click="onSave"></Button>
     </ferro-card>
   </div>
 </template>
@@ -22,19 +29,20 @@
 
 import FerroCard from '../../../common/components/FerroCard.vue';
 import FerropolyInputText from '../../../common/components/FerropolyInputText.vue';
+import FerropolyTextArea from '../../../common/components/FerropolyTextArea.vue';
 import Button from 'primevue/button';
 import {usePlayerStore} from '../store/PlayerStore';
 import {computed} from 'vue';
 import {get, set} from 'lodash';
 import Toast from 'primevue/toast';
 import {useToast} from 'primevue/usetoast';
-import {teamLeaderNameSchema, teamNameSchema} from '../../../common/schemas/PlayerSchema';
-import {zodResolver} from '@primevue/forms/resolvers/zod';
-
-const teamNameResolver = zodResolver(teamNameSchema);
 
 const playerStore = usePlayerStore();
-const toast           = useToast();
+const toast       = useToast();
+
+const confirmationRequired = computed(()=> {
+  return !get(playerStore.currentTeam, 'data.confirmed', false);
+})
 const teamName = computed({
   get() {
     return get(playerStore.currentTeam, 'data.name', '');
@@ -80,10 +88,18 @@ const teamLeaderEmail = computed({
     set(playerStore.currentTeam, 'data.teamLeader.email', value);
   }
 })
+const remarks = computed({
+  get() {
+    return get(playerStore.currentTeam, 'data.remarks', '');
+  },
+  set(value) {
+    set(playerStore.currentTeam, 'data.remarks', value);
+  }
+})
 
-const onSave = function() {
+const onSave = function () {
   playerStore.saveCurrentTeam()
-      .then(()=> {
+      .then(() => {
         console.log('team saved');
       })
       .catch(err => {

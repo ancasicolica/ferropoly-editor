@@ -14,7 +14,9 @@
           </div>
           <div class="flex flex-column">
             <div class="team-name">{{ teamName }}</div>
-            <div>{{ teamLeaderName }} ({{ organization }})</div>
+            <div>{{ teamLeaderName }}
+              <span v-if="organization">({{ organization }})</span>
+            </div>
             <Message severity="warn" v-if="playerToBeConfirmed">
               <i class="pi pi-user-plus mr-1"></i>Neue Anmeldung, bitte bestätigen
             </Message>
@@ -37,7 +39,8 @@ import Card from 'primevue/card';
 
 import Message from 'primevue/message';
 import {playerSchema} from '../../../common/schemas/PlayerSchema';
-const emit = defineEmits(['cardSelected'])
+
+const emit  = defineEmits(['cardSelected'])
 const props = defineProps({
   player: {
     type:    Object,
@@ -46,7 +49,6 @@ const props = defineProps({
     }
   }
 })
-
 
 
 const avatar              = computed(() => {
@@ -65,13 +67,13 @@ const playerToBeConfirmed = computed(() => {
   return get(props, 'player.data.onlineRegistration', false) && !get(props, 'player.data.confirmed', true);
 })
 
-const playerDataInvalid   = computed(() => {
+const playerDataInvalid = computed(() => {
   const res = playerSchema.safeParse(props.player.data);
   console.log('RES', res);
   return !res.success;
 })
 
-const onPlayerSelected = function() {
+const onPlayerSelected = function () {
   emit('cardSelected', props.player);
 }
 

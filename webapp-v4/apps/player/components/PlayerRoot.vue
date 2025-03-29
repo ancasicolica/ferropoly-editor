@@ -11,8 +11,8 @@
     <div class="grid mr-2 ml-2">
       <registered-players class="col-6"></registered-players>
       <div class="col-6">
-        <registration-info></registration-info>
         <player-edit></player-edit>
+        <registration-info></registration-info>
       </div>
     </div>
   </div>
@@ -56,7 +56,7 @@ const onItemSelected = function (item) {
   if (item === 'new-team') {
     console.log('adding new team');
     playerStore.createPlayer()
-        .then(team => {
+        .then(() => {
 
         })
         .catch(err => {

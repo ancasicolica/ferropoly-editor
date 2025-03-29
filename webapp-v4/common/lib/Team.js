@@ -4,19 +4,19 @@
  * Created: 22.03.2025
  **/
 import {DateTime} from 'luxon';
-import {get} from 'lodash';
+import {get, isString} from 'lodash';
 
 function makeSureItsJsDate(date) {
   if (date instanceof DateTime) {
     return date.toJSDate();
   }
-  if (date instanceof String) {
-    return date.fromISO().toJsDate();
+  if (isString(date)) {
+    return DateTime.fromISO(date).toJSDate();
   }
   if (date instanceof Date) {
     return date;
   }
-  console.warn('Unknown date format', date);
+  console.warn('Unknown date format', date, typeof date);
   return null;
 }
 
@@ -33,13 +33,13 @@ class Team {
         email: get(team, 'data.teamLeader.email', ''),
         phone: get(team, 'data.teamLeader.phone', ''),
       },
-      remarks:            get(team, 'remarks', ''),
-      confirmed:          get(team, 'confirmed', true),
-      onlineRegistration: get(team, 'onlineRegistration', false),
-      registrationDate:   makeSureItsJsDate(get(team, 'onlineRegistration', DateTime.now())),
-      changedDate:        makeSureItsJsDate(get(team, 'changedDate', DateTime.now())),
-      confirmationDate:   makeSureItsJsDate(get(team, 'confirmationDate', DateTime.now())),
-      members:            get(team, 'members', []),
+      remarks:            get(team, 'data.remarks', ''),
+      confirmed:          get(team, 'data.confirmed', true),
+      onlineRegistration: get(team, 'data.onlineRegistration', false),
+      registrationDate:   makeSureItsJsDate(get(team, 'data.registrationDate', DateTime.now())),
+      changedDate:        makeSureItsJsDate(get(team, 'data.changedDate', DateTime.now())),
+      confirmationDate:   makeSureItsJsDate(get(team, 'data.confirmationDate', DateTime.now())),
+      members:            get(team, 'data.members', []),
     }
     this.createAcronym();
   }
@@ -48,7 +48,7 @@ class Team {
   createAcronym() {
 
     this.label = this.data.name
-      .split(' ') // Split the string into words
+      .split(/[\s-]+/) // Split the string into words
       .map(word => word.charAt(0).toUpperCase()) // Take the first letter of each word and convert it to uppercase
       .join('') // Join them back into a string
       .slice(0, 3); // Limit the acronym to 3 characters
