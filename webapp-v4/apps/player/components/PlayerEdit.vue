@@ -18,9 +18,13 @@
                             :zod-result="playerStore.phoneValidation"></ferropoly-input-text>
       <ferropoly-input-text label="Email" v-model="teamLeaderEmail"
                             :zod-result="playerStore.emailValidation"></ferropoly-input-text>
-      <ferropoly-text-area v-model="remarks" label="Bemerkungen (Austausch Team und Spielleitung)"></ferropoly-text-area>
-      <Button v-if="!confirmationRequired" label="Gruppe speichern" icon="pi pi-check" icon-pos="right" @click="onSave"></Button>
-      <Button v-if="confirmationRequired" label="Gruppe bestätigen" icon="pi pi-check" icon-pos="right" @click="onSave"></Button>
+      <ferropoly-text-area v-model="remarks"
+                           label="Bemerkungen (Austausch Team und Spielleitung)"></ferropoly-text-area>
+      <Button v-if="!confirmationRequired" label="Gruppe speichern" icon="pi pi-check" icon-pos="right"
+              @click="onSave"></Button>
+      <Button v-if="confirmationRequired" label="Gruppe bestätigen" icon="pi pi-check" icon-pos="right"
+              @click="onSave"></Button>
+      <Button label="Abbrechen" severity="secondary" @click="onAbort" class="ml-5"></Button>
     </ferro-card>
   </div>
 </template>
@@ -39,11 +43,12 @@ import {useToast} from 'primevue/usetoast';
 
 const playerStore = usePlayerStore();
 const toast       = useToast();
+const emit        = defineEmits(['action-complete']);
 
-const confirmationRequired = computed(()=> {
+const confirmationRequired = computed(() => {
   return !get(playerStore.currentTeam, 'data.confirmed', false);
 })
-const teamName = computed({
+const teamName             = computed({
   get() {
     return get(playerStore.currentTeam, 'data.name', '');
   },
@@ -88,7 +93,7 @@ const teamLeaderEmail = computed({
     set(playerStore.currentTeam, 'data.teamLeader.email', value);
   }
 })
-const remarks = computed({
+const remarks         = computed({
   get() {
     return get(playerStore.currentTeam, 'data.remarks', '');
   },
@@ -101,6 +106,7 @@ const onSave = function () {
   playerStore.saveCurrentTeam()
       .then(() => {
         console.log('team saved');
+        emit('action-complete');
       })
       .catch(err => {
         const message = get(err, 'response.data.message', 'unbekannt');
@@ -112,6 +118,10 @@ const onSave = function () {
           life:     6000
         });
       });
+}
+
+const onAbort = function() {
+  emit('action-complete');
 }
 
 </script>

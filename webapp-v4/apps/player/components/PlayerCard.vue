@@ -69,7 +69,6 @@ const playerToBeConfirmed = computed(() => {
 
 const playerDataInvalid = computed(() => {
   const res = playerSchema.safeParse(props.player.data);
-  console.log('RES', res);
   return !res.success;
 })
 

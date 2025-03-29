@@ -8,40 +8,47 @@
   <div>
     <Toast/>
     <ConfirmDialog></ConfirmDialog>
-    <DataTable :value="playerStore.teams" tableStyle="min-width: 50rem">
-      <Column header="Aktion">
-        <template #body="slotProps">
-          <i class="pi pi-eye mr-3" v-tooltip="'Team ansehen'"></i>
-          <i class="pi pi-pencil mr-3" v-tooltip="'Team bearbeiten'"></i>
-          <i class="pi pi-trash mr-3" v-tooltip="'Team löschen'" @click="deleteTeam(slotProps.data.uuid)"></i>
-          <i class="pi pi-check mr-3" style="color:red" v-tooltip="'Team bestätigen'"
-             v-if="!slotProps.data.data.confirmed"></i>
-          <Tag severity="warn" v-if="!slotProps.data.data.confirmed" class="mr-1">Bestätigung notwendig</Tag>
-          <Tag severity="danger" v-if="playerDataInvalid(slotProps.data.data)">Daten unvollständig</Tag>
-        </template>
-      </Column>
-      <Column field="data.name" header="Team Name" sortable>
-        <template #body="slotProps">
-          {{ slotProps.data.data.name }}
+    <div v-if="panel==='list'">
+      <DataTable :value="playerStore.teams" tableStyle="min-width: 50rem">
+        <Column header="Aktion">
+          <template #body="slotProps">
+            <i class="pi pi-eye mr-3" v-tooltip="'Team ansehen'"></i>
+            <i class="pi pi-pencil mr-3" v-tooltip="'Team bearbeiten'" @click="editTeam(slotProps.data.uuid)"></i>
+            <i class="pi pi-trash mr-3" v-tooltip="'Team löschen'" @click="deleteTeam(slotProps.data.uuid)"></i>
+            <i class="pi pi-check mr-3" style="color:red" v-tooltip="'Team bestätigen'"
+               v-if="!slotProps.data.data.confirmed"></i>
+            <Tag severity="warn" v-if="!slotProps.data.data.confirmed" class="mr-1">Bestätigung notwendig</Tag>
+            <Tag severity="danger" v-if="playerDataInvalid(slotProps.data.data)">Daten unvollständig</Tag>
+          </template>
+        </Column>
+        <Column field="data.name" header="Team Name" sortable>
+          <template #body="slotProps">
+            {{ slotProps.data.data.name }}
 
-        </template>
-      </Column>
-      <Column field="data.organization" header="Organisation" sortable>
-        <template #body="slotProps">
-          {{ slotProps.data.data.organization }}
-        </template>
-      </Column>
-      <Column field="data.teamLeader.name" header="Ansprechperson" sortable>
-        <template #body="slotProps">
-          {{ slotProps.data.data.teamLeader.name }}
-        </template>
-      </Column>
-      <Column field="data.registrationDate" header="Anmeldedatum" sortable>
-        <template #body="slotProps">
-          {{ formatDateTime(slotProps.data.data.registrationDate) }}
-        </template>
-      </Column>
-    </DataTable>
+          </template>
+        </Column>
+        <Column field="data.organization" header="Organisation" sortable>
+          <template #body="slotProps">
+            {{ slotProps.data.data.organization }}
+          </template>
+        </Column>
+        <Column field="data.teamLeader.name" header="Ansprechperson" sortable>
+          <template #body="slotProps">
+            {{ slotProps.data.data.teamLeader.name }}
+          </template>
+        </Column>
+        <Column field="data.registrationDate" header="Anmeldedatum" sortable>
+          <template #body="slotProps">
+            {{ formatDateTime(slotProps.data.data.registrationDate) }}
+          </template>
+        </Column>
+      </DataTable>
+      <div class="mt-2">Es sind {{ playerStore.teamsNb }} Gruppen angemeldet, maximal können sich 20 Gruppen anmelden.
+      </div>
+    </div>
+    <div v-if="panel==='edit'">
+      <player-edit @action-complete="onEditFinished"></player-edit>
+    </div>
   </div>
 
 </template>
@@ -53,17 +60,19 @@ import Tag from 'primevue/tag';
 import Toast from 'primevue/toast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import {computed} from 'vue';
+import {computed, ref} from 'vue';
 import {usePlayerStore} from '../store/PlayerStore';
 import {formatDateTime} from '../../../common/lib/formatters';
 import {useConfirm} from 'primevue/useconfirm';
 import {useToast} from 'primevue/usetoast';
 import {get} from 'lodash';
 import {playerSchema} from '../../../common/schemas/PlayerSchema';
+import PlayerEdit from './PlayerEdit.vue';
 
 const confirm     = useConfirm();
 const toast       = useToast();
 const playerStore = usePlayerStore();
+const panel = ref('list');
 
 const title = computed(() => {
   return `Angemeldete Gruppen (${playerStore.teamsNb} / max 20)`
@@ -75,9 +84,7 @@ const onCardSelected = function (team) {
 }
 
 const playerDataInvalid = function (data) {
-  console.log('check', data)
   const res = playerSchema.safeParse(data);
-  console.log('RES', res);
   return !res.success;
 }
 
@@ -109,6 +116,14 @@ const deleteTeam = function (uuid) {
   })
 }
 
+const editTeam = function (uuid) {
+  playerStore.editTeam(playerStore.getTeamByUuid(uuid));
+  panel.value = 'edit';
+}
+
+const onEditFinished = function() {
+  panel.value = 'list';
+}
 </script>
 
 <style scoped lang="scss">
