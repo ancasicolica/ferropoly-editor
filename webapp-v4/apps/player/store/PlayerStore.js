@@ -6,7 +6,7 @@
 
 import {defineStore} from 'pinia'
 import axios from 'axios';
-import {get, findIndex} from 'lodash';
+import {get, findIndex, find, remove} from 'lodash';
 import Team from '../../../common/lib/Team';
 import {getAuthToken} from '../../../common/adapters/authToken';
 import {
@@ -43,7 +43,9 @@ export const usePlayerStore = defineStore('Player', {
     emailValidation(state) {
       return teamLeaderEmailSchema.safeParse(state.currentTeam.data.teamLeader.email);
     },
-
+    getTeamByUuid: (state) => (uuid) => {
+      return find(state.teams, {uuid});
+    }
   },
   actions:  {
     /**
@@ -99,6 +101,11 @@ export const usePlayerStore = defineStore('Player', {
       } else {
         console.warn('TEAM NOT FOUND!', newTeam);
       }
+    },
+    async deleteTeam(uuid) {
+      const resp = await axios.delete(`/player/${this.gameId}/${uuid}`);
+      console.log('User deleted', resp.data);
+      remove(this.teams, n => { return n.uuid === uuid;});
     }
   }
 })

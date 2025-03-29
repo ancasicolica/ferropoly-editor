@@ -9,9 +9,8 @@
     <menu-bar :elements="menuBarElements" @item-selected="onItemSelected"></menu-bar>
     <Toast/>
     <div class="grid mr-2 ml-2">
-      <registered-players class="col-6"></registered-players>
-      <div class="col-6">
-        <player-edit></player-edit>
+      <registered-players class="col-12"></registered-players>
+      <div class="col-12 mt-5">
         <registration-info></registration-info>
       </div>
     </div>
