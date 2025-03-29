@@ -53,10 +53,6 @@ const resolver = zodResolver(
     })
 )
 
-const nbOfAdmins = computed(() => {
-  return adminStore.adminList.length;
-})
-
 const newAdminAllowed = computed(() => {
   return adminStore.adminList.length < 3;
 })
