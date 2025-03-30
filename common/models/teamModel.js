@@ -177,7 +177,7 @@ async function getTeam(gameId, teamId, callback) {
  */
 async function getNewTeamsNb(gameId) {
   const nb = await Team.countDocuments({'gameId': gameId, 'data.confirmed': false});
-  logger.info(`${gameId}: ${nb} uncofirmed teams`);
+  logger.silly(`${gameId}: ${nb} unconfirmed teams`);
   return nb;
 }
 

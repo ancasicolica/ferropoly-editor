@@ -336,7 +336,7 @@ function sendConfirmationMail(gameplay, team, callback) {
   html += '<p>Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly:<a href="http://www.ferropoly.ch">www.ferropoly.ch</a></p>';
   text += 'Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly: www.ferropoly.ch\n';
 
-  logger.info('Mailtext created', text);
+  logger.info(`${gameplay.internal.gameId}: Mailtext created, receiver: ${team.data.teamLeader.email}`, text);
   mailer.send({
     to     : team.data.teamLeader.email,
     cc     : gameplay.owner.organisatorEmail,

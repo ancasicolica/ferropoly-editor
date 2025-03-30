@@ -43,7 +43,7 @@ module.exports = {
    * @param callback
    */
   getNewToken: function (options, callback) {
-    logger.info(`New authtoken requested for ${options.user} suggesting '${options.proposedToken}'`)
+    logger.silly(`New authtoken requested for ${options.user} suggesting '${options.proposedToken}'`)
     getToken(options.user, async function (err, token) {
       if (err) {
         return callback(err);
