@@ -12,7 +12,7 @@
       <DataTable :value="playerStore.teams" tableStyle="min-width: 50rem">
         <Column header="Aktion">
           <template #body="slotProps">
-            <i class="pi pi-eye mr-3" v-tooltip="'Team ansehen'"></i>
+            <i class="pi pi-eye mr-3" v-tooltip="'Team ansehen'" @click="viewTeam(slotProps.data.uuid)"></i>
             <i class="pi pi-pencil mr-3" v-tooltip="'Team bearbeiten'" @click="editTeam(slotProps.data.uuid)"></i>
             <i class="pi pi-trash mr-3" v-tooltip="'Team löschen'" @click="deleteTeam(slotProps.data.uuid)"></i>
             <i class="pi pi-check mr-3" style="color:red" v-tooltip="'Team bestätigen'"
@@ -21,23 +21,23 @@
             <Tag severity="danger" v-if="playerDataInvalid(slotProps.data.data)">Daten unvollständig</Tag>
           </template>
         </Column>
-        <Column field="data.name" header="Team Name" sortable>
+        <Column field="data.name" header="Team Name" :sortable="sortable">
           <template #body="slotProps">
             {{ slotProps.data.data.name }}
 
           </template>
         </Column>
-        <Column field="data.organization" header="Organisation" sortable>
+        <Column field="data.organization" header="Organisation" :sortable="sortable">
           <template #body="slotProps">
             {{ slotProps.data.data.organization }}
           </template>
         </Column>
-        <Column field="data.teamLeader.name" header="Ansprechperson" sortable>
+        <Column field="data.teamLeader.name" header="Ansprechperson" :sortable="sortable">
           <template #body="slotProps">
             {{ slotProps.data.data.teamLeader.name }}
           </template>
         </Column>
-        <Column field="data.registrationDate" header="Anmeldedatum" sortable>
+        <Column field="data.registrationDate" header="Anmeldedatum" :sortable="sortable">
           <template #body="slotProps">
             {{ formatDateTime(slotProps.data.data.registrationDate) }}
           </template>
@@ -48,6 +48,9 @@
     </div>
     <div v-if="panel==='edit'">
       <player-edit @action-complete="onEditFinished"></player-edit>
+    </div>
+    <div v-if="panel==='view'">
+      <player-info @action-complete="onEditFinished"></player-info>
     </div>
   </div>
 
@@ -68,11 +71,13 @@ import {useToast} from 'primevue/usetoast';
 import {get} from 'lodash';
 import {playerSchema} from '../../../common/schemas/PlayerSchema';
 import PlayerEdit from './PlayerEdit.vue';
-
+import PlayerInfo from './PlayerInfo.vue';
 const confirm     = useConfirm();
 const toast       = useToast();
 const playerStore = usePlayerStore();
 const panel = ref('list');
+
+const sortable = ref(true); // for lint reasons only...
 
 const title = computed(() => {
   return `Angemeldete Gruppen (${playerStore.teamsNb} / max 20)`
@@ -119,6 +124,11 @@ const deleteTeam = function (uuid) {
 const editTeam = function (uuid) {
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));
   panel.value = 'edit';
+}
+const viewTeam = function (uuid) {
+  console.log('VIEW')
+  playerStore.editTeam(playerStore.getTeamByUuid(uuid));
+  panel.value = 'view';
 }
 
 const onEditFinished = function() {
