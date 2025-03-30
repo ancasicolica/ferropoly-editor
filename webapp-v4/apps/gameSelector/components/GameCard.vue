@@ -44,7 +44,7 @@
 
     prime-button.btn-gameplay(label="Spielregeln" :badge="badge" badge-severity="danger" icon="pi pi-pencil"  severity="secondary" @click="gotoUrl(url.rules)" v-if="getGpProperty('isOwner')")
 
-    prime-button.btn-gameplay(label="Gruppen" icon="pi pi-users" severity="secondary" @click="gotoUrl(url.editPlayer)" v-if="getGpProperty('isOwner')")
+    prime-button.btn-gameplay(label="Gruppen" icon="pi pi-users" severity="secondary" @click="gotoUrl(url.editPlayer)" :badge="nbTeamsToConfirm"  badgeSeverity="contrast" v-if="getGpProperty('isOwner')")
 
     prime-button.btn-gameplay(label="Spielleiter*innen" icon="pi pi-user" @click="gotoUrl(url.editAdmins)" severity="secondary" v-if="getGpProperty('isOwner')")
 
@@ -114,8 +114,14 @@ export default {
         return '!'
       }
       return null;
+    },
+    nbTeamsToConfirm() {
+      if (this.gameplay.teamsToConfirm) {
+        return `${this.gameplay.teamsToConfirm}`
+      }
+      return null;
     }
-  },
+   },
   created   : function () {
   },
   methods   : {

@@ -13,25 +13,25 @@ const userModel  = require('./userModel');
  * The mongoose schema for a property
  */
 const teamSchema = mongoose.Schema({
-  _id   : {type: String},
+  _id:    {type: String},
   gameId: String, // Gameplay this team plays with
-  uuid  : {type: String, index: {unique: true}},     // UUID of this team (index)
-  data  : {
-    name              : {type: String, default: ''}, // Name of the team
-    organization      : {type: String, default: ''}, // Organization the team belongs to
-    teamLeader        : {
-      name    : {type: String, default: ''},
-      email   : {type: String, default: ''},
-      phone   : {type: String, default: ''},
+  uuid:   {type: String, index: {unique: true}},     // UUID of this team (index)
+  data:   {
+    name:               {type: String, default: ''}, // Name of the team
+    organization:       {type: String, default: ''}, // Organization the team belongs to
+    teamLeader:         {
+      name:     {type: String, default: ''},
+      email:    {type: String, default: ''},
+      phone:    {type: String, default: ''},
       hasLogin: {type: Boolean, default: false} // Info whether the team leader has a login or not
     },
-    remarks           : {type: String, default: ''},
-    confirmed         : {type: Boolean, default: true},
+    remarks:            {type: String, default: ''},
+    confirmed:          {type: Boolean, default: true},
     onlineRegistration: {type: Boolean},
-    registrationDate  : {type: Date, default: Date.now},
-    changedDate       : {type: Date, default: Date.now},
-    confirmationDate  : {type: Date},
-    members           : {type: Array, default: []} // Array with strings (email) of all team members
+    registrationDate:   {type: Date, default: Date.now},
+    changedDate:        {type: Date, default: Date.now},
+    confirmationDate:   {type: Date},
+    members:            {type: Array, default: []} // Array with strings (email) of all team members
   }
 }, {autoIndex: true});
 
@@ -79,13 +79,13 @@ async function updateTeam(team) {
       logger.info(`${team.gameId}: Team leader ${team.data.teamLeader.name} has no login for team ${team.uuid}`);
       // Check for Login
       let user = await userModel.getUserByMailAddressB(team.data.teamLeader.email);
-        logger.info(`${team.gameId}: User found`, user);
-        if (user) {
-          // When the team-leader has a login, set to true. This never becomes false as logins can not be deleted
-          team.data.teamLeader.hasLogin = true;
-        }
-        doc.data = team.data;
-        return await doc.save();
+      logger.info(`${team.gameId}: User found`, user);
+      if (user) {
+        // When the team-leader has a login, set to true. This never becomes false as logins can not be deleted
+        team.data.teamLeader.hasLogin = true;
+      }
+      doc.data = team.data;
+      return await doc.save();
     } else {
       // Team leader has a login, just save
       doc.data = team.data;
@@ -131,11 +131,13 @@ async function getTeams(gameId, callback) {
       .find({gameId: gameId})
       .lean()
       .exec();
-  } catch
+  }
+  catch
     (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, docs);
   }
 }
@@ -152,17 +154,31 @@ async function getTeam(gameId, teamId, callback) {
   try {
     doc = await Team
       .findOne({
-        'uuid'  : teamId,
+        'uuid':   teamId,
         'gameId': gameId
       })
       .exec();
-  } catch
+  }
+  catch
     (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, doc);
   }
+}
+
+/**
+ * Retrieves the number of unconfirmed teams for a specified game.
+ *
+ * @param {string} gameId - The identifier of the game for which to count unconfirmed teams.
+ * @return {Promise<number>} A promise that resolves to the count of unconfirmed teams in the specified game.
+ */
+async function getNewTeamsNb(gameId) {
+  const nb = await Team.countDocuments({'gameId': gameId, 'data.confirmed': false});
+  logger.info(`${gameId}: ${nb} uncofirmed teams`);
+  return nb;
 }
 
 /**
@@ -181,11 +197,13 @@ async function countTeams(gameId, callback) {
     info = await Team
       .countDocuments({gameId: gameId})
       .exec();
-  } catch
+  }
+  catch
     (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, info);
   }
 }
@@ -229,10 +247,12 @@ async function getMyTeams(email, callback) {
     if (docs.length === 0) {
       docs = null;
     }
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, docs);
   }
 }
@@ -249,27 +269,30 @@ async function getMyTeam(gameId, email, callback) {
     doc = await Team
       .findOne({
         'data.teamLeader.email': email,
-        'gameId'               : gameId
+        'gameId':                gameId
       })
       .exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, doc);
   }
 }
 
 module.exports = {
-  Model           : Team,
-  createTeam      : createTeam,
-  updateTeam      : updateTeam,
-  deleteTeam      : deleteTeam,
-  deleteAllTeams  : deleteAllTeams,
-  getTeams        : getTeams,
+  Model:            Team,
+  createTeam:       createTeam,
+  updateTeam:       updateTeam,
+  deleteTeam:       deleteTeam,
+  deleteAllTeams:   deleteAllTeams,
+  getTeams:         getTeams,
   getTeamsAsObject: getTeamsAsObject,
-  countTeams      : countTeams,
-  getMyTeams      : getMyTeams,
-  getMyTeam       : getMyTeam,
-  getTeam         : getTeam
+  countTeams:       countTeams,
+  getMyTeams:       getMyTeams,
+  getMyTeam:        getMyTeam,
+  getTeam:          getTeam,
+  getNewTeamsNb:    getNewTeamsNb
 };

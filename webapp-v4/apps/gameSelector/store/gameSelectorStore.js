@@ -39,11 +39,10 @@ export const useGameSelectorStore = defineStore('gameSelector', {
       return result.data;
     },
     /**
-     * Retrieves and returns all games of the current user.
+     * Fetches the user's games from the server and processes their scheduling information.
+     * The scheduling timestamps are converted to JavaScript Date objects.
      *
-     * @async
-     * @function readMyGames
-     * @returns {Array<object>} The array of gameplays representing the user's games.
+     * @return {Promise<void>} A promise that resolves once the games have been fetched and processed.
      */
     async readMyGames() {
       let resp = await axios.get('/gameplay/mygames', {dataType: 'json'});
@@ -52,7 +51,7 @@ export const useGameSelectorStore = defineStore('gameSelector', {
         gp.scheduling.deleteTs = DateTime.fromISO(gp.scheduling.deleteTs).toJSDate();
         gp.scheduling.gameDate = DateTime.fromISO(gp.scheduling.gameDate).toJSDate();
       });
-      console.log('GPS', resp.data);
+      console.log('Loaded Gameplays', resp.data);
       this.gameplays = get(resp, 'data.gameplays', []);
     }
   }
