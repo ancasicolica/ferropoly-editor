@@ -64,7 +64,7 @@ import Tag from 'primevue/tag';
 import Toast from 'primevue/toast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import {computed, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {usePlayerStore} from '../store/PlayerStore';
 import {formatDateTime} from '../../../common/lib/formatters';
 import {useConfirm} from 'primevue/useconfirm';
@@ -78,8 +78,12 @@ const confirm     = useConfirm();
 const toast       = useToast();
 const playerStore = usePlayerStore();
 const panel       = ref('list');
+const emit        = defineEmits(['new-team-allowed']);
+const sortable    = ref(true); // for lint reasons only...
 
-const sortable = ref(true); // for lint reasons only...
+onMounted(()=> {
+  setPanel('list');
+})
 
 const title = computed(() => {
   return `Angemeldete Gruppen (${playerStore.teamsNb} / max 20)`
@@ -123,10 +127,16 @@ const deleteTeam = function (uuid) {
   })
 }
 
-const editTeam    = function (uuid) {
+const editTeam = function (uuid) {
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));
-  panel.value = 'edit';
+  setPanel('edit');
 }
+
+const setPanel    = function (_panel) {
+  emit('new-team-allowed', _panel === 'list');
+  panel.value = _panel;
+}
+
 const confirmTeam = function (uuid) {
   playerStore.confirmTeam(uuid)
       .then(info => {
@@ -141,12 +151,12 @@ const confirmTeam = function (uuid) {
           } else {
             message += '\n\nEs konnte kein ein Email als Bestätigung versendet werden.';
             severity = 'warn';
-            life = 6000;
+            life     = 6000;
           }
         } else {
           message  = 'Das Team konnte nicht bestätigt werden!';
           severity = 'warn';
-          life = 6000;
+          life     = 6000;
         }
 
         toast.add({
@@ -164,11 +174,11 @@ const confirmTeam = function (uuid) {
 const viewTeam    = function (uuid) {
   console.log('VIEW')
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));
-  panel.value = 'view';
+  setPanel('view');
 }
 
 const onEditFinished = function () {
-  panel.value = 'list';
+  setPanel('list');
 }
 </script>
 
