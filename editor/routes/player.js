@@ -223,7 +223,7 @@ router.post('/store', function (req, res) {
  */
 router.post('/confirm', function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    logger.info('Auth token missing, access denied');
+    logger.info('Auth token missing, access denied', req);
     res.status(404).send('Kein Zugriff möglich, bitte einloggen');
     return;
   }
@@ -241,7 +241,7 @@ router.post('/confirm', function (req, res) {
 
   teams.getTeam(gameId, teamId, (err, team) => {
     if (err) {
-      logger.error('getTeam Error', err);
+      logger.error(`${gameId}: Error while getting team`, err);
       res.status(500).send({message: 'Fehler beim laden des Teams: ' + err.message});
       return;
     }
@@ -257,18 +257,18 @@ router.post('/confirm', function (req, res) {
 
       teams.updateTeam(team)
            .then(updatedTeam => {
-             logger.info(`Confirmed team ${team.data.name} for ${team.data.gameId}`);
+             logger.info(`${gameId}: Confirmed team ${team.data.name}`);
              sendConfirmationMail(gp, team, err => {
                let mailSent = true;
                if (err) {
-                 logger.error('Email send error', err);
+                 logger.error(`${gameId}: Error while sending email`, err);
                  mailSent = false;
                }
                return res.send({mailSent: mailSent, team: updatedTeam});
              });
            })
            .catch(err => {
-             logger.error('updateTeam Error', err);
+             logger.error(`${gameId}: Error while updating team`, err);
              res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
            });
     });

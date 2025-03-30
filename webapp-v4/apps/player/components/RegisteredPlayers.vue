@@ -16,6 +16,7 @@
             <i class="pi pi-pencil mr-3" v-tooltip="'Team bearbeiten'" @click="editTeam(slotProps.data.uuid)"></i>
             <i class="pi pi-trash mr-3" v-tooltip="'Team löschen'" @click="deleteTeam(slotProps.data.uuid)"></i>
             <i class="pi pi-check mr-3" style="color:red" v-tooltip="'Team bestätigen'"
+               @click="confirmTeam(slotProps.data.uuid)"
                v-if="!slotProps.data.data.confirmed"></i>
             <Tag severity="warn" v-if="!slotProps.data.data.confirmed" class="mr-1">Bestätigung notwendig</Tag>
             <Tag severity="danger" v-if="playerDataInvalid(slotProps.data.data)">Daten unvollständig</Tag>
@@ -72,10 +73,11 @@ import {get} from 'lodash';
 import {playerSchema} from '../../../common/schemas/PlayerSchema';
 import PlayerEdit from './PlayerEdit.vue';
 import PlayerInfo from './PlayerInfo.vue';
+
 const confirm     = useConfirm();
 const toast       = useToast();
 const playerStore = usePlayerStore();
-const panel = ref('list');
+const panel       = ref('list');
 
 const sortable = ref(true); // for lint reasons only...
 
@@ -121,17 +123,51 @@ const deleteTeam = function (uuid) {
   })
 }
 
-const editTeam = function (uuid) {
+const editTeam    = function (uuid) {
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));
   panel.value = 'edit';
 }
-const viewTeam = function (uuid) {
+const confirmTeam = function (uuid) {
+  playerStore.confirmTeam(uuid)
+      .then(info => {
+        console.log(`Team ${uuid} confirmed`, info);
+        let message  = '';
+        let severity = 'info';
+        let life     = 4000;
+        if (info.confirmed) {
+          message = 'Das Team wurde bestätigt';
+          if (info.mailSent) {
+            message += '\n\nEs wurde ein Email als Bestätigung versendet.'
+          } else {
+            message += '\n\nEs konnte kein ein Email als Bestätigung versendet werden.';
+            severity = 'warn';
+            life = 6000;
+          }
+        } else {
+          message  = 'Das Team konnte nicht bestätigt werden!';
+          severity = 'warn';
+          life = 6000;
+        }
+
+        toast.add({
+          severity: severity,
+          summary:  'Team bestätigen',
+          detail:   message,
+          life:     life
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      })
+
+}
+const viewTeam    = function (uuid) {
   console.log('VIEW')
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));
   panel.value = 'view';
 }
 
-const onEditFinished = function() {
+const onEditFinished = function () {
   panel.value = 'list';
 }
 </script>

@@ -39,10 +39,6 @@ import {get} from 'lodash';
 
 const playerStore = usePlayerStore();
 
-const confirmationRequired = computed(() => {
-  return !get(playerStore.currentTeam, 'data.confirmed', false);
-})
-
 const teamName = computed(() => {
   return get(playerStore.currentTeam, 'data.name', '');
 })

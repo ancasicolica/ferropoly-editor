@@ -1,5 +1,5 @@
 <!---
-
+  Editor for playing teams
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 07.03.2025
 -->
@@ -20,10 +20,8 @@
                             :zod-result="playerStore.emailValidation"></ferropoly-input-text>
       <ferropoly-text-area v-model="remarks"
                            label="Bemerkungen (Austausch Team und Spielleitung)"></ferropoly-text-area>
-      <Button v-if="!confirmationRequired" label="Gruppe speichern" icon="pi pi-check" icon-pos="right"
-              @click="onSave"></Button>
-      <Button v-if="confirmationRequired" label="Gruppe bestätigen" icon="pi pi-check" icon-pos="right"
-              @click="onSave"></Button>
+      <Button label="Gruppe speichern" icon="pi pi-check" icon-pos="right"
+              @click="onSave" :disabled="!teamDataValid"></Button>
       <Button label="Abbrechen" severity="secondary" @click="onAbort" class="ml-5"></Button>
     </ferro-card>
   </div>
@@ -45,9 +43,10 @@ const playerStore = usePlayerStore();
 const toast       = useToast();
 const emit        = defineEmits(['action-complete']);
 
-const confirmationRequired = computed(() => {
-  return !get(playerStore.currentTeam, 'data.confirmed', false);
+const teamDataValid = computed(()=> {
+  return playerStore.teamValidation.success;
 })
+
 const teamName             = computed({
   get() {
     return get(playerStore.currentTeam, 'data.name', '');
@@ -119,6 +118,7 @@ const onSave = function () {
         });
       });
 }
+
 
 const onAbort = function() {
   emit('action-complete');
