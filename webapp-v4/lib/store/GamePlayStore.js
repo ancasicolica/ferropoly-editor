@@ -190,10 +190,8 @@ export const useGameplayStore = defineStore('Gameplay', {
       return state.joining.infotext;
     },
     gameStart(state) {
-
       const hour = DateTime.fromJSDate(state.scheduling.gameStart).get('hour');
       const minute = DateTime.fromJSDate(state.scheduling.gameStart).get('minute');
-      console.log(`h: ${hour} m: ${minute}`);
       return DateTime.fromJSDate(state.scheduling.gameDate).set({hour: hour, minute: minute});
     }
   },

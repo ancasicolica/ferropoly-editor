@@ -36,7 +36,7 @@
 
     p.id  Id: {{getGpProperty('internal.gameId')}}
 
-    prime-button.btn-gameplay(label="Bearbeiten" icon="pi pi-pencil" severity="primary" v-if="!getGpProperty('internal.finalized') && getGpProperty('isOwner')" @click="gotoUrl(url.edit)")
+    prime-button.btn-gameplay(label="Bearbeiten" icon="pi pi-pencil" severity="primary" v-if="editAllowed" @click="gotoUrl(url.edit)")
 
     prime-button.btn-gameplay(label="Anmeldung" icon="pi pi-file-edit" severity="secondary"  @click="gotoUrl(url.registration)" v-if="getGpProperty('isOwner')")
 
@@ -120,6 +120,15 @@ export default {
         return `${this.gameplay.teamsToConfirm}`
       }
       return null;
+    },
+    editAllowed() {
+      if (this.getGpProperty('internal.finalized')) {
+        return false;
+      }
+      if (!this.getGpProperty('isOwner')) {
+        return false;
+      }
+      return this.getGpProperty('scheduling.gameDate', new Date()) >= new Date();
     }
    },
   created   : function () {
@@ -128,9 +137,10 @@ export default {
     /**
      * Get the property of the gameplay object
      * @param id
+     * @param proposed
      */
-    getGpProperty(id) {
-      return get(this.gameplay, id, '');
+    getGpProperty(id, proposed='') {
+      return get(this.gameplay, id, proposed);
     },
     /**
      * Returns a formatted timestamp as an "ago" string representing the time elapsed since the given ISO date string.

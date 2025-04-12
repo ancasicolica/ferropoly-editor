@@ -139,37 +139,58 @@ const setPanel = function (_panel) {
 }
 
 const confirmTeam = function (uuid) {
-  playerStore.confirmTeam(uuid)
-      .then(info => {
-        console.log(`Team ${uuid} confirmed`, info);
-        let message;
-        let severity = 'info';
-        let life     = 4000;
-        if (info.confirmed) {
-          message = 'Das Team wurde bestätigt';
-          if (info.mailSent) {
-            message += '\n\nEs wurde ein Email als Bestätigung versendet.'
-          } else {
-            message += '\n\nEs konnte kein ein Email als Bestätigung versendet werden.';
-            severity = 'warn';
-            life     = 6000;
-          }
-        } else {
-          message  = 'Das Team konnte nicht bestätigt werden!';
-          severity = 'warn';
-          life     = 6000;
-        }
+  console.log('confirming team ', uuid);
+  const team = playerStore.getTeamByUuid(uuid);
+  confirm.require({
+    message:     `Möchtest Du die Teilnahme des Teams "${team.data.name}" bestätigen? Dem Team wird ein Email mit der Bestätigung zugestellt.`,
+    header:      'Team bestätigen',
+    rejectProps: {
+      label:    'Abbrechen',
+      severity: 'secondary',
+      outlined: true
+    },
+    acceptProps: {
+      label:    'Bestätigen',
+      severity: 'primary'
+    },
+    accept:      () => {
+      playerStore.confirmTeam(uuid)
+          .then(info => {
+            console.log(`Team ${uuid} confirmed`, info);
+            let message;
+            let severity = 'info';
+            let life     = 4000;
+            if (info.confirmed) {
+              message = 'Das Team wurde bestätigt';
+              if (info.mailSent) {
+                message += '\n\nEs wurde ein Email als Bestätigung versendet.'
+              } else {
+                message += '\n\nEs konnte kein ein Email als Bestätigung versendet werden.';
+                severity = 'warn';
+                life     = 6000;
+              }
+            } else {
+              message  = 'Das Team konnte nicht bestätigt werden!';
+              severity = 'warn';
+              life     = 6000;
+            }
 
-        toast.add({
-          severity: severity,
-          summary:  'Team bestätigen',
-          detail:   message,
-          life:     life
-        });
-      })
-      .catch(err => {
-        console.error(err);
-      })
+            toast.add({
+              severity: severity,
+              summary:  'Team bestätigen',
+              detail:   message,
+              life:     life
+            });
+          })
+          .catch(err => {
+            console.error(err);
+          })
+    },
+    reject:      () => {
+      console.log('Deleting aborted');
+    }
+  })
+
 
 }
 
