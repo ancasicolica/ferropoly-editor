@@ -13,8 +13,10 @@
         <Column header="Aktion">
           <template #body="slotProps">
             <i class="pi pi-eye mr-3" v-tooltip="'Team ansehen'" @click="viewTeam(slotProps.data.uuid)"></i>
-            <i class="pi pi-pencil mr-3" v-tooltip="'Team bearbeiten'" @click="editTeam(slotProps.data.uuid)"></i>
-            <i class="pi pi-trash mr-3" v-tooltip="'Team löschen'" @click="deleteTeam(slotProps.data.uuid)"></i>
+            <i class="pi pi-pencil mr-3" v-if="editEnabled" v-tooltip="'Team bearbeiten'"
+               @click="editTeam(slotProps.data.uuid)"></i>
+            <i class="pi pi-trash mr-3" v-if="deleteEnabled" v-tooltip="'Team löschen'"
+               @click="deleteTeam(slotProps.data.uuid)"></i>
             <i class="pi pi-check mr-3" style="color:red" v-tooltip="'Team bestätigen'"
                @click="confirmTeam(slotProps.data.uuid)"
                v-if="!slotProps.data.data.confirmed"></i>
@@ -74,25 +76,24 @@ import {playerSchema} from '../../../common/schemas/PlayerSchema';
 import PlayerEdit from './PlayerEdit.vue';
 import PlayerInfo from './PlayerInfo.vue';
 
-const confirm     = useConfirm();
-const toast       = useToast();
-const playerStore = usePlayerStore();
-const panel       = ref('list');
-const emit        = defineEmits(['new-team-allowed']);
-const sortable    = ref(true); // for lint reasons only...
+const confirm       = useConfirm();
+const toast         = useToast();
+const playerStore   = usePlayerStore();
+const panel         = ref('list');
+const emit          = defineEmits(['new-team-allowed']);
+const sortable      = ref(true); // for lint reasons only...
 
-onMounted(()=> {
+onMounted(() => {
   setPanel('list');
 })
 
-const title = computed(() => {
-  return `Angemeldete Gruppen (${playerStore.teamsNb} / max 20)`
+const deleteEnabled = computed(() => {
+  return playerStore.editTeamsPossible;
 })
 
-const onCardSelected = function (team) {
-  console.log('TEAM', team);
-  playerStore.editTeam(team);
-}
+const editEnabled = computed(() => {
+  return playerStore.deleteTeamPossible;
+})
 
 const playerDataInvalid = function (data) {
   const res = playerSchema.safeParse(data);
@@ -132,7 +133,7 @@ const editTeam = function (uuid) {
   setPanel('edit');
 }
 
-const setPanel    = function (_panel) {
+const setPanel = function (_panel) {
   emit('new-team-allowed', _panel === 'list');
   panel.value = _panel;
 }
@@ -141,7 +142,7 @@ const confirmTeam = function (uuid) {
   playerStore.confirmTeam(uuid)
       .then(info => {
         console.log(`Team ${uuid} confirmed`, info);
-        let message  = '';
+        let message;
         let severity = 'info';
         let life     = 4000;
         if (info.confirmed) {

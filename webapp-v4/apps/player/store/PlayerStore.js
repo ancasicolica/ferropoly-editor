@@ -9,6 +9,7 @@ import axios from 'axios';
 import {get, findIndex, find, remove} from 'lodash';
 import Team from '../../../common/lib/Team';
 import {getAuthToken} from '../../../common/adapters/authToken';
+import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {
   organizationNameSchema, playerSchema,
   teamLeaderEmailSchema,
@@ -20,8 +21,8 @@ import {organisatorPhoneSchema} from '../../../common/schemas/GamePlaySchemas';
 export const usePlayerStore = defineStore('Player', {
   state:   () => ({
     gameId:          '',
+    gameInfo:        {},
     teams:           [],
-    newTeamsAllowed: true,
     currentTeam:     null
   }),
   getters: {
@@ -30,25 +31,35 @@ export const usePlayerStore = defineStore('Player', {
     },
     // Validation check of CURRENT TEAM
     teamNameValidation(state) {
-      return teamNameSchema.safeParse(state.currentTeam.data.name);
+      return teamNameSchema.safeParse(state.currentTeam?.data.name);
     },
     teamLeaderNameValidation(state) {
-      return teamLeaderNameSchema.safeParse(state.currentTeam.data.teamLeader.name);
+      return teamLeaderNameSchema.safeParse(state.currentTeam?.data.teamLeader.name);
     },
     organizationValidation(state) {
-      return organizationNameSchema.safeParse(state.currentTeam.data.organization);
+      return organizationNameSchema.safeParse(state.currentTeam?.data.organization);
     },
     phoneValidation(state) {
-      return organisatorPhoneSchema.safeParse(state.currentTeam.data.teamLeader.phone);
+      return organisatorPhoneSchema.safeParse(state.currentTeam?.data.teamLeader.phone);
     },
     emailValidation(state) {
-      return teamLeaderEmailSchema.safeParse(state.currentTeam.data.teamLeader.email);
+      return teamLeaderEmailSchema.safeParse(state.currentTeam?.data.teamLeader.email);
     },
     teamValidation(state) {
-      return playerSchema.safeParse(state.currentTeam.data);
+      return playerSchema.safeParse(state.currentTeam?.data);
     },
     getTeamByUuid: (state) => (uuid) => {
       return find(state.teams, {uuid});
+    },
+    editTeamsPossible() {
+      return useGameplayStore().scheduling.gameDate > new Date();
+    },
+    deleteTeamPossible() {
+      console.log(useGameplayStore().scheduling.gameDate , new Date(), useGameplayStore().scheduling.gameDate > new Date())
+      return useGameplayStore().scheduling.gameDate > new Date();
+    },
+    newTeamsAllowed(state) {
+      return state.teams.length < 20 && state.editTeamsPossible;
     }
   },
   actions: {
@@ -63,6 +74,8 @@ export const usePlayerStore = defineStore('Player', {
       this.gameId  = gameId;
       let gameInfo = await axios.get(`/gameplay/info/${gameId}`);
       console.log('gameInfo', gameInfo.data);
+      useGameplayStore().setGameplayData(gameInfo.data);
+
       let players = await axios.get(`/player/get/${gameId}`);
       console.log('players', players.data);
       let teams = get(players, 'data.teams', []);
@@ -80,7 +93,6 @@ export const usePlayerStore = defineStore('Player', {
       const authToken = await getAuthToken();
       const resp      = await axios.post('/player/create', {authToken, gameId: this.gameId})
       this.teams.push(new Team(resp.data.team));
-      this.newTeamsAllowed = this.teams.length < 20;
     },
     /**
      * Updates the current team with the provided team object.
