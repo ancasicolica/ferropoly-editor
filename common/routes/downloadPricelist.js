@@ -9,10 +9,10 @@
 
 
 
-var express   = require('express');
-var router    = express.Router();
-var pricelist = require('../lib/pricelist');
-var xlsx      = require('node-xlsx');
+const express   = require('express');
+const router    = express.Router();
+const pricelist = require('../lib/pricelist');
+const xlsx      = require('node-xlsx');
 
 /**
  * Handler for priceslist download
@@ -25,7 +25,7 @@ function handler(req, res) {
       return res.send({status: 'error', message: err.message});
     }
 
-    var buffer = xlsx.build([{name: report.sheetName, data: report.data}]);
+    const buffer = xlsx.build([{name: report.sheetName, data: report.data}]);
 
     res.set({
       'Content-Type'       : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
