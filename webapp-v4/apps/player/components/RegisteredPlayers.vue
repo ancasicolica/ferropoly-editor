@@ -187,7 +187,7 @@ const confirmTeam = function (uuid) {
           })
     },
     reject:      () => {
-      console.log('Deleting aborted');
+      console.log('Confirmation aborted');
     }
   })
 
