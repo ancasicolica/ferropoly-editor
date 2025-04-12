@@ -99,7 +99,7 @@ module.exports = {
     });
 
     // Filter for get, redirect to login page if not logged out
-    app.get('*', function (req, res, next) {
+    app.get('*name', function (req, res, next) {
       let uri = new URL(req.protocol + '://' + req.get('host') + req.originalUrl).pathname;
 
       if (_.startsWith(uri, '/signup')) {
