@@ -20,10 +20,10 @@ import {organisatorPhoneSchema} from '../../../common/schemas/GamePlaySchemas';
 
 export const usePlayerStore = defineStore('Player', {
   state:   () => ({
-    gameId:          '',
-    gameInfo:        {},
-    teams:           [],
-    currentTeam:     null
+    gameId:      '',
+    gameInfo:    {},
+    teams:       [],
+    currentTeam: null
   }),
   getters: {
     teamsNb() {
@@ -52,14 +52,17 @@ export const usePlayerStore = defineStore('Player', {
       return find(state.teams, {uuid});
     },
     editTeamsPossible() {
-      return useGameplayStore().scheduling.gameDate > new Date();
+      // Currently editing teams (names, contact, etc) is always possible, it has no effect on booking processes
+      return true;
     },
     deleteTeamPossible() {
-      console.log(useGameplayStore().scheduling.gameDate , new Date(), useGameplayStore().scheduling.gameDate > new Date())
-      return useGameplayStore().scheduling.gameDate > new Date();
+      // Deleting a team is possible until the game starts
+      let start = useGameplayStore().gameStart
+      console.log(start, typeof (start));
+      return   start.minus({minute: 10}).toJSDate() > new Date();
     },
     newTeamsAllowed(state) {
-      return state.teams.length < 20 && state.editTeamsPossible;
+      return state.teams.length < 20 && state.deleteTeamPossible;
     }
   },
   actions: {

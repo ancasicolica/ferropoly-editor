@@ -88,11 +88,11 @@ onMounted(() => {
 })
 
 const deleteEnabled = computed(() => {
-  return playerStore.editTeamsPossible;
+  return playerStore.deleteTeamPossible;
 })
 
 const editEnabled = computed(() => {
-  return playerStore.deleteTeamPossible;
+  return playerStore.editTeamsPossible;
 })
 
 const playerDataInvalid = function (data) {
@@ -172,6 +172,7 @@ const confirmTeam = function (uuid) {
       })
 
 }
+
 const viewTeam    = function (uuid) {
   console.log('VIEW')
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));

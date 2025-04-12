@@ -42,10 +42,12 @@ export const useGameplayStore = defineStore('Gameplay', {
       organisatorPhone: ''
     },
     scheduling: {
-      gameDate:  new Date(),
-      gameStart: new Date(),
-      gameEnd:   new Date(),
-      deleteTs:  new Date(),
+      gameDate:    new Date(),
+      gameStart:   new Date(),
+      gameEnd:     new Date(),
+      deleteTs:    new Date(),
+      gameStartTs: new Date(),
+      gameEndTs:   new Date()
     },
     gameParams: {
       startCapital:              0,
@@ -185,8 +187,14 @@ export const useGameplayStore = defineStore('Gameplay', {
       return !(this.registrationActive || this.registrationFinished);
     },
     joiningInfotext(state) {
-      console.log('xxxxx', state.joining, state.joining.infotext);
       return state.joining.infotext;
+    },
+    gameStart(state) {
+
+      const hour = DateTime.fromJSDate(state.scheduling.gameStart).get('hour');
+      const minute = DateTime.fromJSDate(state.scheduling.gameStart).get('minute');
+      console.log(`h: ${hour} m: ${minute}`);
+      return DateTime.fromJSDate(state.scheduling.gameDate).set({hour: hour, minute: minute});
     }
   },
   actions: {
@@ -216,13 +224,15 @@ export const useGameplayStore = defineStore('Gameplay', {
     setGameplayData(gameplay) {
       merge(this, gameplay);
       // Convert Times to JS Date objects
-      this.scheduling.deleteTs   = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
-      this.scheduling.gameDate   = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
-      this.scheduling.gameStart  = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
-      this.scheduling.gameEnd    = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
-      this.joining.possibleUntil = DateTime.fromISO(this.joining.possibleUntil).toJSDate();
-      this.log.created           = DateTime.fromISO(this.log.created).toJSDate();
-      this.log.lastEdited        = DateTime.fromISO(this.log.lastEdited).toJSDate();
+      this.scheduling.deleteTs    = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
+      this.scheduling.gameDate    = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
+      this.scheduling.gameStart   = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
+      this.scheduling.gameEnd     = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
+      this.scheduling.gameStartTs = DateTime.fromISO(this.scheduling.gameStartTs).toJSDate();
+      this.scheduling.gameEndTs   = DateTime.fromISO(this.scheduling.gameEndTs).toJSDate();
+      this.joining.possibleUntil  = DateTime.fromISO(this.joining.possibleUntil).toJSDate();
+      this.log.created            = DateTime.fromISO(this.log.created).toJSDate();
+      this.log.lastEdited         = DateTime.fromISO(this.log.lastEdited).toJSDate();
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
@@ -244,19 +254,19 @@ export const useGameplayStore = defineStore('Gameplay', {
         const authToken = await useAuthTokenStoreStore().getAuthToken();
         console.log('self', self, toRaw(self));
         let saveObj = {
-          gamename: toRaw(self.gamename),
-          admins: toRaw(self.admins),
-          owner: toRaw(self.owner),
-          scheduling: toRaw(self.scheduling),
-          gameParams: toRaw(self.gameParams),
+          gamename:    toRaw(self.gamename),
+          admins:      toRaw(self.admins),
+          owner:       toRaw(self.owner),
+          scheduling:  toRaw(self.scheduling),
+          gameParams:  toRaw(self.gameParams),
           rentFactors: toRaw(self.rentFactors),
           chancellery: toRaw(self.chancellery),
-          log: toRaw(self.log),
-          internal: toRaw(self.internal),
-          joining: toRaw(self.joining),
-          mobile: toRaw(self.mobile),
+          log:         toRaw(self.log),
+          internal:    toRaw(self.internal),
+          joining:     toRaw(self.joining),
+          mobile:      toRaw(self.mobile),
         };
-        let resp        = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
+        let resp    = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
         console.log('Gameplay saved', resp);
         this.log.lastEdited = new Date();
         return ({

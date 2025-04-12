@@ -29,7 +29,7 @@ router.get('/edit/:gameId', function (req, res) {
     if (err) {
       return res.render('error/403', {
         message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error  : {status: 403, stack: {}}
+        error:   {status: 403, stack: {}}
       });
     }
 
@@ -39,7 +39,7 @@ router.get('/edit/:gameId', function (req, res) {
     } else {
       res.render('error/401', {
         message: 'Zugriff nicht erlaubt',
-        error  : {status: 401, stack: {}}
+        error:   {status: 401, stack: {}}
       });
     }
   });
@@ -140,7 +140,7 @@ router.get('/get/:gameId', function (req, res) {
           }
           team.login = {
             personalData: user.personalData,
-            info        : user.info
+            info:         user.info
           };
           return cb();
         });
@@ -179,17 +179,10 @@ router.post('/store', function (req, res) {
     return res.status(403).send({message: 'Demo Game Teams können nicht bearbeitet werden'});
   }
 
-  gameplays.getGameplay(team.gameId, req.session.passport.user, function (err, gp) {
+  gameplays.getGameplay(team.gameId, req.session.passport.user, function (err) {
     if (err) {
       res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
       return;
-    }
-    if (gp.scheduling.gameStartTs) {
-      if (moment().isAfter(gp.scheduling.gameStartTs)) {
-        // Changing teams is not allowed after game start, send Forbidden status code
-        res.status(403).send({message: 'Spielbeginn ist bereits vorbei'});
-        return;
-      }
     }
     teams.updateTeam(team).then(storedTeam => {
       // Check if a login is available
@@ -206,7 +199,7 @@ router.post('/store', function (req, res) {
         }
         storedTeam.login = {
           personalData: user.personalData,
-          info        : user.info
+          info:         user.info
         };
         return res.send({team: storedTeam});
       });
@@ -256,21 +249,21 @@ router.post('/confirm', function (req, res) {
       team.data.confirmationDate = new Date();
 
       teams.updateTeam(team)
-           .then(updatedTeam => {
-             logger.info(`${gameId}: Confirmed team ${team.data.name}`);
-             sendConfirmationMail(gp, team, err => {
-               let mailSent = true;
-               if (err) {
-                 logger.error(`${gameId}: Error while sending email`, err);
-                 mailSent = false;
-               }
-               return res.send({mailSent: mailSent, team: updatedTeam});
-             });
-           })
-           .catch(err => {
-             logger.error(`${gameId}: Error while updating team`, err);
-             res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
-           });
+        .then(updatedTeam => {
+          logger.info(`${gameId}: Confirmed team ${team.data.name}`);
+          sendConfirmationMail(gp, team, err => {
+            let mailSent = true;
+            if (err) {
+              logger.error(`${gameId}: Error while sending email`, err);
+              mailSent = false;
+            }
+            return res.send({mailSent: mailSent, team: updatedTeam});
+          });
+        })
+        .catch(err => {
+          logger.error(`${gameId}: Error while updating team`, err);
+          res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
+        });
     });
   });
 });
@@ -338,11 +331,11 @@ function sendConfirmationMail(gameplay, team, callback) {
 
   logger.info(`${gameplay.internal.gameId}: Mailtext created, receiver: ${team.data.teamLeader.email}`, text);
   mailer.send({
-    to     : team.data.teamLeader.email,
-    cc     : gameplay.owner.organisatorEmail,
+    to:      team.data.teamLeader.email,
+    cc:      gameplay.owner.organisatorEmail,
     subject: subject,
-    html   : html,
-    text   : text
+    html:    html,
+    text:    text
   }, callback);
 }
 
