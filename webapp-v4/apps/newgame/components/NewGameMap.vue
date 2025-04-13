@@ -3,50 +3,38 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 23.06.2024
 -->
-<template lang="pug">
-  .block
-    .block
-      h1 Karte
-      p Es stehen verschiedene Karten zur Auswahl, diese unterscheiden sich in der Grösse und damit auch in der benötigten Spieldauer und dem Billetpreis:
-    .block
-      div.ml-5.mr-5(v-for="entry in maps" :key="entry.map")
-        radio-button.mt-2(v-model="gameMap" :input-id="entry.map" :value="entry.map")
-        label.ml-2(:for="entry.map")
-          span.title {{entry.name}}:
-          span &nbsp; {{entry.description}}
+<template>
+<div class="block">
+  <div class="block">
+    <h1>Karte</h1>
+    <p>Es stehen verschiedene Karten zur Auswahl, diese unterscheiden sich in der Grösse und damit auch in der benötigten Spieldauer und dem Billetpreis:
+    </p>
+  </div>
+  <div class="block">
+    <div class="ml-5 mr-5" v-for="entry in maps" :key="entry.map">
+      <radio-button class="mt-4" v-model="newGameStore.gameMap" :input-id="entry.map" :value="entry.map"></radio-button>
+      <label class="ml-3" :for="entry.map">
+        <span class="title">{{entry.name}}</span>
+        <span>&nbsp; {{ entry.description}}</span>
+      </label>
+    </div>
+  </div>
+</div>
 
 </template>
-<script>
+<script setup>
 
 import RadioButton from 'primevue/radiobutton';
-import {mapWritableState} from 'pinia';
 import {useNewGameStore} from '../store/newGameStore';
 import mapDefs from '../../../../common/lib/maps.json';
 import {filter} from 'lodash';
+import {computed} from 'vue';
 
-export default {
-  name      : 'NewGameMap',
-  components: {RadioButton},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
-    return {}
-  },
-  computed  : {
-    ...mapWritableState(useNewGameStore, {
-      gameMap: 'gameMap'
-    }),
-    maps() {
-      return filter(mapDefs.maps, {enabled: true});
-    }
-  },
-  created   : function () {
-  },
-  methods   : {}
-}
+const newGameStore = useNewGameStore();
 
+const maps = computed(()=> {
+  return filter(mapDefs.maps, {enabled: true});
+})
 </script>
 
 
