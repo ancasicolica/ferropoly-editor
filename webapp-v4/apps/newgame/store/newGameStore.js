@@ -19,7 +19,8 @@ export const useNewGameStore = defineStore('NewGame', {
     presets:          'moderate',
     randomNb:         0,
     errorMessage:     undefined,
-    proposedGameIds:  []
+    proposedGameIds:  [],
+    importData:       {}
   }),
   getters: {
     /**
@@ -30,6 +31,24 @@ export const useNewGameStore = defineStore('NewGame', {
      */
     proposedGameNameValid(state) {
       return state.proposedGameName.length > 3;
+    },
+    importedDataAvailable(state) {
+      if (state?.importData?.meta) {
+        return true;
+      }
+    },
+    importedGpCreator(state) {
+      return state.importData?.meta?.creator;
+    },
+    importedGpDate(state) {
+      return DateTime.fromISO(state.importData?.meta?.date).toJSDate();
+    },
+    importedGpMap(state) {
+      return state.importData?.gameplay?.internal?.map;
+    },
+    importedGpPropertyNb(state) {
+      let props = state.importData?.properties || [];
+      return props.length;
     }
   },
   actions: {
@@ -71,7 +90,8 @@ export const useNewGameStore = defineStore('NewGame', {
     /**
      * Creates a new game by sending a POST request to the server with necessary game details.
      *
-     * @return {Promise<string|null>} Returns a promise that resolves to the proposed game name if successful, or null in case of any error.
+     * @return {Promise<string|null>} Returns a promise that resolves to the proposed game name if successful, or null
+     *   in case of any error.
      */
     async createGame() {
       const authToken = await useAuthTokenStoreStore().getAuthToken();
