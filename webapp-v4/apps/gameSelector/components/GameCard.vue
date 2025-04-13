@@ -48,6 +48,8 @@
 
     prime-button.btn-gameplay(label="Spielleiter*innen" icon="pi pi-user" @click="gotoUrl(url.editAdmins)" severity="secondary" v-if="getGpProperty('isOwner')")
 
+    prime-button.btn-gameplay(label="Export" icon="pi pi-download" @click="gotoUrl(url.export)" severity="secondary" v-if="getGpProperty('isOwner')")
+
     prime-button.btn-gameplay(label="Löschen" icon="pi pi-trash" @click="deleteGameplay" severity="danger" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')")
 
 </template>
@@ -82,7 +84,8 @@ export default {
         rules        : `/rules/${this.gameplay.internal.gameId || 'undefined'}`,
         editPlayer   : `/player/edit/${this.gameplay.internal.gameId || 'undefined'}`,
         editAdmins   : `/admins/edit/${this.gameplay.internal.gameId || 'undefined'}`,
-        registration : `/registration/${this.gameplay.internal.gameId || 'undefined'}`
+        registration : `/registration/${this.gameplay.internal.gameId || 'undefined'}`,
+        export : `/export/info/${this.gameplay.internal.gameId || 'undefined'}`,
       }
     }
   },

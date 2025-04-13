@@ -122,6 +122,7 @@ let initServer = function () {
   app.use('/registration', require('./routes/registration'));
   app.use('/dashboard', require('./routes/dashboard'));
   app.use('/images', require('../common/routes/images'));
+  app.use('/export', require('./routes/export'));
   require('./routes/locations')(app);
 
 

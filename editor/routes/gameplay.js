@@ -60,6 +60,7 @@ router.get('/info/:gameId', function (req, res) {
   });
 });
 
+
 /* Post params of a new game */
 router.post('/createnew', function (req, res) {
   try {
