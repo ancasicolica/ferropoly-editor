@@ -8,7 +8,7 @@ import {defineStore} from 'pinia'
 import {DateTime} from 'luxon';
 import axios from 'axios';
 import {useAuthTokenStoreStore} from '../../../common/store/authTokenStore';
-
+import {toRaw} from 'vue'
 export const useNewGameStore = defineStore('NewGame', {
   state:   () => ({
     menuBarElements:  [],
@@ -95,17 +95,23 @@ export const useNewGameStore = defineStore('NewGame', {
      */
     async createGame() {
       const authToken = await useAuthTokenStoreStore().getAuthToken();
+      const importData = toRaw(this.importData);
 
-      let result = await axios.post('/gameplay/createnew',
-        {
-          gamename: this.gameName,
-          map:      this.gameMap,
-          gamedate: this.gameDate,
-          random:   this.randomNb,
-          presets:  this.presets,
-          gameId:   this.proposedGameName,
-          authToken
-        });
+      const creationSet =         {
+        gamename:   this.gameName,
+        map:        importData?.gameplay?.internal?.map || this.gameMap,
+        gamedate:   this.gameDate,
+        random:     this.randomNb,
+        presets:    this.presets,
+        gameId:     this.proposedGameName,
+        gameParams: importData?.gameplay?.gameParams,
+        properties: importData?.properties,
+        authToken
+      }
+
+      console.log('Creating new game', creationSet);
+
+      let result = await axios.post('/gameplay/createnew',creationSet);
 
       if (result.status === 200) {
         return this.proposedGameName;

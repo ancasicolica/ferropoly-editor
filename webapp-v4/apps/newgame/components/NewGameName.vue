@@ -22,11 +22,11 @@
 
     <file-upload @select="handleFileUpload"
                  mode="basic"
-                 :maxFileSize="100000" c
-                 ustom-upload
+                 :maxFileSize="500000"
+                 custom-upload
                  accept=".ferropoly"
                  invalid-file-limit-message="Es kann nur eine Datei hochgeladen werden."
-                 invalid-file-size-message="Die hochgeladene Datei ist zu hoch, muss kleiner als {1.} sein."
+                 invalid-file-size-message="Die hochgeladene Datei ist zu hoch, muss kleiner als 500kB sein."
                  invalid-file-type-message="{0}: ungültiges Dateiformat."></file-upload>
     <message v-if="errorMessage" severity="error" class="mt-3">{{ errorMessage }}</message>
     <Card v-if="newGameStore.importedDataAvailable">

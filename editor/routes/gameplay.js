@@ -105,7 +105,9 @@ router.post('/createnew', function (req, res) {
             gamedate:        req.body.gamedate,
             gameId:          req.body.gameId || '',
             presets:         req.body.presets || 'classic',
-            random:          req.body.random
+            random:          req.body.random,
+            gameParams:      req.body.gameParams,
+            properties:      req.body.properties
           },
           function (err, gp) {
             if (err) {

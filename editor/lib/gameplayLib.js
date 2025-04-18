@@ -115,14 +115,27 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
     if (err) {
       return callback(err);
     }
-    logger.info('Read ' + gameLocations.length + ' locations for this map');
+    logger.info(`${gameplay.internal.gameId} : Read ${gameLocations.length} locations for this map`);
+
+    const importProperties   = gpOptions.properties || [];
+    let nbPropertiesImported = 0;
 
     async.each(gameLocations,
       function (location, cb) {
-        properties.createPropertyFromLocation(gameplay.internal.gameId, location, function (err, prop) {
+
+        // Handle import data, new since 2025
+        let importData = _.find(importProperties, p => {
+          return (p.location.uuid === location.uuid)
+        });
+        if (importData) {
+          nbPropertiesImported++;
+        }
+
+        properties.createPropertyFromLocationEx(gameplay.internal.gameId, location, {pricelist: importData?.pricelist}, function (err, prop) {
           if (err) {
-            logger.info('Error while creating property:' + err.message);
+            logger.info(`${gameplay.internal.gameId} : Error while creating property: ${err.message}`);
           }
+
           props.push(prop);
           cb(err);
         });
@@ -131,10 +144,10 @@ function copyLocationsToProperties(gpOptions, gameplay, callback) {
         if (err) {
           return callback(err);
         }
-        logger.info('Created properties for the game');
-        if (gpOptions.random) {
+        logger.info(`${gameplay.internal.gameId}: created properties, imported ${nbPropertiesImported}`);
+        if (gpOptions.random && nbPropertiesImported === 0) {
           createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
-            logger.info('Created random pricelist');
+            logger.info(`${gameplay.internal.gameId}: random properties added`);
             return callback(err, gameplay);
           });
         } else {
@@ -263,16 +276,18 @@ function createNewGameplay(gpOptions, callback) {
       gameDate:         gpOptions.gamedate,
       instance:         settings.server.serverId,
       mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
-      gameParams:       getGameParamsPresetSet(gpOptions.presets),
+      gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
       interestInterval: gpOptions.interestInterval,
       isDemo:           gpOptions.isDemo,
       mainInstances:    settings.mainInstances,
       autopilot:        gpOptions.autopilot
+
     }, function (err, gameplay) {
       if (err) {
         // Error while creating the gameplay, abort
         return callback(err);
       }
+
       // Create also the rules
       let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
       rules.createRules(gpOptions.gameId, pugToHtml(template))

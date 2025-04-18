@@ -69,6 +69,22 @@ function createPropertyFromLocation(gameId, location, callback) {
   newProperty._id      = createPropertyId(gameId, location);
   return updateProperty(gameId, newProperty, callback);
 }
+/**
+ * Creates a new property from a location (if not already in DB) and stores it for the gameplay
+ * @param gameId
+ * @param location
+ * @param options
+ * @param callback
+ */
+function createPropertyFromLocationEx(gameId, location, options, callback) {
+  let newProperty      = new Property();
+  newProperty.location = location;
+  if(options.pricelist) {
+    newProperty.pricelist = _.assign(newProperty.pricelist, options.pricelist);
+  }
+  newProperty._id      = createPropertyId(gameId, location);
+  return updateProperty(gameId, newProperty, callback);
+}
 
 /**
  * Updates the given properties which must be properties objects
@@ -551,6 +567,7 @@ module.exports = {
   getPropertyById:                 getPropertyById,
   updateProperty:                  updateProperty,
   createPropertyFromLocation:      createPropertyFromLocation,
+  createPropertyFromLocationEx:    createPropertyFromLocationEx,
   updatePositionInPriceList:       updatePositionInPriceList,
   updateProperties:                updateProperties,
   finalizeProperties:              finalizeProperties,
