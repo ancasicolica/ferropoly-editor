@@ -10,8 +10,8 @@
     <stepper value="1" linear>
       <step-list>
         <step value="1">Spielname</step>
-        <step value="2">Karte</step>
-        <step value="3">Spieltag</step>
+        <step value="2">Spieltag</step>
+        <step value="3">Karte</step>
         <step value="4">Preisliste</step>
         <step value="5">Abschluss</step>
       </step-list>
@@ -33,14 +33,18 @@
           <div class="block">
             <card>
               <template #content>
-                <new-game-map></new-game-map>
+                <new-game-date></new-game-date>
               </template>
             </card>
           </div>
           <div class="flex pt-6 justify-content-between">
             <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('1')"
                           severity="secondary"></prime-button>
-            <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('3')"
+            <prime-button v-if="!newGameStore.importedDataAvailable"
+                   label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('3')"
+                          iconPos="right"></prime-button>
+            <prime-button v-if="newGameStore.importedDataAvailable"
+                   label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('5')"
                           iconPos="right"></prime-button>
           </div>
         </step-panel>
@@ -48,7 +52,7 @@
           <div class="block">
             <card>
               <template #content>
-                <new-game-date></new-game-date>
+                <new-game-map></new-game-map>
               </template>
             </card>
           </div>
@@ -83,7 +87,11 @@
             </card>
           </div>
           <div class="flex pt-6 justify-content-between">
-            <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')"
+            <prime-button v-if="!newGameStore.importedDataAvailable"
+                          label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')"
+                          severity="secondary"></prime-button>
+            <prime-button v-if="newGameStore.importedDataAvailable"
+                          label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('2')"
                           severity="secondary"></prime-button>
             <prime-button label="Spiel anlegen" @click="createGame"
                           :disabled="gameCreationActive || proposedGameNameInvalid"></prime-button>

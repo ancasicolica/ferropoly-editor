@@ -30,7 +30,7 @@
                  invalid-file-type-message="{0}: ungültiges Dateiformat."></file-upload>
     <message v-if="errorMessage" severity="error" class="mt-3">{{ errorMessage }}</message>
     <Card v-if="newGameStore.importedDataAvailable">
-      <template #title>Import erfolgreich </template>
+      <template #title>Import erfolgreich</template>
       <template #content>
         <p>Diese Daten werden als Grundlage für ein neues Spiel verwendet:</p>
         <p>Ersteller: {{ newGameStore.importedGpCreator }}</p>
@@ -55,6 +55,10 @@ import Message from 'primevue/message';
 import FileUpload from 'primevue/fileupload';
 import {GameplayImporter} from '../../../common/lib/GameplayImporter';
 import {formatDateTime, formatMap} from '../../../common/lib/formatters';
+import {usePrimeVue} from 'primevue/config';
+
+const primevue                             = usePrimeVue();
+primevue.config.locale.noFileChosenMessage = 'Keine Datei ausgewählt';
 
 const newGameStore = useNewGameStore();
 
@@ -107,7 +111,7 @@ const handleFileUpload = function (event) {
             })
             .catch(err => {
               console.error(err, gi);
-              errorMessage.value = err;
+              errorMessage.value      = err;
               newGameStore.importData = null;
             })
       }
