@@ -150,7 +150,6 @@ function getLogEntries(gameId, teamId, tsStart, tsEnd, callback) {
       .catch(err => {
         return callback(err);
       })
-    return callback(null, res);
   } else {
     GameLog
       .find({gameId: gameId})

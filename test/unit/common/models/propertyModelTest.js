@@ -85,25 +85,24 @@ describe('PropertyModel Tests', function () {
 
   describe('Set the price range in a property', function () {
     it('should set the price range', function (done) {
-      properties.updatePositionInPriceList(gameId, propId0, 12, function (err, prop) {
-        expect(err).to.be(undefined);
+      properties.updatePositionInPriceList(gameId, propId0, 12).then ( prop =>  {
         expect(prop.pricelist.positionInPriceRange).to.be(12);
-        done(err);
+        done();
       })
     });
     it('should set the price range again', function (done) {
-      properties.updatePositionInPriceList(gameId, propId0, 2, function (err, prop) {
-        expect(err).to.be(undefined);
+      properties.updatePositionInPriceList(gameId, propId0, 2).then(prop => {
         expect(prop.pricelist.positionInPriceRange).to.be(2);
-        done(err);
+        done();
       })
     });
     it('should fail as the gameId is wrong', function (done) {
-      properties.updatePositionInPriceList('test', propId0, 2, function (err, prop) {
-        expect(err).not.to.be(undefined);
-        expect(prop).to.be(undefined);
-        done();
+      properties.updatePositionInPriceList('test', propId0, 2).then (prop => {
+        done('error did not happen');
       })
+        .catch(err => {
+          done();
+        })
     });
   });
 
