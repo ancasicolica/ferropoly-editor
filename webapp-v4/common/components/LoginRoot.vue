@@ -96,6 +96,12 @@ export default {
           console.error(ex);
         })
   },
+  mounted() {
+   // document.documentElement.style.setProperty('background', `url('/images/background.jpg?v=${Date.now()}')`);
+    document.documentElement.style.setProperty('--bg-image', `url('/images/background.jpg?v=${Date.now()}')`);
+
+
+  },
   methods:    {
     goToGoogleAuth() {
       window.location.href = '/auth/google';
@@ -239,6 +245,15 @@ export default {
   background-color: black;
 
 }
+
+:global(body.bg) {
+  background: var(--bg-image)  no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 </style>
 
 

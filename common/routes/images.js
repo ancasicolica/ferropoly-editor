@@ -39,7 +39,13 @@ function sendRandomImage(dir, res) {
       return;
     }
     let file = files[getRandomInt(0, files.length)];
+    console.log('FILE >>>>>>>>>>', file);
     res.set('Content-Type', 'image/jpeg');
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Vary', '*');
+
     res.sendFile(path.join(__dirname, 'ressources', dir, file));
   });
 }
@@ -48,14 +54,11 @@ function sendRandomImage(dir, res) {
  * Gets a random background image
  */
 router.get('/background.jpg', cors(corsOptions), function (req, res) {
+
+
   sendRandomImage('backgrounds', res);
 });
 
-/**
- * Gets a random header image
- */
-router.get('/header.jpg', cors(corsOptions), function (req, res) {
-  sendRandomImage('headers', res);
-});
+
 
 module.exports = router;
