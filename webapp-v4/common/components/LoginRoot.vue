@@ -22,7 +22,7 @@
             .field.mb-1
               input-text.input-width(type='text' name='username' id='inputUserName' class='form-control' placeholder='Benutzername' required autofocus)
             .field.mb-2
-              input-text.input-width(type='password' name='password' id='inputPassword' class='form-control' placeholder='Passwort' required)
+              input-text.input-width(type='password' name='password' id='inputPassword' class='form-control' placeholder='Passwort' required autocomplete )
             prime-button.button-login.btn.btn-primary.btn-block(type="submit" label="Login mit Passwort")
 
         .flex.flex-column.p-4.justify-content-center.align-content-start.w-19rem
