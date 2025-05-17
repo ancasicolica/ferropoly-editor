@@ -11,6 +11,7 @@
                show-icon
                hour-format="24"
                fluid
+               :max-date="maxDate"
                date-format="DD, d.m.yy"
 >
 
@@ -37,11 +38,8 @@ const deadline = computed({
   }
 })
 
-const minDate = computed(() => {
-  return DateTime.now().toJSDate();
-})
 const maxDate = computed(() => {
-  return DateTime.now().plus({days: 6}).toJSDate();
+  return DateTime.fromJSDate(gamePlayStore.scheduling.gameDate).minus({days: 1}).toJSDate()
 })
 
 </script>
