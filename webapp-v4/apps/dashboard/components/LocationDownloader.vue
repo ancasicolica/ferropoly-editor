@@ -5,10 +5,15 @@
 -->
 
 <template>
-  <div>LocationDownloader.vue</div>
+  <div>
+    <h3>Download Ortsdaten</h3>
+    <Button as="a" label="Alle Orte downloaden" href="/locations" target="_blank" rel="noopener" />
+  </div>
 </template>
 
 <script setup>
+
+import Button from 'primevue/button';
 
 </script>
 

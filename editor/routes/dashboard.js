@@ -14,6 +14,8 @@ const propertyModel = require('../../common/models/propertyModel');
 const _             = require('lodash');
 const async         = require('async');
 const logger        = require('../../common/lib/logger').getLogger('routes:dashboard');
+const settings = require('../settings.js');
+
 /**
  * Send Component Test Homepage
  */
@@ -57,6 +59,7 @@ router.get('/gameplays', function (req, res) {
 
       async.each(gps,
         function (gp, cb) {
+          gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
           // count the teams
           teamModel.countTeams(gp.internal.gameId, (err, nb) => {
             if (err) {
