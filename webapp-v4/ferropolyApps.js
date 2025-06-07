@@ -70,4 +70,10 @@ module.exports = [
     htmlFile: 'export.html'
   },
 
+  {
+    name    : 'dashboard',
+    entry   : path.join(__dirname, 'apps', 'dashboard', 'app.js'),
+    htmlFile: 'dashboard.html'
+  },
+
 ];
