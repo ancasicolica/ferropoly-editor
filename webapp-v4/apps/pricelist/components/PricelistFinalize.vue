@@ -25,6 +25,7 @@
       <div>Nach diesem Schritt hat man also das endgültige Spiel und die Preisliste wird den Spieler*innen über
         den "Link zur Preisliste für Teams" angezeigt.
       </div>
+      <p>Das Spiel muss bis spätestens einer Stunde vor Spielbeginn finalisiert werden.</p>
 
       <prime-button @click="onFinalize" label="Preisliste finalisieren" class="mt-4"
                     :disabled="finalizing"></prime-button>

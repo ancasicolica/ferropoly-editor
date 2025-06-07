@@ -18,7 +18,7 @@
         <pricelist-finalize></pricelist-finalize>
       </div>
       <div class="flex ml-2 mr-2" v-if="missedFinalizingTimeslot">
-        <Message severity="error">Der Spielstart ist bereits vorbei, deshalb kann das Spiel nicht mehr finalisiert werden. Wenn Du die Spieldaten weiter verwenden willst, dann exportiere das Spiel und erstelle ein neues Spiel mit einem Spieldatum in der Zukunft.</Message>
+        <Message severity="error">Das Spiel kann nur bis eine Stunde vor Spielstart finalisiert werden. Wenn Du die Spieldaten weiter verwenden willst, dann exportiere das Spiel und erstelle ein neues Spiel mit einem Spieldatum in der Zukunft.</Message>
       </div>
     </div>
   </div>
@@ -39,15 +39,16 @@ import Message from 'primevue/message';
 const gameplayStore  = useGameplayStore();
 const {gamename, finalized, gameStart} = storeToRefs(gameplayStore);
 
-const gameAlreadyOver = computed(()=> {
-  return gameStart.value < DateTime.now();
+const gameAlreadyStarted = computed(()=> {
+  return  DateTime.now() > gameStart.value.minus({hour: 1})  ;
 })
+
 const finalizePossible = computed(()=> {
-  return !finalized.value && !gameAlreadyOver.value;
+  return !finalized.value && !gameAlreadyStarted.value;
 })
 
 const missedFinalizingTimeslot = computed(()=> {
-  return !finalized.value && gameAlreadyOver.value;
+  return !finalized.value && gameAlreadyStarted.value;
 })
 
 </script>
