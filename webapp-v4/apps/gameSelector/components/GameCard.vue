@@ -50,7 +50,7 @@
 
     prime-button.btn-gameplay(label="Export" icon="pi pi-download" @click="gotoUrl(url.export)" severity="secondary" v-if="getGpProperty('isOwner')")
 
-    prime-button.btn-gameplay(label="Löschen" icon="pi pi-trash" @click="deleteGameplay" severity="danger" v-if="getGpProperty('isOwner') && !getGpProperty('internal.isDemo')")
+    prime-button.btn-gameplay(label="Löschen" icon="pi pi-trash" @click="deleteGameplay" severity="danger" v-if="deletingAllowed")
 
 </template>
 <script>
@@ -132,6 +132,19 @@ export default {
         return false;
       }
       return this.getGpProperty('scheduling.gameDate', new Date()) >= new Date();
+    },
+    deletingAllowed() {
+      // At the time of playing, we do not delete gameplays
+      const gameDate = this.getGpProperty('scheduling.gameDate');
+      const finalized = this.getGpProperty('internal.finalized');
+      if (finalized && DateTime.now().hasSame(gameDate, 'day'))
+      {
+        console.log('Today we do not delete a finalized game');
+        return false;
+      }
+
+      //  Must be owner and not a demo game
+      return this.getGpProperty('isOwner') && !this.getGpProperty('internal.isDemo')
     }
    },
   created   : function () {
