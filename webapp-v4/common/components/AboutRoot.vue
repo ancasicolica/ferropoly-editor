@@ -35,6 +35,7 @@
         ul
           li Die Durchführung des Spiels erfolgt für Teilnehmer wie Organisator auf eigene Gefahr. Der Betreiber der Webseite kann u.a. für Datenverlust und Serverausfälle nicht haftbar gemacht werden.
           li Eine gewerbliche Benutzung der Software (Organisation von Spielen gegen Vergütung über den effektiven Spesen) ist ohne ausdrückliche Genehmigung des Autors explizit untersagt.
+          li Benutzer ohne gültige Email-Adresse (z.B. bei Verwendung von Wegwerf-Adressen) können jederzeit gelöscht werden.
       FerroCard.mt-1(title="Über diese Software")
         div.info {{title}} V{{version}}
         div
