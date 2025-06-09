@@ -276,31 +276,27 @@ function countGameplays(callback) {
  * Returns exactly one (or none, if not existing) gameplay with the params supplied
  * @param gameId
  * @param ownerId which is the email address of the person getting the data
- * @param callback
  */
-function getGameplay(gameId, ownerId, callback) {
+async function getGameplay(gameId, ownerId, callback) {
+  if (callback) {
+    // This one is critical - I guess I got all the references, but testing is still important a this function is used
+    // quite a lot!!
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   let params = {$or: [{'internal.owner': ownerId}, {'admins.logins': ownerId}], 'internal.gameId': gameId};
   //  var params = {'internal.owner': ownerId, 'internal.gameId': gameId};
   if (ownerId === null) {
     params = {'internal.gameId': gameId};
   } else if (ownerId === undefined) {
-    return callback(new Error('undefined is not a valid value for ownerId'));
+    throw new Error('undefined is not a valid value for ownerId');
   }
-  Gameplay
-    .find(params)
-    .exec()
-    .then(docs => {
-      let err, doc;
-      if (docs.length === 0) {
-        err = new Error('This gameplay does not exist for this user:' + gameId + ' @ ' + ownerId);
-      } else {
-        doc = docs[0];
-      }
-      callback(err, doc);
-    })
-    .catch(err => {
-      callback(err);
-    });
+  let docs = await Gameplay.find(params).exec();
+
+  if (docs.length === 0) {
+    throw new Error('This gameplay does not exist for this user:' + gameId + ' @ ' + ownerId);
+  }
+  return docs[0];
 }
 
 /**
@@ -388,36 +384,37 @@ function finalizeTime(date, time) {
  * @param callback
  */
 function finalize(gameId, ownerId, callback) {
-  getGameplay(gameId, ownerId, function (err, gp) {
-    if (err) {
-      callback(err);
-    }
-    if (gp.internal.finalized) {
-      // nothing to do, is already finalized
-      return callback(null, gp);
-    }
-    if (gp.internal.owner !== ownerId) {
-      return callback(new Error('Wrong user, not allowed to finalize'));
-    }
-    if (gp.log.priceListVersion === 0) {
-      return callback(new Error('Can only finalize gameplays with pricelist'));
-    }
-    if (gp.internal.priceListPendingChanges) {
-      return callback(new Error('Pricelist params changed, list not up to date!'));
-    }
-    gp.internal.finalized     = true;
-    gp.scheduling.gameStartTs = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameStart);
-    gp.scheduling.gameEndTs   = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameEnd);
+  getGameplay(gameId, ownerId)
+    .then(gp => {
+      if (gp.internal.finalized) {
+        // nothing to do, is already finalized
+        return callback(null, gp);
+      }
+      if (gp.internal.owner !== ownerId) {
+        return callback(new Error('Wrong user, not allowed to finalize'));
+      }
+      if (gp.log.priceListVersion === 0) {
+        return callback(new Error('Can only finalize gameplays with pricelist'));
+      }
+      if (gp.internal.priceListPendingChanges) {
+        return callback(new Error('Pricelist params changed, list not up to date!'));
+      }
+      gp.internal.finalized     = true;
+      gp.scheduling.gameStartTs = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameStart);
+      gp.scheduling.gameEndTs   = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameEnd);
 
-    gp.save()
-      .then(gpSaved => {
-        logger.info(`${gpSaved.internal.gameId}: Gameplay finalized`, gpSaved);
-        return callback(null, gpSaved);
-      })
-      .catch(err => {
-        return callback(err);
-      });
-  });
+      gp.save()
+        .then(gpSaved => {
+          logger.info(`${gpSaved.internal.gameId}: Gameplay finalized`, gpSaved);
+          return callback(null, gpSaved);
+        })
+        .catch(err => {
+          return callback(err);
+        });
+    })
+    .catch(err => {
+      callback(err);
+    });
 }
 
 /**
@@ -455,11 +452,7 @@ function isFinalized(gameId, callback) {
  */
 function updateGameplayPartial(gp, callback) {
 
-  getGameplay(gp.internal.gameId, gp.internal.owner, function (err, loadedGp) {
-    if (err) {
-      logger.info('Error while loading gameplay: ' + err.message);
-      return callback(err);
-    }
+  getGameplay(gp.internal.gameId, gp.internal.owner).then(loadedGp => {
     let internal = loadedGp.internal;
     _.merge(loadedGp, gp);
     _.set(loadedGp, 'internal', internal);
@@ -479,7 +472,11 @@ function updateGameplayPartial(gp, callback) {
       .catch(err => {
         return callback(err);
       });
-  });
+  })
+    .catch(err => {
+      logger.info('Error while loading gameplay: ' + err.message);
+      return callback(err);
+    });
 }
 
 /**
@@ -494,11 +491,7 @@ function updateGameplay(gp, callback) {
   if (!gp.save) {
     // If this not a gameplay object, we have to load the existing game and update it
     logger.info('nod a gameplay, converting');
-    return getGameplay(gp.internal.gameId, gp.internal.owner, function (err, loadedGp) {
-      if (err) {
-        logger.info('Error while loading gameplay: ' + err.message);
-        return callback(err);
-      }
+    return getGameplay(gp.internal.gameId, gp.internal.owner).then(loadedGp => {
       // we need to assign the data now to this gameplay loaded
       loadedGp.gamename   = gp.gamename;
       loadedGp.owner      = gp.owner;
@@ -515,7 +508,11 @@ function updateGameplay(gp, callback) {
       return updateGameplay(loadedGp, function (err, gp2) {
         return callback(err, gp2);
       });
-    });
+    })
+      .catch(err => {
+        logger.info('Error while loading gameplay: ' + err.message);
+        return callback(err);
+      });
   }
   // Save in DB
   if (gp.internal.finalized) {
@@ -542,10 +539,7 @@ function updateGameplay(gp, callback) {
  * @param callback
  */
 function setAdmins(gameId, ownerId, logins, callback) {
-  getGameplay(gameId, ownerId, function (err, gameplay) {
-    if (err) {
-      return callback(err);
-    }
+  getGameplay(gameId, ownerId).then(gameplay => {
     gameplay.log.lastEdited = new Date();
     gameplay.admins         = gameplay.admins || {};
     gameplay.admins.logins  = logins || [];
@@ -557,7 +551,10 @@ function setAdmins(gameId, ownerId, logins, callback) {
       .catch(err => {
         return callback(err);
       });
-  });
+  })
+    .catch(err => {
+      return callback(err);
+    });
 }
 
 /**

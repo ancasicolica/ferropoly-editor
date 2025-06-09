@@ -18,16 +18,17 @@ const {DateTime}                 = require('luxon');
 /**
  * Get the home page
  */
-router.get('/info/:gameId', function (req, res) {
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
-    if (err) {
-      return res.render('error/403', {
-        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error:   {status: 403, stack: {}}
-      });
-    }
+router.get('/info/:gameId', async function (req, res) {
+  try {
+    await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user);
     res.sendFile(path.join(__dirname, '..', 'public', 'html', 'export.html'));
-  });
+  }
+  catch {
+    return res.render('error/403', {
+      message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+      error:   {status: 403, stack: {}}
+    });
+  }
 });
 
 /*
@@ -45,11 +46,7 @@ router.get('/:gameId', (req, res) => {
 
   logger.info(`${gameId}: Export started`);
 
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplay) {
-    if (err) {
-      return res.status(500).send({message: 'DB read error: ' + err.message});
-    }
-
+  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user).then(gameplay => {
     getPropertiesForGameplay(req.params.gameId, {lean: true}, (err, props) => {
       if (err) {
         return res.status(500).send({message: 'Property read error: ' + err.message});
@@ -81,7 +78,6 @@ router.get('/:gameId', (req, res) => {
 
         const exportDataBuffer = Buffer.from(JSON.stringify(exportData));
 
-
         let result = {
           version: 1,
           meta:    {
@@ -109,6 +105,8 @@ router.get('/:gameId', (req, res) => {
         res.send(buffer);
       });
     });
+  }).catch(err => {
+      return res.status(500).send({message: 'DB read error: ' + err.message});
   });
 });
 

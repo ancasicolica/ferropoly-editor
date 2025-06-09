@@ -46,17 +46,20 @@ function checkAdminUsers(logins, callback) {
 /**
  * Get the home page
  */
-router.get('/edit/:gameId', function (req, res) {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err) {
+router.get('/edit/:gameId', async function (req, res) {
+  try {
+    await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
+    res.sendFile(path.join(__dirname, '..', 'public', 'html', 'admins.html'));
+  }
+  catch(err) {
     if (err) {
       return res.render('error/403', {
         message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error  : {status: 403, stack: {}}
+        error:   {status: 403, stack: {}}
       });
     }
-    res.sendFile(path.join(__dirname, '..', 'public', 'html', 'admins.html'));
-  });
-});
+  }
+})
 
 
 /**
@@ -97,13 +100,7 @@ router.post('/:gameId', function (req, res) {
  * Get the admins, checks if they have a login
  */
 router.get('/:gameId', (req, res) => {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
-    if (err) {
-      logger.error('getGameplay fails', err);
-      // "not found" is the most likely error thrown
-      return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
-    }
-
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user).then(gp => {
     let adminEmails = _.get(gp, 'admins.logins', []);
     let result      = [];
     // Iterate through all admins, check if they have an email
@@ -129,6 +126,10 @@ router.get('/:gameId', (req, res) => {
         }
         res.send(result);
       });
+  }).catch(err => {
+      logger.error('getGameplay fails', err);
+      // "not found" is the most likely error thrown
+      return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
   });
 });
 

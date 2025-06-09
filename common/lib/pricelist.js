@@ -52,11 +52,7 @@ module.exports = {
         return callback(err);
       }
 
-      gameplayModel.getGameplay(gameId, null, function (err, gp) {
-        if (err) {
-          return callback(err);
-        }
-
+      gameplayModel.getGameplay(gameId, null).then(gp => {
         let csvList = [['Preisliste ' + gp.gamename], ['Position', 'Ort', 'Gruppe', 'Kaufpreis', 'Hauspreis', 'Miete', 'Miete 1H', 'Miete 2H', 'Miete 3H', 'Miete 4H', 'Miete Hotel']];
         for (let i = 0; i < list.length; i++) {
           let e = list[i];
@@ -79,7 +75,10 @@ module.exports = {
         let fileName  = _.kebabCase(gp.gamename) + '-pricelist.xlsx';
 
         callback(null, {sheetName: 'Preisliste', fileName: fileName, data: csvList});
-      });
+      })
+        .catch(err => {
+          return callback(err);
+        });
     });
   }
 };

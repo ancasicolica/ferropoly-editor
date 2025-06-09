@@ -21,12 +21,10 @@ router.get('/:gameId', function (req, res) {
 });
 
 /* GET Rules. */
-router.get('/data/:gameId', function (req, res) {
+router.get('/data/:gameId', async function (req, res) {
+  try {
+    const gp = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user)
 
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
-    if (err) {
-      return res.status(500).send({message: err.message});
-    }
     let gameStart     = _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
     let now           = DateTime.now();
     const editAllowed = now < gameStart;
@@ -40,7 +38,10 @@ router.get('/data/:gameId', function (req, res) {
         text:     text
       }
     });
-  });
+  }
+  catch (err) {
+    return res.status(500).send({message: err.message});
+  }
 });
 
 /**
@@ -54,15 +55,10 @@ router.post('/raw/:gameId', async (req, res) => {
     }
     logger.info(`${req.params.gameId} : updating raw rules`);
 
-    gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
-      if (err) {
-        return res.status(500).send({message: 'Spiel nicht gefunden'});
-      }
-      const compiledRules = rulesCompiler({gp, raw: req.body.raw});
-      const rules         = await rulesModel.updateEditedRules(req.params.gameId, req.body.raw, compiledRules);
-      res.send({text: rules.text, raw: rules.raw, released: rules.released});
-    })
-
+    const gp            = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user)
+    const compiledRules = rulesCompiler({gp, raw: req.body.raw});
+    const rules         = await rulesModel.updateEditedRules(req.params.gameId, req.body.raw, compiledRules);
+    res.send({text: rules.text, raw: rules.raw, released: rules.released});
   }
   catch (e) {
     logger.error('Exception in /rules/raw', e);
@@ -81,17 +77,12 @@ router.post('/reset/:gameId', async (req, res) => {
     }
     logger.info(`${req.params.gameId} : resetting rules`);
 
-    gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, async (err, gp) => {
-      if (err) {
-        return res.status(500).send({message: 'Spiel nicht gefunden'});
-      }
-      const template      = fs.readFileSync(path.join(__dirname, '..', 'lib', 'rulesTemplate.pug'), 'utf8');
-      const raw           = pugToHtml(template);
-      const compiledRules = rulesCompiler({gp, raw: raw});
-      const rules         = await rulesModel.updateEditedRules(req.params.gameId, raw, compiledRules);
-      res.send({text: rules.text, raw: rules.raw, released: rules.released});
-    })
-
+    const gp            = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user)
+    const template      = fs.readFileSync(path.join(__dirname, '..', 'lib', 'rulesTemplate.pug'), 'utf8');
+    const raw           = pugToHtml(template);
+    const compiledRules = rulesCompiler({gp, raw: raw});
+    const rules         = await rulesModel.updateEditedRules(req.params.gameId, raw, compiledRules);
+    res.send({text: rules.text, raw: rules.raw, released: rules.released});
   }
   catch (e) {
     logger.error('Exception in /rules/reset', e);

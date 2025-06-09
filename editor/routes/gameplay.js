@@ -51,13 +51,14 @@ router.get('/mygames', function (req, res) {
 });
 
 /* GET data of a specific gameplay */
-router.get('/info/:gameId', function (req, res) {
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplay) {
-    if (err) {
-      return res.status(500).send({message: 'DB read error: ' + err.message});
-    }
+router.get('/info/:gameId', async function (req, res) {
+  try {
+    const gameplay = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user);
     return res.send(gameplay);
-  });
+  }
+  catch (err) {
+    return res.status(500).send({message: 'DB read error: ' + err.message});
+  }
 });
 
 
@@ -127,7 +128,7 @@ router.post('/createnew', function (req, res) {
 /**
  * Finalize the gameplay
  */
-router.post('/finalize', function (req, res) {
+router.post('/finalize', async function (req, res) {
   try {
     logger.test(_.get(req, 'body.debug'));
 
@@ -136,32 +137,27 @@ router.post('/finalize', function (req, res) {
       return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
     }
     logger.info('finalizing gameplay');
-    gameplayModel.getGameplay(req.body.gameId, req.session.passport.user, function (err, gp) {
+    const gp = await gameplayModel.getGameplay(req.body.gameId, req.session.passport.user)
+
+    if (gp.internal.finalized) {
+      logger.info(`Gameplay ${gp.internal.gameId} was already finalized, quit`);
+      return res.status(200).send({});
+    }
+
+    // Only the owner is allowed to finalize the game, not admins!
+    if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
+      return res.status(403).send('Not allowed');
+    }
+
+    gameplayLib.finalizeGameplay(gp, req.session.passport.user, async function (err) {
       if (err) {
-        return res.status(500).send({
-          message: 'Gameplay finalization error: ' + err.message + ' GameplayId: : ' + req.body.gameId
-        });
+        return res.status(500).send({message: 'Error while finalizing gameplay: ' + err.message});
       }
-
-      if (gp.internal.finalized) {
-        logger.info(`Gameplay ${gp.internal.gameId} was already finalized, quit`);
-        return res.status(200).send({});
-      }
-
-      // Only the owner is allowed to finalize the game, not admins!
-      if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
-        return res.status(403).send('Not allowed');
-      }
-
-      gameplayLib.finalizeGameplay(gp, req.session.passport.user, async function (err) {
-        if (err) {
-          return res.status(500).send({message: 'Error while finalizing gameplay: ' + err.message});
-        }
-        // Now create also first rules
-        await rulesModel.releaseRules(gp.internal.gameId, 'Automatisch bei Finalisierung erzeugt');
-        return res.send({});
-      });
+      // Now create also first rules
+      await rulesModel.releaseRules(gp.internal.gameId, 'Automatisch bei Finalisierung erzeugt');
+      return res.send({});
     });
+
   }
   catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);
@@ -218,12 +214,7 @@ router.delete('/:gameId', function (req, res) {
     }
 
     // Get gameplay first, verify user
-    gameplayModel.getGameplay(gameId, req.session.passport.user, function (err, gp) {
-      if (err) {
-        return res.status(500).send({
-          message: 'Gameplay load error: ' + err.message + ' GameplayId: ' + gameId
-        });
-      }
+    gameplayModel.getGameplay(gameId, req.session.passport.user).then(gp => {
       // Gameplay not found (or wrong user for it)
       if (!gp || gp.length === 0) {
         return res.status(404).send({message: 'Gameplay not found: ' + gameId});
@@ -244,6 +235,10 @@ router.delete('/:gameId', function (req, res) {
           return res.status(500).send({message: 'Error: ' + err.message});
         }
         return res.send({gameId: gp.internal.gameId, name: gp.gamename});
+      });
+    }).catch(err => {
+      return res.status(500).send({
+        message: 'Gameplay load error: ' + err.message + ' GameplayId: ' + gameId
       });
     });
   }

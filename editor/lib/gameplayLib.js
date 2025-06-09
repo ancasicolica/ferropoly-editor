@@ -311,39 +311,36 @@ function deleteGameplay(gpOptions, callback) {
     return callback(new Error('Options are not complete'));
   }
 
-  return properties.removeAllPropertiesFromGameplay(gpOptions.gameId, function (err) {
+  properties.removeAllPropertiesFromGameplay(gpOptions.gameId, async function (err) {
     if (err) {
       return callback(err);
     }
-    return gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail, async function (err, gp) {
-      if (err || !gp) {
-        return callback(err);
-      }
-      try {
-        await teams.deleteAllTeams(gpOptions.gameId);
-        await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
-        await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
-        await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
-        await schedulerEventsModel.dumpEvents(gpOptions.gameId);
-        await picBucketModel.deletePicBucket(gpOptions.gameId);
-        await gameplays.removeGameplay(gp);
-        await travelLog.deleteAllEntries(gpOptions.gameId);
-        await gameLog.deleteAllEntries(gpOptions.gameId);
-        await rules.deleteRules(gpOptions.gameId);
-      }
-      catch (err) {
-        if (err) {
-          logger.error('Error while deleting gameplays', err);
-        }
-      }
-      logger.info('cleaning task finished');
-      if (gpOptions.doNotNotifyMain) {
-        return callback();
-      }
-      // update main instances as we removed the game!
-      updateFerropolyMainCache(100, callback);
-    });
-  });
+    try {
+      const gp = await gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail)
+      await teams.deleteAllTeams(gpOptions.gameId);
+      await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
+      await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
+      await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
+      await schedulerEventsModel.dumpEvents(gpOptions.gameId);
+      await picBucketModel.deletePicBucket(gpOptions.gameId);
+      await gameplays.removeGameplay(gp);
+      await travelLog.deleteAllEntries(gpOptions.gameId);
+      await gameLog.deleteAllEntries(gpOptions.gameId);
+      await rules.deleteRules(gpOptions.gameId);
+    }
+    catch (err) {
+      logger.error('Error while deleting gameplays', err);
+      return callback(err);
+    }
+    logger.info('cleaning task finished');
+    if (gpOptions.doNotNotifyMain) {
+      return callback();
+    }
+    // update main instances as we removed the game!
+    updateFerropolyMainCache(100, callback);
+  }).catch(err => {
+    callback(err);
+  })
 }
 
 /**

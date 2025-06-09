@@ -24,14 +24,9 @@ const MAX_NB_TEAMS = 20;
 /**
  * Get the home page
  */
-router.get('/edit/:gameId', function (req, res) {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
-    if (err) {
-      return res.render('error/403', {
-        message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-        error:   {status: 403, stack: {}}
-      });
-    }
+router.get('/edit/:gameId', async function (req, res) {
+  try {
+    const gp = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
 
     // Only the owner is allowed to edit the game, not the team mates!
     if (_.get(gp, 'internal.owner', 'none') === req.session.passport.user) {
@@ -42,34 +37,39 @@ router.get('/edit/:gameId', function (req, res) {
         error:   {status: 401, stack: {}}
       });
     }
-  });
+  }
+  catch {
+    return res.render('error/403', {
+      message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+      error:   {status: 403, stack: {}}
+    });
+  }
+
 });
 
 /**
  * Creates an empty new team and returns its id
  */
-router.post('/create', function (req, res) {
-  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    logger.info('Auth token missing, access denied');
-    res.status(404).send('Kein Zugriff möglich, bitte einloggen');
-    return;
-  }
-
-  if (req.params.gameId === 'play-a-demo-game') {
-    return res.status(403).send('Demo Game Teams können nicht erstellt werden');
-  }
-
-  let gameId = req.body.gameId;
-  if (!gameId) {
-    return res.status(400).send('GameId fehlt');
-  }
-
-  // Load the gameplay, this prooves that the user is the owner of the game
-  gameplays.getGameplay(gameId, req.session.passport.user, function (err, gp) {
-    if (err) {
-      res.status(500).send('Fehler bei Gameplay laden: ' + err.message);
+router.post('/create', async function (req, res) {
+  try {
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      res.status(404).send('Kein Zugriff möglich, bitte einloggen');
       return;
     }
+
+    if (req.params.gameId === 'play-a-demo-game') {
+      return res.status(403).send('Demo Game Teams können nicht erstellt werden');
+    }
+
+    let gameId = req.body.gameId;
+    if (!gameId) {
+      return res.status(400).send('GameId fehlt');
+    }
+
+    // Load the gameplay, this prooves that the user is the owner of the game
+    const gp = await gameplays.getGameplay(gameId, req.session.passport.user);
+
     if (gp.scheduling.gameStartTs) {
       if (moment().isAfter(gp.scheduling.gameStartTs)) {
         // Creating teams is not allowed after game start, send Forbidden status code
@@ -103,7 +103,12 @@ router.post('/create', function (req, res) {
           res.status(500).send('Fehler beim Erstellen des Teams: ' + err.message);
         });
     });
-  });
+  }
+  catch (err) {
+    if (err) {
+      res.status(500).send('Fehler bei Gameplay laden: ' + err.message);
+    }
+  }
 });
 
 /**
@@ -163,7 +168,7 @@ router.get('/get/:gameId', function (req, res) {
 /**
  * Store a team
  */
-router.post('/store', function (req, res) {
+router.post('/store', async function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
@@ -178,12 +183,9 @@ router.post('/store', function (req, res) {
   if (team.gameId === 'play-a-demo-game') {
     return res.status(403).send({message: 'Demo Game Teams können nicht bearbeitet werden'});
   }
+  try {
+    await gameplays.getGameplay(team.gameId, req.session.passport.user);
 
-  gameplays.getGameplay(team.gameId, req.session.passport.user, function (err) {
-    if (err) {
-      res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
-      return;
-    }
     teams.updateTeam(team).then(storedTeam => {
       // Check if a login is available
       users.getUserByMailAddress(storedTeam.data.teamLeader.email, function (err, user) {
@@ -206,8 +208,11 @@ router.post('/store', function (req, res) {
     }).catch(err => {
       logger.error('updateTeam Error', err);
       res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
-    });
-  });
+    })
+  }
+  catch (err) {
+    res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
+  }
 });
 
 
@@ -232,39 +237,32 @@ router.post('/confirm', function (req, res) {
     return res.status(403).send({message: 'Demo Game Teams können nicht bestätigt werden'});
   }
 
-  teams.getTeam(gameId, teamId, (err, team) => {
+  teams.getTeam(gameId, teamId, async (err, team) => {
     if (err) {
       logger.error(`${gameId}: Error while getting team`, err);
       res.status(500).send({message: 'Fehler beim laden des Teams: ' + err.message});
       return;
     }
 
-    gameplays.getGameplay(team.gameId, req.session.passport.user, function (err, gp) {
-      if (err) {
-        res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
-        return;
-      }
-
+    try {
+      const gp                   = await gameplays.getGameplay(team.gameId, req.session.passport.user);
       team.data.confirmed        = true;
       team.data.confirmationDate = new Date();
+      await teams.update(team);
 
-      teams.updateTeam(team)
-        .then(updatedTeam => {
-          logger.info(`${gameId}: Confirmed team ${team.data.name}`);
-          sendConfirmationMail(gp, team, err => {
-            let mailSent = true;
-            if (err) {
-              logger.error(`${gameId}: Error while sending email`, err);
-              mailSent = false;
-            }
-            return res.send({mailSent: mailSent, team: updatedTeam});
-          });
-        })
-        .catch(err => {
-          logger.error(`${gameId}: Error while updating team`, err);
-          res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
-        });
-    });
+      logger.info(`${gameId}: Confirmed team ${team.data.name}`);
+      sendConfirmationMail(gp, team, err => {
+        let mailSent = true;
+        if (err) {
+          logger.error(`${gameId}: Error while sending email`, err);
+          mailSent = false;
+        }
+        return res.send({mailSent: mailSent, team: updatedTeam});
+      });
+    }
+    catch (err) {
+      res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
+    }
   });
 });
 
@@ -281,12 +279,7 @@ router.delete('/:gameId/:teamId', function (req, res) {
     return res.status(403).send({message: 'Teams im Demospiel können nicht gelöscht werden'});
   }
 
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gp) {
-    if (err) {
-      logger.error('getGameplay Error', err);
-      res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
-      return;
-    }
+  gameplays.getGameplay(req.params.gameId, req.session.passport.user).then(gp => {
     if (gp.scheduling.gameStartTs) {
       if (moment().isAfter(gp.scheduling.gameStartTs)) {
         // Deleting is not allowed after game start
@@ -300,8 +293,10 @@ router.delete('/:gameId/:teamId', function (req, res) {
       logger.error('deleteTeam Error', err);
       res.status(500).send({message: 'Fehler bei Team löschen: ' + err.message});
     });
+  }).catch(err => {
+    logger.error('getGameplay Error', err);
+    res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
   });
-
 });
 
 

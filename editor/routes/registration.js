@@ -9,7 +9,7 @@ const gameplayModel = require('../../common/models/gameplayModel');
 const logger        = require('../../common/lib/logger').getLogger('routes:registration');
 const path          = require('path');
 const _             = require('lodash');
-const { DateTime } = require("luxon");
+const {DateTime}    = require('luxon');
 
 /* GET Page with Registration */
 router.get('/:gameId', function (req, res) {
@@ -19,15 +19,14 @@ router.get('/:gameId', function (req, res) {
 /* GET Rules. */
 router.get('/data/:gameId', function (req, res) {
 
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user, (err, gp) => {
-    if (err) {
-      return res.status(500).send({message: err.message});
-    }
-    let gameStart =  _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
-    let now = DateTime.now();
+  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user).then(gp => {
+    let gameStart     = _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
+    let now           = DateTime.now();
     const editAllowed = now < gameStart;
     let rules         = gp.toObject().rules;
     res.send({editAllowed, rules});
+  }).catch(err => {
+    return res.status(500).send({message: err.message});
   });
 });
 
@@ -44,7 +43,7 @@ router.post('/:gameId', function (req, res) {
     logger.info(`Updating rules for ${req.params.gameId}`);
     let info = {
       changes: req.body.changes || 'Keine Angaben',
-      text   : req.body.text
+      text:    req.body.text
     };
     gameplayModel.updateRules(req.params.gameId, req.session.passport.user, info, function (err) {
       if (err) {

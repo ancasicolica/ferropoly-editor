@@ -19,11 +19,7 @@ const pricelistLib = require('./pricelistLib');
 function createPriceList(gameId, ownerEmail, callback) {
 
   // Collect the information
-  gameplays.getGameplay(gameId, ownerEmail, function (err, gp) {
-    if (err) {
-      logger.error('getGameplay failed', err);
-      return callback(err);
-    }
+  gameplays.getGameplay(gameId, ownerEmail).then(gp => {
     properties.getPropertiesForGameplay(gameId, null, function (err, props) {
       if (err) {
         logger.error('getPropertiesForGameplay failed', err);
@@ -47,6 +43,9 @@ function createPriceList(gameId, ownerEmail, callback) {
         });
       });
     });
+  }).catch(err => {
+      logger.error('getGameplay failed', err);
+      return callback(err);
   });
 
 }
