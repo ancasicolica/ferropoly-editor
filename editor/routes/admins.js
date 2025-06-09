@@ -51,7 +51,7 @@ router.get('/edit/:gameId', async function (req, res) {
     await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
     res.sendFile(path.join(__dirname, '..', 'public', 'html', 'admins.html'));
   }
-  catch(err) {
+  catch (err) {
     if (err) {
       return res.render('error/403', {
         message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
@@ -65,7 +65,7 @@ router.get('/edit/:gameId', async function (req, res) {
 /**
  * Save all admins
  */
-router.post('/:gameId', function (req, res) {
+router.post('/:gameId', async function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
@@ -77,15 +77,8 @@ router.post('/:gameId', function (req, res) {
     logins.push(_.get(login, 'email', undefined));
   });
 
-  gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(logins, 0, 3), function (err, gp) {
-    if (err) {
-      logger.error('Can not set admins', err);
-      logger.info('gameId', req.params.gameId);
-      logger.info('user', req.session.passport.user);
-      res.status(500).send({message: 'can not save admins', errorMessage: err.message});
-      return;
-    }
-
+  try {
+    const gp = await gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(logins, 0, 3));
     checkAdminUsers(gp.admins.logins, function (err, result) {
       if (err) {
         logger.error('Error while checking users', err);
@@ -93,7 +86,13 @@ router.post('/:gameId', function (req, res) {
       }
       return res.send({result: result});
     });
-  });
+  }
+  catch (err) {
+    logger.error('Can not set admins', err);
+    logger.info('gameId', req.params.gameId);
+    logger.info('user', req.session.passport.user);
+    res.status(500).send({message: 'can not save admins', errorMessage: err.message});
+  }
 });
 
 /**
@@ -127,9 +126,9 @@ router.get('/:gameId', (req, res) => {
         res.send(result);
       });
   }).catch(err => {
-      logger.error('getGameplay fails', err);
-      // "not found" is the most likely error thrown
-      return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
+    logger.error('getGameplay fails', err);
+    // "not found" is the most likely error thrown
+    return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
   });
 });
 

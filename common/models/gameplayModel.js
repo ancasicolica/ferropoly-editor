@@ -235,10 +235,9 @@ async function countGameplaysForUser(ownerId, callback) {
     logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countGameplaysForUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
     return callback('NOT SUPPORTED ANYMORE!');
   }
-  const nb = await Gameplay
+  return await Gameplay
     .countDocuments({'internal.owner': ownerId})
     .exec();
-  return nb;
 }
 
 
@@ -246,15 +245,12 @@ async function countGameplaysForUser(ownerId, callback) {
  * Counts all gameplays for all users
  * @param callback
  */
-function countGameplays(callback) {
-  Gameplay.countDocuments({})
-    .exec()
-    .then(nb => {
-      return callback(null, nb);
-    })
-    .catch(err => {
-      return callback(err);
-    });
+async function countGameplays(callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countGameplays is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  return await Gameplay.countDocuments({}).exec();
 }
 
 /**
@@ -355,38 +351,33 @@ function finalizeTime(date, time) {
  * @param ownerId
  * @param callback
  */
-function finalize(gameId, ownerId, callback) {
-  getGameplay(gameId, ownerId)
-    .then(gp => {
-      if (gp.internal.finalized) {
-        // nothing to do, is already finalized
-        return callback(null, gp);
-      }
-      if (gp.internal.owner !== ownerId) {
-        return callback(new Error('Wrong user, not allowed to finalize'));
-      }
-      if (gp.log.priceListVersion === 0) {
-        return callback(new Error('Can only finalize gameplays with pricelist'));
-      }
-      if (gp.internal.priceListPendingChanges) {
-        return callback(new Error('Pricelist params changed, list not up to date!'));
-      }
-      gp.internal.finalized     = true;
-      gp.scheduling.gameStartTs = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameStart);
-      gp.scheduling.gameEndTs   = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameEnd);
+async function finalize(gameId, ownerId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in finalize is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const gp = await getGameplay(gameId, ownerId);
 
-      gp.save()
-        .then(gpSaved => {
-          logger.info(`${gpSaved.internal.gameId}: Gameplay finalized`, gpSaved);
-          return callback(null, gpSaved);
-        })
-        .catch(err => {
-          return callback(err);
-        });
-    })
-    .catch(err => {
-      callback(err);
-    });
+  if (gp.internal.finalized) {
+    // nothing to do, is already finalized
+    return gp;
+  }
+  if (gp.internal.owner !== ownerId) {
+    throw new Error('Wrong user, not allowed to finalize');
+  }
+  if (gp.log.priceListVersion === 0) {
+    throw new Error('Can only finalize gameplays with pricelist');
+  }
+  if (gp.internal.priceListPendingChanges) {
+    throw new Error('Pricelist params changed, list not up to date!');
+  }
+  gp.internal.finalized     = true;
+  gp.scheduling.gameStartTs = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameStart);
+  gp.scheduling.gameEndTs   = finalizeTime(gp.scheduling.gameDate, gp.scheduling.gameEnd);
+
+  const gpSaved = await gp.save();
+  logger.info(`${gpSaved.internal.gameId}: Gameplay finalized`, gpSaved);
+  return gpSaved
 }
 
 /**
@@ -394,26 +385,25 @@ function finalize(gameId, ownerId, callback) {
  * @param gameId
  * @param callback
  */
-function isFinalized(gameId, callback) {
+async function isFinalized(gameId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in isFinalized is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (finalizedGameplays[gameId]) {
     // return cached value
     logger.silly('return cached value');
     return callback(null, true);
   }
-  Gameplay.find({'internal.gameId': gameId})
-    .then(docs => {
-      if (docs.length === 0) {
-        return callback(new Error('game not found: ' + gameId));
-      }
+  const docs = await Gameplay.find({'internal.gameId': gameId});
+  if (docs.length === 0) {
+    throw new Error('game not found: ' + gameId);
+  }
 
-      if (docs[0].internal.finalized) {
-        finalizedGameplays[docs[0].internal.gameId] = true;
-      }
-      return callback(null, docs[0].internal.finalized);
-    })
-    .catch(err => {
-      return callback(err);
-    });
+  if (docs[0].internal.finalized) {
+    finalizedGameplays[docs[0].internal.gameId] = true;
+  }
+  return docs[0].internal.finalized;
 }
 
 
@@ -422,33 +412,25 @@ function isFinalized(gameId, callback) {
  * @param gp
  * @param callback
  */
-function updateGameplayPartial(gp, callback) {
+async function updateGameplayPartial(gp, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateGameplayPartial is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const loadedGp = await getGameplay(gp.internal.gameId, gp.internal.owner);
 
-  getGameplay(gp.internal.gameId, gp.internal.owner).then(loadedGp => {
-    let internal = loadedGp.internal;
-    _.merge(loadedGp, gp);
-    _.set(loadedGp, 'internal', internal);
+  let internal = loadedGp.internal;
+  _.merge(loadedGp, gp);
+  _.set(loadedGp, 'internal', internal);
 
-    // Save in DB
-    if (loadedGp.internal.finalized) {
-      // We can't save it, it is finalized!
-      return callback(new Error('already finalized'));
-    }
-    _.set(loadedGp, 'log.lastEdited', new Date());
+  // Save in DB
+  if (loadedGp.internal.finalized) {
+    // We can't save it, it is finalized!
+    return new Error('already finalized');
+  }
+  _.set(loadedGp, 'log.lastEdited', new Date());
 
-    loadedGp.save()
-      .then(() => {
-        logger.info(`${loadedGp.internal.gameId}: Gameplay update`);
-        return callback(null, loadedGp);
-      })
-      .catch(err => {
-        return callback(err);
-      });
-  })
-    .catch(err => {
-      logger.info('Error while loading gameplay: ' + err.message);
-      return callback(err);
-    });
+  return await loadedGp.save();
 }
 
 /**
@@ -456,50 +438,40 @@ function updateGameplayPartial(gp, callback) {
  * @param gp
  * @param callback
  */
-function updateGameplay(gp, callback) {
-
+async function updateGameplay(gp, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   gp.log.lastEdited = new Date();
 
   if (!gp.save) {
     // If this not a gameplay object, we have to load the existing game and update it
     logger.info('nod a gameplay, converting');
-    return getGameplay(gp.internal.gameId, gp.internal.owner).then(loadedGp => {
-      // we need to assign the data now to this gameplay loaded
-      loadedGp.gamename   = gp.gamename;
-      loadedGp.owner      = gp.owner;
-      loadedGp.scheduling = gp.scheduling;
-      loadedGp.gameParams = gp.gameParams;
-      loadedGp.joining    = gp.joining;
-      loadedGp.rules      = gp.rules;
-      loadedGp.log        = gp.log;
-      loadedGp.pricelist  = gp.pricelist;
-      loadedGp.mobile     = gp.mobile;
-      // we do not copy internal as this does not change (must not change!)
+    const loadedGp      = await getGameplay(gp.internal.gameId, gp.internal.owner);
+    // we need to assign the data now to this gameplay loaded
+    loadedGp.gamename   = gp.gamename;
+    loadedGp.owner      = gp.owner;
+    loadedGp.scheduling = gp.scheduling;
+    loadedGp.gameParams = gp.gameParams;
+    loadedGp.joining    = gp.joining;
+    loadedGp.rules      = gp.rules;
+    loadedGp.log        = gp.log;
+    loadedGp.pricelist  = gp.pricelist;
+    loadedGp.mobile     = gp.mobile;
+    // we do not copy internal as this does not change (must not change!)
 
-      // Call update again (this is recursive)
-      return updateGameplay(loadedGp, function (err, gp2) {
-        return callback(err, gp2);
-      });
-    })
-      .catch(err => {
-        logger.info('Error while loading gameplay: ' + err.message);
-        return callback(err);
-      });
+    // Call update again (this is recursive)
+    return updateGameplay(loadedGp);
   }
   // Save in DB
   if (gp.internal.finalized) {
     // We can't save it, it is finalized!
-    return callback(new Error('already finalized'));
+    throw new Error('already finalized');
   }
 
-  gp.save()
-    .then(() => {
-      logger.info(`${gp.internal.gameId}: Gameplay update`);
-      return callback(null, gp);
-    })
-    .catch(err => {
-      return callback(err);
-    })
+  await gp.save();
+  return gp;
 }
 
 /**
@@ -510,23 +482,17 @@ function updateGameplay(gp, callback) {
  * @param logins is an array with the entries to write
  * @param callback
  */
-function setAdmins(gameId, ownerId, logins, callback) {
-  getGameplay(gameId, ownerId).then(gameplay => {
-    gameplay.log.lastEdited = new Date();
-    gameplay.admins         = gameplay.admins || {};
-    gameplay.admins.logins  = logins || [];
+async function setAdmins(gameId, ownerId, logins, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in setAdmins is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const gameplay          = await getGameplay(gameId, ownerId);
+  gameplay.log.lastEdited = new Date();
+  gameplay.admins         = gameplay.admins || {};
+  gameplay.admins.logins  = logins || [];
 
-    gameplay.save()
-      .then(doc => {
-        return callback(null, doc);
-      })
-      .catch(err => {
-        return callback(err);
-      });
-  })
-    .catch(err => {
-      return callback(err);
-    });
+  return await gameplay.save()
 }
 
 /**
@@ -584,33 +550,29 @@ async function invalidatePricelist(gameId, ownerId) {
  * @param callback
  * @returns {*}
  */
-function updateGameplayLastChangedField(ownerId, gameId, callback) {
-  if (!gameId || !ownerId) {
-    return callback(new Error('no gameplay name or email supplied'));
+async function updateGameplayLastChangedField(ownerId, gameId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateGameplayLastChangedField is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  Gameplay
+  if (!gameId || !ownerId) {
+    throw new Error('no gameplay name or email supplied');
+  }
+  const docs = await Gameplay
     .find({'internal.owner': ownerId, 'internal.gameId': gameId})
-    .exec()
-    .then(docs => {
-      if (docs.length === 0) {
-        return callback();
-      }
-      let gp = docs[0];
-      if (gp.internal.finalized) {
-        // We can't save it, it is finalized!
-        return callback(new Error('already finalized'));
-      }
-      gp.log.lastEdited = new Date();
-      gp.save().then(() => {
-        return callback(null, gp);
-      })
-        .catch(err => {
-          return callback(err);
-        });
-    })
-    .catch(err => {
-      return callback(err);
-    });
+    .exec();
+
+  if (docs.length === 0) {
+    return null;
+  }
+  let gp = docs[0];
+  if (gp.internal.finalized) {
+    // We can't save it, it is finalized!
+    throw new Error('already finalized');
+  }
+  gp.log.lastEdited = new Date();
+  await gp.save();
+  return gp;
 }
 
 /**
@@ -620,47 +582,39 @@ function updateGameplayLastChangedField(ownerId, gameId, callback) {
  * @param info
  * @param callback
  */
-function updateRules(gameId, ownerId, info, callback) {
-  let err;
+async function updateRules(gameId, ownerId, info, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateRules is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId || !ownerId) {
-    return callback(new Error('no gameplay name or email supplied'));
+    throw new Error('no gameplay name or email supplied');
   }
 
-  Gameplay.find({'internal.owner': ownerId, 'internal.gameId': gameId})
-    .exec()
-    .then(docs => {
+  const docs = await Gameplay.find({'internal.owner': ownerId, 'internal.gameId': gameId})
+    .exec();
 
-      if (docs.length === 0) {
-        err = new Error(`Gameplay ${gameId} not found for user ${ownerId}`);
-        return callback(err);
-      }
-      let gp = docs[0];
+  if (docs.length === 0) {
+    throw new Error(`Gameplay ${gameId} not found for user ${ownerId}`);
+  }
 
-      if (!gp.rules || gp.rules.version < 0) {
-        gp.rules = {
-          version: 0, text: info.text, date: new Date(), changelog: []
-        };
-        gp.rules.changelog.push({
-          ts:      new Date(),
-          version: gp.rules.version,
-          changes: 'Automatisch erstellte Grundversion'
-        });
-      } else {
-        gp.rules.version++;
-        gp.rules.text = info.text;
-        gp.rules.changelog.push({ts: new Date(), version: gp.rules.version, changes: info.changes});
-      }
-      gp.save()
-        .then(() => {
-          return callback();
-        })
-        .catch(err => {
-          return callback(err);
-        });
-    })
-    .catch(err => {
-      return callback(err);
+  const gp = docs[0];
+
+  if (!gp.rules || gp.rules.version < 0) {
+    gp.rules = {
+      version: 0, text: info.text, date: new Date(), changelog: []
+    };
+    gp.rules.changelog.push({
+      ts:      new Date(),
+      version: gp.rules.version,
+      changes: 'Automatisch erstellte Grundversion'
     });
+  } else {
+    gp.rules.version++;
+    gp.rules.text = info.text;
+    gp.rules.changelog.push({ts: new Date(), version: gp.rules.version, changes: info.changes});
+  }
+  return await gp.save()
 }
 
 /**
@@ -668,11 +622,14 @@ function updateRules(gameId, ownerId, info, callback) {
  * @param gameplay
  * @param callback
  */
-function saveNewPriceListRevision(gameplay, callback) {
-
+async function saveNewPriceListRevision(gameplay, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in saveNewPriceListRevision is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (gameplay.internal.finalized) {
     // We can't save it, it is finalized!
-    return callback(new Error('already finalized'));
+    throw new Error('already finalized');
   }
   // This is the action which makes a price list valid
   gameplay.internal.priceListPendingChanges = false;
@@ -683,13 +640,7 @@ function saveNewPriceListRevision(gameplay, callback) {
     gameplay.log.priceListVersion++;
   }
 
-  gameplay.save()
-    .then(updatedGp => {
-      return callback(null, updatedGp);
-    })
-    .catch(err => {
-      return callback(err);
-    });
+  return await gameplay.save();
 }
 
 /**

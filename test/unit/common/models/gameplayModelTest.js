@@ -27,55 +27,55 @@ describe('GameplayModel Tests', function () {
     db.close(done);
   });
 
-describe('Creating a new gameplay', function () {
-  it('should work for #1 (user 1)', async function() {  // done entfernt
-    const res = await gameplays.createGameplay({
-      name:       'testspiel 1 (UnitTest)',
-      ownerEmail: users[0],
-      map:        'zvv',
-      gameDate:   DateTime.now().toJSDate()
+  describe('Creating a new gameplay', function () {
+    it('should work for #1 (user 1)', async function () {  // done entfernt
+      const res = await gameplays.createGameplay({
+        name:       'testspiel 1 (UnitTest)',
+        ownerEmail: users[0],
+        map:        'zvv',
+        gameDate:   DateTime.now().toJSDate()
+      });
+
+      expect(res._id).to.be.a('string');
+      expect(res.internal.gameId.length > 4).to.be(true);
+      expect(res.internal.owner).to.be(users[0]);
+      expect(res.internal.map).to.be('zvv');
+      expect(res.gamename).to.be('testspiel 1 (UnitTest)');
+      expect(res.gameParams.housePrices).to.be(.5);
     });
 
-    expect(res._id).to.be.a('string');
-    expect(res.internal.gameId.length > 4).to.be(true);
-    expect(res.internal.owner).to.be(users[0]);
-    expect(res.internal.map).to.be('zvv');
-    expect(res.gamename).to.be('testspiel 1 (UnitTest)');
-    expect(res.gameParams.housePrices).to.be(.5);
-  });
+    it('should work for #2 (user 1)', async function () {  // done entfernt
+      const res = await gameplays.createGameplay({
+        name:       'testspiel 2 (UnitTest)',
+        ownerEmail: users[0],
+        map:        'sbb',
+        gameDate:   DateTime.now().toJSDate()
+      });
 
-  it('should work for #2 (user 1)', async function() {  // done entfernt
-    const res = await gameplays.createGameplay({
-      name:       'testspiel 2 (UnitTest)',
-      ownerEmail: users[0],
-      map:        'sbb',
-      gameDate:   DateTime.now().toJSDate()
+      expect(res._id).to.be.a('string');
+      expect(res.internal.gameId.length > 4).to.be(true);
+      expect(res.internal.owner).to.be(users[0]);
+      expect(res.internal.map).to.be('sbb');
+      expect(res.gamename).to.be('testspiel 2 (UnitTest)');
+      expect(res.gameParams.housePrices).to.be(.5);
     });
-    
-    expect(res._id).to.be.a('string');
-    expect(res.internal.gameId.length > 4).to.be(true);
-    expect(res.internal.owner).to.be(users[0]);
-    expect(res.internal.map).to.be('sbb');
-    expect(res.gamename).to.be('testspiel 2 (UnitTest)');
-    expect(res.gameParams.housePrices).to.be(.5);
-  });
 
-  it('should work for #3 (user 2)', async function() {  // done entfernt
-    const res = await gameplays.createGameplay({
-      name:       'testspiel 3 (UnitTest)',
-      ownerEmail: users[1],
-      map:        'zvv',
-      gameDate:   DateTime.now().toJSDate()
+    it('should work for #3 (user 2)', async function () {  // done entfernt
+      const res = await gameplays.createGameplay({
+        name:       'testspiel 3 (UnitTest)',
+        ownerEmail: users[1],
+        map:        'zvv',
+        gameDate:   DateTime.now().toJSDate()
+      });
+
+      expect(res._id).to.be.a('string');
+      expect(res.internal.gameId.length > 4).to.be(true);
+      expect(res.internal.owner).to.be(users[1]);
+      expect(res.internal.map).to.be('zvv');
+      expect(res.gamename).to.be('testspiel 3 (UnitTest)');
+      expect(res.gameParams.housePrices).to.be(.5);
     });
-    
-    expect(res._id).to.be.a('string');
-    expect(res.internal.gameId.length > 4).to.be(true);
-    expect(res.internal.owner).to.be(users[1]);
-    expect(res.internal.map).to.be('zvv');
-    expect(res.gamename).to.be('testspiel 3 (UnitTest)');
-    expect(res.gameParams.housePrices).to.be(.5);
   });
-});
 
   describe('Creating a new gameId', () => {
     it('should create a new gameId', done => {
@@ -101,10 +101,10 @@ describe('Creating a new gameplay', function () {
       })
     });
     it('should return the correct number all users', function (done) {
-      gameplays.countGameplays(function (err, nb) {
+      gameplays.countGameplays().then(nb => {
         // the gameplays of the test users are also here
         expect(nb >= 3).to.be(true);
-        done(err);
+        done();
       })
     });
   });
@@ -186,38 +186,30 @@ describe('Creating a new gameplay', function () {
   });
 
   describe('Updating a gameplay', function () {
-    it('should work', function (done) {
-      gameplays.getGameplay(gp3.internal.gameId, users[1]).then(gp => {
+    it('should work', function () {
+      gameplays.getGameplay(gp3.internal.gameId, users[1]).then(async gp => {
         expect(gp).to.be.a('object');
         expect(gp.internal.gameId).to.be(gp3.internal.gameId);
         gp.gameParams.startCapital = 4555;
-        gameplays.updateGameplay(gp, function (err, gpSaved) {
-          expect(gpSaved.gameParams.startCapital).to.be(4555);
-          console.log(gpSaved.internal.gameId + ' updated');
-          done();
-        }).catch(err => {
-          done(err);
-        });
+        const gpSaved              = await gameplays.updateGameplay(gp);
+        expect(gpSaved.gameParams.startCapital).to.be(4555);
+        console.log(gpSaved.internal.gameId + ' updated');
       })
     });
     it('should work with a plain object', function (done) {
-      gameplays.getGameplay(gp3.internal.gameId, users[1]).then(gp => {
+      gameplays.getGameplay(gp3.internal.gameId, users[1]).then(async gp => {
         expect(gp).to.be.a('object');
         expect(gp.internal.gameId).to.be(gp3.internal.gameId);
         gp.gameParams.startCapital = 4555;
         gp.save                    = null;
-        gameplays.updateGameplay(gp, function (err, gpSaved) {
-          expect(gpSaved.gameParams.startCapital).to.be(4555);
-          console.log(gpSaved.internal.gameId + ' updated');
-          done();
-        }).catch(err => {
-          done(err);
-        });
-
+        const gpSaved              = await gameplays.updateGameplay(gp);
+        expect(gpSaved.gameParams.startCapital).to.be(4555);
+        console.log(gpSaved.internal.gameId + ' updated');
+        done();
       })
     });
-    it('should work also partially', function (done) {
-      let partial = {
+    it('should work also partially', async function () {
+      let partial   = {
         internal:   {
           gameId: gp1.internal.gameId,
           owner:  gp1.internal.owner
@@ -226,132 +218,101 @@ describe('Creating a new gameplay', function () {
           interestInterVal: 22
         }
       }
-      gameplays.updateGameplayPartial(partial, function (err, gpSaved) {
-        expect(gpSaved.gameParams.interestInterVal).to.be(22);
-        expect(gpSaved.gameParams.startCapital).to.be(4000);
-        console.log(gpSaved.internal.gameId + ' updated');
-        done(err);
-      });
+      const gpSaved = await gameplays.updateGameplayPartial(partial);
+      expect(gpSaved.gameParams.interestInterVal).to.be(22);
+      expect(gpSaved.gameParams.startCapital).to.be(4000);
+      console.log(gpSaved.internal.gameId + ' updated');
     });
   });
 
   describe('Adding Admins', function () {
-    it('should work', function (done) {
-      gameplays.setAdmins(gp3.internal.gameId, users[1], ['demo1@ferropoly.ch',
-                                                          'demo2@ferropoly.ch'], function (err, gpSaved) {
-        expect(gpSaved.admins.logins.length).to.be(2);
-        console.log(gpSaved.internal.gameId + ' updated');
-        done(err);
-      });
+    it('should work', async function () {
+      const gpSaved = await gameplays.setAdmins(gp3.internal.gameId, users[1], ['demo1@ferropoly.ch',
+                                                                                'demo2@ferropoly.ch']);
+      expect(gpSaved.admins.logins.length).to.be(2);
+      console.log(gpSaved.internal.gameId + ' updated');
     });
   });
 
   describe('Updating gameplays last changed field', function () {
-    it('should work', function (done) {
+    it('should work', async function () {
       console.log(gp3.log.lastEdited);
-      gameplays.updateGameplayLastChangedField(users[1], gp3.internal.gameId, function (err, gpSaved) {
-        console.log(gpSaved.log.lastEdited);
-        console.log(gpSaved.internal.gameId + ' updated');
-        done(err);
-      });
+      const gpSaved = await gameplays.updateGameplayLastChangedField(users[1], gp3.internal.gameId);
+      console.log(gpSaved.log.lastEdited);
+      console.log(gpSaved.internal.gameId + ' updated');
     });
   });
 
   describe('Finalizing a gameplay', function () {
     it('should not work without a pricelist', function (done) {
-      gameplays.finalize(gp3.internal.gameId, users[1], function (err) {
-        expect(err).not.to.be(null);
+      gameplays.finalize(gp3.internal.gameId, users[1]).catch(() => {
         done();
       });
     });
 
-    it('should return false as the gp is not finalized', function (done) {
-      gameplays.isFinalized(gp3.internal.gameId, function (err, finalized) {
-        expect(finalized).to.be(false);
-        done(err);
-      });
+    it('should return false as the gp is not finalized', async function () {
+      const finalized = await gameplays.isFinalized(gp3.internal.gameId);
+      expect(finalized).to.be(false);
     });
-    it('should work with a pricelist', function (done) {
-      gameplays.getGameplay(gp3.internal.gameId, users[1]).then(gp => {
-        expect(gp).to.be.a('object');
-        expect(gp.scheduling.gameStartTs).to.be(undefined);
-        expect(gp.scheduling.gameEndTs).to.be(undefined);
-        expect(gp.internal.gameId).to.be(gp3.internal.gameId);
-        gp.scheduling.gameStart = '04:30';
-        gp.scheduling.gameEnd   = '9:22';
-        gp.scheduling.gameDate  = new Date();
-        gp.log.priceListVersion = 1;
-        gameplays.updateGameplay(gp, function (err, gpSaved) {
-          expect(gpSaved.log.priceListVersion).to.be(1);
-          gameplays.finalize(gp3.internal.gameId, users[1], function (err, fgp) {
-            console.log(fgp);
-            expect(moment(fgp.scheduling.gameStartTs).dayOfYear()).to.be(moment().dayOfYear());
-            expect(moment(fgp.scheduling.gameEndTs).dayOfYear()).to.be(moment().dayOfYear());
-            expect(fgp.scheduling.gameStartTs.getMinutes()).to.be(30);
-            expect(fgp.scheduling.gameStartTs.getHours()).to.be(4);
-            expect(fgp.scheduling.gameEndTs.getMinutes()).to.be(22);
-            expect(fgp.scheduling.gameEndTs.getHours()).to.be(9);
-            done(err);
-          });
-        });
-      }).catch(err => {
-        done(err);
-      })
+    it('should work with a pricelist', async function () {
+      const gp = await gameplays.getGameplay(gp3.internal.gameId, users[1]);
+
+      expect(gp).to.be.a('object');
+      expect(gp.scheduling.gameStartTs).to.be(undefined);
+      expect(gp.scheduling.gameEndTs).to.be(undefined);
+      expect(gp.internal.gameId).to.be(gp3.internal.gameId);
+      gp.scheduling.gameStart = '04:30';
+      gp.scheduling.gameEnd   = '9:22';
+      gp.scheduling.gameDate  = new Date();
+      gp.log.priceListVersion = 1;
+      const gpSaved           = await gameplays.updateGameplay(gp);
+      expect(gpSaved.log.priceListVersion).to.be(1);
+      const fgp = await gameplays.finalize(gp3.internal.gameId, users[1]);
+      expect(moment(fgp.scheduling.gameStartTs).dayOfYear()).to.be(moment().dayOfYear());
+      expect(moment(fgp.scheduling.gameEndTs).dayOfYear()).to.be(moment().dayOfYear());
+      expect(fgp.scheduling.gameStartTs.getMinutes()).to.be(30);
+      expect(fgp.scheduling.gameStartTs.getHours()).to.be(4);
+      expect(fgp.scheduling.gameEndTs.getMinutes()).to.be(22);
+      expect(fgp.scheduling.gameEndTs.getHours()).to.be(9);
     });
-    it('should do nothing with an already finalized gameplay', function (done) {
-      gameplays.finalize(gp3.internal.gameId, users[1], function (err, fgp) {
-        expect(fgp.internal.finalized).to.be(true);
-        done(err);
-      });
+    it('should do nothing with an already finalized gameplay', async function () {
+      const fgp = await gameplays.finalize(gp3.internal.gameId, users[1])
+      expect(fgp.internal.finalized).to.be(true);
     });
-    it('should return true if the gp is finalized', function (done) {
-      gameplays.isFinalized(gp3.internal.gameId, function (err, finalized) {
-        expect(finalized).to.be(true);
-        done(err);
-      });
+    it('should return true if the gp is finalized', async function () {
+      const finalized = await gameplays.isFinalized(gp3.internal.gameId);
+      expect(finalized).to.be(true);
     });
   });
 
   describe('Updating rules', function () {
-    it('should create version 1 the first time', function (done) {
-      gameplays.updateRules(gp3.internal.gameId, users[1], {text: 'Spielregeln'}, err => {
-        expect(err).to.be(undefined);
+    it('should create version 1 the first time', async function () {
+      await gameplays.updateRules(gp3.internal.gameId, users[1], {text: 'Spielregeln'});
+      const gp = await gameplays.getGameplay(gp3.internal.gameId, users[1]);
+      expect(gp.rules.text).to.be('Spielregeln');
+      expect(gp.rules.version).to.be(0);
 
-        gameplays.getGameplay(gp3.internal.gameId, users[1]).then(gp => {
-          expect(err).to.be(undefined);
-          expect(gp.rules.text).to.be('Spielregeln');
-          expect(gp.rules.version).to.be(0);
-
-          gameplays.updateRules(gp3.internal.gameId, users[1], {
-            text:    'Updated',
-            changes: 'abc'
-          }, err => {
-            expect(err).to.be(undefined);
-
-            gameplays.getGameplay(gp3.internal.gameId, users[1]).then(gp => {
-              expect(gp.rules.text).to.be('Updated');
-              expect(gp.rules.changelog.length).to.be(2);
-              expect(gp.rules.changelog[1].changes).to.be('abc');
-              expect(gp.rules.changelog[1].version).to.be(1);
-              expect(gp.rules.version).to.be(1);
-              done();
-            }).catch(err => {
-              done(err);
-            });
-          });
-        });
+      await gameplays.updateRules(gp3.internal.gameId, users[1], {
+        text:    'Updated',
+        changes: 'abc'
       });
+      gp3 = await gameplays.getGameplay(gp3.internal.gameId, users[1]);
+      expect(gp3.rules.text).to.be('Updated');
+      expect(gp3.rules.changelog.length).to.be(2);
+      expect(gp3.rules.changelog[1].changes).to.be('abc');
+      expect(gp3.rules.changelog[1].version).to.be(1);
+      expect(gp3.rules.version).to.be(1);
+
     });
 
-    it('should save a new pricelist revision', function (done) {
-      console.log(gp3.log.priceListVersion);
-      gameplays.saveNewPriceListRevision(gp3, function (err, gpSaved) {
-        console.log(gpSaved.log.priceListVersion);
-        console.log(gpSaved.internal.gameId + ' updated');
-        done(err);
-      });
+    it('should save a new pricelist revision', async function () {
+      console.log(gp2.log.priceListVersion);
+      const gpSaved = await gameplays.saveNewPriceListRevision(gp2);
+      console.log(gpSaved.log.priceListVersion);
+      console.log(gpSaved.internal.gameId + ' updated');
     });
   });
+
 
   describe('Making a GP public', function () {
     it('should mark the public flag', async function () {
@@ -362,20 +323,17 @@ describe('Creating a new gameplay', function () {
   });
 
   describe('Deleting all gameplays again', function () {
-    it('should work with #1', function (done) {
-      gameplays.getGameplay(gp1.internal.gameId, users[0]).then(gp => {
-        gameplays.removeGameplay(gp).then(done()).catch(done);
-      })
+    it('should work with #1', async function () {
+      const gp = await gameplays.getGameplay(gp1.internal.gameId, users[0]);
+      await gameplays.removeGameplay(gp);
     });
-    it('should work with #2', function (done) {
-      gameplays.getGameplay(gp2.internal.gameId, users[0]).then(gp => {
-        gameplays.removeGameplay(gp).then(done()).catch(done);
-      })
+    it('should work with #2', async function () {
+      const gp = await gameplays.getGameplay(gp2.internal.gameId, users[0]);
+      await gameplays.removeGameplay(gp);
     });
-    it('should work with #3', function (done) {
-      gameplays.getGameplay(gp3.internal.gameId, users[1]).then(gp => {
-        gameplays.removeGameplay(gp).then(done()).catch(done);
-      })
+    it('should work with #3', async function () {
+      const gp = await gameplays.getGameplay(gp3.internal.gameId, users[1]);
+      await gameplays.removeGameplay(gp);
     });
 
     it('verify by getting all gameplays should return none for user 1', function (done) {
@@ -391,6 +349,5 @@ describe('Creating a new gameplay', function () {
         done();
       })
     });
-
   });
-});
+})

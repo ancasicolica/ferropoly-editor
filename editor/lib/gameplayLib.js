@@ -542,42 +542,41 @@ async function createDemoGameplay(p1, p2) {
  * @param email
  * @param callback
  */
-function finalizeGameplay(gameplay, email, callback) {
-  gameplays.finalize(gameplay.internal.gameId, email, function (err, gpSaved) {
-    if (err) {
-      logger.error('Failed to finalize gameplay: ' + err.message);
-      return callback(err);
-    }
+async function finalizeGameplay(gameplay, email, callback) {
+  try {
+    const gpSaved = await gameplays.finalize(gameplay.internal.gameId, email);
+
     let rules = rulesGenerator(gpSaved);
-    gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules}, err => {
+    await gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules});
+
+    properties.finalizeProperties(gameplay.internal.gameId, function (err) {
       if (err) {
-        logger.error('Error while saving rules', err.message);
-        // But continue...
+        logger.error('Failed to finalize the properties: ' + err.message);
+        return callback(err);
       }
-      properties.finalizeProperties(gameplay.internal.gameId, function (err) {
+      schedulerEvents.createEvents(gpSaved, function (err) {
         if (err) {
-          logger.error('Failed to finalize the properties: ' + err.message);
-          return callback(err);
+          logger.error('Error while creating events', err);
         }
-        schedulerEvents.createEvents(gpSaved, function (err) {
+        logger.info('Scheduler Events created');
+        propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
+          logger.info('Property map created');
           if (err) {
-            logger.error('Error while creating events', err);
+            logger.error(err);
           }
-          logger.info('Scheduler Events created');
-          propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
-            logger.info('Property map created');
-            if (err) {
-              logger.error(err);
-            }
-            if (gameplay.internal.doNotNotifyMain) {
-              return callback();
-            }
-            updateFerropolyMainCache(4000, callback);
-          });
+          if (gameplay.internal.doNotNotifyMain) {
+            return callback();
+          }
+          updateFerropolyMainCache(4000, callback);
         });
       });
     });
-  });
+
+  }
+  catch (err) {
+    logger.error('Error in finalizeGameplay', err);
+    callback(err);
+  }
 }
 
 /**

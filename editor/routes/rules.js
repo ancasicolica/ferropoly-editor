@@ -103,15 +103,11 @@ router.post('/release/:gameId', async (req, res) => {
 
     const rules = await rulesModel.releaseRules(req.params.gameId, req.body.text, 'Neue Version');
     // Temporary, until Game is on the same level like the editor
-    gameplayModel.updateRules(req.params.gameId, req.session.passport.user, {
+    await gameplayModel.updateRules(req.params.gameId, req.session.passport.user, {
       text:    rules.released,
       changes: 'Aktualisiert'
-    }, err => {
-      if (err) {
-        return res.status(500).send({message: 'Fehler beim Speichern der Regeln'});
-      }
-      res.send({text: rules.text, raw: rules.raw, released: rules.released});
-    })
+    });
+    res.send({text: rules.text, raw: rules.raw, released: rules.released});
   }
   catch (e) {
     logger.error('Exception in /rules/reset', e);

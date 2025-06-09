@@ -71,7 +71,7 @@ router.get('/load/:gameId', function (req, res) {
  * Save a game
  * An already existing Gameplay is saved with this route
  * */
-router.post('/save/:gameId', function (req, res) {
+router.post('/save/:gameId', async function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info(`/save/${req.params.gameId} : Auth token missing or wrong, access denied: ${req.body.authToken} vs ${req.session.authToken}`);
     logger.info('Passport Info:' + _.get(req, 'session.passport', 'none'));
@@ -84,15 +84,15 @@ router.post('/save/:gameId', function (req, res) {
     return;
   }
 
-  logger.info('Save game ' + req.params.gameId);
-  gameplays.updateGameplayPartial(req.body.gameplay, function (err, gameplay) {
-    if (err) {
-      logger.error('updateGameplay failed', err);
-      return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});
-    }
-
+  try {
+    logger.info('Save game ' + req.params.gameId);
+    const gameplay = await gameplays.updateGameplayPartial(req.body.gameplay);
     return res.send({success: true, gameId: gameplay.internal.gameId});
-  });
+  }
+  catch(err) {
+    logger.error('updateGameplay failed', err);
+    return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});
+  }
 });
 
 
@@ -133,27 +133,26 @@ router.post('/registration/:gameId', (req, res) => {
  * Saves ONE SINGLE property which was edited in the editor. Properties can only be updated
  * if the gameplay is not finalized yet.
  * */
-router.post('/saveProperty/:gameId', function (req, res) {
-  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-    logger.info('Auth token missing, access denied');
-    return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
-  }
-
-  if (!req.body.property || !req.body.property.location) {
-    return res.status(400).send({message: 'Ungültige Parameter'});
-  }
-  let prop = req.body.property;
-
-  if (req.params.gameId !== prop.gameId) {
-    res.status(400).send({message: 'GameID mismatch'});
-    return;
-  }
-
-  // load gameplay, check if finalized
-  gameplays.isFinalized(req.params.gameId, function (err, finalized) {
-    if (err) {
-      return res.status(500).send({message: 'Fehler bei Check Finalisierung: ' + err.message});
+router.post('/saveProperty/:gameId', async function (req, res) {
+  try {
+    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+      logger.info('Auth token missing, access denied');
+      return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
     }
+
+    if (!req.body.property || !req.body.property.location) {
+      return res.status(400).send({message: 'Ungültige Parameter'});
+    }
+    let prop = req.body.property;
+
+    if (req.params.gameId !== prop.gameId) {
+      res.status(400).send({message: 'GameID mismatch'});
+      return;
+    }
+
+    // load gameplay, check if finalized
+    const finalized = await gameplays.isFinalized(req.params.gameId);
+
     if (finalized) {
       return res.status(400).send({message: 'Bereits finalisiertes Spiel'});
     }
@@ -181,7 +180,10 @@ router.post('/saveProperty/:gameId', function (req, res) {
           return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
         });
     });
-  });
+  }
+  catch (err) {
+    return res.status(500).send({message: err.message});
+  }
 });
 
 /**
@@ -194,18 +196,18 @@ router.post('/dataChanged/:gameId', function (req, res) {
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
 
-  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId, function (err) {
-    if (err) {
-      logger.info('Error while updating gameplay: ' + err.message);
-      return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
-    }
-
+  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId)
+    .then(()=> {
     // This also invalidates the pricelist
     gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, (err, doc) => {
       console.log('XXXXXX', err, doc);
       //res.send({});
     });
-  });
+  })
+    .catch(err => {
+      logger.info('Error while updating gameplay: ' + err.message);
+      return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
+    });
 });
 
 /**
@@ -229,33 +231,29 @@ router.post('/savePositionInPricelist/:gameId', async function (req, res) {
       nbSaved: 0
     });
   }
+  try {
+    // Load gameplay, check if finalized
+    const finalized = await gameplays.isFinalized(req.params.gameId);
 
-  // Load gameplay, check if finalized
-  gameplays.isFinalized(req.params.gameId, async function (err, finalized) {
-    if (err) {
-      return res.status(500).send({message: 'Abfrage isFinalized schlug fehl ' + err.message});
-    }
     if (finalized) {
       return res.status(403).send({message: 'Spiel ist bereits finalisiert'});
     }
 
-    try {
-      for (const p of props) {
-        await properties.updatePositionInPriceList(req.params.gameId, p.uuid, p.positionInPriceRange);
-      }
-      await gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user);
-      res.send({
-        success: true,
-        status:  'ok',
-        message: props.length + ' Orte gespeichert',
-        nbSaved: props.length
-      });
+    for (const p of props) {
+      await properties.updatePositionInPriceList(req.params.gameId, p.uuid, p.positionInPriceRange);
     }
-    catch (err) {
-      logger.error('Saving properties fails', err);
-      return res.status(500).send({message: 'Speichern schlug fehl: ' + err.message});
-    }
-  });
+    await gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user);
+    res.send({
+      success: true,
+      status:  'ok',
+      message: props.length + ' Orte gespeichert',
+      nbSaved: props.length
+    });
+  }
+  catch (err) {
+    logger.error('Saving properties fails', err);
+    return res.status(500).send({message: 'Speichern schlug fehl: ' + err.message});
+  }
 });
 
 
