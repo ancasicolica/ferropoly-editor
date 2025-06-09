@@ -15,11 +15,9 @@ let propId0;
 
 describe('PropertyModel Tests', function () {
   before(function (done) {
-    db.init(settings, function () {
-      locations.getAllLocationsForMap('zvv', function (err, _locations) {
-        foundLocations = _locations;
-        done(err);
-      });
+    db.init(settings, async function () {
+      foundLocations = await locations.getAllLocationsForMap('zvv');
+      done();
     });
   });
 
@@ -97,10 +95,10 @@ describe('PropertyModel Tests', function () {
       })
     });
     it('should fail as the gameId is wrong', function (done) {
-      properties.updatePositionInPriceList('test', propId0, 2).then (prop => {
+      properties.updatePositionInPriceList('test', propId0, 2).then (() => {
         done('error did not happen');
       })
-        .catch(err => {
+        .catch(() => {
           done();
         })
     });

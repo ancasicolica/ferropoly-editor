@@ -37,15 +37,10 @@ module.exports = async function (callback) {
           callback();
         });
       },
-      function (callback) {
+      async function (callback) {
         // Get Info about the locations
-        locations.countLocations((err, info) => {
-          if (err) {
-            return callback(err);
-          }
-          retVal.locations = info;
-          callback();
-        });
+        retVal.locations = await locations.countLocations();
+        callback();
       }
     ], function (err) {
       callback(err, retVal);

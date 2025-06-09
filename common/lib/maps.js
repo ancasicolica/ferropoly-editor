@@ -8,7 +8,6 @@
 
 const maps          = require('./maps.json');
 const locationModel = require('../models/locationModel');
-const async         = require('async');
 const _             = require('lodash');
 
 module.exports = {
@@ -29,59 +28,34 @@ module.exports = {
    * @param req
    * @param res
    */
-  routeHandler: function (req, res) {
+  routeHandler: async function (req, res) {
+    try {
+      if (req.query.count) {
+        const info = await locationModel.countLocations()
+        return res.send(info);
+      } else if (req.query.locations) {
+        let retVal = _.clone(maps, true);
 
-    if (req.query.count) {
-      locationModel.countLocations(function (err, info) {
-        if (err) {
-          return res.status(500).send(err.message);
-        }
-        if (req.query.json) {
-          return res.send(info);
-        }
-        return res.send('var ferropolyMaps = ' + JSON.stringify(info) + ';');
-      });
-    }
-    else if (req.query.locations) {
-      let retVal = _.clone(maps, true);
+        maps.forEach(async m => {
+          const locs      = await locationModel.getAllLocationsForMap(m.map);
+          const locSorted = _.sortBy(locs, 'name');
 
-      async.each(retVal.maps,
-        function (m, cb) {
-          locationModel.getAllLocationsForMap(m.map, function (err, locs) {
-            if (err) {
-              return cb(err);
-            }
-
-            locs = _.sortBy(locs, 'name');
-
-            locs.forEach(function (loc) {
-              delete loc._id;
-              delete loc.position;
-              delete loc.maps;
-              delete loc.uuid;
-              delete loc.__v;
-            });
-
-            m.locations = locs;
-            cb();
+          locSorted.forEach(function (loc) {
+            delete loc._id;
+            delete loc.position;
+            delete loc.maps;
+            delete loc.uuid;
+            delete loc.__v;
           });
-        },
-        function (err) {
-          if (err) {
-            return res.status(500).send(err.message);
-          }
-          if (req.query.json) {
-            return res.send(retVal);
-          }
-          res.send('var ferropolyMaps = ' + JSON.stringify(retVal) + ';');
-        }
-      );
-    }
-    else {
-      if (req.query.json) {
+
+          m.locations = locs;
+        })
         return res.send(retVal);
       }
-      res.send('var ferropolyMaps = ' + JSON.stringify(maps) + ';');
+    }
+    catch (err) {
+      return res.status(500).send(err.message);
     }
   }
+
 };

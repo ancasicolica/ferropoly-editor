@@ -109,52 +109,49 @@ function createRandomGameplay(gameId, props, nb, callback) {
  * @param callback
  * @returns {*}
  */
-function copyLocationsToProperties(gpOptions, gameplay, callback) {
-  let props = [];
-  return locations.getAllLocationsForMap(gpOptions.map, function (err, gameLocations) {
-    if (err) {
-      return callback(err);
-    }
-    logger.info(`${gameplay.internal.gameId} : Read ${gameLocations.length} locations for this map`);
+async function copyLocationsToProperties(gpOptions, gameplay, callback) {
+  let props           = [];
+  const gameLocations = await locations.getAllLocationsForMap(gpOptions.map);
 
-    const importProperties   = gpOptions.properties || [];
-    let nbPropertiesImported = 0;
+  logger.info(`${gameplay.internal.gameId} : Read ${gameLocations.length} locations for this map`);
 
-    async.each(gameLocations,
-      function (location, cb) {
+  const importProperties   = gpOptions.properties || [];
+  let nbPropertiesImported = 0;
 
-        // Handle import data, new since 2025
-        let importData = _.find(importProperties, p => {
-          return (p.location.uuid === location.uuid)
-        });
-        if (importData) {
-          nbPropertiesImported++;
-        }
+  async.each(gameLocations,
+    function (location, cb) {
 
-        properties.createPropertyFromLocationEx(gameplay.internal.gameId, location, {pricelist: importData?.pricelist}, function (err, prop) {
-          if (err) {
-            logger.info(`${gameplay.internal.gameId} : Error while creating property: ${err.message}`);
-          }
-
-          props.push(prop);
-          cb(err);
-        });
-      },
-      function (err) {
-        if (err) {
-          return callback(err);
-        }
-        logger.info(`${gameplay.internal.gameId}: created properties, imported ${nbPropertiesImported}`);
-        if (gpOptions.random && nbPropertiesImported === 0) {
-          createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
-            logger.info(`${gameplay.internal.gameId}: random properties added`);
-            return callback(err, gameplay);
-          });
-        } else {
-          return callback(null, gameplay);
-        }
+      // Handle import data, new since 2025
+      let importData = _.find(importProperties, p => {
+        return (p.location.uuid === location.uuid)
       });
-  });
+      if (importData) {
+        nbPropertiesImported++;
+      }
+
+      properties.createPropertyFromLocationEx(gameplay.internal.gameId, location, {pricelist: importData?.pricelist}, function (err, prop) {
+        if (err) {
+          logger.info(`${gameplay.internal.gameId} : Error while creating property: ${err.message}`);
+        }
+
+        props.push(prop);
+        cb(err);
+      });
+    },
+    function (err) {
+      if (err) {
+        return callback(err);
+      }
+      logger.info(`${gameplay.internal.gameId}: created properties, imported ${nbPropertiesImported}`);
+      if (gpOptions.random && nbPropertiesImported === 0) {
+        createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
+          logger.info(`${gameplay.internal.gameId}: random properties added`);
+          return callback(err, gameplay);
+        });
+      } else {
+        return callback(null, gameplay);
+      }
+    });
 }
 
 /**
@@ -257,47 +254,44 @@ function createNewGameplay(gpOptions, callback) {
   }
 
   logger.info('New game for ' + gpOptions.email + ' using map ' + gpOptions.map);
-  userModel.getUserByMailAddress(gpOptions.email, function (err, user) {
+  userModel.getUserByMailAddress(gpOptions.email, async function (err, user) {
     if (err) {
       return callback(err);
     }
-    // as default we use the email address as user id
-    user = user || {id: gpOptions.email};
+    try {
+      // as default we use the email address as user id
+      user = user || {id: gpOptions.email};
 
-    gameplays.createGameplay({
-      gameId:           gpOptions.gameId || '',
-      map:              gpOptions.map,
-      name:             gpOptions.gamename,
-      ownerEmail:       gpOptions.email,
-      organisatorName:  gpOptions.organisatorName,
-      ownerId:          user.id,
-      gameStart:        gpOptions.gameStart || '05:00',
-      gameEnd:          gpOptions.gameEnd || '18:00',
-      gameDate:         gpOptions.gamedate,
-      instance:         settings.server.serverId,
-      mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
-      gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
-      interestInterval: gpOptions.interestInterval,
-      isDemo:           gpOptions.isDemo,
-      mainInstances:    settings.mainInstances,
-      autopilot:        gpOptions.autopilot
+      const gameplay = await gameplays.createGameplay({
+        gameId:           gpOptions.gameId || '',
+        map:              gpOptions.map,
+        name:             gpOptions.gamename,
+        ownerEmail:       gpOptions.email,
+        organisatorName:  gpOptions.organisatorName,
+        ownerId:          user.id,
+        gameStart:        gpOptions.gameStart || '05:00',
+        gameEnd:          gpOptions.gameEnd || '18:00',
+        gameDate:         gpOptions.gamedate,
+        instance:         settings.server.serverId,
+        mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
+        gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
+        interestInterval: gpOptions.interestInterval,
+        isDemo:           gpOptions.isDemo,
+        mainInstances:    settings.mainInstances,
+        autopilot:        gpOptions.autopilot
 
-    }, function (err, gameplay) {
-      if (err) {
-        // Error while creating the gameplay, abort
-        return callback(err);
-      }
+      });
 
       // Create also the rules
       let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
-      rules.createRules(gpOptions.gameId, pugToHtml(template))
-        .finally(() => {
-          logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
-          return copyLocationsToProperties(gpOptions, gameplay, callback);
-        });
-    });
+      await rules.createRules(gpOptions.gameId, pugToHtml(template));
+      logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
+      return copyLocationsToProperties(gpOptions, gameplay, callback);
+    }
+    catch (err) {
+      return callback(err);
+    }
   });
-
 }
 
 /**

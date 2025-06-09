@@ -32,37 +32,32 @@ router.get('/edit/:gameId', async function (req, res) {
  *
  * This route returns the gameplay and all properties belonging to it
  * */
-router.get('/load/:gameId', function (req, res) {
+router.get('/load/:gameId', async function (req, res) {
 
-  return gameplays.getGameplay(req.params.gameId, req.session.passport.user, function (err, gameplayData) {
+  const gameplayData = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
+  if (!gameplayData) {
+    return res.status(400).send({message: 'Spiel nicht gefunden'});
+  }
+  // Only the owner is allowed to edit the game, not the team mates!
+  if (_.get(gameplayData, 'internal.owner', 'none') !== req.session.passport.user) {
+    return res.status(401).send({message: 'Zugriff nicht erlaubt'});
+  }
+  // Now get all properties of this gameplay
+  return properties.getPropertiesForGameplay(req.params.gameId, {lean: true}, function (err, propertyData) {
     if (err) {
-      logger.error('getGameplay fails', err);
-      return res.status(500).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
+      logger.error('getPropertiesForGameplay fails', err);
+      return res.status(500).send({message: 'Fehler beim Laden der Orte: ' + err.message});
     }
-    if (!gameplayData) {
-      return res.status(400).send({message: 'Spiel nicht gefunden'});
+    if (!propertyData) {
+      return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
     }
-    // Only the owner is allowed to edit the game, not the team mates!
-    if (_.get(gameplayData, 'internal.owner', 'none') !== req.session.passport.user) {
-      return res.status(401).send({message: 'Zugriff nicht erlaubt'});
-    }
-    // Now get all properties of this gameplay
-    return properties.getPropertiesForGameplay(req.params.gameId, {lean: true}, function (err, propertyData) {
-      if (err) {
-        logger.error('getPropertiesForGameplay fails', err);
-        return res.status(500).send({message: 'Fehler beim Laden der Orte: ' + err.message});
+    propertyData.forEach(p => {
+      delete p._id;
+    })
+    res.send({
+      gameplay: gameplayData, properties: propertyData, settings: {
+        publicServer: settings.publicServer
       }
-      if (!propertyData) {
-        return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
-      }
-      propertyData.forEach(p => {
-        delete p._id;
-      })
-      res.send({
-        gameplay: gameplayData, properties: propertyData, settings: {
-          publicServer: settings.publicServer
-        }
-      });
     });
   });
 });

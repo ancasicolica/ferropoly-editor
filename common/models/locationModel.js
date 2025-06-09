@@ -16,20 +16,20 @@ const _        = require('lodash');
  * The mongoose schema for a location
  */
 const locationSchema = mongoose.Schema({
-  name         : String,                       // Name of the location
-  uuid         : {type: String, index: true},  // UUID of the location, this is the key we are referencing to
-  position     : {lat: String, lng: String},   // position of the location
+  name:          String,                       // Name of the location
+  uuid:          {type: String, index: true},  // UUID of the location, this is the key we are referencing to
+  position:      {lat: String, lng: String},   // position of the location
   accessibility: String,                       // How do we access it?
-  maps         : {
-    zvv      : {type: Boolean, default: false},
-    zvv110   : {type: Boolean, default: false},
-    sbb      : {type: Boolean, default: false},
-    ostwind  : {type: Boolean, default: false},
-    libero   : {type: Boolean, default: false},
+  maps:          {
+    zvv:       {type: Boolean, default: false},
+    zvv110:    {type: Boolean, default: false},
+    sbb:       {type: Boolean, default: false},
+    ostwind:   {type: Boolean, default: false},
+    libero:    {type: Boolean, default: false},
     libero100: {type: Boolean, default: false},
-    tva      : {type: Boolean, default: false},
-    tvlu     : {type: Boolean, default: false},
-    tnw      : {type: Boolean, default: false}
+    tva:       {type: Boolean, default: false},
+    tvlu:      {type: Boolean, default: false},
+    tnw:       {type: Boolean, default: false}
   }
 }, {autoIndex: true});
 
@@ -42,22 +42,21 @@ const Location = mongoose.model('Location', locationSchema);
  * Returns all locations in ferropoly style, LEAN
  * @param callback
  */
-function getAllLocationsLean(callback) {
-
-  Location
+async function getAllLocationsLean(callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllLocationsLean is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const docs = await Location
     .find({})
     .lean()
-    .exec()
-    .then(docs => {
-      let locations = [];
-      for (let i = 0; i < docs.length; i++) {
-        locations.push(convertModelDataToObject(docs[i]));
-      }
-      return callback(null, locations);
-    })
-    .catch(err => {
-      return callback(err);
-    })
+    .exec();
+
+  let locations = [];
+  for (let i = 0; i < docs.length; i++) {
+    locations.push(convertModelDataToObject(docs[i]));
+  }
+  return locations;
 }
 
 
@@ -65,16 +64,14 @@ function getAllLocationsLean(callback) {
  * Returns all locations in ferropoly style, COMPLETE OBJECTS
  * @param callback
  */
-function getAllLocations(callback) {
-  Location
+async function getAllLocations(callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllLocations is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  return await Location
     .find({})
-    .exec()
-    .then(docs => {
-      return callback(null, docs);
-    })
-    .catch(err => {
-      return callback(err);
-    });
+    .exec();
 }
 
 
@@ -83,22 +80,20 @@ function getAllLocations(callback) {
  * @param map : map ('zvv', 'sbb' or 'ostwind')
  * @param callback
  */
-function getAllLocationsForMap(map, callback) {
+async function getAllLocationsForMap(map, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllLocationsForMap is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   // This creates a query in this format: {'maps.zvv': true}
   let index    = 'maps.' + map;
   let query    = {};
   query[index] = true;
 
-  Location
+  return await Location
     .find(query)
     .lean()
-    .exec()
-    .then(docs => {
-      return callback(null, docs);
-    })
-    .catch(err => {
-      return callback(err);
-    })
+    .exec();
 }
 
 /**
@@ -106,20 +101,20 @@ function getAllLocationsForMap(map, callback) {
  * @param uuid
  * @param callback
  */
-function getLocationByUuid(uuid, callback) {
-    Location
-      .find({uuid: uuid})
-      .exec()
-      .then(docs=> {
-        if (docs.length === 0) {
-          // No location found
-          return callback(null, null);
-        }
-        return callback(null, docs[0]);
-      })
-      .catch(err=> {
-        return callback(err);
-      })
+async function getLocationByUuid(uuid, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getLocationByUuid is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const docs = await Location
+    .find({uuid: uuid})
+    .exec();
+
+  if (docs.length === 0) {
+    // No location found
+    return null;
+  }
+  return docs[0];
 }
 
 /**
@@ -127,29 +122,30 @@ function getLocationByUuid(uuid, callback) {
  * @param callback
  */
 async function countLocations(callback) {
-  let retVal, err;
-  try {
-    retVal = _.clone(mapinfo, true);
-
-    retVal.all = await Location
-      .countDocuments({})
-      .exec();
-
-    for (const m of retVal.maps) {
-      // This creates a query in this format: {'maps.zvv': true}
-      let index    = 'maps.' + m.map;
-      let query    = {};
-      query[index] = true;
-      m.locationNb = await Location
-        .countDocuments(query)
-        .exec();
-    }
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, retVal);
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countLocations is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
+  let retVal;
+
+  retVal = _.clone(mapinfo, true);
+
+  retVal.all = await Location
+    .countDocuments({})
+    .exec();
+
+  for (const m of retVal.maps) {
+    // This creates a query in this format: {'maps.zvv': true}
+    let index    = 'maps.' + m.map;
+    let query    = {};
+    query[index] = true;
+    m.locationNb = await Location
+      .countDocuments(query)
+      .exec();
+  }
+
+  return retVal;
+
 }
 
 /**
@@ -174,15 +170,11 @@ function convertModelDataToObject(data) {
  * @param callback
  */
 async function saveLocation(location, callback) {
-  let savedLocation, err;
-  try {
-    savedLocation = await location.save();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, savedLocation);
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in saveLocation is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
+  return await location.save();
 }
 
 module.exports = {
@@ -194,7 +186,12 @@ module.exports = {
   /**
    * Get all locations in a lean style (not as model objects, just the data)
    */
-  getAllLocations: getAllLocationsLean,
+  getAllLocationsLean: getAllLocationsLean,
+
+  /**
+   * Get all locations
+   */
+  getAllLocations: getAllLocations,
 
   /**
    * Get all locations as Model objects, ready to be saved
