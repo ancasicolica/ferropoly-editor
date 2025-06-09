@@ -17,32 +17,28 @@ const logger        = require('../../common/lib/logger').getLogger('routes:gamep
 const _             = require('lodash');
 
 /* GET all games for the current user as a summary for the main page */
-router.get('/mygames', function (req, res) {
+router.get('/mygames', async function (req, res) {
   try {
-    gameplayModel.getGameplaysForUser(req.session.passport.user, async function (err, gameplays) {
-      if (err) {
-        return res.status(500).send({message: 'DB read error: ' + err.message});
+    const gameplays = await gameplayModel.getGameplaysForUser(req.session.passport.user);
+    let retVal      = {gameplays: []};
+    if (gameplays) {
+      for (const gameplay of gameplays) {
+        const rules          = await rulesModel.getRules(gameplay.internal.gameId);
+        const teamsToConfirm = await teamModel.getNewTeamsNb(gameplay.internal.gameId);
+        retVal.gameplays.push({
+          internal:          gameplay.internal,
+          gamename:          gameplay.gamename,
+          scheduling:        gameplay.scheduling,
+          joining:           gameplay.joining,
+          log:               gameplay.log,
+          rulesUpdateNeeded: rules.text !== rules?.released,
+          teamsToConfirm:    teamsToConfirm,
+          isOwner:           _.get(gameplay, 'internal.owner') === req.session.passport.user
+        });
       }
-      let retVal = {gameplays: []};
-      if (gameplays) {
-        for (const gameplay of gameplays) {
-          const rules          = await rulesModel.getRules(gameplay.internal.gameId);
-          const teamsToConfirm = await teamModel.getNewTeamsNb(gameplay.internal.gameId);
-          retVal.gameplays.push({
-            internal:          gameplay.internal,
-            gamename:          gameplay.gamename,
-            scheduling:        gameplay.scheduling,
-            joining:           gameplay.joining,
-            log:               gameplay.log,
-            rulesUpdateNeeded: rules.text !== rules?.released,
-            teamsToConfirm:    teamsToConfirm,
-            isOwner:           _.get(gameplay, 'internal.owner') === req.session.passport.user
-          });
-        }
-      }
+    }
 
-      return res.send(retVal);
-    });
+    return res.send(retVal);
   }
   catch (ex) {
     logger.error('Problem in getting /mygamse', ex);
@@ -63,7 +59,7 @@ router.get('/info/:gameId', async function (req, res) {
 
 
 /* Post params of a new game */
-router.post('/createnew', function (req, res) {
+router.post('/createnew', async function (req, res) {
   try {
     logger.info('createnew', req.body);
     logger.info('authToken session:', req.session.authToken);
@@ -78,46 +74,44 @@ router.post('/createnew', function (req, res) {
     logger.test(_.get(req, 'body.debug'));
     logger.info('/gameplay/createnew for ' + req.session.passport.user);
 
-    gameplayModel.countGameplaysForUser(req.session.passport.user, function (err, nb) {
+    const nb = await gameplayModel.countGameplaysForUser(req.session.passport.user);
+
+    if (nb > 3) {
+      // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
+      // a user specific count. So far we have four.
+      return res.status(403).send({message: 'Max game number reached: ' + nb});
+    }
+
+    userModel.getUser(req.session.passport.user, function (err, user) {
       if (err) {
         return res.status(500).send({message: 'DB read error: ' + err.message});
       }
-      if (nb > 3) {
-        // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
-        // a user specific count. So far we have four.
-        return res.status(403).send({message: 'Max game number reached: ' + nb});
+      if (!user) {
+        return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
       }
 
-      userModel.getUser(req.session.passport.user, function (err, user) {
-        if (err) {
-          return res.status(500).send({message: 'DB read error: ' + err.message});
-        }
-        if (!user) {
-          return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
-        }
 
-
-        // Use the unit-test tested gameplay lib for this
-        gameplayLib.createNewGameplay({
-            email:           user.personalData.email,
-            organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
-            map:             req.body.map,
-            gamename:        req.body.gamename,
-            gamedate:        req.body.gamedate,
-            gameId:          req.body.gameId || '',
-            presets:         req.body.presets || 'classic',
-            random:          req.body.random,
-            gameParams:      req.body.gameParams,
-            properties:      req.body.properties
-          },
-          function (err, gp) {
-            if (err) {
-              return res.status(500).send({message: err.message});
-            }
-            return res.send({gameId: gp.internal.gameId});
-          });
-      });
+      // Use the unit-test tested gameplay lib for this
+      gameplayLib.createNewGameplay({
+          email:           user.personalData.email,
+          organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
+          map:             req.body.map,
+          gamename:        req.body.gamename,
+          gamedate:        req.body.gamedate,
+          gameId:          req.body.gameId || '',
+          presets:         req.body.presets || 'classic',
+          random:          req.body.random,
+          gameParams:      req.body.gameParams,
+          properties:      req.body.properties
+        },
+        function (err, gp) {
+          if (err) {
+            return res.status(500).send({message: err.message});
+          }
+          return res.send({gameId: gp.internal.gameId});
+        });
     });
+
   }
   catch (e) {
     logger.error('Exception in gameplay.createnew.post', e);
@@ -168,33 +162,29 @@ router.post('/finalize', async function (req, res) {
 /**
  * Checks the gameId provided, if invalid, returns a few ideas instead
  */
-router.post('/checkid', (req, res) => {
-  let gameId = req.body.gameId || '';
+router.post('/checkid', async (req, res) => {
+  try {
+    let gameId = req.body.gameId || '';
 
-  logger.test(_.get(req, 'body.debug'));
+    logger.test(_.get(req, 'body.debug'));
 
-  gameplayModel.checkIfGameIdExists(gameId, (err, exists) => {
-    if (err) {
-      return res.status(500).send({message: 'Error while getting gameplay: ' + err.message});
-    }
+    const exists = await gameplayModel.checkIfGameIdExists(gameId);
+
     logger.info(`Checks if ${gameId} is already taken: ${exists}`);
     if (gameId.length === 0 || exists) {
       // Return 5 suggestions
-      async.times(7, (n, next) => {
-          gameplayModel.createNewGameId((err, id) => {
-            next(err, id);
-          });
-        },
-        (err, ids) => {
-          if (err) {
-            return res.status(500).send({message: 'Error while getting ids: ' + err.message});
-          }
-          return res.send({valid: false, ids: ids});
-        });
-      return;
+      let ids = [];
+      for (let i = 0; i < 5; i++) {
+        const id = await gameplayModel.createNewGameId();
+        ids.push(id);
+      }
+      return res.send({valid: false, ids: ids});
     }
     res.send({valid: true});
-  });
+  }
+  catch (err) {
+    return res.status(500).send({message: 'Error in /checkid ' + err.message});
+  }
 });
 
 

@@ -9,51 +9,49 @@ const users     = require('../../common/models/userModel');
 const locations = require('../../common/models/locationModel');
 const async     = require('async');
 
-module.exports = function (callback) {
-  let retVal = {};
+module.exports = async function (callback) {
+  try {
+    let retVal = {};
 
-  async.waterfall([
-    function (callback) {
-      // Get all Gameplays
-      gameplays.getAllGameplays((err, gps) => {
-        if (err) {
-          return callback(err);
-        }
-        retVal.gamePlays = [];
-        gps.forEach(gp => {
-          retVal.gamePlays.push({
-            name     : gp.gamename,
-            id       : gp.internal.gameId,
-            date     : gp.scheduling.gameDate,
-            finalized: gp.internal.finalized
-          });
+    const gps        = await gameplays.getAllGameplays();
+    retVal.gamePlays = [];
+    gps.forEach(gp => {
+      retVal.gamePlays.push({
+        name:      gp.gamename,
+        id:        gp.internal.gameId,
+        date:      gp.scheduling.gameDate,
+        finalized: gp.internal.finalized
+      });
+    });
+
+    async.waterfall([
+      function (callback) {
+        // Get number of registered users
+        users.countUsers((err, nb) => {
+          if (err) {
+            return callback(err);
+          }
+          retVal.users = {
+            nb: nb
+          };
+          callback();
         });
-        callback();
-      });
-    },
-    function (callback) {
-      // Get number of registered users
-      users.countUsers((err, nb) => {
-        if (err) {
-          return callback(err);
-        }
-        retVal.users = {
-          nb: nb
-        };
-        callback();
-      });
-    },
-    function (callback) {
-      // Get Info about the locations
-      locations.countLocations((err, info) => {
-        if (err) {
-          return callback(err);
-        }
-        retVal.locations = info;
-        callback();
-      });
-    }
-  ], function (err) {
-    callback(err, retVal);
-  });
+      },
+      function (callback) {
+        // Get Info about the locations
+        locations.countLocations((err, info) => {
+          if (err) {
+            return callback(err);
+          }
+          retVal.locations = info;
+          callback();
+        });
+      }
+    ], function (err) {
+      callback(err, retVal);
+    });
+  }
+  catch (err) {
+    callback(err);
+  }
 };

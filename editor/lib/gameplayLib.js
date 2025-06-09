@@ -438,7 +438,7 @@ async function createDemoTeams(gp, teamNb, callback) {
  * @param p1 is parameter 1: either settings or callback
  * @param p2 if settings are used, callback
  */
-function createDemoGameplay(p1, p2) {
+async function createDemoGameplay(p1, p2) {
   let callback = p2;
   let settings = {};
 
@@ -485,11 +485,9 @@ function createDemoGameplay(p1, p2) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
     logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
   }
-  let startTs = new Date();
-  gameplays.checkIfGameIdExists(options.gameId, function (err, isExisting) {
-    if (err) {
-      return callback(err);
-    }
+  try {
+    let startTs      = new Date();
+    const isExisting = await gameplays.checkIfGameIdExists(options.gameId);
     if (isExisting) {
       return deleteGameplay(options, function (err) {
         if (err) {
@@ -532,7 +530,10 @@ function createDemoGameplay(p1, p2) {
         });
       });
     }
-  });
+  }
+  catch (err) {
+    callback(err);
+  }
 }
 
 /**
@@ -584,11 +585,7 @@ function finalizeGameplay(gameplay, email, callback) {
  * @param callback
  */
 function deleteOldGameplays(callback) {
-  gameplays.getAllGameplays((err, gps) => {
-    if (err) {
-      return callback(err);
-    }
-
+  gameplays.getAllGameplays().then(gps => {
     async.each(gps,
       function (gp, cb) {
         let timeout;
@@ -613,6 +610,8 @@ function deleteOldGameplays(callback) {
       },
       callback
     );
+  }).catch(err => {
+    return callback(err);
   });
 }
 

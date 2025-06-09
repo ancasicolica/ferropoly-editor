@@ -128,10 +128,21 @@ const Gameplay = mongoose.model('Gameplay', gameplaySchema);
  * @param gpOptions is an object with at least 'map', 'ownerEmail' and 'name'
  * @param callback
  */
-function createGameplay(gpOptions, callback) {
+async function createGameplay(gpOptions, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   let gp = new Gameplay();
   if (!gpOptions.map || !gpOptions.ownerEmail || !gpOptions.name) {
-    return callback(new Error('Missing parameter'));
+    throw new Error('Missing parameter');
+  }
+
+  const isExisting = await checkIfGameIdExists(gp.internal.gameId);
+  if (isExisting) {
+    // generate new gameID, call again
+    gpOptions.gameId = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
+    return createGameplay(gpOptions);
   }
 
   gp.internal.map              = gpOptions.map;
@@ -163,80 +174,55 @@ function createGameplay(gpOptions, callback) {
   gp.gameParams                  = _.assign(gp.gameParams, gpOptions.gameParams);
   gp.gameParams.interestInterval = gpOptions.interestInterval || gp.gameParams.interestInterval;
 
-  checkIfGameIdExists(gp.internal.gameId, (err, isExisting) => {
-
-    if (isExisting) {
-      // generate new gameID
-      gpOptions.gameId = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
-      return createGameplay(gpOptions, callback);
-    } else {
-      gp.save()
-        .then(() => {
-          return callback(null, gp);
-        })
-        .catch(err => {
-          return callback(err);
-        });
-    }
-  });
-
+  await gp.save();
+  return gp;
 }
 
 /**
  * Get all gameplays associated for a user
  * @param email is an object with either id or email or both
- * @param callback
  */
-function getGameplaysForUser(email, callback) {
-  Gameplay
+async function getGameplaysForUser(email) {
+  return Gameplay
     .find({
       $or: [
         {'internal.owner': email},
         {'admins.logins': email}]
     })
-    .exec()
-    .then(docs => {
-      return callback(null, docs);
-    })
-    .catch(err => {
-      return callback(err);
-    })
+    .exec();
 }
 
 /**
  * Checks if a game with a gameId exists.
  * @param gameId
- * @param callback
  */
-function checkIfGameIdExists(gameId, callback) {
-  Gameplay
+async function checkIfGameIdExists(gameId) {
+  const nb = await Gameplay
     .countDocuments({'internal.gameId': gameId})
-    .exec()
-    .then(res => {
-      return callback(null, res > 0);
-    })
-    .catch(err => {
-      return callback(err);
-    });
+    .exec();
+
+  return nb > 0;
 }
 
 /**
  * Creates a new GameID which is not used already (tested)
  * @param callback
  */
-function createNewGameId(callback) {
+async function createNewGameId(callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createNewGameId is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+
   let gameId = Moniker.generator([Moniker.adjective, Moniker.noun]).choose();
 
-  checkIfGameIdExists(gameId, function (err, isExisting) {
-    if (err) {
-      return callback(err);
-    }
-    if (isExisting) {
-      // generate new gameID, recursive
-      return createNewGameId(callback);
-    }
-    callback(null, gameId);
-  });
+  const isExisting = await checkIfGameIdExists(gameId);
+  if (isExisting) {
+    // generate new gameID, recursive
+    return await createNewGameId();
+  }
+  return gameId;
+
 }
 
 /**
@@ -244,16 +230,15 @@ function createNewGameId(callback) {
  * @param ownerId
  * @param callback
  */
-function countGameplaysForUser(ownerId, callback) {
-  Gameplay
+async function countGameplaysForUser(ownerId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countGameplaysForUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const nb = await Gameplay
     .countDocuments({'internal.owner': ownerId})
-    .exec()
-    .then(nb => {
-      return callback(null, nb);
-    })
-    .catch(err => {
-      return callback(err);
-    })
+    .exec();
+  return nb;
 }
 
 
@@ -301,23 +286,17 @@ async function getGameplay(gameId, ownerId, callback) {
 
 /**
  * Returns all gameplays of all users. Of course only needed in the admin app
- * @param callback
  */
 async function getAllGameplays(callback) {
-  let err, docs;
-  try {
-    docs = await Gameplay
-      .find({})
-      .lean()
-      .exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllGameplays is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs)
-  }
+
+  return await Gameplay
+    .find({})
+    .lean()
+    .exec();
 }
 
 /**
@@ -339,21 +318,14 @@ async function removeGameplay(gp) {
 /**
  * Deletes all gameplays for a user, this is for internal and testing purposes only
  * @param email
- * @param callback
  * @returns {*}
  */
-function removeGameplaysForUser(email, callback) {
+async function removeGameplaysForUser(email) {
 
   logger.info(`Removing all Gameplays for ${email}`);
-  Gameplay
+  await Gameplay
     .deleteMany({'owner.organisatorEmail': email})
-    .exec()
-    .then(() => {
-      return callback(null);
-    })
-    .catch(err => {
-      return callback(err);
-    });
+    .exec();
 }
 
 /**
