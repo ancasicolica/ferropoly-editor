@@ -35,27 +35,25 @@ router.get('/info/:gameId', async function (req, res) {
  Returns the exported game
  */
 router.get('/:gameId', (req, res) => {
-  if (!req.session?.passport?.user) {
-    return res.status(401).send({message: 'Nicht autorisiert'});
-  }
+  try {
+    if (!req.session?.passport?.user) {
+      return res.status(401).send({message: 'Nicht autorisiert'});
+    }
 
-  const gameId = req.params.gameId;
-  if (!/^[a-zA-Z0-9_-]+$/.test(gameId)) {
-    return res.status(400).send({message: 'Ungültige Spiel-ID'});
-  }
+    const gameId = req.params.gameId;
+    if (!/^[a-zA-Z0-9_-]+$/.test(gameId)) {
+      return res.status(400).send({message: 'Ungültige Spiel-ID'});
+    }
 
-  logger.info(`${gameId}: Export started`);
+    logger.info(`${gameId}: Export started`);
 
-  gameplayModel.getGameplay(req.params.gameId, req.session.passport.user).then(gameplay => {
-    getPropertiesForGameplay(req.params.gameId, {lean: true}, (err, props) => {
-      if (err) {
-        return res.status(500).send({message: 'Property read error: ' + err.message});
-      }
-
-      getUserByMailAddress(req.session.passport.user, (err, user) => {
-        if (err || !user) {
-          return res.status(500).send({message: 'User read error: ' + err.message});
+    gameplayModel.getGameplay(req.params.gameId, req.session.passport.user).then(gameplay => {
+      getPropertiesForGameplay(req.params.gameId, {lean: true}, async (err, props) => {
+        if (err) {
+          return res.status(500).send({message: 'Property read error: ' + err.message});
         }
+
+        const user = await getUserByMailAddress(req.session.passport.user);
 
         let exportData = {
           gameplay:   {
@@ -105,9 +103,11 @@ router.get('/:gameId', (req, res) => {
         res.send(buffer);
       });
     });
-  }).catch(err => {
-      return res.status(500).send({message: 'DB read error: ' + err.message});
-  });
+  }
+  catch (err) {
+    logger.err(err);
+    return res.status(500).send({message: 'Error in /export: ' + err.message});
+  }
 });
 
 module.exports = router;

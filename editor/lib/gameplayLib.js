@@ -247,51 +247,51 @@ function getGameParamsPresetSet(presets) {
  * @param gpOptions options for the gameplay.
  * @param callback
  */
-function createNewGameplay(gpOptions, callback) {
+async function createNewGameplay(gpOptions, callback) {
   // Verify options
   if (!gpOptions.email || !gpOptions.map || !gpOptions.gamename || !gpOptions.gamedate) {
     return callback(new Error('Options are not complete'));
   }
 
   logger.info('New game for ' + gpOptions.email + ' using map ' + gpOptions.map);
-  userModel.getUserByMailAddress(gpOptions.email, async function (err, user) {
-    if (err) {
-      return callback(err);
-    }
-    try {
-      // as default we use the email address as user id
-      user = user || {id: gpOptions.email};
 
-      const gameplay = await gameplays.createGameplay({
-        gameId:           gpOptions.gameId || '',
-        map:              gpOptions.map,
-        name:             gpOptions.gamename,
-        ownerEmail:       gpOptions.email,
-        organisatorName:  gpOptions.organisatorName,
-        ownerId:          user.id,
-        gameStart:        gpOptions.gameStart || '05:00',
-        gameEnd:          gpOptions.gameEnd || '18:00',
-        gameDate:         gpOptions.gamedate,
-        instance:         settings.server.serverId,
-        mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
-        gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
-        interestInterval: gpOptions.interestInterval,
-        isDemo:           gpOptions.isDemo,
-        mainInstances:    settings.mainInstances,
-        autopilot:        gpOptions.autopilot
 
-      });
+  try {
+    const dbUser = await userModel.getUserByMailAddress(gpOptions.email);
 
-      // Create also the rules
-      let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
-      await rules.createRules(gpOptions.gameId, pugToHtml(template));
-      logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
-      return copyLocationsToProperties(gpOptions, gameplay, callback);
-    }
-    catch (err) {
-      return callback(err);
-    }
-  });
+    // as default we use the email address as user id
+    const user = dbUser || {id: gpOptions.email};
+
+    const gameplay = await gameplays.createGameplay({
+      gameId:           gpOptions.gameId || '',
+      map:              gpOptions.map,
+      name:             gpOptions.gamename,
+      ownerEmail:       gpOptions.email,
+      organisatorName:  gpOptions.organisatorName,
+      ownerId:          user.id,
+      gameStart:        gpOptions.gameStart || '05:00',
+      gameEnd:          gpOptions.gameEnd || '18:00',
+      gameDate:         gpOptions.gamedate,
+      instance:         settings.server.serverId,
+      mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
+      gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
+      interestInterval: gpOptions.interestInterval,
+      isDemo:           gpOptions.isDemo,
+      mainInstances:    settings.mainInstances,
+      autopilot:        gpOptions.autopilot
+
+    });
+
+    // Create also the rules
+    let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
+    await rules.createRules(gpOptions.gameId, pugToHtml(template));
+    logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
+    return copyLocationsToProperties(gpOptions, gameplay, callback);
+  }
+  catch (err) {
+    logger.error(err);
+    return callback(err);
+  }
 }
 
 /**

@@ -21,33 +21,33 @@ const accountLog = require('./accountLogModel');
  * The mongoose schema for an user
  */
 const userSchema = mongoose.Schema({
-  _id         : {type: String},
-  id          : String,
+  _id:          {type: String},
+  id:           String,
   personalData: {
     forename: String,
-    surname : String,
-    email   : String,
-    avatar  : String
+    surname:  String,
+    email:    String,
+    avatar:   String
   },
-  roles       : {
-    admin : {type: Boolean, default: false},
+  roles:        {
+    admin:  {type: Boolean, default: false},
     editor: {type: Boolean, default: true},
     player: {type: Boolean, default: true}
   },
-  login       : {
-    passwordSalt      : String,
-    passwordHash      : String,
-    verifiedEmail     : {type: Boolean, default: false},
-    verificationText  : String,
-    googleProfileId   : String,
+  login:        {
+    passwordSalt:       String,
+    passwordHash:       String,
+    verifiedEmail:      {type: Boolean, default: false},
+    verificationText:   String,
+    googleProfileId:    String,
     microsoftProfileId: String,
   },
-  info        : {
+  info:         {
     registrationDate: Date,
-    lastLogin       : Date,
-    google          : Object,
-    microsoft       : Object,
-    agbAccepted     : {type: Number, default: 0}
+    lastLogin:        Date,
+    google:           Object,
+    microsoft:        Object,
+    agbAccepted:      {type: Number, default: 0}
   }
 }, {autoIndex: true});
 
@@ -119,10 +119,12 @@ async function removeUser(emailAddress, callback) {
   let res, err;
   try {
     res = await User.deleteOne({'personalData.email': emailAddress}).exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, res);
   }
 }
@@ -139,10 +141,7 @@ async function updateUser(user, password, callback) {
 
     if (!doc) {
       // New User OR invalid created user
-      return getUserByMailAddress(user.personalData.email, async function (err, foundUser) {
-        if (err) {
-          return callback(err);
-        }
+      return getUserByMailAddress(user.personalData.email).then(async (foundUser) => {
         if (foundUser) {
           return callback(new Error('User with this email-address already exists, remove first!'));
         }
@@ -156,6 +155,8 @@ async function updateUser(user, password, callback) {
         accountLog.addNewUserEntry(user.personalData.email, 'Email-Adresse');
         savedUser = await user.save();
         return callback(null, savedUser);
+      }).catch(err => {
+        return callback(err);
       });
 
     } else {
@@ -169,7 +170,8 @@ async function updateUser(user, password, callback) {
       let savedUser = await editedUser.save();
       return callback(null, savedUser);
     }
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     callback(ex);
   }
@@ -180,50 +182,31 @@ async function updateUser(user, password, callback) {
  * @param emailAddress
  * @param callback
  */
-function getUserByMailAddress(emailAddress, callback) {
-
-  User
+async function getUserByMailAddress(emailAddress, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getUserByMailAddress is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const foundUser = await User
     .findOne({'personalData.email': emailAddress})
     .exec()
-    .then(foundUser => {
-      if (!foundUser) {
-        return callback();
-      }
 
-      // Verify if this user already has an ID or not. If not, upgrade to new model
-      if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
-        const id      = foundUser._id;
-        const newUser = new User();
-        copyUser(foundUser, newUser);
-        newUser._id = emailAddress;
-        newUser.save()
-               .then(() => {
-                 User
-                   .findByIdAndRemove(id)
-                   .exec()
-                   .then(() => {
-                     logger.info(`Updated user with email ${newUser.personalData.email}`, newUser);
-                     callback(null, newUser);
-                   })
-                   .catch(callback);
-               })
-               .catch(callback);
-      } else {
-        callback(null, foundUser);
-      }
-    })
-    .catch(callback);
-}
+  if (!foundUser) {
+    return undefined;
+  }
 
-async function getUserByMailAddressB(emailAddress) {
-  return new Promise(resolve => {
-    getUserByMailAddress(emailAddress, (err, user) => {
-      if (err) {
-        throw new Error(err);
-      }
-      resolve(user);
-    });
-  });
+  // Verify if this user already has an ID or not. If not, upgrade to new model
+  if (!_.isString(foundUser._id) || foundUser._id !== foundUser.personalData.email) {
+    const id      = foundUser._id;
+    const newUser = new User();
+    copyUser(foundUser, newUser);
+    newUser._id = emailAddress;
+    await newUser.save();
+    await User
+      .findByIdAndRemove(id)
+      .exec();
+  }
+  return foundUser;
 }
 
 /**
@@ -235,10 +218,12 @@ async function getUser(id, callback) {
   let doc, err;
   try {
     doc = await User.findOne({'_id': id}).exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, doc);
   }
 }
@@ -253,10 +238,12 @@ async function getGoogleUser(profileId, callback) {
   let err, doc;
   try {
     doc = await User.findOne({'login.googleProfileId': profileId}).exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, doc);
   }
 }
@@ -270,10 +257,12 @@ async function getMicrosoftUser(profileId, callback) {
   let err, doc;
   try {
     doc = await User.findOne({'login.microsoftProfileId': profileId}).exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, doc);
   }
 }
@@ -286,10 +275,12 @@ async function getAllUsers(callback) {
   let docs, err;
   try {
     docs = await User.find({}).exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, docs);
   }
 }
@@ -302,10 +293,12 @@ async function countUsers(callback) {
   let err, nb;
   try {
     nb = await User.countDocuments({}).exec();
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     err = ex;
-  } finally {
+  }
+  finally {
     callback(err, nb);
   }
 }
@@ -376,11 +369,8 @@ function findOrCreateGoogleUser(profile, callback) {
         }
 
         if (emailAddress) {
-          getUserByMailAddress(emailAddress, async function (err, user) {
-            if (err) {
-              return callback(err);
-            }
-            if (user) {
+          getUserByMailAddress(emailAddress).then(async user => {
+             if (user) {
               // Ok, we know this user. Update profile for google access
               user.info.google           = profile;
               user.info.registrationDate = new Date();
@@ -398,7 +388,10 @@ function findOrCreateGoogleUser(profile, callback) {
 
             // We do not know this user. Add him/her to the list.
             saveNewGoogleUser();
-          });
+          })
+            .catch(err => {
+              callback(err);
+            });
           return;
         }
         // No email address (somehow an annonymous google user). Add as new User
@@ -410,7 +403,8 @@ function findOrCreateGoogleUser(profile, callback) {
       user.personalData.avatar = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
       updateUser(user, null, callback);
     });
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     callback(ex);
   }
@@ -482,10 +476,7 @@ function findOrCreateMicrosoftUser(profile, callback) {
         }
 
         if (emailAddress) {
-          getUserByMailAddress(emailAddress, async function (err, user) {
-            if (err) {
-              return callback(err);
-            }
+          getUserByMailAddress(emailAddress).then(async user => {
             if (user) {
               // Ok, we know this user. Update profile for microsoft access
               user.info.microsoft           = profile;
@@ -504,7 +495,7 @@ function findOrCreateMicrosoftUser(profile, callback) {
 
             // We do not know this user. Add him/her to the list.
             saveNewMicrosoftUser();
-          });
+          }).catch(callback);
           return;
         }
         // No email address (somehow an annonymous google user). Add as new User
@@ -516,7 +507,8 @@ function findOrCreateMicrosoftUser(profile, callback) {
       user.personalData.avatar = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
       updateUser(user, null, callback);
     });
-  } catch (ex) {
+  }
+  catch (ex) {
     logger.error(ex);
     callback(ex);
   }
@@ -526,15 +518,14 @@ function findOrCreateMicrosoftUser(profile, callback) {
 module.exports = {
   Model: User,
 
-  updateUser               : updateUser,
-  generatePasswordHash     : generatePasswordHash,
-  verifyPassword           : verifyPassword,
-  getUserByMailAddress     : getUserByMailAddress,
-  getUserByMailAddressB    : getUserByMailAddressB,
-  removeUser               : removeUser,
-  getAllUsers              : getAllUsers,
-  getUser                  : getUser,
-  countUsers               : countUsers,
-  findOrCreateGoogleUser   : findOrCreateGoogleUser,
+  updateUser:                updateUser,
+  generatePasswordHash:      generatePasswordHash,
+  verifyPassword:            verifyPassword,
+  getUserByMailAddress:      getUserByMailAddress,
+  removeUser:                removeUser,
+  getAllUsers:               getAllUsers,
+  getUser:                   getUser,
+  countUsers:                countUsers,
+  findOrCreateGoogleUser:    findOrCreateGoogleUser,
   findOrCreateMicrosoftUser: findOrCreateMicrosoftUser,
 };

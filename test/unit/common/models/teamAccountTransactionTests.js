@@ -160,16 +160,14 @@ describe('Chancellery Transaction Tests', function () {
   })
 
   describe('Getting ranking list', () => {
-    it('should return the list', done => {
-      tat.getRankingList(gameId).then (list => {
-        console.log(list);
-        expect(list.length).to.be(2);
-        expect(list[0]._id).to.be(teamIds[0]);
-        expect(list[0].asset).to.be(4050);
-        expect(list[1]._id).to.be(teamIds[1]);
-        expect(list[1].asset).to.be(8750);
-        done();
-      })
+    it('should return the list', async () => {
+      const list = await tat.getRankingList(gameId);
+      console.log(list);
+      expect(list.length).to.be(2);
+      expect(list[0]._id).to.be(teamIds[0]);
+      expect(list[0].asset).to.be(4050);
+      expect(list[1]._id).to.be(teamIds[1]);
+      expect(list[1].asset).to.be(8750);
     })
   });
 

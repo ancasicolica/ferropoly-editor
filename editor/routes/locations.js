@@ -76,34 +76,28 @@ const importLocation = async function (location) {
 /**
  * Download JSON File with all locations
  */
-router.get('/', function (req, res) {
+router.get('/', async function (req, res) {
   try {
-    userModel.getUserByMailAddress(req.session.passport.user, async (err, user) => {
-      if (err) {
-        return res.render('error/500', {
-          message: 'Interner Fehler', error: 'Benutzer konnte nicht gelesen werden'
-        });
-      }
-      let authUser = _.get(user, 'roles.admin', false);
-      logger.info(`Dashboard access for ${req.session.passport.user} granted: ${authUser}`);
-      if (!authUser) {
-        return res.render('error/403', {
-          message: 'Auf diese Seite hast Du keinen Zugriff', error: 'Nur für Admins'
-        });
-      }
-      const data   = await locationModel.getAllLocations();
-      let resData  = {
-        type:      'LocationDatabase',
-        version:   1,
-        timestamp: new Date(),
-        instance:  settings.server.serverId,
-        locations: data
-      };
-      let fileName = 'locationDb-' + DateTime.now().toFormat('yyLLdd-HHmmss') + '.json'
-      res.setHeader('Content-type', 'application/force-download');
-      res.setHeader('Content-Disposition', 'attachement; filename="' + fileName + '"');
-      return res.send(JSON.stringify(resData));
-    });
+    const user   = await userModel.getUserByMailAddress(req.session.passport.user);
+    let authUser = _.get(user, 'roles.admin', false);
+    logger.info(`Dashboard access for ${req.session.passport.user} granted: ${authUser}`);
+    if (!authUser) {
+      return res.render('error/403', {
+        message: 'Auf diese Seite hast Du keinen Zugriff', error: 'Nur für Admins'
+      });
+    }
+    const data   = await locationModel.getAllLocations();
+    let resData  = {
+      type:      'LocationDatabase',
+      version:   1,
+      timestamp: new Date(),
+      instance:  settings.server.serverId,
+      locations: data
+    };
+    let fileName = 'locationDb-' + DateTime.now().toFormat('yyLLdd-HHmmss') + '.json'
+    res.setHeader('Content-type', 'application/force-download');
+    res.setHeader('Content-Disposition', 'attachement; filename="' + fileName + '"');
+    return res.send(JSON.stringify(resData));
   }
   catch (err) {
     logger.error(err);
@@ -131,83 +125,77 @@ router.get('/summary', async function (req, res) {
  * @param res
  * @returns {void|*}
  */
-const uploadHandler = function (req, res) {
+const uploadHandler = async function (req, res) {
   try {
     logger.info('UPLOADING LOCATIONS!', req.file);
 
-    userModel.getUserByMailAddress(req.session.passport.user, (err, user) => {
+    const user   = await userModel.getUserByMailAddress(req.session.passport.user);
+    let authUser = _.get(user, 'roles.admin', false);
+    logger.info(`Dashboard access for ${req.session.passport.user} granted: ${authUser}`);
+    if (!authUser) {
+      return res.render('error/403', {
+        message: 'Auf diese Seite hast Du keinen Zugriff', error: 'Nur für Admins'
+      });
+    }
+    // console.warn(req);
+    res.setHeader('Content-type', 'text/plain; charset=utf-8');
+    if (!req.file || !req.file.path) {
+      return res.send({message: 'Either the file or the file path does not look correct'});
+    }
+
+    return fs.readFile(req.file.path, 'utf8', function (err, data) {
       if (err) {
-        return res.render('error/500', {
-          message: 'Interner Fehler', error: 'Benutzer konnte nicht gelesen werden'
-        });
-      }
-      let authUser = _.get(user, 'roles.admin', false);
-      logger.info(`Dashboard access for ${req.session.passport.user} granted: ${authUser}`);
-      if (!authUser) {
-        return res.render('error/403', {
-          message: 'Auf diese Seite hast Du keinen Zugriff', error: 'Nur für Admins'
-        });
-      }
-      // console.warn(req);
-      res.setHeader('Content-type', 'text/plain; charset=utf-8');
-      if (!req.file || !req.file.path) {
-        return res.send({message: 'Either the file or the file path does not look correct'});
+        logger.error(err);
+        return res.status(500).send({message: `Had troubles while reading the file: ${err.message}`});
       }
 
-      return fs.readFile(req.file.path, 'utf8', function (err, data) {
+      const locationDb = JSON.parse(data);
+
+      // Validation
+      if (!locationDb.type || !locationDb.version || !locationDb.timestamp || !locationDb.locations) {
+        return res.status(400).send({message: 'This seems not to be a valid LocationDb Export file.'});
+      }
+
+      if (locationDb.version !== 1) {
+        return res.status(400).send({message: 'This location file version is not supported.'});
+      }
+      if (locationDb.type !== 'LocationDatabase') {
+        return res.status(400).send({message: 'This is not a LocationDb Export file.'});
+      }
+
+      let locations          = locationDb.locations;
+      let changedLocations   = [];
+      let newLocations       = [];
+      let unalteredLocations = [];
+      let errorLocations     = [];
+
+      locations.forEach(async location => {
+        const r          = await importLocation(location);
+        let _location    = r.location;
+        let importResult = r.result;
         if (err) {
-          logger.error(err);
-          return res.status(500).send({message: `Had troubles while reading the file: ${err.message}`});
-        }
+          errorLocations.push(_location.name);
+        } else {
+          switch (importResult) {
+            case -1:
+              changedLocations.push(_location.name);
+              break;
 
-        const locationDb = JSON.parse(data);
+            case 0:
+              unalteredLocations.push(_location.name);
+              break;
 
-        // Validation
-        if (!locationDb.type || !locationDb.version || !locationDb.timestamp || !locationDb.locations) {
-          return res.status(400).send({message: 'This seems not to be a valid LocationDb Export file.'});
-        }
-
-        if (locationDb.version !== 1) {
-          return res.status(400).send({message: 'This location file version is not supported.'});
-        }
-        if (locationDb.type !== 'LocationDatabase') {
-          return res.status(400).send({message: 'This is not a LocationDb Export file.'});
-        }
-
-        let locations          = locationDb.locations;
-        let changedLocations   = [];
-        let newLocations       = [];
-        let unalteredLocations = [];
-        let errorLocations     = [];
-
-        locations.forEach(async location => {
-          const r          = await importLocation(location);
-          let _location    = r.location;
-          let importResult = r.result;
-          if (err) {
-            errorLocations.push(_location.name);
-          } else {
-            switch (importResult) {
-              case -1:
-                changedLocations.push(_location.name);
-                break;
-
-              case 0:
-                unalteredLocations.push(_location.name);
-                break;
-
-              case 1:
-                newLocations.push(_location.name);
-                break;
-            }
+            case 1:
+              newLocations.push(_location.name);
+              break;
           }
-        });
-        return res.send({
-          newLocations:       newLocations.length,
-          unalteredLocations: unalteredLocations.length,
-          changedLocations:   changedLocations.length,
-          errorLocations
-        });
+        }
+      });
+      return res.send({
+        newLocations:       newLocations.length,
+        unalteredLocations: unalteredLocations.length,
+        changedLocations:   changedLocations.length,
+        errorLocations
       });
     });
   }

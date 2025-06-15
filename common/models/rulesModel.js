@@ -29,6 +29,9 @@ const Rules = mongoose.model('Rules', rulesSchema);
  * @return {Promise<void>} A promise that resolves when the rules have been successfully saved.
  */
 async function createRules(gameId, template) {
+  if (!gameId) {
+    throw new Error('gameId is missing!');
+  }
   const rules  = new Rules();
   rules.gameId = gameId;
   rules._id    = gameId;

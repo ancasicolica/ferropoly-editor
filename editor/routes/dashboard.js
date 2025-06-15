@@ -19,14 +19,9 @@ const settings      = require('../settings.js');
 /**
  * Send Component Test Homepage
  */
-router.get('/', function (req, res) {
-  userModel.getUserByMailAddress(req.session.passport.user, (err, user) => {
-    if (err) {
-      return res.render('error/500', {
-        message: 'Interner Fehler',
-        error:   'Benutzer konnte nicht gelesen werden'
-      });
-    }
+router.get('/', async function (req, res) {
+  try {
+    const user   = await userModel.getUserByMailAddress(req.session.passport.user);
     let authUser = _.get(user, 'roles.admin', false);
     logger.info(`Dashboard access for ${req.session.passport.user} granted: ${authUser}`);
     if (!authUser) {
@@ -37,76 +32,86 @@ router.get('/', function (req, res) {
     }
 
     res.sendFile(path.join(__dirname, '..', 'public', 'html', 'dashboard.html'));
-  });
+  }
+  catch (err) {
+    return res.render('error/500', {
+      message: 'Interner Fehler',
+      error:   'Benutzer konnte nicht gelesen werden'
+    });
+  }
 });
 
 /**
  * Returns all information about current gameplays
  */
-router.get('/gameplays', function (req, res) {
-  userModel.getUserByMailAddress(req.session.passport.user, (err, user) => {
-    if (err) {
-      return res.status(500).send({message: 'User not read: ' + err.message});
-    }
+router.get('/gameplays', async function (req, res) {
+  try {
+
+    const user = await userModel.getUserByMailAddress(req.session.passport.user);
+
     if (!_.get(user, 'roles.admin', false)) {
       return res.status(403).send({message: 'Admins only'});
     }
-
-    gameplayModel.getAllGameplays().then(gps => {
-      async.each(gps,
-        function (gp, cb) {
-          gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
-          // count the teams
-          teamModel.countTeams(gp.internal.gameId, (err, nb) => {
-            if (err) {
-              return cb(err);
-            }
-            gp.teamNb = nb;
-            // count properties, makes only really sense when gameplay is finalized
-            if (gp.internal.finalized) {
-              propertyModel.countProperties(gp.internal.gameId, (err, nb) => {
-                if (err) {
-                  return cb(err);
-                }
-                gp.propertyNb = nb;
-                return cb(null);
-              });
-            } else {
-              cb(null);
-            }
-          });
-        },
-        function (err) {
+    const gps = await gameplayModel.getAllGameplays();
+    async.each(gps,
+      function (gp, cb) {
+        gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
+        // count the teams
+        teamModel.countTeams(gp.internal.gameId, (err, nb) => {
           if (err) {
-            return res.status(500).send({message: 'Teams not read: ' + err.message});
+            return cb(err);
           }
-          res.send({gameplays: gps});
+          gp.teamNb = nb;
+          // count properties, makes only really sense when gameplay is finalized
+          if (gp.internal.finalized) {
+            propertyModel.countProperties(gp.internal.gameId, (err, nb) => {
+              if (err) {
+                return cb(err);
+              }
+              gp.propertyNb = nb;
+              return cb(null);
+            });
+          } else {
+            cb(null);
+          }
+        });
+      },
+      function (err) {
+        if (err) {
+          return res.status(500).send({message: 'Teams not read: ' + err.message});
         }
-      );
-    }).catch(err => {
-      return res.status(500).send({message: 'GP not read: ' + err.message});
-    });
-  });
+        res.send({gameplays: gps});
+      }
+    );
+  }
+  catch (err) {
+    return res.status(500).send({message: 'User not read: ' + err.message});
+  }
+
 });
 
 /**
  * Infos about users
  */
-router.get('/users', function (req, res) {
-  userModel.getUserByMailAddress(req.session.passport.user, (err, user) => {
-    if (err) {
-      return res.status(500).send({message: 'User not read: ' + err.message});
-    }
+router.get('/users', async function (req, res) {
+  try {
+    const user = await userModel.getUserByMailAddress(req.session.passport.user);
+
     if (!_.get(user, 'roles.admin', false)) {
       return res.status(403).send({message: 'Admins only'});
     }
 
-    userModel.countUsers((err, userNb) => {
+    await userModel.countUsers((err, userNb) => {
       if (err) {
         return res.status(500).send({message: 'Users not read: ' + err.message});
       }
       res.send({userNb: userNb});
     });
-  });
+  }
+  catch(err) {
+    res.status(500).send({message: 'User not read: ' + err.message});
+  }
+
+
 });
 module.exports = router;

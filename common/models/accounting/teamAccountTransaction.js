@@ -141,7 +141,12 @@ async function getRankingList(gameId) {
           _id  : '$teamId',
           asset: {$sum: "$transaction.amount"}
         }
+      }, {
+        $sort: {
+          asset: 1 // -1 for descending order, 1 for ascending
+        }
       }
+
     ])
     .exec();
 }

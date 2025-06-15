@@ -30,22 +30,18 @@ function createPriceList(gameId, ownerEmail, callback) {
         logger.error('createPriceListInternal failed');
         return callback(new Error('createPriceListInternal failed'));
       }
-      properties.updateProperties(pricelist, function (err) {
+      properties.updateProperties(pricelist, async function (err) {
         if (err) {
           logger.error('updateProperties failed', err);
           return callback(err);
         }
-        gameplays.saveNewPriceListRevision(gp, function (err) {
-          if (err) {
-            logger.error('saveNewPriceListRevision failed', err);
-          }
-          return callback(err);
-        });
+        await gameplays.saveNewPriceListRevision(gp);
+        return callback(err);
       });
     });
   }).catch(err => {
-      logger.error('getGameplay failed', err);
-      return callback(err);
+    logger.error('getGameplay failed', err);
+    return callback(err);
   });
 
 }

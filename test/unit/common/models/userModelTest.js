@@ -6,6 +6,7 @@ const expect   = require('expect.js');
 const users    = require('./../../../../common/models/userModel');
 const settings = require('./../../../../editor/settings');
 const db       = require('./../../../../common/lib/ferropolyDb');
+
 describe('UserModel Tests', function () {
   before(function (done) {
     db.init(settings, function (err) {
@@ -58,9 +59,9 @@ describe('UserModel Tests', function () {
   describe('Updating / creating', function () {
     let user1          = new users.Model({
       personalData: {
-        surname : 'Kunz',
+        surname:  'Kunz',
         forename: 'Olivia',
-        email   : 'olivia@gm-x.ch'
+        email:    'olivia@gm-x.ch'
       }
     });
     user1.roles.editor = true;
@@ -96,44 +97,27 @@ describe('UserModel Tests', function () {
       });
     });
 
-    it('Changing a users parameter should work', function (done) {
-      users.getUserByMailAddress('olivia@gm-x.ch', function (err, foundUser) {
-        if (err) {
-          done(err);
-        }
-        foundUser.personalData.surname = 'Huber-Kunz';
-        users.updateUser(foundUser, null, function (err, savedUser) {
-          if (err) {
-            done(err);
-          }
-          expect(savedUser.personalData.surname).to.be('Huber-Kunz');
-          expect(savedUser.personalData.forename).to.be('Olivia');
-          expect(users.verifyPassword(savedUser, password1)).to.be(true);
-          done();
-        });
+    it('Changing a users parameter should work', async function () {
+      const foundUser                = await users.getUserByMailAddress('olivia@gm-x.ch')
+      foundUser.personalData.surname = 'Huber-Kunz';
+      await users.updateUser(foundUser, null, function (err, savedUser) {
+        expect(savedUser.personalData.surname).to.be('Huber-Kunz');
+        expect(savedUser.personalData.forename).to.be('Olivia');
+        expect(users.verifyPassword(savedUser, password1)).to.be(true);
       });
     });
-
-    it('Checking if the user exists should work', function (done) {
-      users.getUserByMailAddress('olivia@gm-x.ch', function (err, user) {
-        if (err) {
-          done(err);
-        }
-        expect(user.personalData.email).to.be('olivia@gm-x.ch');
-        done(err);
-      })
-    });
-
-    it('Checking if an unkown exists should return none', function (done) {
-      users.getUserByMailAddress('olivia@kunz-huber.ch', function (err, user) {
-        if (err) {
-          done(err);
-        }
-        expect(user).to.be(undefined);
-        done(err);
-      })
-    });
   });
+
+  it('Checking if the user exists should work', async function () {
+    const user = await users.getUserByMailAddress('olivia@gm-x.ch');
+    expect(user.personalData.email).to.be('olivia@gm-x.ch');
+  });
+
+  it('Checking if an unkown exists should return none', async function () {
+    const user = await users.getUserByMailAddress('olivia@kunz-huber.ch');
+    expect(user).to.be(undefined);
+  });
+
 
   let nb = 0;
   describe('Getting all users', function () {
@@ -164,4 +148,5 @@ describe('UserModel Tests', function () {
       });
     })
   });
+
 });

@@ -7,7 +7,6 @@ const express   = require('express');
 const router    = express.Router();
 const gameplays = require('../../common/models/gameplayModel');
 const _         = require('lodash');
-const async     = require('async');
 const logger    = require('../../common/lib/logger').getLogger('routes:admins');
 const users     = require('../../common/models/userModel');
 const path      = require('path');
@@ -15,32 +14,22 @@ const path      = require('path');
 /**
  * Checks all logins whether they exist in the user database or not
  * @param logins is an array with the logins
- * @param callback
  */
-function checkAdminUsers(logins, callback) {
+async function checkAdminUsers(logins) {
   // Check if the users exist
   let result = {};
-  async.each(logins, function (login, cb) {
-      if (!login) {
-        return cb();
-      }
-      users.getUserByMailAddress(login, function (err, user) {
-        if (err) {
-          logger.error('no user found', err);
-          return cb;
-        }
-        if (user) {
-          result[login]       = user;
-          result[login].login = undefined;
-          result[login].roles = undefined;
-          result[login].info  = undefined;
-        }
-        cb(null, user);
-      });
-    },
-    function (err) {
-      callback(err, result);
-    });
+
+  for (const login of logins) {
+    const user = await users.getUserByMailAddress(login);
+    if (user) {
+      result[login]       = user;
+      result[login].login = undefined;
+      result[login].roles = undefined;
+      result[login].info  = undefined;
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -78,14 +67,9 @@ router.post('/:gameId', async function (req, res) {
   });
 
   try {
-    const gp = await gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(logins, 0, 3));
-    checkAdminUsers(gp.admins.logins, function (err, result) {
-      if (err) {
-        logger.error('Error while checking users', err);
-        return res.status(500).send({message: 'Error while checking users', errorMessage: err.message});
-      }
-      return res.send({result: result});
-    });
+    const gp     = await gameplays.setAdmins(req.params.gameId, req.session.passport.user, _.slice(logins, 0, 3));
+    const result = await checkAdminUsers(gp.admins.logins);
+    return res.send({result: result});
   }
   catch (err) {
     logger.error('Can not set admins', err);
@@ -98,38 +82,28 @@ router.post('/:gameId', async function (req, res) {
 /**
  * Get the admins, checks if they have a login
  */
-router.get('/:gameId', (req, res) => {
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user).then(gp => {
+router.get('/:gameId', async (req, res) => {
+  try {
+    const gp = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
+
     let adminEmails = _.get(gp, 'admins.logins', []);
     let result      = [];
     // Iterate through all admins, check if they have an email
-    async.eachSeries(adminEmails,
-      function (admin, cb) {
-        users.getUserByMailAddress(admin, (err, user) => {
-          let r = {email: admin};
-          if (err) {
-            return cb(err);
-          }
-          r.hasLogin = _.isObject(user);
-          result.push(r);
-          cb();
-        });
-      },
-      function (err) {
-        if (err) {
-          return res.status(500).send({message: 'Fehler beim Laden der Admins: ' + err.message});
-        }
-        // result should be always at least 3 entries long
-        while (result.length < 3) {
-          result.push({email: ''});
-        }
-        res.send(result);
-      });
-  }).catch(err => {
-    logger.error('getGameplay fails', err);
-    // "not found" is the most likely error thrown
-    return res.status(404).send({message: 'Fehler beim Laden des Spieles: ' + err.message});
-  });
+    for (const admin of adminEmails) {
+      const user = await users.getUserByMailAddress(admin);
+      let r      = {email: admin};
+      r.hasLogin = _.isObject(user);
+      result.push(r);
+    }
+    while (result.length < 3) {
+      result.push({email: ''});
+    }
+    res.send(result);
+  }
+  catch (err) {
+    return res.status(500).send({message: 'Fehler beim Laden der Admins: ' + err.message});
+  }
+
 });
 
 module.exports = router;

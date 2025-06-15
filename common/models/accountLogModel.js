@@ -10,8 +10,8 @@ const _        = require('lodash');
 
 let accountLogSchema = mongoose.Schema({
   timestamp: Date,
-  user     : String,
-  activity : String
+  user:      String,
+  activity:  String
 }, {autoIndex: true});
 
 const accountLogEntry = mongoose.model('AccountLog', accountLogSchema);
@@ -22,13 +22,9 @@ const accountLogEntry = mongoose.model('AccountLog', accountLogSchema);
  * @param means type of login
  */
 function addNewUserEntry(email, means) {
-  addEntry({user: email, activity: `Neuer Zugang mit ${means} erstellt`}, err => {
-    if (err) {
-      logger.error('MongoDb Error', err);
-    }
-  })
-    .then(() => {
-    });
+  addEntry({user: email, activity: `Neuer Zugang mit ${means} erstellt`}).catch(err => {
+    logger.error(err);
+  });
 }
 
 /**
@@ -37,23 +33,18 @@ function addNewUserEntry(email, means) {
  * @param callback
  */
 async function addEntry(info, callback) {
-  let result;
-  let err;
-  try {
-    let entry       = new accountLogEntry();
-    entry.timestamp = new Date();
-    entry.user      = _.get(info, 'user', 'none');
-    entry.activity  = _.get(info, 'activity', '');
-    result          = await entry.save();
-  } catch (ex) {
-    logger.error('MongoDb Error', ex);
-    err = ex;
-  } finally {
-    callback(err, result);
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in accountLogModel:addEntry is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
+  let entry       = new accountLogEntry();
+  entry.timestamp = new Date();
+  entry.user      = _.get(info, 'user', 'none');
+  entry.activity  = _.get(info, 'activity', '');
+  return await entry.save();
 }
 
 module.exports = {
-  addEntry       : addEntry,
+  addEntry:        addEntry,
   addNewUserEntry: addNewUserEntry
 }

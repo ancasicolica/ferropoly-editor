@@ -61,13 +61,14 @@ let initServer = function () {
 
   app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded({extended: false}));
-  app.use(express.urlencoded({limit:'50mb', extended: true }));
+  app.use(express.urlencoded({limit: '50mb', extended: true}));
 
   // Using compression speeds up the connection (and uses much less data for mobile)
   app.use(compression());
 
   app.use(express.static(path.join(__dirname, 'public')));
-  app.use('/maps', require('../common/lib/maps').routeHandler); // No user authentication needed here, so place it before passport
+  app.use('/maps', require('../common/lib/maps').routeHandler); // No user authentication needed here, so place it
+                                                                // before passport
 
 
   // Define Strategy, login
@@ -80,18 +81,18 @@ let initServer = function () {
   passport.deserializeUser(authStrategy.deserializeUser);
   // required for passport: configuration
   app.use(session({
-    secret           : 'ferropolyIsAGameWithAVeryLargePlayground',
-    resave           : true,
+    secret:            'ferropolyIsAGameWithAVeryLargePlayground',
+    resave:            true,
     saveUninitialized: false,
-    httpOnly         : false,
-    cookie           : {
+    httpOnly:          false,
+    cookie:            {
       secure: 'auto'
     },
-    genid            : function () {
+    genid:             function () {
       return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid();
     },
-    store            : MongoStore.create({mongoUrl: settings.locationDbSettings.mongoDbUrl, ttl: 2 * 24 * 60 * 60}),
-    name             : 'ferropoly-editor'
+    store:             MongoStore.create({mongoUrl: settings.locationDbSettings.mongoDbUrl, ttl: 2 * 24 * 60 * 60}),
+    name:              'ferropoly-editor'
   }));
   app.use(passport.initialize());
   app.use(passport.session()); // persistent login sessions
@@ -130,7 +131,7 @@ let initServer = function () {
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
-    const err    = new Error(`Page ${req?.originalUrl} not found`);
+    const err  = new Error(`Page ${req?.originalUrl} not found`);
     err.status = 404;
     next(err);
   });
@@ -160,7 +161,7 @@ let initServer = function () {
       }
       res.render(errorPage, {
         message: err.message,
-        error  : err
+        error:   err
       });
     });
   }
@@ -184,38 +185,39 @@ let initServer = function () {
     }
     res.render(errorPage, {
       message: err.message,
-      error  : {}
+      error:   {}
     });
   });
 
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
 
-  demoUsers.updateLogins(function (err) {
+  demoUsers.updateLogins().catch(function (err) {
     if (err) {
       logger.error(err);
       process.exit(-1);
     }
-    server.listen(app.get('port'), app.get('ip'), function () {
-      logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
-      logger.info('Ferropoly Editor, Copyright (C) 2015-2024 Christian Kuster, CH-8342 Wernetshausen');
-      logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
-      logger.info('This is free software, and you are welcome to redistribute it');
-      logger.info('under certain conditions; see www.ferropoly.ch for details.');
-      logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
-      logger.info(`Google Cloud Logging: ${settings.logger.google.enabled}`)
-      // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
-      // CRON task never executes (FERE-9)
-      gpLib.deleteOldGameplays(function (err) {
-        if (err) {
-          logger.error('error while deleting old gameplays', err);
-        } else {
-          logger.info('old gameplays deleted');
-        }
-      });
-
-    });
   });
+  server.listen(app.get('port'), app.get('ip'), function () {
+    logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
+    logger.info('Ferropoly Editor, Copyright (C) 2015-2024 Christian Kuster, CH-8342 Wernetshausen');
+    logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
+    logger.info('This is free software, and you are welcome to redistribute it');
+    logger.info('under certain conditions; see www.ferropoly.ch for details.');
+    logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
+    logger.info(`Google Cloud Logging: ${settings.logger.google.enabled}`)
+    // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
+    // CRON task never executes (FERE-9)
+    gpLib.deleteOldGameplays(function (err) {
+      if (err) {
+        logger.error('error while deleting old gameplays', err);
+      } else {
+        logger.info('old gameplays deleted');
+      }
+    });
+
+  });
+
 
 };
 

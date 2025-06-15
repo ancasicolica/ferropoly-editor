@@ -78,7 +78,7 @@ async function updateTeam(team) {
     if (!team.data.teamLeader.hasLogin) {
       logger.info(`${team.gameId}: Team leader ${team.data.teamLeader.name} has no login for team ${team.uuid}`);
       // Check for Login
-      let user = await userModel.getUserByMailAddressB(team.data.teamLeader.email);
+      let user = await userModel.getUserByMailAddress(team.data.teamLeader.email);
       logger.info(`${team.gameId}: User found`, user);
       if (user) {
         // When the team-leader has a login, set to true. This never becomes false as logins can not be deleted

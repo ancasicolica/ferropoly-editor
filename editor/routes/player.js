@@ -130,10 +130,7 @@ router.get('/get/:gameId', function (req, res) {
           team.login = {};
           return cb();
         }
-        users.getUserByMailAddress(team.data.teamLeader.email, function (err, user) {
-          if (err) {
-            return cb(err);
-          }
+        users.getUserByMailAddress(team.data.teamLeader.email).then(user => {
           if (!user) {
             return cb();
           }
@@ -148,7 +145,7 @@ router.get('/get/:gameId', function (req, res) {
             info:         user.info
           };
           return cb();
-        });
+        }).catch(cb);
       },
       function (err) {
         if (err) {
@@ -186,25 +183,22 @@ router.post('/store', async function (req, res) {
   try {
     await gameplays.getGameplay(team.gameId, req.session.passport.user);
 
-    teams.updateTeam(team).then(storedTeam => {
+    teams.updateTeam(team).then(async storedTeam => {
       // Check if a login is available
-      users.getUserByMailAddress(storedTeam.data.teamLeader.email, function (err, user) {
-        if (err || !user) {
-          return res.send({team: storedTeam});
-        }
-        storedTeam = storedTeam.toObject();
-        user       = user.toObject();
+      let user   = await users.getUserByMailAddress(storedTeam.data.teamLeader.email);
+      storedTeam = storedTeam.toObject();
+      user       = user.toObject();
 
-        if (user.info && !user.personalData.avatar) {
-          // Use default avatar
-          user.personalData.avatar = gravatar.getUrl(user.personalData.email);
-        }
-        storedTeam.login = {
-          personalData: user.personalData,
-          info:         user.info
-        };
-        return res.send({team: storedTeam});
-      });
+      if (user.info && !user.personalData.avatar) {
+        // Use default avatar
+        user.personalData.avatar = gravatar.getUrl(user.personalData.email);
+      }
+      storedTeam.login = {
+        personalData: user.personalData,
+        info:         user.info
+      };
+      return res.send({team: storedTeam});
+
     }).catch(err => {
       logger.error('updateTeam Error', err);
       res.status(500).send({message: 'Fehler beim speichern: ' + err.message});

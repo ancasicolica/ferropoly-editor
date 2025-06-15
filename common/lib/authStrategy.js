@@ -29,14 +29,18 @@ module.exports = function (settings, users) {
    * @param done
    * @returns {*}
    */
-  function deserializeUser(userId, done) {
+  async function deserializeUser(userId, done) {
     logger.silly('deserializeUser:' + userId);
-    return users.getUserByMailAddress(userId, function (err, foundUser) {
-      if (err || !foundUser) {
+    try {
+      const foundUser = await users.getUserByMailAddress(userId);
+      if (!foundUser) {
         return done(new Error(`Login error, we do not know "${userId}"`), null);
       }
       return done(null, foundUser);
-    });
+    }
+    catch (err) {
+      done(err, null);
+    }
   }
 
   /**
@@ -44,14 +48,13 @@ module.exports = function (settings, users) {
    * @type {LocalStrategy}
    */
   const localStrategy = new LocalStrategy(
-    function verify(username, password, done) {
-      console.log('XXXX');
+    async function verify(username, password, done) {
       logger.info('Login attempt: ' + username);
-      users.getUserByMailAddress(username, function (err, foundUser) {
-        if (err || !foundUser) {
+      try {
+        const foundUser = await users.getUserByMailAddress(username);
+        if (!foundUser) {
           return done(null, false);
         }
-
         if (users.verifyPassword(foundUser, password)) {
           foundUser.info.lastLogin = new Date();
           users.updateUser(foundUser, null, function () {
@@ -61,7 +64,10 @@ module.exports = function (settings, users) {
           logger.info('invalid password supplied for ' + foundUser);
           return done(null, false);
         }
-      });
+      }
+      catch (err) {
+        return done(err, null);
+      }
     }
   );
 
@@ -69,9 +75,9 @@ module.exports = function (settings, users) {
    * Google Strategy
    */
   const googleStrategy = new GoogleStrategy({
-      clientID         : settings.oAuth.google.clientId,
-      clientSecret     : settings.oAuth.google.clientSecret,
-      callbackURL      : settings.oAuth.google.callbackURL,
+      clientID:          settings.oAuth.google.clientId,
+      clientSecret:      settings.oAuth.google.clientSecret,
+      callbackURL:       settings.oAuth.google.callbackURL,
       passReqToCallback: true
     },
     function (accessToken, refreshToken, donotknow, profile, done) {
@@ -90,10 +96,10 @@ module.exports = function (settings, users) {
    * Configured in https://portal.azure.com/
    */
   const microsoftStrategy = new MicrosoftStrategy({
-      clientID    : settings.oAuth.microsoft.clientId,
+      clientID:     settings.oAuth.microsoft.clientId,
       clientSecret: settings.oAuth.microsoft.clientSecret,
-      callbackURL : settings.oAuth.microsoft.callbackURL,
-      scope       : ['user.read']
+      callbackURL:  settings.oAuth.microsoft.callbackURL,
+      scope:        ['user.read']
     },
 
     function (accessToken, refreshToken, profile, done) {
@@ -106,10 +112,10 @@ module.exports = function (settings, users) {
   );
 
   return {
-    localStrategy    : localStrategy,
-    googleStrategy   : googleStrategy,
+    localStrategy:     localStrategy,
+    googleStrategy:    googleStrategy,
     microsoftStrategy: microsoftStrategy,
-    deserializeUser  : deserializeUser,
-    serializeUser    : serializeUser
+    deserializeUser:   deserializeUser,
+    serializeUser:     serializeUser
   };
 };

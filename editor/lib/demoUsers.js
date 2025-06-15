@@ -3,9 +3,10 @@
  * Created by kc on 06.01.16.
  */
 
-const async    = require('async');
-const users    = require('../../common/models/userModel');
-const gravatar = require('../../common/lib/gravatar');
+const users                  = require('../../common/models/userModel');
+const gravatar               = require('../../common/lib/gravatar');
+const {getUserByMailAddress} = require('../../common/models/userModel');
+const logger                     = require('../../common/lib/logger').getLogger('demoUsers');
 
 const demoUsers = [
   {forename: 'Heinz', surename: 'Muster', email: 'demo@ferropoly.ch'},
@@ -65,22 +66,26 @@ module.exports = {
    * Updates (creates if needed) the logins for the users.
    * @param callback
    */
-  updateLogins: function (callback) {
-    async.each(demoUsers,
-      function (u, cb) {
-        users.getUserByMailAddress(u.email, function (err, foundUser) {
-          if (err || foundUser) {
-            return cb(err);
+  updateLogins: async function (callback) {
+    if (callback) {
+      logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateLogins is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+      return callback('NOT SUPPORTED ANYMORE!');
+    }
+
+    for (const u of demoUsers) {
+      const foundUser            = await getUserByMailAddress(u.email);
+      if (foundUser) {
+        foundUser.personalData.forename = u.forename;
+        foundUser.personalData.surname  = u.surename;
+        foundUser.personalData.email    = u.email;
+        foundUser.personalData.avatar   = gravatar.getUrl(u.email);
+        foundUser.login.verifiedEmail   = true;
+        await users.updateUser(foundUser, '12345678', (err=> {
+          if(err) {
+            logger.error(err);
           }
-          var user                   = new users.Model();
-          user.personalData.forename = u.forename;
-          user.personalData.surname  = u.surename;
-          user.personalData.email    = u.email;
-          user.personalData.avatar   = gravatar.getUrl(u.email);
-          user.login.verifiedEmail   = true;
-          users.updateUser(user, '12345678', cb);
-        });
-      },
-      callback);
+        }));
+      }
+    }
   }
 };

@@ -10,16 +10,11 @@ const logger    = require('../lib/logger').getLogger('userinfo');
 const gravatar  = require('../lib/gravatar');
 
 /* GET info about the user */
-router.get('/', function (req, res) {
-  userModel.getUserByMailAddress(req.session.passport.user, function (err, user) {
-    user = user.toObject();
-    if (err) {
-      logger.error('Error in userinfo', err);
-      res.status(500);
-      res.send('Fehler bei Abfrage: ' + err.message);
-      return;
-    }
+router.get('/', async function (req, res) {
+  try {
+    const foundUser = await userModel.getUserByMailAddress(req.session.passport.user);
 
+    const user = foundUser.toObject();
     // Remove some information not needed at client side
     delete user.login;
     delete user._id;
@@ -29,7 +24,12 @@ router.get('/', function (req, res) {
     user.info.generatedAvatar = gravatar.getUrl(user.personalData.email);
 
     res.send({success: true, info: user});
-  });
+  }
+  catch(err) {
+    logger.error('Error in userinfo', err);
+    res.status(500);
+    res.send('Fehler bei Abfrage: ' + err.message);
+  }
 });
 
 

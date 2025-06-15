@@ -29,26 +29,28 @@ describe('GameplayLib Tests', function () {
   describe('Creating a complete new gameplay', function () {
     it('should create a gameplay', function (done) {
       gplib.createNewGameplay({
-        email   : 'anyone@me.com',
-        map     : 'zvv',
+        email:    'anyone@me.com',
+        map:      'zvv',
         gamename: 'LibTest',
+        gameId:   'test',
         gamedate: DateTime.local(2020, 1, 1).toJSDate()
       }, function (err, newGp) {
+        if (err) {
+          return done(err);
+        }
+        expect(newGp).not.to.be(undefined);
         expect(newGp.gamename).to.be('LibTest');
         gp = newGp;
         done(err);
       });
     });
     it('should have the same number of properties as there are locations', function (done) {
-      locations.getAllLocationsForMap('zvv', function (err, zvvLocs) {
-        if (err) {
-          done(err);
-        }
-        properties.getPropertiesForGameplay(gp.internal.gameId, null, function (err, props) {
-          expect(props.length).to.be(zvvLocs.length);
-          done(err);
-        })
-      })
+      locations.getAllLocationsForMap('zvv').then(zvvLocs => {
+          properties.getPropertiesForGameplay(gp.internal.gameId, null, function (err, props) {
+            expect(props.length).to.be(zvvLocs.length);
+            done(err);
+          })
+        }).catch(done);
     });
   });
 
