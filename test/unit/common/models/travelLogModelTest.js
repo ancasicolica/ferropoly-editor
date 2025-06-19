@@ -19,11 +19,11 @@ const position   = {
   lng: 8.1
 }
 const property   = {
-  uuid    : '1234',
+  uuid: '1234',
   location:
-    {
-      position: position
-    }
+        {
+          position: position
+        }
 }
 const user       = 'cameo@ferropoly.ch'
 
@@ -35,101 +35,77 @@ describe('TravelLogModel Tests', function () {
   });
 
   // Close DB afterwards
-  after(function (done) {
-    travelLogModel.deleteAllEntries(gameId).then(() => {
-      db.close(done);
-    }).catch(done);
+  after(async function () {
+    await travelLogModel.deleteAllEntries(gameId);
+    db.close();
+
   });
 
   describe('Adding normal entries', function () {
-    it('should work ', function (done) {
-      travelLogModel.addEntry(gameId, teamIds[0], propertyId, (err, info) => {
-        console.log(info);
-        done(err);
-      })
+    it('should work ', async function () {
+      const info = await travelLogModel.addEntry(gameId, teamIds[0], propertyId);
+      console.log(info);
     });
-    it('should deny if teamId is not a string ', function (done) {
-      travelLogModel.addEntry(gameId, {}, propertyId, (err, info) => {
-        console.log(info);
-        expect(err).to.be.a('object')
-        done();
-      })
+    it('should deny if teamId is not a string ', function () {
+       travelLogModel.addEntry(gameId, {}, propertyId).catch(err => {
+         expect(err).to.be.a('object')
+       })
+
+
     });
-    it('should deny if propertyId is not set', function (done) {
-      travelLogModel.addEntry(gameId, teamIds[0], null, (err, info) => {
-        console.log(info);
+    it('should deny if propertyId is not set', function () {
+      travelLogModel.addEntry(gameId, teamIds[0], null).catch(err =>  {
         expect(err).to.be.a('object')
-        done();
       })
     });
   });
 
   describe('Adding property entries', function () {
-    it('should work ', function (done) {
-      travelLogModel.addPropertyEntry(gameId, teamIds[0], property, (err, info) => {
-        console.log(info);
-        done(err);
-      })
+    it('should work ', async function () {
+      const info = await travelLogModel.addPropertyEntry(gameId, teamIds[0], property);
+      console.log(info);
     });
-    it('should deny if teamId is not a string ', function (done) {
-      travelLogModel.addPropertyEntry(gameId, {}, propertyId, (err, info) => {
-        console.log(info);
-        expect(err).to.be.a('object')
-        done();
-      })
+    it('should deny if teamId is not a string ', function () {
+     travelLogModel.addPropertyEntry(gameId, {}, propertyId).catch(err => {
+       expect(err).to.be.a('object')
+     });
     });
-    it('should deny if propertyId is not set', function (done) {
-      travelLogModel.addPropertyEntry(gameId, teamIds[0], null, (err, info) => {
-        console.log(info);
+    it('should deny if propertyId is not set', function () {
+      travelLogModel.addPropertyEntry(gameId, teamIds[0], null).catch(err => {
         expect(err).to.be.a('object')
-        done();
       })
     });
   });
 
   describe('Adding position entries', function () {
-    it('should work ', function (done) {
-      travelLogModel.addPositionEntry(gameId, teamIds[0], user, position, (err, info) => {
-        console.log(info);
-        done(err);
+    it('should work ', async function () {
+      const info = await travelLogModel.addPositionEntry(gameId, teamIds[0], user, position);
+      console.log(info);
+    });
+    it('should deny if teamId is not a string ', function () {
+      travelLogModel.addPositionEntry(gameId, {}, user, position).catch(err => {
+        expect(err).to.be.a('object')
       })
     });
-    it('should deny if teamId is not a string ', function (done) {
-      travelLogModel.addPositionEntry(gameId, {}, user, position, (err, info) => {
-        console.log(info);
+    it('should deny if user is not set', function () {
+      travelLogModel.addPositionEntry(gameId, teamIds[0], null, position).catch(err => {
         expect(err).to.be.a('object')
-        done();
-      })
-    });
-    it('should deny if user is not set', function (done) {
-      travelLogModel.addPositionEntry(gameId, teamIds[0], null, position, (err, info) => {
-        console.log(info);
-        expect(err).to.be.a('object')
-        done();
       })
     });
   });
 
   describe('Get all entries', function () {
-    it('should work for one team ', function (done) {
-      travelLogModel.getLogEntries(gameId, teamIds[0], null, null, (err, info) => {
-        console.log(info);
-        done(err);
-      })
+    it('should work for one team ', async function () {
+      const info = await travelLogModel.getLogEntries(gameId, teamIds[0], null, null);
+      console.log(info);
     });
-    it('should work for all teams', function (done) {
-      travelLogModel.getLogEntries(gameId, null, null, null, (err, info) => {
-        console.log(info);
-        done(err);
-      })
+    it('should work for all teams', async function () {
+      const info = await travelLogModel.getLogEntries(gameId, null, null, null);
+      console.log(info);
     });
-    it('should work for all and everything', function (done) {
-      travelLogModel.getAllLogEntries(gameId, null, (err, info) => {
-        console.log(info);
-        done(err);
-      })
+    it('should work for all and everything', async function () {
+      const info = await travelLogModel.getAllLogEntries(gameId, null);
+      console.log(info);
     });
-
   });
-
 });

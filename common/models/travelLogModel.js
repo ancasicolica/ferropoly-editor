@@ -12,17 +12,17 @@ const _             = require('lodash');
  * The mongoose schema for an user
  */
 let travelLogSchema = mongoose.Schema({
-  _id       : String,
-  gameId    : String,
-  teamId    : String,
-  user      : String, // User who causes this entry
+  _id:        String,
+  gameId:     String,
+  teamId:     String,
+  user:       String, // User who causes this entry
   propertyId: String, // EITHER propertyId
-  position  : {       // OR location coordinates must be supplied
-    lat     : Number,
-    lng     : Number,
+  position:   {       // OR location coordinates must be supplied
+    lat:      Number,
+    lng:      Number,
     accuracy: Number
   },
-  timestamp : {type: Date, default: Date.now}
+  timestamp:  {type: Date, default: Date.now}
 });
 
 
@@ -40,26 +40,23 @@ let TravelLog = mongoose.model('TravelLog', travelLogSchema);
  * @returns {*}
  */
 let addEntry = async function (gameId, teamId, propertyId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in addEntry is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId || !teamId || !propertyId) {
-    return callback(new Error('all params in addEntry must be set'));
+    throw new Error('all params in addEntry must be set');
   }
   if (!_.isString(gameId) || !_.isString(teamId) || !_.isString(propertyId)) {
-    return callback(new Error('all params in createEntry must be strings'));
+    throw new Error('all params in createEntry must be strings');
   }
-  let res, err;
-  try {
-    let logEntry        = new TravelLog();
-    logEntry.gameId     = gameId;
-    logEntry.teamId     = teamId;
-    logEntry.propertyId = propertyId;
-    logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
-    res                 = await logEntry.save();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, res);
-  }
+
+  const logEntry      = new TravelLog();
+  logEntry.gameId     = gameId;
+  logEntry.teamId     = teamId;
+  logEntry.propertyId = propertyId;
+  logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  return await logEntry.save();
 };
 
 /**
@@ -71,31 +68,30 @@ let addEntry = async function (gameId, teamId, propertyId, callback) {
  * @returns {*}
  */
 async function addPropertyEntry(gameId, teamId, property, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in addPropertyEntry is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+
   if (!gameId || !teamId || !property) {
-    return callback(new Error('all params in addEntry must be set'));
+    throw new Error('all params in addEntry must be set');
   }
+
   if (!_.isString(gameId) || !_.isString(teamId)) {
-    return callback(new Error('teamId and gameId params in createEntry must be strings'));
+    throw new Error('teamId and gameId params in createEntry must be strings');
   }
-  let err, res;
-  try {
-    let logEntry        = new TravelLog();
-    logEntry.gameId     = gameId;
-    logEntry.teamId     = teamId;
-    logEntry.propertyId = property.uuid;
-    logEntry.position   = {
-      lat     : property.location.position.lat,
-      lng     : property.location.position.lng,
-      accuracy: 200
-    };
-    logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
-    res                 = await logEntry.save();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, res);
-  }
+
+  let logEntry        = new TravelLog();
+  logEntry.gameId     = gameId;
+  logEntry.teamId     = teamId;
+  logEntry.propertyId = property.uuid;
+  logEntry.position   = {
+    lat:      property.location.position.lat,
+    lng:      property.location.position.lng,
+    accuracy: 200
+  };
+  logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  return await logEntry.save();
 }
 
 
@@ -109,27 +105,24 @@ async function addPropertyEntry(gameId, teamId, property, callback) {
  * @returns {*}
  */
 async function addPositionEntry(gameId, teamId, user, position, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in addPositionEntry is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId || !teamId || !user || !position) {
-    return callback(new Error('all params in addEntry must be set'));
+    throw new Error('all params in addEntry must be set');
   }
   if (!_.isString(gameId) || !_.isString(teamId)) {
-    return callback(new Error('teamId and gameId params in createEntry must be strings'));
+    throw new Error('teamId and gameId params in createEntry must be strings');
   }
-  let err, res;
-  try {
-    let logEntry      = new TravelLog();
-    logEntry.gameId   = gameId;
-    logEntry.teamId   = teamId;
-    logEntry.position = position;
-    logEntry.user     = user;
-    logEntry._id      = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
-    res               = await logEntry.save();
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, res);
-  }
+
+  const logEntry    = new TravelLog();
+  logEntry.gameId   = gameId;
+  logEntry.teamId   = teamId;
+  logEntry.position = position;
+  logEntry.user     = user;
+  logEntry._id      = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  return await logEntry.save();
 }
 
 /**
@@ -152,8 +145,12 @@ async function deleteAllEntries(gameId) {
  * @returns {*}
  */
 let getLogEntries = async function (gameId, teamId, tsStart, tsEnd, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getLogEntries is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
   if (!tsStart) {
     tsStart = moment('2015-01-01');
@@ -161,29 +158,22 @@ let getLogEntries = async function (gameId, teamId, tsStart, tsEnd, callback) {
   if (!tsEnd) {
     tsEnd = moment();
   }
-  let err, res;
-  try {
-    if (teamId) {
-      res = await TravelLog
-        .find({gameId: gameId})
-        .where('teamId').equals(teamId)
-        .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
-        .sort('timestamp')
-        .lean()
-        .exec();
-    } else {
-      res = await TravelLog
-        .find({gameId: gameId})
-        .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
-        .sort('timestamp')
-        .lean()
-        .exec();
-    }
-  } catch (ex) {
-    logger.error(ex);
-    err = ex;
-  } finally {
-    callback(err, res);
+
+  if (teamId) {
+    return await TravelLog
+      .find({gameId: gameId})
+      .where('teamId').equals(teamId)
+      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .sort('timestamp')
+      .lean()
+      .exec();
+  } else {
+    return await TravelLog
+      .find({gameId: gameId})
+      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .sort('timestamp')
+      .lean()
+      .exec();
   }
 }
 
@@ -193,15 +183,19 @@ let getLogEntries = async function (gameId, teamId, tsStart, tsEnd, callback) {
  * @param teamId
  * @param callback
  */
-let getAllLogEntries = function (gameId, teamId, callback) {
-  getLogEntries(gameId, teamId, undefined, undefined, callback);
+let getAllLogEntries = async function (gameId, teamId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllLogEntries is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  return await getLogEntries(gameId, teamId, undefined, undefined);
 };
 
 module.exports = {
-  Model           : TravelLog,
-  addEntry        : addEntry,
+  Model:            TravelLog,
+  addEntry:         addEntry,
   deleteAllEntries: deleteAllEntries,
-  getLogEntries   : getLogEntries,
+  getLogEntries:    getLogEntries,
   getAllLogEntries: getAllLogEntries,
   addPositionEntry: addPositionEntry,
   addPropertyEntry: addPropertyEntry
