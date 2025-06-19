@@ -121,25 +121,19 @@ async function deleteAllTeams(gameId) {
  * @returns {*}
  */
 async function getTeams(gameId, callback) {
-  if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getTeams is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  let err, docs;
-  try {
-    docs = await Team
-      .find({gameId: gameId})
-      .lean()
-      .exec();
+  if (!gameId) {
+    throw new Error('No gameId supplied');
   }
-  catch
-    (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs);
-  }
+
+  return await Team
+    .find({gameId: gameId})
+    .lean()
+    .exec();
 }
 
 /**
@@ -150,23 +144,17 @@ async function getTeams(gameId, callback) {
  * @returns {*}
  */
 async function getTeam(gameId, teamId, callback) {
-  let doc, err;
-  try {
-    doc = await Team
-      .findOne({
-        'uuid':   teamId,
-        'gameId': gameId
-      })
-      .exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getTeam is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch
-    (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, doc);
-  }
+
+  return await Team
+    .findOne({
+      'uuid':   teamId,
+      'gameId': gameId
+    })
+    .exec();
 }
 
 /**
@@ -188,24 +176,18 @@ async function getNewTeamsNb(gameId) {
  * @returns {*}
  */
 async function countTeams(gameId, callback) {
-  if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countTeams is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  let err, info;
-  try {
-    info = await Team
-      .countDocuments({gameId: gameId})
-      .exec();
+  if (!gameId) {
+    throw new Error('No gameId supplied');
   }
-  catch
-    (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, info);
-  }
+
+  return await Team
+    .countDocuments({gameId: gameId})
+    .exec();
 }
 
 /**
@@ -213,18 +195,20 @@ async function countTeams(gameId, callback) {
  * @param gameId
  * @param callback
  */
-function getTeamsAsObject(gameId, callback) {
-  getTeams(gameId, (err, data) => {
-    if (err) {
-      return callback(err);
-    }
-    // Add all teams to the result
-    let teams = {};
-    for (let i = 0; i < data.length; i++) {
-      teams[data[i].uuid] = data[i];
-    }
-    callback(null, teams);
-  });
+async function getTeamsAsObject(gameId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getTeamsAsObject is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+  const data = await getTeams(gameId);
+
+  // Add all teams to the result
+  let teams = {};
+  for (let i = 0; i < data.length; i++) {
+    teams[data[i].uuid] = data[i];
+  }
+  return teams;
+
 }
 
 /**
@@ -233,28 +217,24 @@ function getTeamsAsObject(gameId, callback) {
  * @param callback
  */
 async function getMyTeams(email, callback) {
-  let docs, err;
-  try {
-    docs = await Team
-      .find({
-        $or: [
-          {'data.teamLeader.email': email},
-          {'data.members': email}
-        ]
-      })
-      .exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getMyTeams is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
 
-    if (docs.length === 0) {
-      docs = null;
-    }
+  let docs = await Team
+    .find({
+      $or: [
+        {'data.teamLeader.email': email},
+        {'data.members': email}
+      ]
+    })
+    .exec();
+
+  if (docs.length === 0) {
+    docs = null;
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs);
-  }
+  return docs;
 }
 
 /**
@@ -264,22 +244,17 @@ async function getMyTeams(email, callback) {
  * @param callback
  */
 async function getMyTeam(gameId, email, callback) {
-  let doc, err;
-  try {
-    doc = await Team
-      .findOne({
-        'data.teamLeader.email': email,
-        'gameId':                gameId
-      })
-      .exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getMyTeam is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, doc);
-  }
+
+  return await Team
+    .findOne({
+      'data.teamLeader.email': email,
+      'gameId':                gameId
+    })
+    .exec();
 }
 
 module.exports = {

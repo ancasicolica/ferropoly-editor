@@ -54,22 +54,18 @@ router.get('/gameplays', async function (req, res) {
     }
     const gps = await gameplayModel.getAllGameplays();
     async.each(gps,
-      function (gp, cb) {
+      async function (gp, cb) {
         gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
         // count the teams
-        teamModel.countTeams(gp.internal.gameId, async (err, nb) => {
-          if (err) {
-            return cb(err);
-          }
-          gp.teamNb = nb;
-          // count properties, makes only really sense when gameplay is finalized
-          if (gp.internal.finalized) {
-            gp.propertyNb = await propertyModel.countProperties(gp.internal.gameId);
-            cb(null);
-          } else {
-            cb(null);
-          }
-        });
+        gp.teamNb    = await teamModel.countTeams(gp.internal.gameId);
+        // count properties, makes only really sense when gameplay is finalized
+        if (gp.internal.finalized) {
+          gp.propertyNb = await propertyModel.countProperties(gp.internal.gameId);
+          cb(null);
+        } else {
+          cb(null);
+        }
+
       },
       function (err) {
         if (err) {

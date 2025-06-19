@@ -78,31 +78,27 @@ router.post('/create', async function (req, res) {
       }
     }
 
-    teams.countTeams(gameId, function (err, c) {
-      if (err) {
-        res.status(500).send('Fehler beim Zählen der Teams: ' + err.message);
-        return;
-      }
+    let c = await teams.countTeams(gameId);
 
-      if (c >= MAX_NB_TEAMS) {
-        // Maximal number of teams reached
-        res.status(403).send('Maximale Anzahl Teams erreicht');
-        return;
-      }
+    if (c >= MAX_NB_TEAMS) {
+      // Maximal number of teams reached
+      res.status(403).send('Maximale Anzahl Teams erreicht');
+      return;
+    }
 
-      let team = new teams.Model();
-      c++; // Do not start counting with 0, they're not engineers :-)
-      team.data.name = 'Team ' + c;
-      teams
-        .createTeam(team, gameId)
-        .then(newTeam => {
-          res.send({team: newTeam});
-        })
-        .catch(err => {
-          logger.error('createTeam Error', err);
-          res.status(500).send('Fehler beim Erstellen des Teams: ' + err.message);
-        });
-    });
+    let team = new teams.Model();
+    c++; // Do not start counting with 0, they're not engineers :-)
+    team.data.name = 'Team ' + c;
+    teams
+      .createTeam(team, gameId)
+      .then(newTeam => {
+        res.send({team: newTeam});
+      })
+      .catch(err => {
+        logger.error('createTeam Error', err);
+        res.status(500).send('Fehler beim Erstellen des Teams: ' + err.message);
+      });
+
   }
   catch (err) {
     if (err) {
@@ -117,13 +113,7 @@ router.post('/create', async function (req, res) {
  * Return teams and authToken
  */
 router.get('/get/:gameId', function (req, res) {
-  teams.getTeams(req.params.gameId, function (err, gameTeams) {
-    if (err) {
-      logger.error('/get Error', err);
-      res.status(500).send({message: 'Fehler bei Abfrage: ' + err.message});
-      return;
-    }
-
+  teams.getTeams(req.params.gameId).then(gameTeams => {
     async.each(gameTeams,
       function (team, cb) {
         if (!team || !team.data || !team.data.teamLeader || !team.data.teamLeader.email) {
@@ -157,7 +147,9 @@ router.get('/get/:gameId', function (req, res) {
         return res.send({teams: gameTeams});
       }
     );
-
+  }).catch(err => {
+    logger.error('/get Error', err);
+    res.status(500).send({message: 'Fehler bei Abfrage: ' + err.message});
   });
 });
 
@@ -231,13 +223,7 @@ router.post('/confirm', function (req, res) {
     return res.status(403).send({message: 'Demo Game Teams können nicht bestätigt werden'});
   }
 
-  teams.getTeam(gameId, teamId, async (err, team) => {
-    if (err) {
-      logger.error(`${gameId}: Error while getting team`, err);
-      res.status(500).send({message: 'Fehler beim laden des Teams: ' + err.message});
-      return;
-    }
-
+  teams.getTeam(gameId, teamId).then(async team => {
     try {
       const gp                   = await gameplays.getGameplay(team.gameId, req.session.passport.user);
       team.data.confirmed        = true;
@@ -257,6 +243,9 @@ router.post('/confirm', function (req, res) {
     catch (err) {
       res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
     }
+  }).catch(err => {
+    logger.error(`${gameId}: Error while getting team`, err);
+    res.status(500).send({message: 'Fehler beim laden des Teams: ' + err.message});
   });
 });
 

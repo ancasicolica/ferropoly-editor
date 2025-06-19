@@ -44,14 +44,10 @@ function createEvent(gameId, timestamp, type) {
  * @param events
  */
 async function saveEvents(events) {
-  dumpEvents(events[0].gameId).then(async () => {
-    events.forEach(async item => {
-      await item.save();
-    })
-  }).catch(err => {
-    logger.error(err);
-    throw err;
-  })
+  await dumpEvents(events[0].gameId);
+  for (const item of events) {
+    await item.save();
+  }
 }
 
 /**
