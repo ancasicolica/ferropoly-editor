@@ -16,34 +16,23 @@ const pricelistLib = require('./pricelistLib');
  * @param ownerEmail
  * @param callback
  */
-function createPriceList(gameId, ownerEmail, callback) {
-
+async function createPriceList(gameId, ownerEmail, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in pricelist.createPriceList is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   // Collect the information
-  gameplays.getGameplay(gameId, ownerEmail).then(gp => {
-    properties.getPropertiesForGameplay(gameId, null, function (err, props) {
-      if (err) {
-        logger.error('getPropertiesForGameplay failed', err);
-        return callback(err);
-      }
-      const pricelist = pricelistLib.createPriceList(gp, props)
-      if (!pricelist) {
-        logger.error('createPriceListInternal failed');
-        return callback(new Error('createPriceListInternal failed'));
-      }
-      properties.updateProperties(pricelist, async function (err) {
-        if (err) {
-          logger.error('updateProperties failed', err);
-          return callback(err);
-        }
-        await gameplays.saveNewPriceListRevision(gp);
-        return callback(err);
-      });
-    });
-  }).catch(err => {
-    logger.error('getGameplay failed', err);
-    return callback(err);
-  });
+  const gp = await gameplays.getGameplay(gameId, ownerEmail);
 
+  const props = await properties.getPropertiesForGameplay(gameId, null);
+
+  const pricelist = pricelistLib.createPriceList(gp, props);
+  if (!pricelist) {
+    logger.error('createPriceListInternal failed');
+    throw new Error('createPriceListInternal failed');
+  }
+  await properties.updateProperties(pricelist);
+  await gameplays.saveNewPriceListRevision(gp);
 }
 
 

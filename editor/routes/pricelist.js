@@ -37,20 +37,21 @@ router.get('/download/:gameId', downloadPricelist.handler);
 /**
  * Create a pricelist
  */
-router.post('/create', function (req, res) {
+router.post('/create', async function (req, res) {
 
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
-  pricelistLib.create(req.body.gameId, req.session.passport.user, function (err) {
-    if (err) {
-      res.status(500);
-      return res.send({success: false, message: err.message});
-    }
+  try {
+    await pricelistLib.create(req.body.gameId, req.session.passport.user);
     logger.info(`Pricelist for ${req.body.gameId} created`);
     return res.send({success: true, gameId: req.body.gameId});
-  });
+  }
+  catch (err) {
+    res.status(500);
+    return res.send({success: false, message: err.message});
+  }
 });
 
 /**

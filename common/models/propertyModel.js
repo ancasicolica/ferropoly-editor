@@ -53,9 +53,9 @@ const propertySchema = mongoose.Schema({
  */
 const Property = mongoose.model('Property', propertySchema);
 
-const createPropertyId = function (gameId, location) {
+function createPropertyId(gameId, location) {
   return gameId + '-' + _.kebabCase(_.deburr(location.name)) + '-' + _.random(10000000, 99999999);
-};
+}
 
 /**
  * Creates a new property from a location (if not already in DB) and stores it for the gameplay
@@ -63,12 +63,17 @@ const createPropertyId = function (gameId, location) {
  * @param location
  * @param callback
  */
-function createPropertyFromLocation(gameId, location, callback) {
+async function createPropertyFromLocation(gameId, location, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createPropertyFromLocation is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   let newProperty      = new Property();
   newProperty.location = location;
   newProperty._id      = createPropertyId(gameId, location);
-  return updateProperty(gameId, newProperty, callback);
+  return await updateProperty(gameId, newProperty);
 }
+
 /**
  * Creates a new property from a location (if not already in DB) and stores it for the gameplay
  * @param gameId
@@ -76,14 +81,19 @@ function createPropertyFromLocation(gameId, location, callback) {
  * @param options
  * @param callback
  */
-function createPropertyFromLocationEx(gameId, location, options, callback) {
+async function createPropertyFromLocationEx(gameId, location, options, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createPropertyFromLocationEx is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+
   let newProperty      = new Property();
   newProperty.location = location;
-  if(options.pricelist) {
+  if (options.pricelist) {
     newProperty.pricelist = _.assign(newProperty.pricelist, options.pricelist);
   }
-  newProperty._id      = createPropertyId(gameId, location);
-  return updateProperty(gameId, newProperty, callback);
+  newProperty._id = createPropertyId(gameId, location);
+  return await updateProperty(gameId, newProperty);
 }
 
 /**
@@ -92,14 +102,17 @@ function createPropertyFromLocationEx(gameId, location, options, callback) {
  * @param callback
  */
 async function updateProperties(properties, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateProperties is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
 
   for (let i = 0; i < properties.length; i++) {
     if (!(properties[i] instanceof Property)) {
-      return callback(new Error('not real properties'));
+      throw new Error('not real properties');
     }
   }
 
-  let err;
   try {
     for (const p of properties) {
       await p.save();
@@ -107,10 +120,6 @@ async function updateProperties(properties, callback) {
   }
   catch (ex) {
     logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err);
   }
 }
 
@@ -120,27 +129,17 @@ async function updateProperties(properties, callback) {
  * @param property
  * @param callback
  */
-function updatePropertyPartial(gameId, property, callback) {
+async function updatePropertyPartial(gameId, property, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updatePropertyPartial is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
 
-  getPropertyById(gameId, property.uuid, async (err, loadedProperty) => {
-    if (err) {
-      return callback(err);
-    }
-    _.merge(loadedProperty, property);
+  let loadedProperty = await getPropertyById(gameId, property.uuid);
 
-    let res, errInfo;
-    try {
-      res = await loadedProperty.save();
-    }
-    catch (ex) {
-      logger.error(ex);
-      errInfo = ex;
-    }
-    finally {
-      callback(errInfo, res);
-    }
-  });
+  _.merge(loadedProperty, property);
 
+  return await loadedProperty.save();
 }
 
 /**
@@ -150,21 +149,23 @@ function updatePropertyPartial(gameId, property, callback) {
  * @param callback
  */
 async function updateProperty(gameId, property, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateProperty is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
   if (!property.location || !property.location.uuid) {
     // this one is pretty useless!
-    return callback(new Error('No location added, can not save property'));
+    throw new Error('No location added, can not save property');
   }
   if (!(property instanceof Property)) {
     /* In the original version, we created here a new property object.
      This could have been important for the admin, but this was not
      the best solution
      */
-    updatePropertyPartial(gameId, property, (err, prop) => {
-      return callback(err, prop);
-    });
+    return await updatePropertyPartial(gameId, property);
   } else {
     // This is a Property object, save it
     if (!property.gameId) {
@@ -174,49 +175,27 @@ async function updateProperty(gameId, property, callback) {
       property.uuid = uuid();
     }
     // load the existing one (if there is one) and update it
-    return getPropertyByLocationId(gameId, property.location.uuid, async function (err, foundProperty) {
-      if (err) {
-        return callback(err);
-      }
-      if (!foundProperty) {
-        // this is a new one!
-        let prop       = new Property();
-        prop.gameId    = gameId;
-        prop.uuid      = uuid();
-        prop.location  = property.location;
-        prop.gamedata  = property.gamedata;
-        prop.pricelist = property.pricelist;
-        prop._id       = createPropertyId(gameId, property.location);
+    let foundProperty = await getPropertyByLocationId(gameId, property.location.uuid);
 
-        let savedProp, errInfo;
-        try {
-          savedProp = await prop.save();
-        }
-        catch (ex) {
-          logger.error(ex);
-          errInfo = ex;
-        }
-        finally {
-          callback(errInfo, savedProp)
-        }
-      } else {
-        // we found the property and do not touch gameId and location data
-        foundProperty.gamedata  = property.gamedata;
-        foundProperty.pricelist = property.pricelist;
+    if (!foundProperty) {
+      // this is a new one!
+      const prop     = new Property();
+      prop.gameId    = gameId;
+      prop.uuid      = uuid();
+      prop.location  = property.location;
+      prop.gamedata  = property.gamedata;
+      prop.pricelist = property.pricelist;
+      prop._id       = createPropertyId(gameId, property.location);
 
-        let savedProp, errInfo;
-        try {
-          savedProp = await foundProperty.save();
-        }
-        catch (ex) {
-          logger.error(ex);
-          errInfo = ex;
-        }
-        finally {
-          callback(errInfo, savedProp)
-        }
-      }
-    });
+      return await prop.save();
+
+    } else {
+      // we found the property and do not touch gameId and location data
+      foundProperty.gamedata  = property.gamedata;
+      foundProperty.pricelist = property.pricelist;
+
+      return await foundProperty.save();
+    }
   }
 }
 
@@ -228,6 +207,7 @@ async function updateProperty(gameId, property, callback) {
  * @returns {*}
  */
 async function updatePositionInPriceList(gameId, propertyId, position) {
+
   if (!gameId) {
     throw new Error('No gameId supplied');
   }
@@ -256,23 +236,17 @@ async function updatePositionInPriceList(gameId, propertyId, position) {
  * @returns {*}
  */
 async function getPropertyByLocationId(gameId, locationId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getPropertyByLocationId is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
 
-  let docs, err;
-  try {
-    docs = await Property
-      .findOne({gameId: gameId, 'location.uuid': locationId})
-      .exec();
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs);
-  }
+  return await Property
+    .findOne({gameId: gameId, 'location.uuid': locationId})
+    .exec();
 }
 
 
@@ -284,22 +258,18 @@ async function getPropertyByLocationId(gameId, locationId, callback) {
  * @returns {*}
  */
 async function getPropertyById(gameId, propertyId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getPropertyById is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
-  let err, docs;
-  try {
-    docs = await Property
-      .findOne({gameId: gameId, 'uuid': propertyId})
-      .exec();
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs);
-  }
+
+  return await Property
+    .findOne({gameId: gameId, 'uuid': propertyId})
+    .exec();
+
 }
 
 /**
@@ -314,38 +284,33 @@ async function getPropertyById(gameId, propertyId, callback) {
  * @returns {Query}
  */
 async function getPropertiesForGameplay(gameId, options, callback) {
-  if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getPropertiesForGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  let docs, err;
-  try {
-    if (options && options.lean) {
-      docs = await Property
-        .find()
-        .where('gameId').equals(gameId)
-        .select('uuid location pricelist')
-        .lean()
-        .exec();
-    } else if (options && options.propertyGroup) {
-      docs = await Property
-        .find()
-        .where('gameId').equals(gameId)
-        .where('pricelist.propertyGroup').equals(options.propertyGroup)
-        .exec();
-    } else {
-      docs = await Property
-        .find()
-        .where('gameId').equals(gameId)
-        .exec();
-    }
+  if (!gameId) {
+    throw new Error('No gameId supplied');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs);
+
+  if (options && options.lean) {
+    return await Property
+      .find()
+      .where('gameId').equals(gameId)
+      .select('uuid location pricelist')
+      .lean()
+      .exec();
+  } else if (options && options.propertyGroup) {
+    return await Property
+      .find()
+      .where('gameId').equals(gameId)
+      .where('pricelist.propertyGroup').equals(options.propertyGroup)
+      .exec();
+  } else {
+    return await Property
+      .find()
+      .where('gameId').equals(gameId)
+      .exec();
   }
 }
 
@@ -357,25 +322,21 @@ async function getPropertiesForGameplay(gameId, options, callback) {
  * @returns {*}
  */
 async function getPropertiesForTeam(gameId, teamId, callback) {
-  if (!gameId || !teamId) {
-    return callback(new Error('Parameter error'));
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getPropertiesForTeam is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  let data, err;
-  try {
-    data = await Property
-      .find()
-      .where('gamedata.owner').equals(teamId)
-      .where('gameId').equals(gameId)
-      .exec();
+  if (!gameId || !teamId) {
+    throw new Error('Parameter error');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, data);
-  }
+
+  return await Property
+    .find()
+    .where('gamedata.owner').equals(teamId)
+    .where('gameId').equals(gameId)
+    .exec();
+
 }
 
 /**
@@ -386,25 +347,22 @@ async function getPropertiesForTeam(gameId, teamId, callback) {
  * @returns {*}
  */
 async function getPropertiesIdsForTeam(gameId, teamId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getPropertiesIdsForTeam is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+
   if (!gameId || !teamId) {
-    return callback(new Error('Parameter error'));
+    throw new Error('Parameter error');
   }
-  let err, data;
-  try {
-    data = await Property
-      .find()
-      .where('gamedata.owner').equals(teamId)
-      .where('gameId').equals(gameId)
-      .select('uuid')
-      .exec();
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, data);
-  }
+
+  return await Property
+    .find()
+    .where('gamedata.owner').equals(teamId)
+    .where('gameId').equals(gameId)
+    .select('uuid')
+    .exec();
+
 }
 
 /**
@@ -414,24 +372,21 @@ async function getPropertiesIdsForTeam(gameId, teamId, callback) {
  * @param callback
  */
 async function removePropertyFromGameplay(gameId, locationId, callback) {
-  if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in removePropertyFromGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  let res, err;
-  try {
-    logger.info(`${gameId}: Removing one property`, {locationId, gameId});
-    res = await Property
-      .deleteOne({gameId: gameId, 'location.uuid': locationId})
-      .exec();
+  if (!gameId) {
+    throw new Error('No gameId supplied');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, res);
-  }
+
+  logger.info(`${gameId}: Removing one property`, {locationId, gameId});
+
+  return await Property
+    .deleteOne({gameId: gameId, 'location.uuid': locationId})
+    .exec();
+
 }
 
 /**
@@ -441,26 +396,22 @@ async function removePropertyFromGameplay(gameId, locationId, callback) {
  * @returns {*}
  */
 async function finalizeProperties(gameId, callback) {
-  if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in finalizeProperties is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  let err, res;
-  try {
-    res = await Property
-      .deleteMany({
-        gameId:                 gameId,
-        'pricelist.priceRange': -1
-      })
-      .exec();
+  if (!gameId) {
+    throw new Error('No gameId supplied');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, res);
-  }
+
+  return await Property
+    .deleteMany({
+      gameId:                 gameId,
+      'pricelist.priceRange': -1
+    })
+    .exec();
+
 }
 
 /**
@@ -469,24 +420,18 @@ async function finalizeProperties(gameId, callback) {
  * @param callback
  */
 async function removeAllPropertiesFromGameplay(gameId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in removeAllPropertiesFromGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
   logger.info(`${gameId}: Removing all properties`);
 
-  let err, res;
-  try {
-    res = await Property
-      .deleteMany({gameId: gameId})
-      .exec();
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, res);
-  }
+  return await Property
+    .deleteMany({gameId: gameId})
+    .exec();
 }
 
 /**
@@ -496,35 +441,29 @@ async function removeAllPropertiesFromGameplay(gameId, callback) {
  * @returns {*}
  */
 async function allowBuilding(gameId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in allowBuilding is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
 
-  let res, err;
-  try {
-    const numAffected = await Property
-      .updateMany(
-        {
-          gameId:           gameId,
-          'gamedata.owner': {
-            '$exists': true,   // must exist
-            '$ne':     ''      // not equal empty
-          }
-        },
-        {
-          'gamedata.buildingEnabled': true
-        })
-      .exec();
+  const numAffected = await Property
+    .updateMany(
+      {
+        gameId:           gameId,
+        'gamedata.owner': {
+          '$exists': true,   // must exist
+          '$ne':     ''      // not equal empty
+        }
+      },
+      {
+        'gamedata.buildingEnabled': true
+      })
+    .exec();
 
-    res = _.get(numAffected, 'nModified', 0);
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, res);
-  }
+  return _.get(numAffected, 'nModified', 0);
 }
 
 /**
@@ -534,23 +473,17 @@ async function allowBuilding(gameId, callback) {
  * @returns {*}
  */
 async function countProperties(gameId, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countProperties is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!gameId) {
-    return callback(new Error('No gameId supplied'));
+    throw new Error('No gameId supplied');
   }
 
-  let err, res;
-  try {
-    res = await Property
-      .countDocuments({gameId: gameId})
-      .exec();
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, res);
-  }
+  return await Property
+    .countDocuments({gameId: gameId})
+    .exec();
 }
 
 /**

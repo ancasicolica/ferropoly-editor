@@ -68,35 +68,22 @@ function updateFerropolyMainCache(delay, callback) {
  * @param gameId ID of the game
  * @param props array with the properties
  * @param nb Number of items to assign
- * @param callback
  */
-function createRandomGameplay(gameId, props, nb, callback) {
+async function createRandomGameplay(gameId, props, nb) {
   let gplen = Math.min(nb, props.length);
   logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   let priceRange = 0;
   let generated  = 0;
 
-  try {
-    async.whilst(
-      function (cb) {
-        return cb(null, generated < gplen);
-      },
-      function (cb) {
-        let index                 = _.random(0, props.length - 1);
-        let p                     = _.pullAt(props, [index]);
-        p[0].pricelist.priceRange = priceRange % 6;
-        priceRange++;
-        generated++;
-        properties.updateProperty(gameId, p[0], cb);
-      },
-      function (err) {
-        return callback(err);
-      }
-    );
-  }
-  catch (e) {
-    console.error(e);
-    callback(e);
+  while (generated < gplen) {
+    let index = _.random(0, props.length - 1);
+    let p     = _.pullAt(props, [index]);
+    if (p[0].pricelist.priceRange === -1) {
+      p[0].pricelist.priceRange = priceRange % 6;
+      priceRange++;
+      generated++;
+      await properties.updateProperty(gameId, p[0])
+    }
   }
 }
 
@@ -106,10 +93,9 @@ function createRandomGameplay(gameId, props, nb, callback) {
  *
  * @param gpOptions options for gameplay creation
  * @param gameplay  gameplay
- * @param callback
  * @returns {*}
  */
-async function copyLocationsToProperties(gpOptions, gameplay, callback) {
+async function copyLocationsToProperties(gpOptions, gameplay) {
   let props           = [];
   const gameLocations = await locations.getAllLocationsForMap(gpOptions.map);
 
@@ -118,40 +104,28 @@ async function copyLocationsToProperties(gpOptions, gameplay, callback) {
   const importProperties   = gpOptions.properties || [];
   let nbPropertiesImported = 0;
 
-  async.each(gameLocations,
-    function (location, cb) {
-
-      // Handle import data, new since 2025
-      let importData = _.find(importProperties, p => {
-        return (p.location.uuid === location.uuid)
-      });
-      if (importData) {
-        nbPropertiesImported++;
-      }
-
-      properties.createPropertyFromLocationEx(gameplay.internal.gameId, location, {pricelist: importData?.pricelist}, function (err, prop) {
-        if (err) {
-          logger.info(`${gameplay.internal.gameId} : Error while creating property: ${err.message}`);
-        }
-
-        props.push(prop);
-        cb(err);
-      });
-    },
-    function (err) {
-      if (err) {
-        return callback(err);
-      }
-      logger.info(`${gameplay.internal.gameId}: created properties, imported ${nbPropertiesImported}`);
-      if (gpOptions.random && nbPropertiesImported === 0) {
-        createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random, function (err) {
-          logger.info(`${gameplay.internal.gameId}: random properties added`);
-          return callback(err, gameplay);
-        });
-      } else {
-        return callback(null, gameplay);
-      }
+  for (location of gameLocations) {
+    // Handle import data, new since 2025
+    let importData = _.find(importProperties, p => {
+      return (p.location.uuid === location.uuid)
     });
+    if (importData) {
+      nbPropertiesImported++;
+    }
+
+    const prop = await properties.createPropertyFromLocationEx(gameplay.internal.gameId, location, {pricelist: importData?.pricelist});
+    props.push(prop);
+  }
+
+  logger.info(`${gameplay.internal.gameId}: created properties, imported ${nbPropertiesImported}`);
+
+  if (gpOptions.random && nbPropertiesImported === 0) {
+    await createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random);
+    logger.info(`${gameplay.internal.gameId}: random properties added`);
+    return gameplay;
+  } else {
+    return gameplay;
+  }
 }
 
 /**
@@ -245,53 +219,45 @@ function getGameParamsPresetSet(presets) {
 /**
  * Creates a complete new gameplay, including copying the locations to the properties
  * @param gpOptions options for the gameplay.
- * @param callback
  */
-async function createNewGameplay(gpOptions, callback) {
+async function createNewGameplay(gpOptions) {
   // Verify options
   if (!gpOptions.email || !gpOptions.map || !gpOptions.gamename || !gpOptions.gamedate) {
-    return callback(new Error('Options are not complete'));
+    throw new Error('Options are not complete');
   }
 
   logger.info('New game for ' + gpOptions.email + ' using map ' + gpOptions.map);
 
+  const dbUser = await userModel.getUserByMailAddress(gpOptions.email);
 
-  try {
-    const dbUser = await userModel.getUserByMailAddress(gpOptions.email);
+  // as default we use the email address as user id
+  const user = dbUser || {id: gpOptions.email};
 
-    // as default we use the email address as user id
-    const user = dbUser || {id: gpOptions.email};
+  const gameplay = await gameplays.createGameplay({
+    gameId:           gpOptions.gameId || '',
+    map:              gpOptions.map,
+    name:             gpOptions.gamename,
+    ownerEmail:       gpOptions.email,
+    organisatorName:  gpOptions.organisatorName,
+    ownerId:          user.id,
+    gameStart:        gpOptions.gameStart || '05:00',
+    gameEnd:          gpOptions.gameEnd || '18:00',
+    gameDate:         gpOptions.gamedate,
+    instance:         settings.server.serverId,
+    mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
+    gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
+    interestInterval: gpOptions.interestInterval,
+    isDemo:           gpOptions.isDemo,
+    mainInstances:    settings.mainInstances,
+    autopilot:        gpOptions.autopilot
 
-    const gameplay = await gameplays.createGameplay({
-      gameId:           gpOptions.gameId || '',
-      map:              gpOptions.map,
-      name:             gpOptions.gamename,
-      ownerEmail:       gpOptions.email,
-      organisatorName:  gpOptions.organisatorName,
-      ownerId:          user.id,
-      gameStart:        gpOptions.gameStart || '05:00',
-      gameEnd:          gpOptions.gameEnd || '18:00',
-      gameDate:         gpOptions.gamedate,
-      instance:         settings.server.serverId,
-      mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
-      gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
-      interestInterval: gpOptions.interestInterval,
-      isDemo:           gpOptions.isDemo,
-      mainInstances:    settings.mainInstances,
-      autopilot:        gpOptions.autopilot
+  });
 
-    });
-
-    // Create also the rules
-    let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
-    await rules.createRules(gpOptions.gameId, pugToHtml(template));
-    logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
-    return copyLocationsToProperties(gpOptions, gameplay, callback);
-  }
-  catch (err) {
-    logger.error(err);
-    return callback(err);
-  }
+  // Create also the rules
+  let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
+  await rules.createRules(gpOptions.gameId, pugToHtml(template));
+  logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
+  return await copyLocationsToProperties(gpOptions, gameplay);
 }
 
 /**
@@ -300,41 +266,35 @@ async function createNewGameplay(gpOptions, callback) {
  * @param callback
  * @returns {*}
  */
-function deleteGameplay(gpOptions, callback) {
+async function deleteGameplay(gpOptions, callback) {
   if (!gpOptions.gameId || !gpOptions.ownerEmail) {
     return callback(new Error('Options are not complete'));
   }
 
-  properties.removeAllPropertiesFromGameplay(gpOptions.gameId, async function (err) {
-    if (err) {
-      return callback(err);
-    }
-    try {
-      const gp = await gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail)
-      await teams.deleteAllTeams(gpOptions.gameId);
-      await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
-      await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
-      await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
-      await schedulerEventsModel.dumpEvents(gpOptions.gameId);
-      await picBucketModel.deletePicBucket(gpOptions.gameId);
-      await gameplays.removeGameplay(gp);
-      await travelLog.deleteAllEntries(gpOptions.gameId);
-      await gameLog.deleteAllEntries(gpOptions.gameId);
-      await rules.deleteRules(gpOptions.gameId);
-    }
-    catch (err) {
-      logger.error('Error while deleting gameplays', err);
-      return callback(err);
-    }
-    logger.info('cleaning task finished');
-    if (gpOptions.doNotNotifyMain) {
-      return callback();
-    }
-    // update main instances as we removed the game!
-    updateFerropolyMainCache(100, callback);
-  }).catch(err => {
-    callback(err);
-  })
+  try {
+    const gp = await gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail);
+    await properties.removeAllPropertiesFromGameplay(gpOptions.gameId);
+    await teams.deleteAllTeams(gpOptions.gameId);
+    await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
+    await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
+    await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
+    await schedulerEventsModel.dumpEvents(gpOptions.gameId);
+    await picBucketModel.deletePicBucket(gpOptions.gameId);
+    await gameplays.removeGameplay(gp);
+    await travelLog.deleteAllEntries(gpOptions.gameId);
+    await gameLog.deleteAllEntries(gpOptions.gameId);
+    await rules.deleteRules(gpOptions.gameId);
+  }
+  catch (err) {
+    logger.error('Error while deleting gameplays', err);
+    return callback(err);
+  }
+  logger.info('cleaning task finished');
+  if (gpOptions.doNotNotifyMain) {
+    return callback();
+  }
+  // update main instances as we removed the game!
+  updateFerropolyMainCache(100, callback);
 }
 
 /**
@@ -361,9 +321,8 @@ function createDemoTeamEntry(gameId, entry) {
  * Creates the teams for the demo
  * @param gp
  * @param teamNb
- * @param callback
  */
-async function createDemoTeams(gp, teamNb, callback) {
+async function createDemoTeams(gp, teamNb) {
   let i;
   teamNb = teamNb || 8;
   if (teamNb > 20) {
@@ -423,8 +382,6 @@ async function createDemoTeams(gp, teamNb, callback) {
   for (i = 0; i < teamNb; i++) {
     await teams.createTeam(referenceData[i], gp.internal.gameId);
   }
-
-  callback();
 }
 
 /**
@@ -483,45 +440,31 @@ async function createDemoGameplay(p1, p2) {
     let startTs      = new Date();
     const isExisting = await gameplays.checkIfGameIdExists(options.gameId);
     if (isExisting) {
-      return deleteGameplay(options, function (err) {
+      return deleteGameplay(options, async function (err) {
         if (err) {
           return callback(err);
         } else {
           // recursive!
-          return createDemoGameplay(p1, p2);
+          return await createDemoGameplay(p1, p2);
         }
       });
     } else {
       // Create new gameplay now
-      createNewGameplay(options, function (err, gp) {
+      const gp = await createNewGameplay(options)
+      await createDemoTeams(gp, options.teamNb);
+
+      await pricelistLib.create(gameId, demoOrganisatorMail);
+      gp.internal.finalized       = true;
+      gp.internal.doNotNotifyMain = true;
+      finalizeGameplay(gp, demoOrganisatorMail, function (err) {
         if (err) {
-          logger.info('Failed to create the demo gameplay: ' + err.message);
+          logger.info('Failed to save demo gameplay: ' + err.message);
           return callback(err);
         }
-        createDemoTeams(gp, options.teamNb, function (err) {
-          if (err) {
-            logger.info('Failed to create the demo teams: ' + err.message);
-            return callback(err);
-          }
-          pricelistLib.create(gameId, demoOrganisatorMail, function (err) {
-            if (err) {
-              logger.info('Failed to create the demo price list: ' + err.message);
-              return callback(err);
-            }
-            gp.internal.finalized       = true;
-            gp.internal.doNotNotifyMain = true;
-            finalizeGameplay(gp, demoOrganisatorMail, function (err) {
-              if (err) {
-                logger.info('Failed to save demo gameplay: ' + err.message);
-                return callback(err);
-              }
-              let endTs    = new Date();
-              let duration = (endTs.getTime() - startTs.getTime()) / 1000;
-              logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
-              callback();
-            });
-          });
-        });
+        let endTs    = new Date();
+        let duration = (endTs.getTime() - startTs.getTime()) / 1000;
+        logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
+        callback();
       });
     }
   }
@@ -543,29 +486,24 @@ async function finalizeGameplay(gameplay, email, callback) {
     let rules = rulesGenerator(gpSaved);
     await gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules});
 
-    properties.finalizeProperties(gameplay.internal.gameId, function (err) {
+    await properties.finalizeProperties(gameplay.internal.gameId)
+
+    schedulerEvents.createEvents(gpSaved, function (err) {
       if (err) {
-        logger.error('Failed to finalize the properties: ' + err.message);
-        return callback(err);
+        logger.error('Error while creating events', err);
       }
-      schedulerEvents.createEvents(gpSaved, function (err) {
+      logger.info('Scheduler Events created');
+      propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
+        logger.info('Property map created');
         if (err) {
-          logger.error('Error while creating events', err);
+          logger.error(err);
         }
-        logger.info('Scheduler Events created');
-        propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
-          logger.info('Property map created');
-          if (err) {
-            logger.error(err);
-          }
-          if (gameplay.internal.doNotNotifyMain) {
-            return callback();
-          }
-          updateFerropolyMainCache(4000, callback);
-        });
+        if (gameplay.internal.doNotNotifyMain) {
+          return callback();
+        }
+        updateFerropolyMainCache(4000, callback);
       });
     });
-
   }
   catch (err) {
     logger.error('Error in finalizeGameplay', err);

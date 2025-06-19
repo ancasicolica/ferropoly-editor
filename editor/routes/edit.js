@@ -34,20 +34,18 @@ router.get('/edit/:gameId', async function (req, res) {
  * */
 router.get('/load/:gameId', async function (req, res) {
 
-  const gameplayData = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
-  if (!gameplayData) {
-    return res.status(400).send({message: 'Spiel nicht gefunden'});
-  }
-  // Only the owner is allowed to edit the game, not the team mates!
-  if (_.get(gameplayData, 'internal.owner', 'none') !== req.session.passport.user) {
-    return res.status(401).send({message: 'Zugriff nicht erlaubt'});
-  }
-  // Now get all properties of this gameplay
-  return properties.getPropertiesForGameplay(req.params.gameId, {lean: true}, function (err, propertyData) {
-    if (err) {
-      logger.error('getPropertiesForGameplay fails', err);
-      return res.status(500).send({message: 'Fehler beim Laden der Orte: ' + err.message});
+  try {
+    const gameplayData = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
+    if (!gameplayData) {
+      return res.status(400).send({message: 'Spiel nicht gefunden'});
     }
+    // Only the owner is allowed to edit the game, not the team mates!
+    if (_.get(gameplayData, 'internal.owner', 'none') !== req.session.passport.user) {
+      return res.status(401).send({message: 'Zugriff nicht erlaubt'});
+    }
+    // Now get all properties of this gameplay
+    const propertyData = await properties.getPropertiesForGameplay(req.params.gameId, {lean: true});
+
     if (!propertyData) {
       return res.status(500).send({message: 'Spielfeld konnte nicht geladen werden'});
     }
@@ -59,7 +57,11 @@ router.get('/load/:gameId', async function (req, res) {
         publicServer: settings.publicServer
       }
     });
-  });
+  }
+  catch (err) {
+    logger.error('getPropertiesForGameplay fails', err);
+    return res.status(500).send({message: 'Fehler beim Laden der Orte: ' + err.message});
+  }
 });
 
 /**
@@ -72,19 +74,19 @@ router.post('/save/:gameId', async function (req, res) {
     logger.info('Passport Info:' + _.get(req, 'session.passport', 'none'));
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
-
-  if (req.params.gameId !== req.body.gameplay.internal.gameId) {
-    logger.info(`/save/${req.params.gameId} : GameId mismatch: ${req.params.gameId} vs ${req.body.gameplay.internal.gameId}`);
-    res.status(400).send({message: 'GameID mismatch'});
-    return;
-  }
-
   try {
+
+    if (req.params.gameId !== req.body.gameplay.internal.gameId) {
+      logger.info(`/save/${req.params.gameId} : GameId mismatch: ${req.params.gameId} vs ${req.body.gameplay.internal.gameId}`);
+      res.status(400).send({message: 'GameID mismatch'});
+      return;
+    }
+
     logger.info('Save game ' + req.params.gameId);
     const gameplay = await gameplays.updateGameplayPartial(req.body.gameplay);
     return res.send({success: true, gameId: gameplay.internal.gameId});
   }
-  catch(err) {
+  catch (err) {
     logger.error('updateGameplay failed', err);
     return res.status(500).send({message: 'Fehler beim Update des Spieles: ' + err.message});
   }
@@ -162,19 +164,12 @@ router.post('/saveProperty/:gameId', async function (req, res) {
     }
 
     logger.info('Save property ' + prop.location.name);
-    properties.updateProperty(req.params.gameId, prop, function (err, updatedProp) {
-      if (err) {
-        return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
-      }
-      // Updating a property invalidates the pricelist!
-      gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user)
-        .then(() => {
-          return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
-        })
-        .catch(err => {
-          return res.status(500).send({message: 'Fehler beim Speichern des Ortes: ' + err.message});
-        });
-    });
+    const updatedProp = await properties.updateProperty(req.params.gameId, prop);
+
+    // Updating a property invalidates the pricelist!
+    await gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user);
+    return res.send({success: true, status: 'ok', message: updatedProp.location.name + ' gespeichert'});
+
   }
   catch (err) {
     return res.status(500).send({message: err.message});
@@ -185,24 +180,21 @@ router.post('/saveProperty/:gameId', async function (req, res) {
  * Just updates the "gameplay changed" field. This is done once (in the angular app) when adding a location or
  * changing the price ranges
  */
-router.post('/dataChanged/:gameId', function (req, res) {
+router.post('/dataChanged/:gameId', async function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
     return res.status(401).send({message: 'Kein Zugriff möglich, bitte einloggen'});
   }
-
-  gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId)
-    .then(()=> {
+  try {
+    await gameplays.updateGameplayLastChangedField(req.session.passport.user, req.params.gameId);
     // This also invalidates the pricelist
-    gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user, (err, doc) => {
-      console.log('XXXXXX', err, doc);
-      //res.send({});
-    });
-  })
-    .catch(err => {
-      logger.info('Error while updating gameplay: ' + err.message);
-      return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
-    });
+    await gameplays.invalidatePricelist(req.params.gameId, req.session.passport.user);
+    res.send({});
+  }
+  catch (err) {
+    logger.info('Error while updating gameplay: ' + err.message);
+    return res.status(500).send({message: 'Konnte nicht speichern: ' + err.message});
+  }
 });
 
 /**

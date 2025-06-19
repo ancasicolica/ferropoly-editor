@@ -34,7 +34,7 @@ router.get('/info/:gameId', async function (req, res) {
 /*
  Returns the exported game
  */
-router.get('/:gameId', (req, res) => {
+router.get('/:gameId', async (req, res) => {
   try {
     if (!req.session?.passport?.user) {
       return res.status(401).send({message: 'Nicht autorisiert'});
@@ -47,62 +47,56 @@ router.get('/:gameId', (req, res) => {
 
     logger.info(`${gameId}: Export started`);
 
-    gameplayModel.getGameplay(req.params.gameId, req.session.passport.user).then(gameplay => {
-      getPropertiesForGameplay(req.params.gameId, {lean: true}, async (err, props) => {
-        if (err) {
-          return res.status(500).send({message: 'Property read error: ' + err.message});
+    const gameplay = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user);
+    const props    = await getPropertiesForGameplay(req.params.gameId, {lean: true});
+    const user     = await getUserByMailAddress(req.session.passport.user);
+
+    let exportData = {
+      gameplay:   {
+        gameParams: gameplay.gameParams,
+        internal:   {
+          map: gameplay.internal.map
         }
+      },
+      properties: []
+    };
 
-        const user = await getUserByMailAddress(req.session.passport.user);
-
-        let exportData = {
-          gameplay:   {
-            gameParams: gameplay.gameParams,
-            internal:   {
-              map: gameplay.internal.map
-            }
-          },
-          properties: []
-        };
-
-        props.forEach(p => {
-          exportData.properties.push({
-            location:  {
-              uuid: p.location.uuid
-            },
-            pricelist: p.pricelist
-          });
-        })
-
-        const exportDataBuffer = Buffer.from(JSON.stringify(exportData));
-
-        let result = {
-          version: 1,
-          meta:    {
-            creator: _.get(user, 'personalData.forename', 'unbekannt') + ' ' + _.get(user, 'personalData.surname'),
-            date:    DateTime.now().toISO({format: 'extended'})
-          },
-          data:    exportDataBuffer.toString('base64')
-        }
-
-        // Generate SHA1 hash for `data`
-        const hash = crypto.createHash('sha256');
-        hash.update(result.data);
-
-        // Generate hash as hex string
-        result.meta.signature = hash.digest('hex');
-
-        const buffer = Buffer.from(JSON.stringify(result));
-
-        res.set({
-          'Content-Type':        'application/json',
-          'Content-Description': 'File Transfer',
-          'Content-Disposition': 'attachment; filename=' + req.params.gameId + '.ferropoly',
-          'Content-Length':      buffer.length
-        });
-        res.send(buffer);
+    props.forEach(p => {
+      exportData.properties.push({
+        location:  {
+          uuid: p.location.uuid
+        },
+        pricelist: p.pricelist
       });
+    })
+
+    const exportDataBuffer = Buffer.from(JSON.stringify(exportData));
+
+    let result = {
+      version: 1,
+      meta:    {
+        creator: _.get(user, 'personalData.forename', 'unbekannt') + ' ' + _.get(user, 'personalData.surname'),
+        date:    DateTime.now().toISO({format: 'extended'})
+      },
+      data:    exportDataBuffer.toString('base64')
+    }
+
+    // Generate SHA1 hash for `data`
+    const hash = crypto.createHash('sha256');
+    hash.update(result.data);
+
+    // Generate hash as hex string
+    result.meta.signature = hash.digest('hex');
+
+    const buffer = Buffer.from(JSON.stringify(result));
+
+    res.set({
+      'Content-Type':        'application/json',
+      'Content-Description': 'File Transfer',
+      'Content-Disposition': 'attachment; filename=' + req.params.gameId + '.ferropoly',
+      'Content-Length':      buffer.length
     });
+    res.send(buffer);
   }
   catch (err) {
     logger.err(err);

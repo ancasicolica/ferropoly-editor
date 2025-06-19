@@ -22,68 +22,54 @@ describe('PropertyModel Tests', function () {
   });
 
   // Close DB afterwards
-  after(function (done) {
-    properties.removeAllPropertiesFromGameplay(gameId, err=> {
-      expect(err).to.be(undefined);
-      db.close(done);
-    })
+  after(async function () {
+    await properties.removeAllPropertiesFromGameplay(gameId);
+    db.close();
   });
 
   describe('Deleting all properties', function () {
-    it('should work (even there are none)', function (done) {
-      properties.removeAllPropertiesFromGameplay(gameId, done);
+    it('should work (even there are none)', async function () {
+      await properties.removeAllPropertiesFromGameplay(gameId);
     });
   });
 
   describe('Add some locations to the properties', function () {
-    it('should add the first location', function (done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[0], function (err, prop) {
-        expect(prop.location.uuid).to.be(foundLocations[0].uuid);
-        expect(prop.gameId).to.be(gameId);
-        expect(prop.uuid.length > 6).to.be(true);
-        propId0 = prop.uuid;
-        done(err);
-      })
+    it('should add the first location', async function () {
+      const prop = await properties.createPropertyFromLocation(gameId, foundLocations[0]);
+      expect(prop.location.uuid).to.be(foundLocations[0].uuid);
+      expect(prop.gameId).to.be(gameId);
+      expect(prop.uuid.length > 6).to.be(true);
+      propId0 = prop.uuid;
     });
-    it('should not add the first location twice', function (done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[0], function (err, prop) {
-        expect(prop.location.uuid).to.be(foundLocations[0].uuid);
-        expect(prop.gameId).to.be(gameId);
-        expect(prop.uuid.length > 6).to.be(true);
-        properties.getPropertiesForGameplay(gameId, null, function (err, props) {
-          expect(props.length).to.be(1);
-          done(err);
-        });
-
-      })
+    it('should not add the first location twice', async function () {
+      const prop = await properties.createPropertyFromLocation(gameId, foundLocations[0])
+      expect(prop.location.uuid).to.be(foundLocations[0].uuid);
+      expect(prop.gameId).to.be(gameId);
+      expect(prop.uuid.length > 6).to.be(true);
+      const props = await properties.getPropertiesForGameplay(gameId, null);
+      expect(props.length).to.be(1);
     });
-    it('should add the second location', function (done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[1], function (err, prop) {
-        expect(prop.location.uuid).to.be(foundLocations[1].uuid);
-        expect(prop.gameId).to.be(gameId);
-        expect(prop.uuid.length > 6).to.be(true);
-        properties.getPropertiesForGameplay(gameId, null, function (err, props) {
-          expect(props.length).to.be(2);
-          done(err);
-        });
-      })
+    it('should add the second location', async function () {
+      const prop = await properties.createPropertyFromLocation(gameId, foundLocations[1]);
+      expect(prop.location.uuid).to.be(foundLocations[1].uuid);
+      expect(prop.gameId).to.be(gameId);
+      expect(prop.uuid.length > 6).to.be(true);
+      const props = await properties.getPropertiesForGameplay(gameId, null);
+      expect(props.length).to.be(2);
     });
-    it('should add the third location', function (done) {
-      properties.createPropertyFromLocation(gameId, foundLocations[2], function (err, prop) {
-        expect(prop.location.uuid).to.be(foundLocations[2].uuid);
-        expect(prop.gameId).to.be(gameId);
-        expect(prop.uuid.length > 6).to.be(true);
-        properties.getPropertiesForGameplay(gameId, null, function (err, props) {
-          expect(props.length).to.be(3);
-          done(err);
-        });
-      })
+    it('should add the third location', async function () {
+      const prop = await properties.createPropertyFromLocation(gameId, foundLocations[2])
+      expect(prop.location.uuid).to.be(foundLocations[2].uuid);
+      expect(prop.gameId).to.be(gameId);
+      expect(prop.uuid.length > 6).to.be(true);
+      const props = await properties.getPropertiesForGameplay(gameId, null)
+      expect(props.length).to.be(3);
     });
   });
 
   describe('Set the price range in a property', function () {
     it('should set the price range', function (done) {
-      properties.updatePositionInPriceList(gameId, propId0, 12).then ( prop =>  {
+      properties.updatePositionInPriceList(gameId, propId0, 12).then(prop => {
         expect(prop.pricelist.positionInPriceRange).to.be(12);
         done();
       })
@@ -95,7 +81,7 @@ describe('PropertyModel Tests', function () {
       })
     });
     it('should fail as the gameId is wrong', function (done) {
-      properties.updatePositionInPriceList('test', propId0, 2).then (() => {
+      properties.updatePositionInPriceList('test', propId0, 2).then(() => {
         done('error did not happen');
       })
         .catch(() => {
@@ -104,30 +90,24 @@ describe('PropertyModel Tests', function () {
     });
   });
 
-  describe('Getting a property', ()=> {
-    it('should return one by id', done=> {
-      properties.getPropertyById(gameId, propId0, (err, prop) => {
-        console.log(prop);
-        expect(prop.uuid).to.be(propId0);
-        done(err);
-      } );
+  describe('Getting a property', () => {
+    it('should return one by id', async () => {
+      const prop = await properties.getPropertyById(gameId, propId0);
+      console.log(prop);
+      expect(prop.uuid).to.be(propId0);
+    });
+  });
+
+  describe('Allow building', () => {
+    it('should work', async () => {
+      await properties.allowBuilding(gameId);
     });
   })
-  describe('Allow building', ()=> {
-    it('should work', done=> {
-      properties.allowBuilding(gameId, (err, res) => {
-        console.log(res);
-        done(err);
-      } );
+  describe('Counting properties', () => {
+    it('should work', async () => {
+      const res = await properties.countProperties(gameId);
+      expect(res).to.be(3);
     });
   })
-  describe('Counting properties', ()=> {
-    it('should work', done=> {
-      properties.countProperties(gameId, (err, res) => {
-        console.log(res);
-        expect(res).to.be(3);
-        done(err);
-      } );
-    });
-  })
-});
+})
+;

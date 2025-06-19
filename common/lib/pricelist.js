@@ -17,10 +17,7 @@ module.exports = {
    * @param callback
    */
   getPricelist: function (gameId, callback) {
-    properties.getPropertiesForGameplay(gameId, null, function (err, props) {
-      if (err) {
-        return callback(err);
-      }
+    properties.getPropertiesForGameplay(gameId, null).then(props => {
       let pricelist = _.filter(props, function (p) {
         return p.pricelist.position > -1;
       });
@@ -37,7 +34,7 @@ module.exports = {
       });
 
       return callback(null, sortedPricelist);
-    })
+    }).catch(callback);
   },
 
   /**

@@ -6,7 +6,6 @@
 
 const express       = require('express');
 const router        = express.Router();
-const async         = require('async');
 const gameplayLib   = require('../lib/gameplayLib');
 const gameplayModel = require('../../common/models/gameplayModel');
 const userModel     = require('../../common/models/userModel');
@@ -60,64 +59,59 @@ router.get('/info/:gameId', async function (req, res) {
 
 /* Post params of a new game */
 router.post('/createnew', async function (req, res) {
-  try {
-    logger.info('createnew', req.body);
-    logger.info('authToken session:', req.session.authToken);
-    let x               = req.session.counter || 1;
-    req.session.counter = x + 1;
 
-    if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
-      logger.info('Auth token missing, access denied');
-      return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
+  logger.info('createnew', req.body);
+  logger.info('authToken session:', req.session.authToken);
+  let x               = req.session.counter || 1;
+  req.session.counter = x + 1;
+
+  if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
+    logger.info('Auth token missing, access denied');
+    return res.status(401).send('Kein Zugriff möglich, bitte einloggen');
+  }
+
+  logger.test(_.get(req, 'body.debug'));
+  logger.info('/gameplay/createnew for ' + req.session.passport.user);
+
+  const nb = await gameplayModel.countGameplaysForUser(req.session.passport.user);
+
+  if (nb > 3) {
+    // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
+    // a user specific count. So far we have four.
+    return res.status(403).send({message: 'Max game number reached: ' + nb});
+  }
+
+  userModel.getUser(req.session.passport.user, async function (err, user) {
+    if (err) {
+      return res.status(500).send({message: 'DB read error: ' + err.message});
+    }
+    if (!user) {
+      return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
     }
 
-    logger.test(_.get(req, 'body.debug'));
-    logger.info('/gameplay/createnew for ' + req.session.passport.user);
-
-    const nb = await gameplayModel.countGameplaysForUser(req.session.passport.user);
-
-    if (nb > 3) {
-      // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
-      // a user specific count. So far we have four.
-      return res.status(403).send({message: 'Max game number reached: ' + nb});
-    }
-
-    userModel.getUser(req.session.passport.user, function (err, user) {
-      if (err) {
-        return res.status(500).send({message: 'DB read error: ' + err.message});
-      }
-      if (!user) {
-        return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
-      }
-
-
+    try {
       // Use the unit-test tested gameplay lib for this
-      gameplayLib.createNewGameplay({
-          email:           user.personalData.email,
-          organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
-          map:             req.body.map,
-          gamename:        req.body.gamename,
-          gamedate:        req.body.gamedate,
-          gameId:          req.body.gameId || '',
-          presets:         req.body.presets || 'classic',
-          random:          req.body.random,
-          gameParams:      req.body.gameParams,
-          properties:      req.body.properties
-        },
-        function (err, gp) {
-          if (err) {
-            return res.status(500).send({message: err.message});
-          }
-          return res.send({gameId: gp.internal.gameId});
-        });
-    });
-
-  }
-  catch (e) {
-    logger.error('Exception in gameplay.createnew.post', e);
-    return res.status(500).send({message: e.message});
-  }
+      const gp = await gameplayLib.createNewGameplay({
+        email:           user.personalData.email,
+        organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
+        map:             req.body.map,
+        gamename:        req.body.gamename,
+        gamedate:        req.body.gamedate,
+        gameId:          req.body.gameId || '',
+        presets:         req.body.presets || 'classic',
+        random:          req.body.random,
+        gameParams:      req.body.gameParams,
+        properties:      req.body.properties
+      });
+      return res.send({gameId: gp.internal.gameId});
+    }
+    catch (err) {
+      logger.error('Exception in gameplay.createnew.post', e);
+      return res.status(500).send({message: e.message});
+    }
+  });
 });
+
 
 /**
  * Finalize the gameplay
@@ -220,7 +214,10 @@ router.delete('/:gameId', function (req, res) {
       }
 
       logger.info('Deleting a gameplay: ' + gp.internal.gameId);
-      gameplayLib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail: req.session.passport.user}, function (err) {
+      gameplayLib.deleteGameplay({
+        gameId:     gp.internal.gameId,
+        ownerEmail: req.session.passport.user
+      }, function (err) {
         if (err) {
           return res.status(500).send({message: 'Error: ' + err.message});
         }

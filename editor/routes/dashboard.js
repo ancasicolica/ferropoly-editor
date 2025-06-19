@@ -57,20 +57,15 @@ router.get('/gameplays', async function (req, res) {
       function (gp, cb) {
         gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
         // count the teams
-        teamModel.countTeams(gp.internal.gameId, (err, nb) => {
+        teamModel.countTeams(gp.internal.gameId, async (err, nb) => {
           if (err) {
             return cb(err);
           }
           gp.teamNb = nb;
           // count properties, makes only really sense when gameplay is finalized
           if (gp.internal.finalized) {
-            propertyModel.countProperties(gp.internal.gameId, (err, nb) => {
-              if (err) {
-                return cb(err);
-              }
-              gp.propertyNb = nb;
-              return cb(null);
-            });
+            gp.propertyNb = await propertyModel.countProperties(gp.internal.gameId);
+            cb(null);
           } else {
             cb(null);
           }
@@ -108,7 +103,7 @@ router.get('/users', async function (req, res) {
       res.send({userNb: userNb});
     });
   }
-  catch(err) {
+  catch (err) {
     res.status(500).send({message: 'User not read: ' + err.message});
   }
 

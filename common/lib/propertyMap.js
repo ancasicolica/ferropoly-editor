@@ -14,14 +14,11 @@ const _             = require('lodash');
  * @param callback
  */
 function create(options, callback) {
-  propertyModel.getPropertiesForGameplay(options.gameId, {lean: true}, (err, props) => {
-    if (err) {
-      return callback(err);
-    }
+  propertyModel.getPropertiesForGameplay(options.gameId, {lean: true}).then(props => {
     let boundary = calculateSquareParams(options, calculateBoundary(props));
     console.log(boundary);
     callback();
-  });
+  }).catch(err => callback(err));
 }
 
 /**
