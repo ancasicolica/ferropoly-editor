@@ -47,17 +47,11 @@ describe('GameplayLib Tests', function () {
   });
 
   describe('Delete the complete gameplay', function () {
-    it('should delete all properties of the gameplay', function (done) {
-      gplib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail: 'anyone@me.com'}, function (err) {
-        if (err) {
-          done(err);
-        }
-        // verifiy if really so
-        properties.getPropertiesForGameplay(gp.internal.gameId, null).then(props => {
-          expect(props.length).to.be(0);
-          done(err);
-        })
-      })
+    it('should delete all properties of the gameplay', async function () {
+      await gplib.deleteGameplay({gameId: gp.internal.gameId, ownerEmail: 'anyone@me.com'});
+      // verifiy if really so
+      const props = await properties.getPropertiesForGameplay(gp.internal.gameId, null);
+      expect(props.length).to.be(0);
     });
     it('should delete the gameplay as well', function (done) {
       gameplays.getGameplay(gp.internal.gameId, 'anyone@me.com').catch((err) => {
@@ -70,10 +64,8 @@ describe('GameplayLib Tests', function () {
 
   describe('Create the demo gameplay', function () {
     this.timeout(15000);
-    it('should create the demo gameplay', function (done) {
-      gplib.createDemoGameplay(function (err) {
-        done(err);
-      });
+    it('should create the demo gameplay', async function () {
+      await gplib.createDemoGameplay({});
     });
   });
 

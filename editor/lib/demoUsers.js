@@ -6,7 +6,7 @@
 const users                  = require('../../common/models/userModel');
 const gravatar               = require('../../common/lib/gravatar');
 const {getUserByMailAddress} = require('../../common/models/userModel');
-const logger                     = require('../../common/lib/logger').getLogger('demoUsers');
+const logger                 = require('../../common/lib/logger').getLogger('demoUsers');
 
 const demoUsers = [
   {forename: 'Heinz', surename: 'Muster', email: 'demo@ferropoly.ch'},
@@ -24,7 +24,7 @@ const demoUsers = [
   {forename: 'Simon', surename: 'Rotach', email: 'team12@ferropoly.ch'},
   {forename: 'Brigitte', surename: 'Buttex', email: 'team13@ferropoly.ch'},
   {forename: 'Daniel', surename: 'Häberling', email: 'team14@ferropoly.ch'},
-  {forename: 'Franziska', surename: 'Boner', email: 'team15@ferropoly.ch'},
+  {forename: 'Franziska', surename: 'Ochsner', email: 'team15@ferropoly.ch'},
   {forename: 'Bernhard', surename: 'Spiegelberg', email: 'team16@ferropoly.ch'},
   {forename: 'Claudia', surename: 'Ruckli', email: 'team17@ferropoly.ch'},
   {forename: 'Richard', surename: 'Droost', email: 'team18@ferropoly.ch'},
@@ -32,7 +32,7 @@ const demoUsers = [
   {forename: 'Stefan', surename: 'Heinzmann', email: 'team20@ferropoly.ch'},
   {forename: 'Esther', surename: 'Isler', email: 'team21@ferropoly.ch'},
   {forename: 'Adriano', surename: 'Baraldo', email: 'team22@ferropoly.ch'},
-  {forename: 'Annina', surename: 'Cavegn', email: 'team23@ferropoly.ch'},
+  {forename: 'Annina', surename: 'Michels', email: 'team23@ferropoly.ch'},
   {forename: 'Peter', surename: 'Joss', email: 'team24@ferropoly.ch'},
   {forename: 'Jeanette', surename: 'Meyer', email: 'team25@ferropoly.ch'},
   {forename: 'Silvan', surename: 'Rümeli', email: 'team26@ferropoly.ch'},
@@ -72,20 +72,21 @@ module.exports = {
       return callback('NOT SUPPORTED ANYMORE!');
     }
 
-    for (const u of demoUsers) {
-      const foundUser            = await getUserByMailAddress(u.email);
-      if (foundUser) {
-        foundUser.personalData.forename = u.forename;
-        foundUser.personalData.surname  = u.surename;
-        foundUser.personalData.email    = u.email;
-        foundUser.personalData.avatar   = gravatar.getUrl(u.email);
-        foundUser.login.verifiedEmail   = true;
-        await users.updateUser(foundUser, '12345678', (err=> {
-          if(err) {
-            logger.error(err);
-          }
-        }));
+    try {
+      for (const u of demoUsers) {
+        const foundUser = await getUserByMailAddress(u.email);
+        if (foundUser) {
+          foundUser.personalData.forename = u.forename;
+          foundUser.personalData.surname  = u.surename;
+          foundUser.personalData.email    = u.email;
+          foundUser.personalData.avatar   = gravatar.getUrl(u.email);
+          foundUser.login.verifiedEmail   = true;
+          await users.updateUser(foundUser, '12345678');
+        }
       }
+    }
+    catch (err) {
+      logger.error('Problem in updateLogins', err);
     }
   }
 };

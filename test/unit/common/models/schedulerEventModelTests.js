@@ -22,34 +22,34 @@ describe('Scheduler Event Tests', function () {
 
   // Close DB afterwards
   after(function (done) {
-    schedulerEventsModel.dumpEvents(gameId).then( () => {
+    schedulerEventsModel.dumpEvents(gameId).then(() => {
       db.close(done);
     });
   });
 
   describe('Creating events for a game', () => {
-    it('should create them', done => {
-      schedulerEvents.createEvents({
-        internal  : {
+    it('should create them', async () => {
+      const info = await schedulerEvents.createEvents({
+        internal:   {
           gameId: gameId
         },
         scheduling: {
-          gameStartTs: DateTime.now().set({hour: 6, minute:0}).toJSDate(),
-          gameEndTs: DateTime.now().set({hour: 22, minute:0}).toJSDate(),
+          gameStartTs: DateTime.now().set({hour: 6, minute: 0}).toJSDate(),
+          gameEndTs:   DateTime.now().set({hour: 22, minute: 0}).toJSDate(),
         },
         gameParams: {
           interestInterval: 60
         }
-      }, (err, info) => {
-        console.log(info);
-        done(err);
-      })
+      });
+
+      console.log(info);
+
     })
   })
 
-  describe('Getting some events', ()=> {
-    it('should hopefully return some', done=> {
-      schedulerEventsModel.getUpcomingEvents().then( events => {
+  describe('Getting some events', () => {
+    it('should hopefully return some', done => {
+      schedulerEventsModel.getUpcomingEvents().then(events => {
         // This hardly depends on the games in the DB, do not analyse too much
         console.log(events);
         expect(events.length > 1).to.be(true);

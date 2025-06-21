@@ -29,13 +29,8 @@ ferropolyDb.init(settings, async function (err) {
     process.exit(code = 0);
     return;
   }
-  userModel.updateUser(user, `${argv.password}`, function (err) {
-    if (err) {
-      console.log('User update error: ' + err);
-      process.exit(code = 0);
-      return;
-    }
-    console.log('OK');
-    process.exit(code = 0);
-  })
+  await userModel.updateUser(user, `${argv.password}`);
+  console.log('OK');
+  process.exit(code = 0);
+
 });

@@ -18,22 +18,21 @@ if (!argv.gameid || !argv.owner) {
   console.log('error');
   process.exit(code = -1);
 } else {
-  ferropolyDb.init(settings, function (err) {
+  ferropolyDb.init(settings, async function (err) {
     if (err) {
       console.log('DB initialisation error: ' + err);
       process.exit(-1);
       return;
     }
-    gpLib.deleteGameplay({gameId: argv.gameid, ownerEmail: argv.owner}, err => {
-      if (err) {
-        console.log('Deleting error: ', err);
-        process.exit(-1);
-        return;
-      }
+    try {
+      await gpLib.deleteGameplay({gameId: argv.gameid, ownerEmail: argv.owner});
       console.log('done');
       process.exit(0);
-    })
-
+    }
+    catch(err) {
+      console.log('Deleting error: ', err);
+      process.exit(-1);
+    }
   });
 }
 

@@ -198,7 +198,7 @@ let initServer = function () {
       process.exit(-1);
     }
   });
-  server.listen(app.get('port'), app.get('ip'), function () {
+  server.listen(app.get('port'), app.get('ip'), async function () {
     logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
     logger.info('Ferropoly Editor, Copyright (C) 2015-2024 Christian Kuster, CH-8342 Wernetshausen');
     logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
@@ -206,16 +206,17 @@ let initServer = function () {
     logger.info('under certain conditions; see www.ferropoly.ch for details.');
     logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
     logger.info(`Google Cloud Logging: ${settings.logger.google.enabled}`)
-    // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
-    // CRON task never executes (FERE-9)
-    gpLib.deleteOldGameplays(function (err) {
-      if (err) {
-        logger.error('error while deleting old gameplays', err);
-      } else {
-        logger.info('old gameplays deleted');
-      }
-    });
 
+    try {
+      // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
+      // CRON task never executes (FERE-9)
+      await gpLib.deleteOldGameplays();
+
+      logger.info('old gameplays deleted');
+    }
+    catch(err) {
+      logger.error(err);
+    }
   });
 
 

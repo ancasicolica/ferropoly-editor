@@ -116,17 +116,12 @@ function createPasswordHash(salt, password) {
  * @param callback
  */
 async function removeUser(emailAddress, callback) {
-  let res, err;
-  try {
-    res = await User.deleteOne({'personalData.email': emailAddress}).exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in removeUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, res);
-  }
+
+  return await User.deleteOne({'personalData.email': emailAddress}).exec();
 }
 
 /**
@@ -136,44 +131,38 @@ async function removeUser(emailAddress, callback) {
  * @param callback
  */
 async function updateUser(user, password, callback) {
-  try {
-    let doc = await User.findOne({_id: user._id}).exec();
-
-    if (!doc) {
-      // New User OR invalid created user
-      return getUserByMailAddress(user.personalData.email).then(async (foundUser) => {
-        if (foundUser) {
-          return callback(new Error('User with this email-address already exists, remove first!'));
-        }
-        logger.info(`New user:${user.personalData.email}`, user);
-        if (!password) {
-          return callback(new Error('Password missing'));
-        }
-        generatePasswordHash(user, password);
-        user.info.registrationDate = new Date();
-        user._id                   = user.personalData.email;
-        accountLog.addNewUserEntry(user.personalData.email, 'Email-Adresse');
-        savedUser = await user.save();
-        return callback(null, savedUser);
-      }).catch(err => {
-        return callback(err);
-      });
-
-    } else {
-      let editedUser = doc;
-      copyUser(user, editedUser);
-      // Update User
-      logger.info(`Update user: ${user.personalData.email}`, user);
-      if (password) {
-        generatePasswordHash(editedUser, password);
-      }
-      let savedUser = await editedUser.save();
-      return callback(null, savedUser);
-    }
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    callback(ex);
+
+
+  let doc = await User.findOne({_id: user._id}).exec();
+
+  if (!doc) {
+    // New User OR invalid created user
+    let foundUser = await getUserByMailAddress(user.personalData.email);
+    if (foundUser) {
+      throw new Error('User with this email-address already exists, remove first!');
+    }
+    logger.info(`New user:${user.personalData.email}`, user);
+    if (!password) {
+      throw new Error('Password missing');
+    }
+    generatePasswordHash(user, password);
+    user.info.registrationDate = new Date();
+    user._id                   = user.personalData.email;
+    accountLog.addNewUserEntry(user.personalData.email, 'Email-Adresse');
+    return await user.save();
+  } else {
+    let editedUser = doc;
+    copyUser(user, editedUser);
+    // Update User
+    logger.info(`Update user: ${user.personalData.email}`, user);
+    if (password) {
+      generatePasswordHash(editedUser, password);
+    }
+    return await editedUser.save();
   }
 }
 
@@ -215,17 +204,11 @@ async function getUserByMailAddress(emailAddress, callback) {
  * @param callback , providing the complete user information when found
  */
 async function getUser(id, callback) {
-  let doc, err;
-  try {
-    doc = await User.findOne({'_id': id}).exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, doc);
-  }
+  return await User.findOne({'_id': id}).exec();
 }
 
 
@@ -235,17 +218,11 @@ async function getUser(id, callback) {
  * @param callback
  */
 async function getGoogleUser(profileId, callback) {
-  let err, doc;
-  try {
-    doc = await User.findOne({'login.googleProfileId': profileId}).exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getGoogleUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, doc);
-  }
+  return await User.findOne({'login.googleProfileId': profileId}).exec();
 }
 
 /**
@@ -254,17 +231,11 @@ async function getGoogleUser(profileId, callback) {
  * @param callback
  */
 async function getMicrosoftUser(profileId, callback) {
-  let err, doc;
-  try {
-    doc = await User.findOne({'login.microsoftProfileId': profileId}).exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getMicrosoftUser is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, doc);
-  }
+  return await User.findOne({'login.microsoftProfileId': profileId}).exec();
 }
 
 /**
@@ -272,17 +243,11 @@ async function getMicrosoftUser(profileId, callback) {
  * @param callback
  */
 async function getAllUsers(callback) {
-  let docs, err;
-  try {
-    docs = await User.find({}).exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllUsers is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, docs);
-  }
+  return await User.find({}).exec();
 }
 
 /**
@@ -290,17 +255,11 @@ async function getAllUsers(callback) {
  * @param callback
  */
 async function countUsers(callback) {
-  let err, nb;
-  try {
-    nb = await User.countDocuments({}).exec();
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in countUsers is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, nb);
-  }
+  return await User.countDocuments({}).exec();
 }
 
 
@@ -323,10 +282,7 @@ function findOrCreateGoogleUser(profile, callback) {
     }
 
     // Try to get the user
-    getGoogleUser(profile.id, function (err, user) {
-      if (err) {
-        return callback(err);
-      }
+    getGoogleUser(profile.id).then(async function (user) {
       if (!user) {
         // The user is not here, try to find him with the email-address
         let emailAddress = '';
@@ -370,7 +326,7 @@ function findOrCreateGoogleUser(profile, callback) {
 
         if (emailAddress) {
           getUserByMailAddress(emailAddress).then(async user => {
-             if (user) {
+            if (user) {
               // Ok, we know this user. Update profile for google access
               user.info.google           = profile;
               user.info.registrationDate = new Date();
@@ -401,8 +357,9 @@ function findOrCreateGoogleUser(profile, callback) {
       // User found, update
       user.info.google         = profile;
       user.personalData.avatar = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
-      updateUser(user, null, callback);
-    });
+      const u                  = await updateUser(user, null);
+      return callback(null, u);
+    }).catch(callback);
   }
   catch (ex) {
     logger.error(ex);
@@ -430,10 +387,7 @@ function findOrCreateMicrosoftUser(profile, callback) {
     }
 
     // Try to get the user
-    getMicrosoftUser(profile.id, function (err, user) {
-      if (err) {
-        return callback(err);
-      }
+    getMicrosoftUser(profile.id).then( async function ( user) {
       if (!user) {
         // The user is not here, try to find him with the email-address
         let emailAddress = '';
@@ -505,8 +459,9 @@ function findOrCreateMicrosoftUser(profile, callback) {
       // User found, update
       user.info.microsoft      = profile;
       user.personalData.avatar = _.isArray(profile.photos) ? profile.photos[0].value : undefined;
-      updateUser(user, null, callback);
-    });
+      const u                  = await updateUser(user, null);
+      return callback(null, u);
+    }).catch(callback);
   }
   catch (ex) {
     logger.error(ex);

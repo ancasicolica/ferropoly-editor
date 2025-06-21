@@ -80,36 +80,33 @@ router.post('/createnew', async function (req, res) {
     // a user specific count. So far we have four.
     return res.status(403).send({message: 'Max game number reached: ' + nb});
   }
+  try {
+    const user = await userModel.getUser(req.session.passport.user);
 
-  userModel.getUser(req.session.passport.user, async function (err, user) {
-    if (err) {
-      return res.status(500).send({message: 'DB read error: ' + err.message});
-    }
     if (!user) {
       return res.status(401).send('Ungültiger Benutzer, bitte einloggen');
     }
 
-    try {
-      // Use the unit-test tested gameplay lib for this
-      const gp = await gameplayLib.createNewGameplay({
-        email:           user.personalData.email,
-        organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
-        map:             req.body.map,
-        gamename:        req.body.gamename,
-        gamedate:        req.body.gamedate,
-        gameId:          req.body.gameId || '',
-        presets:         req.body.presets || 'classic',
-        random:          req.body.random,
-        gameParams:      req.body.gameParams,
-        properties:      req.body.properties
-      });
-      return res.send({gameId: gp.internal.gameId});
-    }
-    catch (err) {
-      logger.error('Exception in gameplay.createnew.post', e);
-      return res.status(500).send({message: e.message});
-    }
-  });
+    // Use the unit-test tested gameplay lib for this
+    const gp = await gameplayLib.createNewGameplay({
+      email:           user.personalData.email,
+      organisatorName: user.personalData.forename + ' ' + user.personalData.surname,
+      map:             req.body.map,
+      gamename:        req.body.gamename,
+      gamedate:        req.body.gamedate,
+      gameId:          req.body.gameId || '',
+      presets:         req.body.presets || 'classic',
+      random:          req.body.random,
+      gameParams:      req.body.gameParams,
+      properties:      req.body.properties
+    });
+    return res.send({gameId: gp.internal.gameId});
+  }
+  catch (err) {
+    logger.error('Exception in gameplay.createnew.post', e);
+    return res.status(500).send({message: e.message});
+  }
+
 });
 
 
@@ -137,15 +134,10 @@ router.post('/finalize', async function (req, res) {
       return res.status(403).send('Not allowed');
     }
 
-    gameplayLib.finalizeGameplay(gp, req.session.passport.user, async function (err) {
-      if (err) {
-        return res.status(500).send({message: 'Error while finalizing gameplay: ' + err.message});
-      }
-      // Now create also first rules
-      await rulesModel.releaseRules(gp.internal.gameId, 'Automatisch bei Finalisierung erzeugt');
-      return res.send({});
-    });
-
+    await gameplayLib.finalizeGameplay(gp, req.session.passport.user);
+    // Now create also first rules
+    await rulesModel.releaseRules(gp.internal.gameId, 'Automatisch bei Finalisierung erzeugt');
+    return res.send({});
   }
   catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);
@@ -185,7 +177,7 @@ router.post('/checkid', async (req, res) => {
 /**
  * Deletes a gameplay and everything associated to it
  */
-router.delete('/:gameId', function (req, res) {
+router.delete('/:gameId', async function (req, res) {
   try {
     const gameId = req.params.gameId;
 
@@ -198,36 +190,27 @@ router.delete('/:gameId', function (req, res) {
     }
 
     // Get gameplay first, verify user
-    gameplayModel.getGameplay(gameId, req.session.passport.user).then(gp => {
-      // Gameplay not found (or wrong user for it)
-      if (!gp || gp.length === 0) {
-        return res.status(404).send({message: 'Gameplay not found: ' + gameId});
-      }
-      // Only the owner is allowed to delete the game, not admins!
-      if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
-        return res.status(403).send('Not allowed');
-      }
+    const gp = await gameplayModel.getGameplay(gameId, req.session.passport.user)
+    // Gameplay not found (or wrong user for it)
+    if (!gp || gp.length === 0) {
+      return res.status(404).send({message: 'Gameplay not found: ' + gameId});
+    }
+    // Only the owner is allowed to delete the game, not admins!
+    if (_.get(gp, 'internal.owner') !== req.session.passport.user) {
+      return res.status(403).send('Not allowed');
+    }
 
-      if (gp.internal.finalized && moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {
-        logger.info('Attempted to delete a finalized game of today');
-        return res.status(403).send({message: 'Deleting todays games is not allowed'});
-      }
+    if (gp.internal.finalized && moment(gp.scheduling.gameDate).startOf('day').isSame(moment().startOf('day'))) {
+      logger.info('Attempted to delete a finalized game of today');
+      return res.status(403).send({message: 'Deleting todays games is not allowed'});
+    }
 
-      logger.info('Deleting a gameplay: ' + gp.internal.gameId);
-      gameplayLib.deleteGameplay({
-        gameId:     gp.internal.gameId,
-        ownerEmail: req.session.passport.user
-      }, function (err) {
-        if (err) {
-          return res.status(500).send({message: 'Error: ' + err.message});
-        }
-        return res.send({gameId: gp.internal.gameId, name: gp.gamename});
-      });
-    }).catch(err => {
-      return res.status(500).send({
-        message: 'Gameplay load error: ' + err.message + ' GameplayId: ' + gameId
-      });
+    logger.info('Deleting a gameplay: ' + gp.internal.gameId);
+    await gameplayLib.deleteGameplay({
+      gameId:     gp.internal.gameId,
+      ownerEmail: req.session.passport.user
     });
+    return res.send({gameId: gp.internal.gameId, name: gp.gamename});
   }
   catch (e) {
     logger.error('Exception in gameplay.finalize.post', e);

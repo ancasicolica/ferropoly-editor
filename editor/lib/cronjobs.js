@@ -17,10 +17,10 @@ const {DateTime} = require('luxon');
 function generateGameOptions() {
   let gameOptions = {
     autopilot: {
-      active   : _.get(settings, 'autopilot.enabled', false),
+      active:    _.get(settings, 'autopilot.enabled', false),
       picBucket: _.get(settings, 'autopilot.picBucket', true)
     },
-    presets  : 'moderate',
+    presets:   'moderate',
   };
 
   switch ((DateTime.now().ordinal + _.get(settings, 'demoGameplay.seed', 0)) % 5) {
@@ -81,13 +81,12 @@ function setUpDemoGamemplayCreation() {
     cron.scheduleJob(settings.cron.createDemoGameplay, function () {
       logger.info('CRON: starting demo gameplay creation');
       let gameOpts = generateGameOptions();
-      gpLib.createDemoGameplay(gameOpts, function (err) {
-        if (err) {
-          logger.error('CRON: error while creating demo gameplay', err);
-        } else {
+      gpLib.createDemoGameplay(gameOpts).then(function () {
           logger.info('CRON: demo set created');
         }
-      });
+      ).catch(err => {
+        logger.error('CRON: error while creating demo gameplay', err);
+      })
     });
   }
 }
@@ -102,13 +101,13 @@ function setupDeletingOldGameplays() {
   if (settings.cron.deleteOldGameplays) {
     logger.info('CRON: setting up the delete-old-games job', settings.cron.deleteOldGameplays);
     cron.scheduleJob(settings.cron.deleteOldGameplays, function () {
-      gpLib.deleteOldGameplays(function (err) {
-        if (err) {
-          logger.error('CRON: error while deleting old gameplays', err);
-        } else {
+      gpLib.deleteOldGameplays()
+        .then(() => {
           logger.info('CRON: old gameplays deleted');
-        }
-      });
+        })
+        .catch(err => {
+          logger.error('CRON: error while deleting old gameplays', err);
+        })
     });
   }
 }

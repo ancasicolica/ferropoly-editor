@@ -7,7 +7,6 @@
 const gameplays                  = require('../../common/models/gameplayModel');
 const properties                 = require('../../common/models/propertyModel');
 const rules                      = require('../../common/models/rulesModel');
-const propertyMap                = require('../../common/lib/propertyMap');
 const locations                  = require('../../common/models/locationModel');
 const travelLog                  = require('../../common/models/travelLogModel');
 const teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
@@ -25,42 +24,38 @@ const pricelistLib               = require('./pricelist');
 const pugToHtml                  = require('./pugToHtml');
 const settings                   = require('../settings');
 const rulesGenerator             = require('./rulesGenerator');
-const needle                     = require('needle');
 const moment                     = require('moment');
 const _                          = require('lodash');
-const async                      = require('async');
 const fs                         = require('fs');
 const path                       = require('path');
-
-const demoGameId          = 'play-a-demo-game';
-const demoOrganisatorMail = 'demo@ferropoly.ch';
+const axios                      = require('axios');
+const demoGameId                 = 'play-a-demo-game';
+const demoOrganisatorMail        = 'demo@ferropoly.ch';
 
 /**
  * Updates the ferropoly main program cache
  */
-function updateFerropolyMainCache(delay, callback) {
+async function updateFerropolyMainCache(delay, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateFerropolyMainCache is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   if (!settings.mainInstances || settings.mainInstances.length === 0) {
     logger.info('No main instances to update');
-    return callback();
+    return;
   }
+  try {
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  logger.info('Attempting to update main module caches in a few seconds');
-  _.delay(function () {
-    async.each(settings.mainInstances, function (instance, cb) {
-      // Fire and forget, don't care about the return
-      needle.post(`${instance}/gamecache/refresh`,
-        {},
-        cb);
-    }, function (err) {
-      if (err) {
-        logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
-        // Do not return an error, proceed!!
-        return callback();
-      }
-      logger.info('Ferropoly main instances updated');
-      callback();
-    });
-  }, delay);
+    logger.info('Attempting to update main module caches, delay: ' + delay);
+    for (const instance of settings.mainInstances) {
+      await sleep(delay);
+      await axios.post(`${instance}/gamecache/refresh`);
+    }
+  }
+  catch (err) {
+    logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
+  }
 }
 
 /**
@@ -267,8 +262,13 @@ async function createNewGameplay(gpOptions) {
  * @returns {*}
  */
 async function deleteGameplay(gpOptions, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in deleteGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+
   if (!gpOptions.gameId || !gpOptions.ownerEmail) {
-    return callback(new Error('Options are not complete'));
+    throw new Error('Options are not complete');
   }
 
   try {
@@ -284,17 +284,16 @@ async function deleteGameplay(gpOptions, callback) {
     await travelLog.deleteAllEntries(gpOptions.gameId);
     await gameLog.deleteAllEntries(gpOptions.gameId);
     await rules.deleteRules(gpOptions.gameId);
+    logger.info('cleaning task finished');
+    if (!gpOptions.doNotNotifyMain) {
+      // update main instances as we removed the game!
+      await updateFerropolyMainCache(100);
+    }
   }
   catch (err) {
     logger.error('Error while deleting gameplays', err);
     return callback(err);
   }
-  logger.info('cleaning task finished');
-  if (gpOptions.doNotNotifyMain) {
-    return callback();
-  }
-  // update main instances as we removed the game!
-  updateFerropolyMainCache(100, callback);
 }
 
 /**
@@ -399,6 +398,11 @@ async function createDemoGameplay(p1, p2) {
     settings = p1;
   }
 
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createDemoGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
+
   if (settings.tomorrow) {
     settings.gameDate = moment().add(1, 'days').toDate();
   }
@@ -436,41 +440,24 @@ async function createDemoGameplay(p1, p2) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
     logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
   }
-  try {
-    let startTs      = new Date();
-    const isExisting = await gameplays.checkIfGameIdExists(options.gameId);
-    if (isExisting) {
-      return deleteGameplay(options, async function (err) {
-        if (err) {
-          return callback(err);
-        } else {
-          // recursive!
-          return await createDemoGameplay(p1, p2);
-        }
-      });
-    } else {
-      // Create new gameplay now
-      const gp = await createNewGameplay(options)
-      await createDemoTeams(gp, options.teamNb);
 
-      await pricelistLib.create(gameId, demoOrganisatorMail);
-      gp.internal.finalized       = true;
-      gp.internal.doNotNotifyMain = true;
-      finalizeGameplay(gp, demoOrganisatorMail, function (err) {
-        if (err) {
-          logger.info('Failed to save demo gameplay: ' + err.message);
-          return callback(err);
-        }
-        let endTs    = new Date();
-        let duration = (endTs.getTime() - startTs.getTime()) / 1000;
-        logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
-        callback();
-      });
-    }
+  let startTs      = new Date();
+  const isExisting = await gameplays.checkIfGameIdExists(options.gameId);
+  if (isExisting) {
+    await deleteGameplay(options);
   }
-  catch (err) {
-    callback(err);
-  }
+  // Create new gameplay now
+  const gp = await createNewGameplay(options)
+  await createDemoTeams(gp, options.teamNb);
+
+  await pricelistLib.create(gameId, demoOrganisatorMail);
+  gp.internal.finalized       = true;
+  gp.internal.doNotNotifyMain = true;
+  await finalizeGameplay(gp, demoOrganisatorMail);
+  let endTs    = new Date();
+  let duration = (endTs.getTime() - startTs.getTime()) / 1000;
+  logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
+
 }
 
 /**
@@ -480,34 +467,22 @@ async function createDemoGameplay(p1, p2) {
  * @param callback
  */
 async function finalizeGameplay(gameplay, email, callback) {
-  try {
-    const gpSaved = await gameplays.finalize(gameplay.internal.gameId, email);
-
-    let rules = rulesGenerator(gpSaved);
-    await gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules});
-
-    await properties.finalizeProperties(gameplay.internal.gameId)
-
-    schedulerEvents.createEvents(gpSaved, function (err) {
-      if (err) {
-        logger.error('Error while creating events', err);
-      }
-      logger.info('Scheduler Events created');
-      propertyMap.create({gameId: gameplay.internal.gameId, squaresOnShortSide: 4}, err => {
-        logger.info('Property map created');
-        if (err) {
-          logger.error(err);
-        }
-        if (gameplay.internal.doNotNotifyMain) {
-          return callback();
-        }
-        updateFerropolyMainCache(4000, callback);
-      });
-    });
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in finalizeGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
   }
-  catch (err) {
-    logger.error('Error in finalizeGameplay', err);
-    callback(err);
+
+  const gpSaved = await gameplays.finalize(gameplay.internal.gameId, email);
+
+  let rules = rulesGenerator(gpSaved);
+  await gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules});
+  await properties.finalizeProperties(gameplay.internal.gameId)
+
+  await schedulerEvents.createEvents(gpSaved);
+  logger.info('Scheduler Events created');
+
+  if (!gameplay.internal.doNotNotifyMain) {
+    await updateFerropolyMainCache(4000);
   }
 }
 
@@ -515,35 +490,34 @@ async function finalizeGameplay(gameplay, email, callback) {
  * Deletes all expired gameplays
  * @param callback
  */
-function deleteOldGameplays(callback) {
-  gameplays.getAllGameplays().then(gps => {
-    async.each(gps,
-      function (gp, cb) {
-        let timeout;
-        if (!gp.scheduling.deleteTs) {
-          // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
-          // the game took place. This code can be removed in the next ferropoly release
-          timeout = moment(gp.scheduling.gameDate).add(1, 'M');
-        } else {
-          // This is the code which should run for current (V2) ferropolys
-          timeout = moment(gp.scheduling.deleteTs);
-        }
-        logger.info(`Deletion timeout for "${gp._id}":`, timeout.toDate());
-        if (!timeout) {
-          // Still no timeout, cancel this one, but still handle others
-          logger.error(new Error('No deletion timeout found for ' + gp._id));
-          return cb();
-        }
+async function deleteOldGameplays(callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in deleteOldGameplays is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
 
-        if (moment().isAfter(timeout)) {
-          deleteGameplay({gameId: gp._id, ownerEmail: gp.internal.owner, doNotNotifyMain: true}, cb);
-        }
-      },
-      callback
-    );
-  }).catch(err => {
-    return callback(err);
-  });
+  const gps = await gameplays.getAllGameplays();
+
+  for (const gp of gps) {
+    let timeout;
+    if (!gp.scheduling.deleteTs) {
+      // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
+      // the game took place. This code can be removed in the next ferropoly release
+      timeout = moment(gp.scheduling.gameDate).add(1, 'M');
+    } else {
+      // This is the code which should run for current (V2) ferropolys
+      timeout = moment(gp.scheduling.deleteTs);
+    }
+    logger.info(`Deletion timeout for "${gp._id}":`, timeout.toDate());
+    if (!timeout) {
+      // Still no timeout, cancel this one, but still handle others
+      logger.error(new Error('No deletion timeout found for ' + gp._id));
+    } else {
+      if (moment().isAfter(timeout)) {
+        await deleteGameplay({gameId: gp._id, ownerEmail: gp.internal.owner, doNotNotifyMain: true});
+      }
+    }
+  }
 }
 
 

@@ -68,43 +68,33 @@ describe('UserModel Tests', function () {
     let password1      = 'erstfeld';
 
     describe('Removing user 1', function () {
-      it('should work if it exits', function (done) {
-        users.removeUser(user1.personalData.email, function (err) {
-          console.log('Result:');
-          console.log(err);
-          done();
-        });
+      it('should work if it exits', async function () {
+        await users.removeUser(user1.personalData.email);
       });
     });
 
     describe('Tests with user 1', function () {
-      it('Adding the user should work', function (done) {
-        users.updateUser(user1, password1, function (err, savedUser) {
-          if (err) {
-            done(err);
-          }
-          expect(savedUser.personalData.surname).to.be(user1.personalData.surname);
-          expect(savedUser.personalData.forename).to.be(user1.personalData.forename);
-          expect(savedUser.personalData.email).to.be(user1.personalData.email);
-          expect(savedUser.roles.editor).to.be(true);
-          expect(savedUser.roles.admin).to.be(false);
-          expect(savedUser.login.passwordHash.length > 60).to.be(true);
-          expect(savedUser.login.passwordSalt.length).to.be(64);
-          expect(users.verifyPassword(savedUser, password1)).to.be(true);
-          user1 = savedUser;
-          done();
-        })
+      it('Adding the user should work', async function () {
+        const savedUser = await users.updateUser(user1, password1);
+        expect(savedUser.personalData.surname).to.be(user1.personalData.surname);
+        expect(savedUser.personalData.forename).to.be(user1.personalData.forename);
+        expect(savedUser.personalData.email).to.be(user1.personalData.email);
+        expect(savedUser.roles.editor).to.be(true);
+        expect(savedUser.roles.admin).to.be(false);
+        expect(savedUser.login.passwordHash.length > 60).to.be(true);
+        expect(savedUser.login.passwordSalt.length).to.be(64);
+        expect(users.verifyPassword(savedUser, password1)).to.be(true);
+        user1 = savedUser;
       });
     });
 
     it('Changing a users parameter should work', async function () {
       const foundUser                = await users.getUserByMailAddress('olivia@gm-x.ch')
       foundUser.personalData.surname = 'Huber-Kunz';
-      await users.updateUser(foundUser, null, function (err, savedUser) {
-        expect(savedUser.personalData.surname).to.be('Huber-Kunz');
-        expect(savedUser.personalData.forename).to.be('Olivia');
-        expect(users.verifyPassword(savedUser, password1)).to.be(true);
-      });
+      const savedUser                = await users.updateUser(foundUser, null);
+      expect(savedUser.personalData.surname).to.be('Huber-Kunz');
+      expect(savedUser.personalData.forename).to.be('Olivia');
+      expect(users.verifyPassword(savedUser, password1)).to.be(true);
     });
   });
 
@@ -121,31 +111,25 @@ describe('UserModel Tests', function () {
 
   let nb = 0;
   describe('Getting all users', function () {
-    it('should return some', function (done) {
-      users.getAllUsers(function (err, users) {
-        nb = users.length;
-        expect(nb >= 2).to.be(true);
-        done(err);
-      });
+    it('should return some', async function () {
+      const res = await users.getAllUsers();
+      nb = res.length;
+      expect(nb >= 2).to.be(true);
     })
   });
 
 
   describe('Getting one user', function () {
-    it('should return one', function (done) {
-      users.getUser('olivia@gm-x.ch', function (err, user) {
-        console.log(user);
-        done(err);
-      });
+    it('should return one', async function () {
+      const user = await users.getUser('olivia@gm-x.ch');
+      console.log(user);
     })
   });
 
   describe('Count all users', function () {
-    it('should return some', function (done) {
-      users.countUsers(function (err, userNb) {
-        expect(userNb).to.be(nb);
-        done(err);
-      });
+    it('should return some', async function () {
+      const userNb = await users.countUsers()
+      expect(userNb).to.be(nb);
     })
   });
 

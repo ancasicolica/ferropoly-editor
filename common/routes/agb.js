@@ -40,15 +40,8 @@ router.post('/accept', async function (req, res) {
   try {
     const user            = await userModel.getUserByMailAddress(req.session.passport.user);
     user.info.agbAccepted = currentAgbVersion;
-    userModel.updateUser(user, null, function (err) {
-      if (err) {
-        logger.error('Error in agb update', err);
-        res.status(500);
-        res.send('Fehler bei Abfrage: ' + err.message);
-        return;
-      }
-      res.send({success: true});
-    });
+    await userModel.updateUser(user, null);
+    res.send({success: true});
   }
   catch (err) {
     logger.error('Error in agb', err);

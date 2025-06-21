@@ -12,7 +12,11 @@ const moment     = require('moment');
  * @param gameplay
  * @param callback
  */
-function createEvents(gameplay, callback) {
+async function createEvents(gameplay, callback) {
+  if (callback) {
+    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createEvents is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    return callback('NOT SUPPORTED ANYMORE!');
+  }
   let events = [];
 
   // Pre-Start
@@ -53,9 +57,8 @@ function createEvents(gameplay, callback) {
   );
   events.push(summary);
 
-  eventModel.saveEvents(events).then(() => {
-    callback();
-  }).catch(callback);
+  await eventModel.saveEvents(events);
+
 }
 
 module.exports = {

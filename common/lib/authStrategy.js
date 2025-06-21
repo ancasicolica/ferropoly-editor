@@ -57,9 +57,8 @@ module.exports = function (settings, users) {
         }
         if (users.verifyPassword(foundUser, password)) {
           foundUser.info.lastLogin = new Date();
-          users.updateUser(foundUser, null, function () {
-            return done(null, foundUser);
-          });
+          await users.updateUser(foundUser, null);
+          return done(null, foundUser);
         } else {
           logger.info('invalid password supplied for ' + foundUser);
           return done(null, false);
