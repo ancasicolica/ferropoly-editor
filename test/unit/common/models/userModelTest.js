@@ -8,15 +8,13 @@ const settings = require('./../../../../editor/settings');
 const db       = require('./../../../../common/lib/ferropolyDb');
 
 describe('UserModel Tests', function () {
-  before(function (done) {
-    db.init(settings, function (err) {
-      done(err);
-    });
+  before(async function () {
+    await db.init(settings);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    db.close(done);
+  after(async function () {
+    await db.close();
   });
 
   let user = new users.Model();

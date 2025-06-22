@@ -14,17 +14,15 @@ const {DateTime}           = require('luxon');
 const gameId = 'unit-test';
 
 describe('Scheduler Event Tests', function () {
-  before(function (done) {
-    db.init(settings, function () {
-      schedulerEventsModel.dumpEvents(gameId).then(done())
-    });
+  before(async function () {
+    await db.init(settings);
+    await schedulerEventsModel.dumpEvents(gameId);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    schedulerEventsModel.dumpEvents(gameId).then(() => {
-      db.close(done);
-    });
+  after(async function () {
+    await schedulerEventsModel.dumpEvents(gameId);
+    await db.close();
   });
 
   describe('Creating events for a game', () => {

@@ -8,13 +8,13 @@ const db        = require('./../../../../common/lib/ferropolyDb');
 const locations = require('./../../../../common/models/locationModel');
 const settings  = require('./../../../../editor/settings');
 describe('Location Model test', () => {
-  before(function (done) {
-    db.init(settings, done);
+  before(async function () {
+    await db.init(settings);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    db.close(done);
+  after(async function () {
+    await db.close();
   });
 
   let totalLocationNb = 0;

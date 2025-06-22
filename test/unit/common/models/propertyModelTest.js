@@ -14,17 +14,15 @@ let foundLocations;
 let propId0;
 
 describe('PropertyModel Tests', function () {
-  before(function (done) {
-    db.init(settings, async function () {
-      foundLocations = await locations.getAllLocationsForMap('zvv');
-      done();
-    });
+  before(async function () {
+    await db.init(settings);
+    foundLocations = await locations.getAllLocationsForMap('zvv');
   });
 
   // Close DB afterwards
   after(async function () {
     await properties.removeAllPropertiesFromGameplay(gameId);
-    db.close();
+    await db.close();
   });
 
   describe('Deleting all properties', function () {

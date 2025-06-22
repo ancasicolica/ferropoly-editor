@@ -12,17 +12,15 @@ const settings = require('./../../../../editor/settings');
 const gameId  = 'unit-test';
 const teamIds = ['team-id-1', 'team-id-2'];
 describe('Chancellery Transaction Tests', function () {
-  before(function (done) {
-    db.init(settings, function () {
-      tat.dumpAccounts(gameId).then(done())
-    });
+  before(async function () {
+    await db.init(settings);
+    await tat.dumpAccounts(gameId);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    tat.dumpAccounts(gameId).then(() => {
-      db.close(done);
-    });
+  after(async function () {
+    await tat.dumpAccounts(gameId);
+    await db.close();
   });
 
   describe('Booking some transactions for team 1', () => {

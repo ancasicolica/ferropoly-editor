@@ -28,17 +28,14 @@ const property   = {
 const user       = 'cameo@ferropoly.ch'
 
 describe('TravelLogModel Tests', function () {
-  before(function (done) {
-    db.init(settings, function () {
-      done()
-    });
+  before(async function () {
+    await db.init(settings);
   });
 
   // Close DB afterwards
   after(async function () {
     await travelLogModel.deleteAllEntries(gameId);
-    db.close();
-
+    await db.close();
   });
 
   describe('Adding normal entries', function () {
@@ -47,14 +44,14 @@ describe('TravelLogModel Tests', function () {
       console.log(info);
     });
     it('should deny if teamId is not a string ', function () {
-       travelLogModel.addEntry(gameId, {}, propertyId).catch(err => {
-         expect(err).to.be.a('object')
-       })
+      travelLogModel.addEntry(gameId, {}, propertyId).catch(err => {
+        expect(err).to.be.a('object')
+      })
 
 
     });
     it('should deny if propertyId is not set', function () {
-      travelLogModel.addEntry(gameId, teamIds[0], null).catch(err =>  {
+      travelLogModel.addEntry(gameId, teamIds[0], null).catch(err => {
         expect(err).to.be.a('object')
       })
     });
@@ -66,9 +63,9 @@ describe('TravelLogModel Tests', function () {
       console.log(info);
     });
     it('should deny if teamId is not a string ', function () {
-     travelLogModel.addPropertyEntry(gameId, {}, propertyId).catch(err => {
-       expect(err).to.be.a('object')
-     });
+      travelLogModel.addPropertyEntry(gameId, {}, propertyId).catch(err => {
+        expect(err).to.be.a('object')
+      });
     });
     it('should deny if propertyId is not set', function () {
       travelLogModel.addPropertyEntry(gameId, teamIds[0], null).catch(err => {

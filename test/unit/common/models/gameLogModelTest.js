@@ -13,17 +13,15 @@ const settings = require('./../../../../editor/settings');
 const gameId  = 'unit-test'
 const teamIds = ['team-id-1', 'team-id-2'];
 describe('gameLogModel Tests', () => {
-  before(function (done) {
-    db.init(settings, function () {
-      log.deleteAllEntries(gameId).then(done());
-    });
+  before(async function () {
+    await db.init(settings);
+    await log.deleteAllEntries(gameId);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    log.deleteAllEntries(gameId).then(() => {
-      db.close(done);
-    });
+  after(async function () {
+    await log.deleteAllEntries(gameId);
+    await db.close();
   });
 
   describe('Adding some log entries', () => {

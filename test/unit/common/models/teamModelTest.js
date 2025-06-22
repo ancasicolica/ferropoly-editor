@@ -13,19 +13,15 @@ let team1;
 let team2;
 const gameId = 'test-game';
 describe('TeamModel Tests', function () {
-  before(function (done) {
-    db.init(settings, async function () {
-      await teams.deleteAllTeams(gameId);
-      done();
-    });
+  before(async function () {
+    await db.init(settings)
+    await teams.deleteAllTeams(gameId);
   });
 
   // Close DB afterwards and delete all teams
-  after(function (done) {
-    teams.deleteAllTeams(gameId)
-      .then(() => {
-        db.close(done);
-      });
+  after(async function () {
+    await teams.deleteAllTeams(gameId);
+    await db.close();
   });
 
   describe('Create a new Team', function () {

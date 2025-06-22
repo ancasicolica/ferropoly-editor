@@ -14,17 +14,15 @@ const {DateTime} = require('luxon');
 const users = ['admin1@ferropoly.ch', 'admin2@ferropoly.ch'];
 let gp1, gp2, gp3;
 describe('GameplayModel Tests', function () {
-  before(function (done) {
-    db.init(settings, async function () {
-      await gameplays.removeGameplaysForUser(users[0]);
-      await gameplays.removeGameplaysForUser(users[1]);
-      done();
-    })
+  before(async function () {
+    await db.init(settings);
+    await gameplays.removeGameplaysForUser(users[0]);
+    await gameplays.removeGameplaysForUser(users[1]);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    db.close(done);
+  after(async function () {
+    await db.close();
   });
 
   describe('Creating a new gameplay', function () {

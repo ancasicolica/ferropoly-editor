@@ -12,17 +12,15 @@ const settings = require('./../../../../editor/settings');
 const gameId     = 'unit-test';
 const propertyId = 'prop-id-test';
 describe('Chancellery Transaction Tests', function () {
-  before(function (done) {
-    db.init(settings, function () {
-      pt.dumpAccounts(gameId).then(done());
-    });
+  before(async function () {
+    await db.init(settings);
+    await pt.dumpAccounts(gameId);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    pt.dumpAccounts(gameId).then(() => {
-      db.close(done);
-    });
+  after(async function () {
+    await pt.dumpAccounts(gameId);
+    await db.close();
   });
 
   describe('Booking some transactions', () => {

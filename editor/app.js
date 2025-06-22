@@ -45,7 +45,8 @@ const demoUsers    = require('./lib/demoUsers');
 const {v4: uuid}   = require('uuid');
 const gpLib        = require('./lib/gameplayLib');
 
-let initServer = function () {
+let initServer = async function () {
+  await ferropolyDb.init(settings);
   cronjobs.init();
   mailer.init(settings);
 
@@ -69,7 +70,6 @@ let initServer = function () {
   app.use(express.static(path.join(__dirname, 'public')));
   app.use('/maps', require('../common/lib/maps').routeHandler); // No user authentication needed here, so place it
                                                                 // before passport
-
 
   // Define Strategy, login
   passport.use(authStrategy.googleStrategy);
@@ -222,16 +222,9 @@ let initServer = function () {
 
 };
 
-/**
- * Initialize DB connection, has to be only once for all models
- */
-ferropolyDb.init(settings, function (err, db) {
-  if (err) {
-    logger.warning('Failed to init ferropolyDb');
-    logger.error(err);
-  }
-  initServer(db);
 
-});
+initServer();
+
+
 
 module.exports = app;

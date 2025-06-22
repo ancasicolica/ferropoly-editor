@@ -15,15 +15,13 @@ const {DateTime} = require('luxon');
 let gp;
 
 describe('GameplayLib Tests', function () {
-  before(function (done) {
-    db.init(settings, function (err) {
-      done(err);
-    });
+  before(async function () {
+    await db.init(settings);
   });
 
   // Close DB afterwards
-  after(function (done) {
-    db.close(done);
+  after(async function () {
+    await db.close();
   });
 
   describe('Creating a complete new gameplay', function () {
