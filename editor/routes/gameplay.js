@@ -103,8 +103,8 @@ router.post('/createnew', async function (req, res) {
     return res.send({gameId: gp.internal.gameId});
   }
   catch (err) {
-    logger.error('Exception in gameplay.createnew.post', e);
-    return res.status(500).send({message: e.message});
+    logger.error('Exception in gameplay.createnew.post', err.message);
+    return res.status(500).send({message: err.message});
   }
 
 });

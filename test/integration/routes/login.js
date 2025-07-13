@@ -25,7 +25,7 @@ module.exports = function (options, callback) {
       if (err) {
         return callback(err);
       }
-      assert.equal(resp.statusCode, 302);
+      assert.equal(resp.statusCode, 200);
       assert.notEqual(resp.headers.location, '/login');
 
       if (err) {

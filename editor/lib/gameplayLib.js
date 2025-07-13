@@ -21,6 +21,7 @@ const userModel                  = require('../../common/models/userModel');
 const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
 const demoUsers                  = require('./demoUsers');
 const pricelistLib               = require('./pricelist');
+const Moniker                    = require('moniker');
 const pugToHtml                  = require('./pugToHtml');
 const settings                   = require('../settings');
 const rulesGenerator             = require('./rulesGenerator');
@@ -228,8 +229,12 @@ async function createNewGameplay(gpOptions) {
   // as default we use the email address as user id
   const user = dbUser || {id: gpOptions.email};
 
+  let gameId = gpOptions.gameId;
+  if (!gameId || gameId.length === 0) {
+    gameId = Moniker.generator([Moniker.adjective, Moniker.adjective, Moniker.noun]).choose();
+  }
   const gameplay = await gameplays.createGameplay({
-    gameId:           gpOptions.gameId || '',
+    gameId:           gameId,
     map:              gpOptions.map,
     name:             gpOptions.gamename,
     ownerEmail:       gpOptions.email,
@@ -250,7 +255,7 @@ async function createNewGameplay(gpOptions) {
 
   // Create also the rules
   let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
-  await rules.createRules(gpOptions.gameId, pugToHtml(template));
+  await rules.createRules(gameId, pugToHtml(template));
   logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
   return await copyLocationsToProperties(gpOptions, gameplay);
 }
