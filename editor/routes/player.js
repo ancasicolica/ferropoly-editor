@@ -228,7 +228,7 @@ router.post('/confirm', function (req, res) {
       const gp                   = await gameplays.getGameplay(team.gameId, req.session.passport.user);
       team.data.confirmed        = true;
       team.data.confirmationDate = new Date();
-      await teams.update(team);
+      const updatedTeam = await teams.updateTeam(team);
 
       logger.info(`${gameId}: Confirmed team ${team.data.name}`);
       sendConfirmationMail(gp, team, err => {

@@ -11,7 +11,7 @@
       <template #content>
         <p class="m-0">
           Die Gruppen können sich unter folgendem Link selbst für das Spiel anmelden:
-          <a :href="registrationUrl" target="_blank">https://spiel.ferropoly.ch/anmelden/ferropoly-spiel</a>
+          <a :href="registrationUrl" target="_blank">{{ registrationUrl }}</a>
           <br/>
           Angemeldete Gruppen müssen anschliessend mit dieser App bestätigt werden.
         </p>
@@ -23,9 +23,17 @@
 <script setup>
 
 import Card from 'primevue/card';
-import {ref} from 'vue';
+import {computed} from 'vue';
+import {storeToRefs} from 'pinia';
+import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 
-const registrationUrl = ref('/');
+const gameplayStore          = useGameplayStore();
+const {joining} = storeToRefs(gameplayStore);
+const registrationUrl        = computed(() => {
+  const url = joining.value?.url;
+  console.log('hhhh', url, joining, joining.value)
+  return url ? url : '';
+});
 
 </script>
 
