@@ -24,12 +24,13 @@ const pricelistLib               = require('./pricelist');
 const Moniker                    = require('moniker');
 const pugToHtml                  = require('./pugToHtml');
 const settings                   = require('../settings');
-const rulesGenerator             = require('./rulesGenerator');
 const moment                     = require('moment');
 const _                          = require('lodash');
 const fs                         = require('fs');
 const path                       = require('path');
 const axios                      = require('axios');
+const rulesModel = require('../../common/models/rulesModel');
+const rulesCompiler              = require('./rulesCompiler');
 const demoGameId                 = 'play-a-demo-game';
 const demoOrganisatorMail        = 'demo@ferropoly.ch';
 
@@ -477,10 +478,16 @@ async function finalizeGameplay(gameplay, email, callback) {
     return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  const gpSaved = await gameplays.finalize(gameplay.internal.gameId, email);
+  const gameId = gameplay.internal.gameId;
+  const gpSaved = await gameplays.finalize(gameId, email);
 
-  let rules = rulesGenerator(gpSaved);
-  await gameplays.updateRules(gpSaved.internal.gameId, gpSaved.internal.owner, {text: rules});
+  // Creating rules
+  logger.info(`${gameId} : creating first rules`);
+  const rules = await rulesModel.getRules(gameId);
+  const text = rulesCompiler({gp:gpSaved, raw: rules.raw});
+  await rulesModel.releaseRules(gameId, text, 'Automatisch bei Finalisierung erzeugt');
+  await gameplays.updateRules(gameId, gpSaved.internal.owner, {text: text});
+
   await properties.finalizeProperties(gameplay.internal.gameId)
 
   await schedulerEvents.createEvents(gpSaved);

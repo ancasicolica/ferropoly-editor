@@ -7,7 +7,7 @@
 const translation = require('./rulesTranslation.json');
 const _           = require('lodash');
 const {DateTime}  = require('luxon');
-
+const logger = require('../../common/lib/logger').getLogger('rulesCompiler');
 function formatAmount(amount) {
   return amount.toLocaleString('de-CH');
 }
@@ -26,16 +26,18 @@ function formatGameTime(time) {
 }
 
 function formatGameDate(date) {
-  console.log('XXX', date);
   return  DateTime.fromJSDate(date).setLocale('de').toLocaleString(DateTime.DATE_HUGE);
 }
 
 module.exports = function (options) {
   if (!options.gp || !options.raw) {
+    logger.warn('Options are invalid', options);
     return;
   }
 
   let raw = options.raw;
+
+  raw = _.replace(raw, new RegExp('&nbsp;', 'gm'), ' ');
 
   translation.forEach(t => {
     let formatter;

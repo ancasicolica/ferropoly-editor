@@ -98,10 +98,11 @@ async function releaseRules(gameId, text, info) {
   rules.changelog.push(
     {
       date: DateTime.now().toJSDate(),
-      text: rules.text,
+      text: text,
       info: info
     }
   )
+  logger.info(`${gameId}: Rules released. Info: ${info}`);
   await rules.save();
   return rules;
 }

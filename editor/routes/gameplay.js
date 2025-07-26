@@ -135,8 +135,6 @@ router.post('/finalize', async function (req, res) {
     }
 
     await gameplayLib.finalizeGameplay(gp, req.session.passport.user);
-    // Now create also first rules
-    await rulesModel.releaseRules(gp.internal.gameId, 'Automatisch bei Finalisierung erzeugt');
     return res.send({});
   }
   catch (e) {

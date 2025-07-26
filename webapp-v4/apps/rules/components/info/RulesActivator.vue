@@ -8,20 +8,19 @@
   <div>
     <Toast/>
     <h2>Veröffentlichung</h2>
-    <p>Für die angemeldeten Gruppen sind die Spielregeln sichtbar, sobald Du eine Version freigibst, spätestens jedoch
-      nach der Finalisierung des Spiels.
+    <p>Mit der aktuellen Ferropoly Spiel-Version sind die Spielregeln für die Gruppen erst nach der Finalisierung des Spiels sichtbar, dann werden sie ein erstes Mal automatisch freigegeben. Wenn Du danach
+      Änderungen machst, musst Du die Spielregeln wieder explizit hier freigeben!
     </p>
-    <message v-if="noRulesYet" severity="warn">Aktuell gibt es keine Spielregeln für die Teams. Finalisiere das Spiel
-      oder
-      gib die aktuellen Regeln frei.
+    <message v-if="notFinalizedYet" severity="warn">Das Spiel muss für die ersten Spielregeln zuerst finalisiert werden.
     </message>
-    <message v-if="outdatedRules" severity="error">Die für die Teams freigegebenen Spielregeln sind älter als die
-      bearbeitete Version. Gib die bearbeiteten
-      Regeln frei, sobald Du mit den Änderungen fertig bist.
+    <message v-if="noRulesYet" severity="warn">Aktuell gibt es keine Spielregeln für die Teams. Finalisiere das Spiel
+      oder gib die aktuellen Regeln frei.
+    </message>
+    <message v-if="outdatedRules" severity="error">Die Spielregeln wurden verändert und noch nicht für die Teams freigegeben. Bitte kontrolliere die Spielregeln und gib sie dann mit "Spielregeln freigeben" den teilnehmenden Personen frei.
     </message>
     <message v-if="rulesUpToDate" severity="success">Die aktuellen Spielregeln wurden den Teams freigegeben.</message>
 
-    <Button :disabled="releaseInProcess" label="Spielregeln freigeben" v-if="outdatedRules || noRulesYet" class="mt-4"
+    <Button :disabled="releaseInProcess" label="Spielregeln freigeben" v-if="showReleaseButton" class="mt-4"
             @click="onReleaseClicked"></Button>
   </div>
 </template>
@@ -38,16 +37,24 @@ const rulesStore       = useRulesStore();
 const releaseInProcess = ref(false);
 const toast            = useToast();
 
+const showReleaseButton = computed(()=> {
+  return rulesStore.gamePlayFinalized && (noRulesYet.value || outdatedRules.value);
+})
+
+const notFinalizedYet = computed(()=> {
+  return !rulesStore.gamePlayFinalized;
+})
+
 const noRulesYet = computed(() => {
-  return !rulesStore.released || rulesStore.released.length === 0;
+  return rulesStore.gamePlayFinalized && (!rulesStore.released || rulesStore.released.length === 0);
 })
 
 const outdatedRules = computed(() => {
-  return rulesStore.released && rulesStore.released.length > 0 && rulesStore.released !== rulesStore.text;
+  return rulesStore.gamePlayFinalized && (rulesStore.released && rulesStore.released.length > 0 && rulesStore.released !== rulesStore.text);
 })
 
 const rulesUpToDate = computed(() => {
-  return rulesStore.released && rulesStore.text === rulesStore.released;
+  return rulesStore.gamePlayFinalized && (rulesStore.released && rulesStore.text === rulesStore.released);
 })
 
 const onReleaseClicked = function () {

@@ -10,12 +10,13 @@ import {getAuthToken} from '../../../common/adapters/authToken';
 
 export const useRulesStore = defineStore('Rules', {
   state:   () => ({
-    editAllowed: false,
-    raw:         '',
-    rawOriginal: '',
-    gameId:      '',
-    released:    '',
-    text:        '',
+    editAllowed:       false,
+    gamePlayFinalized: false,
+    raw:               '',
+    rawOriginal:       '',
+    gameId:            '',
+    released:          '',
+    text:              '',
   }),
   getters: {},
   actions: {
@@ -28,12 +29,13 @@ export const useRulesStore = defineStore('Rules', {
     async fetchRules(gameId) {
       const loadedRules = await axios.get(`/rules/data/${gameId}`);
       console.log(loadedRules.data);
-      this.editAllowed = loadedRules.data.editAllowed || false;
-      this.raw         = loadedRules.data?.rules.raw;
-      this.rawOriginal = loadedRules.data?.rules.raw;
-      this.text        = loadedRules.data?.rules.text;
-      this.released    = loadedRules.data?.rules.released;
-      this.gameId      = gameId;
+      this.editAllowed       = loadedRules.data.editAllowed || false;
+      this.gamePlayFinalized = loadedRules.data.gamePlayFinalized || false;
+      this.raw               = loadedRules.data?.rules.raw;
+      this.rawOriginal       = loadedRules.data?.rules.raw;
+      this.text              = loadedRules.data?.rules.text;
+      this.released          = loadedRules.data?.rules.released;
+      this.gameId            = gameId;
     },
     /**
      * Saves the current rules for a specific game using an HTTP POST request.
@@ -52,8 +54,9 @@ export const useRulesStore = defineStore('Rules', {
         raw: this.raw,
         authToken
       });
-      this.rawOriginal = this.raw;
-      this.text        = res.data?.text;
+      const regex =  new RegExp('&nbsp;', 'gm');
+      this.rawOriginal = _.replace(this.raw, regex, ' ');
+      this.text        = _.replace(res.data?.text, this.regex, ' ');
     },
 
     /**
@@ -72,9 +75,11 @@ export const useRulesStore = defineStore('Rules', {
       const res        = await axios.post(`/rules/reset/${this.gameId}`, {
         authToken
       });
-      this.raw         = res.data?.raw;
-      this.rawOriginal = res.data?.raw;
-      this.text        = res.data?.text;
+      const regex =  new RegExp('&nbsp;', 'gm');
+
+      this.raw         = _.replace(res.data?.raw, regex, ' ');
+      this.rawOriginal = _.replace(res.data?.raw, regex, ' ');
+      this.text        = _.replace(res.data?.text, regex, ' ');
       this.released    = res.data?.released;
     },
     /**
@@ -87,12 +92,13 @@ export const useRulesStore = defineStore('Rules', {
     async releaseRules() {
       const authToken  = await getAuthToken();
       const res        = await axios.post(`/rules/release/${this.gameId}`, {
-        authToken,
-        text: this.text
+        authToken
       });
-      this.raw         = res.data?.raw;
-      this.rawOriginal = res.data?.raw;
-      this.text        = res.data?.text;
+      const regex =  new RegExp('&nbsp;', 'gm');
+
+      this.raw         = _.replace(res.data?.raw, regex, ' ');
+      this.rawOriginal = _.replace(res.data?.raw, regex, ' ');
+      this.text        = _.replace(res.data?.text, regex, ' ');
       this.released    = res.data?.released;
     }
 

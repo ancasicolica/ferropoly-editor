@@ -28,11 +28,14 @@ router.get('/data/:gameId', async function (req, res) {
     let gameStart     = _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
     let now           = DateTime.now();
     const editAllowed = now < gameStart;
+    const gamePlayFinalized = _.get(gp, 'internal.finalized', false);
     const rules       = await rulesModel.getRules(req.params.gameId);
     const text        = rulesCompiler({gp, raw: rules.raw});
 
     res.send({
-      editAllowed, rules: {
+      editAllowed,
+      gamePlayFinalized,
+      rules: {
         raw:      rules.raw,
         released: rules.released,
         text:     text
@@ -101,13 +104,16 @@ router.post('/release/:gameId', async (req, res) => {
     }
     logger.info(`${req.params.gameId} : releasing rules`);
 
-    const rules = await rulesModel.releaseRules(req.params.gameId, req.body.text, 'Neue Version');
+    const gp = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user);
+    const rules = await rulesModel.getRules(req.params.gameId);
+    const text = rulesCompiler({gp, raw: rules.raw});
+    const releasedRules= await rulesModel.releaseRules(req.params.gameId, text, 'Neue Version');
     // Temporary, until Game is on the same level like the editor
     await gameplayModel.updateRules(req.params.gameId, req.session.passport.user, {
-      text:    rules.released,
+      text:    releasedRules.released,
       changes: 'Aktualisiert'
     });
-    res.send({text: rules.text, raw: rules.raw, released: rules.released});
+    res.send({text: releasedRules.text, raw: releasedRules.raw, released: releasedRules.released});
   }
   catch (e) {
     logger.error('Exception in /rules/reset', e);
