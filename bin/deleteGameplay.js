@@ -2,6 +2,7 @@
 const ferropolyDb = require('../common/lib/ferropolyDb');
 const gpLib = require('../editor/lib/gameplayLib');
 const settings = require('../editor/settings');
+
 /**
  * Deletes a gameplay
  *
@@ -17,23 +18,24 @@ if (!argv.gameid || !argv.owner) {
   console.log('all params must be supplied');
   console.log('error');
   process.exit(code = -1);
-} else {
-  ferropolyDb.init(settings, async function (err) {
-    if (err) {
-      console.log('DB initialisation error: ' + err);
-      process.exit(-1);
-      return;
-    }
-    try {
-      await gpLib.deleteGameplay({gameId: argv.gameid, ownerEmail: argv.owner});
-      console.log('done');
-      process.exit(0);
-    }
-    catch(err) {
-      console.log('Deleting error: ', err);
-      process.exit(-1);
-    }
-  });
 }
+
+
+async function main() {
+  try {
+    await ferropolyDb.init(settings);
+    await gpLib.deleteGameplay({gameId: argv.gameid, ownerEmail: argv.owner});
+
+    await ferropolyDb.close();
+    console.log('OK');
+    process.exit(code = 0);
+  }
+  catch(err) {
+    console.error(err);
+    process.exit(code = -1);
+  }
+}
+
+main();
 
 

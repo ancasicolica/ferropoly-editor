@@ -19,7 +19,7 @@ let debug      = process.env.DEBUG || false;
 if (process.env.DEPLOY_TYPE === 'contabo') {
   // check which instance
   let rootPath = path.join(__dirname, '..');
-  console.log('Root path: ' + rootPath);
+  //console.log('Root path: ' + rootPath);
   if (_.endsWith(rootPath, 'preview')) {
     deployType = 'contabo_preview';
     preview    = true;
@@ -65,18 +65,9 @@ settings.debugSecret = process.env.FERROPOLY_DEBUG_SECRET || uuid();
 // API Key for requests
 settings.apiKey = process.env.FERROPOLY_API_KEY || uuid();
 
-if (debug) {
-  console.log('DEBUG Settings used');
-  // Use minified javascript files wherever available
-  settings.minifiedjs = false;
-} else {
-  console.log('DIST Settings with minified js files used');
-  // Use minified javascript files wherever available
-  settings.minifiedjs = true;
-}
 
 console.log('DEPLOY_TYPE: ' + deployType);
-console.log(settings);
+//console.log(settings);
 
 if (deployType && fs.existsSync(path.join(__dirname, 'settings/' + deployType + '.js'))) {
   module.exports = require('./settings/' + deployType + '.js')(settings);

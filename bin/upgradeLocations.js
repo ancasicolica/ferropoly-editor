@@ -7,24 +7,33 @@
 const settings      = require('../editor/settings');
 const ferropolyDb   = require('../common/lib/ferropolyDb');
 const locationModel = require('../common/models/locationModel');
+const argv        = require('minimist')(process.argv.slice(2));
 
-ferropolyDb.init(settings, async function (err) {
-  if (err) {
-    console.log('DB initialisation error: ' + err);
-    process.exit(code = 0);
-    return;
+async function main() {
+  try {
+    await ferropolyDb.init(settings);
+
+    const locations = await locationModel.getAllLocationsAsModel();
+
+    console.log(`Read ${locations.length} Locations`);
+
+    let nb = 0;
+    for await(let location of locations)
+     {
+       if (argv.v || argv.verbose) {
+         console.log(location.name);
+       }
+      await locationModel.saveLocation(location);
+      nb++;
+    }
+
+    console.log('done', nb);
+    process.exit(code = 1);
   }
-  const locations = await locationModel.getAllLocationsAsModel();
+  catch(err) {
+    console.error(err);
+    process.exit(code = -1);
+  }
+}
 
-  console.log(`Read ${locations.length} Locations`);
-
-  let nb = 0;
-  locations.forEach(async location => {
-    await locationModel.saveLocation(location);
-    nb++;
-  });
-
-  console.log('done', nb);
-  process.exit(code = 1);
-
-});
+main();

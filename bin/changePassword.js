@@ -17,20 +17,26 @@ if (!argv.email || !argv.password) {
   process.exit(code = -1);
 }
 
-ferropolyDb.init(settings, async function (err) {
-  if (err) {
-    console.log('DB initialisation error: ' + err);
-    process.exit(code = 0);
-    return;
-  }
-  const user = await userModel.getUserByMailAddress(argv.email);
-  if (!user) {
-    console.log('User "' + argv.email + '" not found');
-    process.exit(code = 0);
-    return;
-  }
-  await userModel.updateUser(user, `${argv.password}`);
-  console.log('OK');
-  process.exit(code = 0);
+async function main() {
+  try {
+    await ferropolyDb.init(settings);
 
-});
+    const user = await userModel.getUserByMailAddress(argv.email);
+    if (!user) {
+      console.log('User "' + argv.email + '" not found');
+      process.exit(code = 0);
+      return;
+    }
+    await userModel.updateUser(user, `${argv.password}`);
+    await ferropolyDb.close();
+    console.log('OK');
+    process.exit(code = 0);
+
+  }
+  catch (err) {
+    console.error(err);
+    process.exit(code = -1);
+  }
+}
+
+main();

@@ -37,20 +37,19 @@ let newUser = new userModel.Model({
 
 console.log('Creating user:', newUser);
 
-ferropolyDb.init(settings, async function (err) {
-  if (err) {
-    console.log('DB initialisation error: ' + err);
-    process.exit(code = 0);
-    return;
-  }
+async function main() {
   try {
-    await userModel.updateUser(newUser, argv.password);
+    await ferropolyDb.init(settings);
+    await userModel.updateUser(newUser, argv.password.toString());
+
+    await ferropolyDb.close();
     console.log('OK');
-  }
-  catch (err) {
-    console.log('User creation error: ' + err);
-  }
-  finally {
     process.exit(code = 0);
   }
-});
+  catch(err) {
+    console.error(err);
+    process.exit(code = -1);
+  }
+}
+
+main();

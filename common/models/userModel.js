@@ -104,7 +104,7 @@ function verifyPassword(user, enteredPassword) {
  */
 function createPasswordHash(salt, password) {
   if (!_.isString(salt) || !_.isString(password)) {
-    logger.error(new Error('Invalid params supplied', salt, password));
+    logger.error(new Error('Invalid params supplied'), salt, password);
     return 'not-a-valid-hash-' + _.random(0, 100000000);
   }
   return pbkdf2.pbkdf2Sync(password, salt, 1, 64, 'sha256').toString('base64');

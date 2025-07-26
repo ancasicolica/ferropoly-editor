@@ -85,23 +85,22 @@ async function createGame4() {
   });
 }
 
-ferropolyDb.init(settings, async function (err) {
-  if (err) {
-    console.log('DB initialisation error: ' + err);
-    process.exit(code = 0);
-    return;
-  }
-  try {
 
+async function main() {
+  try {
+    await ferropolyDb.init(settings);
     await createGame1();
     await createGame2();
     await createGame3();
     await createGame4();
+    await ferropolyDb.close();
     console.log('OK');
     process.exit(code = 0);
   }
-  catch (err) {
-    console.log('Sample gameplay 4 creation error: ' + err);
-    process.exit(code = 0);
+  catch(err) {
+    console.error(err);
+    process.exit(code = -1);
   }
-});
+}
+
+main();
