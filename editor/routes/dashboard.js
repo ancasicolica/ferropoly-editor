@@ -12,7 +12,6 @@ const userModel     = require('../../common/models/userModel');
 const teamModel     = require('../../common/models/teamModel');
 const propertyModel = require('../../common/models/propertyModel');
 const _             = require('lodash');
-const async         = require('async');
 const logger        = require('../../common/lib/logger').getLogger('routes:dashboard');
 const settings      = require('../settings.js');
 
@@ -53,27 +52,17 @@ router.get('/gameplays', async function (req, res) {
       return res.status(403).send({message: 'Admins only'});
     }
     const gps = await gameplayModel.getAllGameplays();
-    async.each(gps,
-      async function (gp, cb) {
-        gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
-        // count the teams
-        gp.teamNb    = await teamModel.countTeams(gp.internal.gameId);
-        // count properties, makes only really sense when gameplay is finalized
-        if (gp.internal.finalized) {
-          gp.propertyNb = await propertyModel.countProperties(gp.internal.gameId);
-          cb(null);
-        } else {
-          cb(null);
-        }
 
-      },
-      function (err) {
-        if (err) {
-          return res.status(500).send({message: 'Teams not read: ' + err.message});
-        }
-        res.send({gameplays: gps});
+    for (const gp of gps) {
+      gp.summary = `${settings.mainInstances[0]}/summary/${gp.internal.gameId}`;
+      // count the teams
+      gp.teamNb  = await teamModel.countTeams(gp.internal.gameId);
+      if (gp.internal.finalized) {
+        gp.propertyNb = await propertyModel.countProperties(gp.internal.gameId);
       }
-    );
+    }
+    res.send({gameplays: gps});
+
   }
   catch (err) {
     return res.status(500).send({message: 'User not read: ' + err.message});
@@ -92,12 +81,9 @@ router.get('/users', async function (req, res) {
       return res.status(403).send({message: 'Admins only'});
     }
 
-    await userModel.countUsers((err, userNb) => {
-      if (err) {
-        return res.status(500).send({message: 'Users not read: ' + err.message});
-      }
-      res.send({userNb: userNb});
-    });
+    const userNb = await userModel.countUsers();
+    res.send({userNb: userNb});
+
   }
   catch (err) {
     res.status(500).send({message: 'User not read: ' + err.message});
