@@ -10,8 +10,8 @@ import axios from 'axios';
 export const useUserStore = defineStore('user', {
   state  : () => ({
     personalData: {
-      forename: 'noy',
-      surename: 'undefined',
+      forename: '',
+      surename: '',
       email   : undefined,
       avatar  : undefined
     },
