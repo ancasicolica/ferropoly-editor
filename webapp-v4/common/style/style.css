@@ -1,0 +1,31 @@
+
+@import "tailwindcss";
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+
+}
+@layer components {
+    .my-flex-container {
+        @apply flex flex-row;
+    }
+
+    .my-box {
+        @apply bg-sky-700 basis-128 m-3 pl-4 pt-2 pb-6;
+    }
+
+    h1 {
+       @apply text-4xl
+    }
+    h2 {
+       @apply text-3xl
+    }
+    h3 {
+       @apply text-2xl
+    }
+    h4 {
+       @apply text-xl
+    }
+}

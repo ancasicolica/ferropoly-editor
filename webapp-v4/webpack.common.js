@@ -27,7 +27,17 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use : ['style-loader', 'css-loader']
+        use : ['style-loader', 'css-loader', {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: {
+              plugins: [
+                require('@tailwindcss/postcss'), // Use the main Tailwind CSS package
+                require('autoprefixer'), // Autoprefixer for browser compatibility
+              ],
+            },
+          },
+        }]
       },
       {
         test: /\.html$/i,

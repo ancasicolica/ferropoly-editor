@@ -200,7 +200,7 @@ let initServer = async function () {
   });
   server.listen(app.get('port'), app.get('ip'), async function () {
     logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
-    logger.info('Ferropoly Editor, Copyright (C) 2015-2024 Christian Kuster, CH-8342 Wernetshausen');
+    logger.info('Ferropoly Editor, Copyright (C) 2015-2025 Christian Kuster, CH-8342 Wernetshausen');
     logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
     logger.info('This is free software, and you are welcome to redistribute it');
     logger.info('under certain conditions; see www.ferropoly.ch for details.');

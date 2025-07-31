@@ -13,10 +13,8 @@ import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import {createRouter, createWebHashHistory} from 'vue-router'
 
-import 'primeicons/primeicons.css'                      ;    //icons
-import '/node_modules/primeflex/primeflex.css'          ;    //primeflex
 import 'primeicons/primeicons.css';
-import '../style/app.scss'            ;    //core css
+import '../style/style.css';    //core css
 
 
 import locale from '../resources/de.json';

@@ -4,39 +4,61 @@
   Created: 19.05.2024
 
 -->
-<template lang="pug">
-  prime-menubar(:model="elements" exact=false)
-    template(#start)
-      .flex.flex-row.flex-wrap.start
-        .flex.justify-content-center.align-items-center
-          img.start-logo(v-if="favicon" :src="favicon" @click="goToRoot")
-        .flex.justify-content-center.align-items-center
-          div.start-title(@click="goToRoot") {{title}}
-    template(#item="{ item, props, root, hasSubmenu }")
-      router-link.no-underline.menu-item(v-if="item.route" v-slot="{ href, navigate }" :to="{name: item.route}" :id="item.key")
-        a.v-ripple(:href="href" v-bind="props.action" @click="navigate")
-          span(:class='item.icon')
-          span {{ item.label }}
-      a(v-else :href="item.url").v-ripple.flex.align-items-center.menu-item(v-bind='props.action' :id="item.key" @click="onItem(item)")
-        span(:class='item.icon')
-        span {{ item.label }}
-        span.ml-auto.border-1.surface-border.border-round.surface-100.text-xs.p-1(v-if='item.shortcut') {{ item.shortcut }}
-        i(v-if='hasSubmenu' :class="['pi pi-angle-down text-primary', { 'pi-angle-down ml-2': root, 'pi-angle-right ml-auto': !root }]")
+<template>
+  <prime-menubar :model="elements" exact="false">
+    <template #start>
+      <div class="flex flex-row flex-wrap start">
+        <div class="flex justify-content-center align-items-center">
+          <img class="start-logo" v-if="favicon" :src="favicon" @click="goToRoot"/>
+        </div>
+        <div class="flex justify-content-center align-items-center">
+          <div class="start-title pt-4 " @click="goToRoot">{{ title }}</div>
 
-    template(#end)
-      .flex.align-items-center.gap-2
-        .flex(v-if="showOnlineStatus && online")
-          i.pi.pi-cloud.online(style="font-size:  2rem" v-tooltip.left="'Online Status OK!'")
-        .flex(v-if="showOnlineStatus && !online")
-          i.pi.pi-times-circle.offline(style="font-size:  1.8rem" v-tooltip.left="'Keine Verbindung zum Server!'")
-        .flex(v-if="helpUrl")
-          a.help-button(v-if="!helpText" :href="helpUrl" target="_blank")
-            i.pi.pi-question-circle(style="font-size:  1.6rem")
-          a.no-underline(v-if="helpText" :href="helpUrl")
-            span {{helpText}}
-        .flex(v-if="showUserBox")
-          prime-button(type='button' severity="secondary" size="small" rounded icon='pi pi-user' @click='toggle' aria-haspopup='true' aria-controls='overlay_menu')
-          tiered-menu#overlay_menu(ref='menu' :model='menuUser' :popup='true')
+        </div>
+      </div>
+    </template>
+
+    <template #item="{ item, props, root, hasSubmenu }">
+      <router-link class="no-underline menu-item" v-if="item.route" v-slot="{ href, navigate }" :to="{name: item.route}"
+                   :id="item.key">
+        <a class="v-ripple" :href="href" v-bind="props.action" @click="navigate">
+          <span :class="item.icon"></span>
+          <span>{{ item.label }}</span>
+        </a>
+      </router-link>
+      <a class="v-ripple flex align-items-center menu-item" v-else :href="item.url" v-bind="props.action"
+         :id="item.key" @click="onItem(item)">
+        <span :class="item.icon"></span><span>{{ item.label }}</span>
+        <span class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1"
+              v-if="item.shortcut">{{ item.shortcut }}</span>
+        <i v-if="hasSubmenu"
+           :class="['pi pi-angle-down text-primary', { 'pi-angle-down ml-2': root, 'pi-angle-right ml-auto': !root }]"></i>
+      </a>
+    </template>
+
+    <template #end>
+      <div class="flex align-items-center gap-2">
+        <div class="flex" v-if="showOnlineStatus &amp;&amp; online"><i class="pi pi-cloud online"
+                                                                       style="font-size:  2rem"
+                                                                       v-tooltip.left="'Online Status OK!'"></i></div>
+        <div class="flex" v-if="showOnlineStatus &amp;&amp; !online">
+          <i class="pi pi-times-circle offline" style="font-size:  1.8rem" v-tooltip.left="'Keine Verbindung zum Server!'"></i>
+        </div>
+        <div class="flex" v-if="helpUrl"><a class="help-button" v-if="!helpText" :href="helpUrl" target="_blank">
+          <i class="pi pi-question-circle" style="font-size:  1.6rem"></i>
+        </a>
+          <a class="no-underline" v-if="helpText"
+             :href="helpUrl"><span>{{ helpText }}</span>
+          </a>
+        </div>
+        <div class="flex" v-if="showUserBox">
+          <prime-button type="button" severity="secondary" size="small" rounded="rounded" icon="pi pi-user"
+                        @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"></prime-button>
+          <tiered-menu id="overlay_menu" ref="menu" :model="menuUser" :popup="true"></tiered-menu>
+        </div>
+      </div>
+    </template>
+  </prime-menubar>
 
 </template>
 <script>
@@ -168,7 +190,6 @@ export default {
   padding-right: 5px;
   padding-left: 5px;
   cursor: pointer;
-
 }
 
 .menu-selected {
