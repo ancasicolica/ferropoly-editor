@@ -3,10 +3,12 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 30.05.2024
 -->
-<template lang="pug">
-  #info-header(:style="{backgroundImage: backgroundImage}")
-    #info-welcome
-      h1.info-header {{greetingText}}
+<template>
+  <div id="info-header" :style="{backgroundImage: backgroundImage}">
+    <div id="info-welcome">
+      <h1 class="info-header">{{greetingText}}</h1>
+    </div>
+  </div>
 </template>
 <script>
 
