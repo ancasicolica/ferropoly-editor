@@ -3,10 +3,8 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 30.05.2024
 -->
-<template lang="pug">
-  welcome-bar(user-name="Christian")
-
-
+<template>
+  <welcome-bar user-name="Christian"></welcome-bar>
 </template>
 <script>
 import WelcomeBar from '../../../common/components/WelcomeBar.vue';
