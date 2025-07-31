@@ -6,6 +6,7 @@
 <template>
   <div id="info-header" :style="{backgroundImage: backgroundImage}">
     <div id="info-welcome">
+      <span class="mt-3"> </span>
       <h1 class="info-header">{{greetingText}}</h1>
     </div>
   </div>

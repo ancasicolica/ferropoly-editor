@@ -12,8 +12,7 @@
           <img class="start-logo" v-if="favicon" :src="favicon" @click="goToRoot"/>
         </div>
         <div class="flex justify-content-center align-items-center">
-          <div class="start-title pt-4 " @click="goToRoot">{{ title }}</div>
-
+          <div class="start-title pt-4" @click="goToRoot">{{ title }}</div>
         </div>
       </div>
     </template>
