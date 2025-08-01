@@ -7,21 +7,22 @@
 <template>
   <div>
     <h2>Locations</h2>
-    <div class="grid">
-        <div class="col-6">Version</div>
-        <div class="col-6">{{locationInfo.version}}</div>
-    </div>
-    <div class="grid">
-        <div class="col-6">Anzahl Orte total</div>
-        <div class="col-6">{{locationInfo.all}}</div>
-    </div>
-    <div v-for="map in enabledMaps" :key="map.name"  class="grid">
-
-        <div class="col-6"> {{map.name}}</div>
-        <div class="col-6"> {{map.locationNb}}</div>
-
-    </div>
-
+    <table class="table-fixed border-spacing-[7px]">
+      <tbody>
+      <tr>
+        <td>Version</td>
+        <td>{{ locationInfo.version }}</td>
+      </tr>
+      <tr>
+        <td>Anzahl Orte total</td>
+        <td>{{ locationInfo.all }}</td>
+      </tr>
+      <tr v-for="map in enabledMaps" :key="map.name">
+        <td class="pr-5">{{ map.name }}</td>
+        <td>{{ map.locationNb }}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -33,7 +34,7 @@ import {computed} from 'vue';
 const dashboardStore = useDashboardStore();
 const {locationInfo} = storeToRefs(dashboardStore);
 
-const enabledMaps = computed(()=> {
+const enabledMaps = computed(() => {
   return dashboardStore.locationInfo.maps.filter(map => map.enabled !== false);
 })
 </script>

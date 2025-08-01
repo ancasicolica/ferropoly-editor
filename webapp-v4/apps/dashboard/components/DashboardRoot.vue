@@ -7,12 +7,12 @@
 <template>
   <div>
     <menu-bar :elements="menuBarElements"></menu-bar>
-    <div class="m-2">
+    <div class="ferropoly-container">
     <div>
       <h1>Admin Dashboard</h1>
     </div>
 
-    <div class="grid">
+    <div class="grid grid-cols-3 gap-4">
       <div class="col">
         <user-info></user-info>
       </div>
