@@ -5,22 +5,25 @@
 -->
 
 <template>
-  <menu-bar :elements="menuBarElements"></menu-bar>
-  <div class="ml-2 mr-2">
-    <h1>Spielleiter*innen</h1>
-    <p>Mit zusätzlichen Spielleiter*innen kannst Du dir die Arbeit in der Zentrale auf verschiedene Personen aufteilen:
-      jeder Spielleiter*in hat während des Spiels vollen Zugriff auf das Spielgeschehen und kann so für die Gruppen Orte
-      kaufen und Häuser bauen.</p>
-    <p>Die hier definierten Spielleiter*innen können jedoch die Preisliste nicht modifizieren und auch keine Gruppen
-      hinzufügen, das ist Dir als Organisator*in vorbehalten.</p>
-    <p>Es sind maximal drei weitere Spielleiter*innen möglich. Gib deren Email-Adresse in die Textfelder ein und
-      speichere diese. Für den Zugriff auf das Spiel müssen sich die Spielleiter*innen im Ferropoly mit derselben
-      Email-Adresse registriert haben.</p>
-    <div class="flex">
-      <add-admin class="flex-1"></add-admin>
-      <admin-list class="flex-1"></admin-list>
+  <div>
+    <menu-bar :elements="menuBarElements"></menu-bar>
+    <div class="ferropoly-container">
+      <h1>Spielleiter*innen</h1>
+      <p>Mit zusätzlichen Spielleiter*innen kannst Du dir die Arbeit in der Zentrale auf verschiedene Personen
+        aufteilen:
+        jeder Spielleiter*in hat während des Spiels vollen Zugriff auf das Spielgeschehen und kann so für die Gruppen
+        Orte
+        kaufen und Häuser bauen.</p>
+      <p>Die hier definierten Spielleiter*innen können jedoch die Preisliste nicht modifizieren und auch keine Gruppen
+        hinzufügen, das ist Dir als Organisator*in vorbehalten.</p>
+      <p>Es sind maximal drei weitere Spielleiter*innen möglich. Gib deren Email-Adresse in die Textfelder ein und
+        speichere diese. Für den Zugriff auf das Spiel müssen sich die Spielleiter*innen im Ferropoly mit derselben
+        Email-Adresse registriert haben.</p>
+      <div class="flex mt-2">
+        <add-admin class="flex-1"></add-admin>
+        <admin-list class="flex-1"></admin-list>
+      </div>
     </div>
-
   </div>
 </template>
 

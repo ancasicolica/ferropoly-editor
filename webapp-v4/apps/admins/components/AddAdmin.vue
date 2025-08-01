@@ -8,11 +8,11 @@
   <ferro-card class="mr-2 ml-2" title="Spielleiter*in hinzufügen">
     <Toast position="center"/>
     <div v-if="newAdminAllowed">
-      <Form :resolver @submit="onFormSubmit" class="flex flex-col gap-4 w-full sm:w-56" :validate-on-submit="true"
+      <Form :resolver @submit="onFormSubmit" class="" :validate-on-submit="true"
             ref="formRef">
         <FormField v-slot="$field" name="username" initial-value="" class="field">
           <label for="username">Email-Adresse</label>
-          <InputText id="username" class="w-full" aria-describedby="username-help" placeholder="Login Email-Adresse"/>
+          <InputText id="username" fluid class="w-full" aria-describedby="username-help" placeholder="Login Email-Adresse"/>
           <Message size="small" severity="secondary" variant="simple">Muss dieselbe Email-Adresse sein, mit der sich die
             Person einloggt. Die Person wird nicht benachrichtigt.
           </Message>
