@@ -3,18 +3,19 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 30.05.2024
 -->
-<template lang="pug">
-  //
-  menu-bar(:elements="menuBarElements" show-user-box  help-url="/about" help-text="Infos / Kontakt" )
-  welcome-bar(:user-name="userName")
-  .ml-3.mr-3
-    p.intro Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende bearbeiten. Weitere Infos findest Du auf der&nbsp;
-      a(href='http://www.ferropoly.ch' target='blank') Ferropoly Webseite
-      | .
-    game-collection
+<template>
+  <div>
+    <menu-bar :elements="menuBarElements" show-user-box help-url="/about" help-text="Infos / Kontakt"></menu-bar>
+    <welcome-bar :user-name="userName"></welcome-bar>
+    <div class="ferropoly-container">
+      <p class="intro">Dies ist der Ferropoly Spiel-Editor. Damit kannst Du neue Spiele erstellen oder bestehende
+        bearbeiten. Weitere Infos findest Du auf der
+        <a href='http://www.ferropoly.ch' target='blank'> Ferropoly Webseite</a>.</p>
+      <game-collection></game-collection>
+      <agb-confirmator></agb-confirmator>
+    </div>
 
-  agb-confirmator
-
+  </div>
 </template>
 <script>
 import MenuBar from '../../../common/components/MenuBar.vue'
@@ -24,19 +25,20 @@ import {mapStores, mapWritableState} from 'pinia';
 import {useGameSelectorStore} from '../store/gameSelectorStore';
 import GameCollection from './GameCollection.vue';
 import AgbConfirmator from '../../../common/components/AgbConfirmator.vue';
+
 export default {
-  name      : 'GameSelectorRoot',
-  components: {AgbConfirmator, GameCollection, MenuBar, WelcomeBar, },
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
+  name:       'GameSelectorRoot',
+  components: {AgbConfirmator, GameCollection, MenuBar, WelcomeBar,},
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
     return {
       showAgbDialog: false
     }
   },
-  computed  : {
+  computed:   {
     ...mapStores(useUserStore, useGameSelectorStore),
     ...mapWritableState(useGameSelectorStore, {
       menuBarElements: 'menuBarElements',
@@ -49,20 +51,18 @@ export default {
       return retVal;
     }
   },
-  created   : function () {
+  created:    function () {
     console.log(this, this.userStore);
     this.userStore.fetchUserData()
-        .then(()=>{
+        .then(() => {
           console.log('Data fetched');
           this.gameSelectorStore.init();
         })
   },
-  mounted    : function () {
+  mounted:    function () {
     this.showAgbDialog = false;
   },
-  methods   : {
-
-  }
+  methods:    {}
 }
 
 </script>

@@ -3,19 +3,23 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 01.06.2024
 -->
-<template lang="pug">
-  confirm-dialog
-  h1 Meine Spiele
-  .grid.m1(v-if="gameplays.length === 0")
-    .col-12
-      p Du hast noch keine Spiele angelegt.&nbsp;
-      prime-button(
-        label="Neues Spiel anlegen"
-        as="a"
-        href="/newgame")
-  .grid.m1(v-if="gameplays.length > 0")
-    .col-4(v-for="gp in gameplays" :key="gp.internal.gameId")
-      game-card(:gameplay="gp" @delete-gameplay="onDeleteGameplay")
+<template>
+  <div>
+    <confirm-dialog></confirm-dialog>
+    <h1>Meine Spiele</h1>
+    <div class="" v-if="gameplays.length === 0">
+      <p>Du hast noch keine Spiele angelegt.</p>
+      <prime-button label="Neues Spiel anlegen" as="a" href="/newgame"></prime-button>
+    </div>
+    <div v-if="gameplays.length > 0" class="flex flex-wrap ">
+      <div v-for="gp in gameplays"
+           :key="gp.internal.gameId"
+           :id="gp.internal.gameId"
+           class="lg:basis-3/10 sm:basis-9/10 md:basis-9/20 mr-2 mb-2">
+        <game-card :gameplay="gp" @delete-gameplay="onDeleteGameplay"></game-card>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 

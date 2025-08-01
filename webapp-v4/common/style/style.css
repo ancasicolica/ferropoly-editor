@@ -26,9 +26,10 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
 }
+
 @layer components {
-    .my-flex-container {
-        @apply flex flex-row;
+    .ferropoly-container {
+        @apply ml-2 mr-2
     }
 
     .my-box {
@@ -46,5 +47,9 @@ body {
     }
     h4 {
        @apply text-xl
+    }
+    a {
+        text-decoration: none;
+        @apply text-blue-600
     }
 }

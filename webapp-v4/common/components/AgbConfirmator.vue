@@ -3,32 +3,34 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 01.06.2024
 -->
-<template lang="pug">
-  prime-dialog(v-model:visible="dialogVisible"
-    position="top"
-    closable=false
-    close-on-escape=false
-    modal
-    header="Ferropoly AGB")
-    p Für die Benutzung dieser Software muss den Ferropoly AGBs zugestimmt werden. Diese sind unter&nbsp;
-      a(href='http://www.ferropoly.ch/agb/' target='_blank') http://www.ferropoly.ch/agb/
-      | &nbsp; im Detail einsehbar.
-    p Zusammengefasst geht es darin um:
-    ul
-      li Die Verwendung Deiner Daten, welche bei der Benutzung der Software anfallen
-      li Die Verwendung dieser Software für kommerzielle Spiele
-      li Wer die Risiken bei der Benutzung dieser Software trägt
-    p
-    p(v-if="newAgb") Die bereits von Dir akzeptierten AGBs wurden angepasst, deshalb ist eine erneute Bestätigung notwendig.
-    p
-    p Mit "Annehmen" stimmst Du den Bestimmungen der aktuellen Version zu.
+<template>
+  <div>
+    <prime-dialog v-model:visible="dialogVisible"
+                  position="top"
+                  :closable="closable"
+                  :close-on-escape="closeOnEscape"
+                  modal
+                  header="Ferropoly AGB">
+      <p>Für die Benutzung dieser Software muss den Ferropoly AGBs zugestimmt werden. Diese sind unter
+        <a href='http://www.ferropoly.ch/agb/' target='_blank'> http://www.ferropoly.ch/agb/</a>
+        im Detail einsehbar.</p>
+      <p class="mt-2">Zusammengefasst geht es darin um:</p>
+      <ul class="list-disc mb-2 ml-4">
+        <li>Die Verwendung Deiner Daten, welche bei der Benutzung der Software anfallen.</li>
+        <li>Die Verwendung dieser Software für kommerzielle Spiele.</li>
+        <li>Wer die Risiken bei der Benutzung dieser Software trägt.</li>
+      </ul>
+      <p v-if="newAgb">Die bereits von Dir akzeptierten AGBs wurden angepasst, deshalb ist eine erneute Bestätigung
+        notwendig.</p>
+      <p class="mb-2 mt-2">Mit "Annehmen" stimmst Du den Bestimmungen der aktuellen Version zu.</p>
 
-    .flex.flex-row.flex-wrap.justify-content-end
-      .flex.align-content-center.justify-content-center
-        PrimeButton(label="akzeptieren" severity="primary" @click="acceptAgb")
-      .flex.align-content-center.justify-content-center.ml-5
-        PrimeButton(label="ablehnen" severity="secondary" @click="declineAgb")
+      <div class="flex justify-evenly">
+        <prime-button label="akzeptieren" severity="primary" @click="acceptAgb"></prime-button>
+        <prime-button label="ablehnen" severity="warn" @click="declineAgb"></prime-button>
+      </div>
 
+    </prime-dialog>
+  </div>
 
 </template>
 <script>
@@ -38,22 +40,24 @@ import PrimeButton from 'primevue/button';
 import axios from 'axios';
 
 export default {
-  name      : 'AgbConfirmator',
+  name:       'AgbConfirmator',
   components: {PrimeDialog, PrimeButton},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {},
-  data      : function () {
+  filters:    {},
+  mixins:     [],
+  model:      {},
+  props:      {},
+  data:       function () {
     return {
-      dialogVisible     : false,
-      actionRequired    : true,
-      currentAgbVersion : 0,
+      dialogVisible:      false,
+      actionRequired:     true,
+      closable:           false,
+      closeOnEscape:      false,
+      currentAgbVersion:  0,
       acceptedAgbVersion: 0,
     }
   },
-  computed  : {},
-  created   : function () {
+  computed:   {},
+  created:    function () {
     let self = this;
     axios.get('/agb')
         .then(response => {
@@ -68,7 +72,7 @@ export default {
           console.error(err)
         });
   },
-  methods   : {
+  methods:    {
     /**
      * Returns true, if the AGB were updated
      * @returns {boolean}

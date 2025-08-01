@@ -8,11 +8,11 @@
   <prime-menubar :model="elements" exact="false">
     <template #start>
       <div class="flex flex-row flex-wrap start">
-        <div class="flex justify-content-center align-items-center">
-          <img class="start-logo" v-if="favicon" :src="favicon" @click="goToRoot"/>
+        <div class="flex justify-content-center content-center">
+          <img class="start-logo" alt="Ferropoly Logo" v-if="favicon" :src="favicon" @click="goToRoot"/>
         </div>
-        <div class="flex justify-content-center align-items-center">
-          <div class="start-title pt-4" @click="goToRoot">{{ title }}</div>
+        <div class="content-center">
+          <div class="start-title" @click="goToRoot">{{ title }}</div>
         </div>
       </div>
     </template>
@@ -25,7 +25,7 @@
           <span>{{ item.label }}</span>
         </a>
       </router-link>
-      <a class="v-ripple flex align-items-center menu-item" v-else :href="item.url" v-bind="props.action"
+      <a class="v-ripple flex content-center menu-item" v-else :href="item.url" v-bind="props.action"
          :id="item.key" @click="onItem(item)">
         <span :class="item.icon"></span><span>{{ item.label }}</span>
         <span class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1"
@@ -36,21 +36,23 @@
     </template>
 
     <template #end>
-      <div class="flex align-items-center gap-2">
-        <div class="flex" v-if="showOnlineStatus &amp;&amp; online"><i class="pi pi-cloud online"
-                                                                       style="font-size:  2rem"
-                                                                       v-tooltip.left="'Online Status OK!'"></i></div>
-        <div class="flex" v-if="showOnlineStatus &amp;&amp; !online">
-          <i class="pi pi-times-circle offline" style="font-size:  1.8rem" v-tooltip.left="'Keine Verbindung zum Server!'"></i>
+      <div class="flex content-center">
+        <div class="" v-if="showOnlineStatus &amp;&amp; online">
+          <i class="pi pi-cloud online" style="font-size:  2rem" v-tooltip.left="'Online Status OK!'">
+          </i>
         </div>
-        <div class="flex" v-if="helpUrl"><a class="help-button" v-if="!helpText" :href="helpUrl" target="_blank">
-          <i class="pi pi-question-circle" style="font-size:  1.6rem"></i>
-        </a>
-          <a class="no-underline" v-if="helpText"
-             :href="helpUrl"><span>{{ helpText }}</span>
+        <div class="ml-2" v-if="showOnlineStatus &amp;&amp; !online">
+          <i class="pi pi-times-circle offline" style="font-size:  1.8rem"
+             v-tooltip.left="'Keine Verbindung zum Server!'"></i>
+        </div>
+        <div class="ml-2 content-center" v-if="helpUrl">
+          <a class="help-button" v-if="!helpText" :href="helpUrl" target="_blank">
+            <i class="pi pi-question-circle" style="font-size:  1.6rem"></i>
+          </a>
+          <a class="no-underline" v-if="helpText" :href="helpUrl">{{ helpText }}
           </a>
         </div>
-        <div class="flex" v-if="showUserBox">
+        <div class="ml-2" v-if="showUserBox">
           <prime-button type="button" severity="secondary" size="small" rounded="rounded" icon="pi pi-user"
                         @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"></prime-button>
           <tiered-menu id="overlay_menu" ref="menu" :model="menuUser" :popup="true"></tiered-menu>
@@ -62,13 +64,12 @@
 </template>
 <script>
 import PrimeMenubar from 'primevue/menubar';
-import PrimeMenu from 'primevue/menu';
 import PrimeButton from 'primevue/button';
 import TieredMenu from 'primevue/tieredmenu';
 
 export default {
   name:       'MenuBar',
-  components: {PrimeMenubar, PrimeMenu, PrimeButton, TieredMenu},
+  components: {PrimeMenubar, PrimeButton, TieredMenu},
   filters:    {},
   mixins:     [],
   model:      {},
@@ -186,8 +187,7 @@ export default {
 
 .start-title {
   font-weight: bold;
-  padding-right: 5px;
-  padding-left: 5px;
+  padding-left: 4px;
   cursor: pointer;
 }
 
