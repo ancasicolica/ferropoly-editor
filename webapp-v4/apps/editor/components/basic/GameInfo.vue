@@ -3,22 +3,35 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  ferro-card(title="Spielinformationen")
-    .flex.flex-column.gap-1
-      label.info Erstellungsdatum
-      div {{creationDate}}
-    .flex.flex-column.gap-1.mt-3
-      label.info Letzte Änderung
-      div {{lastEdited}}
-    .flex.flex-column.gap-1.mt-3
-      label.info Karte
-      div {{map}}
-    .flex.flex-column.gap-1.mt-3
-      label.info Spiel ID
-      div {{gameId}}
-      prime-message(size="small" variant="simple" severity="secondary") Die Spiel ID wird intern für dieses Spiel verwendet. Bei Support-Anfragen bitte immer diese ID angeben.
+<template>
+  <div>
+    <ferro-card title="Spielinformationen">
+      <div>
+        <div class="mb-2">
+          <label class="info">Erstellungsdatum</label>
+          <div> {{creationDate}}</div>
+        </div>
+        <div class="mb-2">
+          <label class="info">Letzte Änderung</label>
+          <div> {{lastEdited}}</div>
+        </div>
+        <div class="mb-2">
+          <label class="info">Karte</label>
+          <div> {{map}}</div>
+        </div>
+        <div class="">
+          <label class="info">Spiel ID</label>
+          <div> {{gameId}}</div>
+          <prime-message size="small" variant="simple" severity="secondary">
+            Die Spiel ID wird intern für dieses Spiel verwendet. Bei Support-Anfragen bitte immer diese ID angeben.
+          </prime-message>
+        </div>
 
+      </div>
+
+
+    </ferro-card>
+  </div>
 </template>
 <script>
 import FerroCard from '../../../../common/components/FerroCard.vue';

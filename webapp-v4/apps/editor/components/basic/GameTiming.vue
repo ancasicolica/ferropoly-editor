@@ -3,41 +3,49 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
+<template>
+  <div>
+    <ferro-card title="Spielzeit">
+      <div>
+        <div class="mb-2">Das Spiel ist für den {{ gameDateFull }} angesetzt. Hier können die Zeiten für Spielstart und Spielende
+          definiert werden. Ein Spiel dauert mindestens zwei Stunden.
+        </div>
+        <div class="mb-2">
+          <label for="inputbox">Spielstart</label>
+          <date-picker v-model="gameStart" time-only fluid :invalid="!valid" :max-date="maxGameStart"></date-picker>
+          <prime-message v-if="valid"
+                         size="small"
+                         variant="simple"
+                         severity="secondary"> Erste Startgeldausgabe, ab diesem Zeitpunkt können Orte gekauft werden.
+          </prime-message>
+          <prime-message v-if="!valid"
+                         severity="error"
+                         size="small"
+                         variant="simple">Die Startzeit muss vor dem Spielende liegen!
+          </prime-message>
+        </div>
+        <div class="mb-2">
+          <label for="inputbox">Spielende</label>
+          <date-picker v-model="gameEnd" time-only fluid :invalid="!valid" :min-date="minGameEnd"></date-picker>
+          <prime-message v-if="valid"
+                         size="small"
+                         variant="simple"
+                         severity="secondary">Letzte Ausgabe Zins und Startgeld, ab diesem Zeitpunkt sind keine
+            Buchungen mehr möglich.
+          </prime-message>
+          <prime-message v-if="!valid"
+                         severity="error"
+                         size="small"
+                         variant="simple">Das Spielende muss nach dem Spielstart sein!
+          </prime-message>
+        </div>
+        <prime-message v-if="oddDurationMessage" severity="warn"> {{ oddDurationMessage }}</prime-message>
+        <prime-message v-if="tooShortGameMessage" severity="error">{{ tooShortGameMessage }}</prime-message>
+        <p>Sämtliche Spieldaten werden automatisch am {{ gameDeleteFull }} gelöscht.</p>
+      </div>
+    </ferro-card>
+  </div>
 
-  ferro-card(title="Spielzeit")
-    div Das Spiel ist für den {{gameDateFull}} angesetzt. Hier können die Zeiten für Spielstart und Spielende definiert werden. Ein Spiel dauert mindestens zwei Stunden.
-
-    .flex.flex-column.gap-1.mt-3
-      label(for="inputbox") Spielstart
-      date-picker(v-model="gameStart" time-only fluid :invalid="!valid" :max-date="maxGameStart")
-      prime-message(
-        v-if="valid"
-        size="small"
-        variant="simple"
-        severity="secondary") Erste Startgeldausgabe, ab diesem Zeitpunkt können Orte gekauft werden.
-      prime-message(
-        v-if="!valid"
-        severity="error"
-        size="small"
-        variant="simple") Die Startzeit muss vor dem Spielende liegen!
-    .flex.flex-column.gap-1.mt-3.mb-3
-      label(for="inputbox") Spielende
-      date-picker(v-model="gameEnd" time-only fluid :invalid="!valid" :min-date="minGameEnd")
-      prime-message(
-        v-if="valid"
-        size="small"
-        variant="simple"
-        severity="secondary") Letzte Ausgabe Zins und Startgeld, ab diesem Zeitpunkt sind keine Buchungen mehr möglich.
-      prime-message(
-        v-if="!valid"
-        severity="error"
-        size="small"
-        variant="simple") Das Spielende muss nach dem Spielstart sein!
-
-    prime-message(v-if="oddDurationMessage" severity="warn" ) {{oddDurationMessage}}
-    prime-message(v-if="tooShortGameMessage" severity="error" ) {{tooShortGameMessage}}
-    p Sämtliche Spieldaten werden automatisch am {{gameDeleteFull}} gelöscht.
 </template>
 
 <script>

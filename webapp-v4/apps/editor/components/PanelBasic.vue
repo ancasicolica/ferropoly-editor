@@ -3,21 +3,18 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  .grid.m1
-    .col-12
-       h1 Spieldaten
-  .grid.m1
-    .col-4
-      contact-info
-    .col-4
-      game-timing
-    .col-4
-      game-info
-      prime-button.mt-5(severity="primary" @click="onSave") Speichern und weiter
-  .grid.m1(v-if="apiErrorMessage")
-    .col-12
-      prime-message(severity="error") {{apiErrorMessage}}
+<template>
+  <div>
+    <h1>Spieldaten</h1>
+    <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <contact-info></contact-info>
+      <game-timing></game-timing>
+      <game-info></game-info>
+    </div>
+    <div v-if="apiErrorMessage">
+      <prime-message severity="error">{{apiErrorMessage}}</prime-message>
+    </div>
+  </div>
 </template>
 <script>
 

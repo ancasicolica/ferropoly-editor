@@ -3,28 +3,34 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 26.12.2024
 -->
-<template lang="pug">
-  .flex.flex-column.gap-1.mb-3
-    label(for="inputbox") {{label}}
-    div.p-field
-      div.input-wrapper
-        span.p-input-icon-right
-          i(:class="[ 'pi',valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' :  'p-error']" v-if="validationIconsEnabled")
-          input-text(type="text"
-            :value="modelValue"
-            @valueChange="onValueChange"
-            :invalid="!valid"
-            :class="{ 'p-invalid': !valid }")
-    prime-message#organisatorName(
-      v-if="valid"
-      size="small"
-      variant="simple"
-      severity="secondary") {{info}}
-    prime-message(
-      v-for="err in errors"
+<template>
+  <div class="flex flex-col mb-2">
+    <label for="inputbox"> {{ label }}</label>
+    <div>
+      <div class="input-wrapper">
+        <span class="p-input-icon-right">
+          <i :class="[ 'pi',valid ? 'pi-check-circle' : 'pi-times-circle', valid ? 'p-success' :  'p-error']"
+             v-if="validationIconsEnabled"></i>
+          <input-text type="text"
+                      :value="modelValue"
+                      @valueChange="onValueChange"
+                      :invalid="!valid"
+                      :class="{ 'p-invalid': !valid }"></input-text>
+        </span>
+      </div>
+    </div>
+    <prime-message id="organisatorName" v-if="valid"
+                   size="small"
+                   variant="simple"
+                   severity="secondary">{{ info }}
+    </prime-message>
+    <prime-message v-for="err in errors"
       severity="error"
       size="small"
-      variant="simple") {{err.message}}
+      variant="simple">{{ err.message }}
+    </prime-message>
+  </div>
+
 
 </template>
 <script>
@@ -90,8 +96,8 @@ export default {
      * The default value is set to `false`, meaning validation icons are enabled by default.
      */
     validationIconsDisabled: {
-      type: Boolean,
-      default: ()=> {
+      type:    Boolean,
+      default: () => {
         return false;
       }
     }
@@ -127,6 +133,7 @@ export default {
 .p-success {
   color: green;
 }
+
 .p-error {
   color: red;
 }

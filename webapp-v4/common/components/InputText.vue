@@ -3,18 +3,16 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 23.06.2024
 -->
-<template lang="pug">
-  div.flex.flex-column.mt-1
-    label(v-if="label") {{label}}
-    prime-input-text(
-      type="text"
-      v-model="value"
-      :maxlength="maxLength"
-      :invalid="invalid"
-    )
-    small.error-text.mt-1(v-if="errorText") {{errorText}}
-    small.mt-1(v-if="!errorText") &nbsp;
-
+<template>
+  <div class="flex flex-col">
+    <label v-if="label">{{ label }}</label>
+    <prime-input-text type="text"
+                      v-model="value"
+                      :maxlength="maxLength"
+                      :invalid="invalid"></prime-input-text>
+    <small class="error-text" v-if="errorText">{{ errorText }}</small>
+    <small v-if="!errorText">&nbsp;</small>
+  </div>
 </template>
 <script>
 
@@ -22,29 +20,29 @@ import PrimeInputText from 'primevue/inputtext';
 
 
 export default {
-  name      : 'InputText',
+  name:       'InputText',
   components: {PrimeInputText},
-  filters   : {},
-  mixins    : [],
-  props     : {
-    label: {
-      type: String,
+  filters:    {},
+  mixins:     [],
+  props:      {
+    label:      {
+      type:    String,
       default: ''
     },
     modelValue: {
-      type   : String,
+      type:    String,
       default: ''
     },
-    minLength : {
-      type   : String,
-      default: "0"
+    minLength:  {
+      type:    String,
+      default: '0'
     },
-    maxLength : {
-      type   : String,
-      default: "60"
+    maxLength:  {
+      type:    String,
+      default: '60'
     }
   },
-  data      : function () {
+  data:       function () {
     return {
       errorText: undefined
     }
@@ -65,7 +63,7 @@ export default {
     invalid() {
       if ((!this.modelValue && parseInt(this.minLength) > 0) || (this.modelValue && this.modelValue.length < parseInt(this.minLength))) {
 
-    //    if (!this.modelValue && this.modelValue.length < parseInt(this.minLength)) {
+        //    if (!this.modelValue && this.modelValue.length < parseInt(this.minLength)) {
         this.errorText = `Das Feld muss mindestens ${this.minLength} Zeichen enthalten.`;
         return true;
       }
@@ -77,7 +75,7 @@ export default {
       return false;
     }
   },
-  created : function () {
+  created:  function () {
   }
 
 }

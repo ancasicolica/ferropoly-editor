@@ -3,10 +3,13 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 20.05.2024
 -->
-<template lang="pug">
-  div(:class="class")
-    Panel(:header="title" :toggleable="toggleable" :class="class")
-      slot
+<template>
+  <div :class="class" >
+    <Panel :header="title" :toggleable="toggleable" :class="class">
+      <slot></slot>
+    </Panel>
+  </div>
+
 
 </template>
 <script>

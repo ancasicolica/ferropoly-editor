@@ -131,7 +131,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       return organisatorPhoneSchema.safeParse(state.owner.organisatorPhone);
     },
     gameTimesValidation(state) {
-      return {success: state.scheduling.gameEnd > state.scheduling.gameStart};
+      return {success: DateTime.fromJSDate(state.scheduling.gameEnd) > DateTime.fromJSDate(state.scheduling.gameStart).plus({hours: 2})};
     },
     pricelistPriceValidation(state) {
       return pricelistPriceSchema.safeParse({
@@ -190,7 +190,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       return state.joining.infotext;
     },
     gameStart(state) {
-      const hour = DateTime.fromJSDate(state.scheduling.gameStart).get('hour');
+      const hour   = DateTime.fromJSDate(state.scheduling.gameStart).get('hour');
       const minute = DateTime.fromJSDate(state.scheduling.gameStart).get('minute');
       return DateTime.fromJSDate(state.scheduling.gameDate).set({hour: hour, minute: minute});
     }
