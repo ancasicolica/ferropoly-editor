@@ -29,7 +29,7 @@ body {
 
 @layer components {
     .ferropoly-container {
-        @apply ml-2 mr-2
+        @apply ml-2 mr-2 mt-2
     }
 
     .my-box {
@@ -51,5 +51,8 @@ body {
     a {
         text-decoration: none;
         @apply text-blue-600
+    }
+    ul {
+        @apply list-disc mb-2 ml-4
     }
 }
