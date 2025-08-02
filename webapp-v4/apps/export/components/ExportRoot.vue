@@ -7,7 +7,7 @@
 <template>
   <div>
     <menu-bar :elements="menuBarElements"></menu-bar>
-    <div class="flex justify-content-center flex-wrap">
+    <div class="flex justify-center">
       <div class="flex align-items-center justify-content-center m-2">
         <ferro-card title="Spiel exportieren">
           <div>Du kannst hier deine erstellten Spieldaten downloaden und später wieder für ein neues Spiel importieren.</div>
