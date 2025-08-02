@@ -3,12 +3,13 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  menu-bar(:elements="menuBarElements"  show-user-box)
-
-  .ml-3.mr-3
-    // the different panels
-    router-view(v-if="ready")
+<template>
+  <div>
+    <menu-bar :elements="menuBarElements"  show-user-box></menu-bar>
+    <div>
+      <router-view v-if="ready"></router-view>
+    </div>
+  </div>
 </template>
 <script>
 

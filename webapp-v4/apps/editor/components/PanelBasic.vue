@@ -4,7 +4,7 @@
   Created: 24.12.2024
 -->
 <template>
-  <div>
+  <div class="ferropoly-container">
     <h1>Spieldaten</h1>
     <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       <contact-info></contact-info>

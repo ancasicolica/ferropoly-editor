@@ -184,7 +184,7 @@ export default {
       const element           = $('#property-list');
       const hDoc              = $(window).height();
       const offsetElement     = element.offset();
-      const rowHeight         = 27;
+      const rowHeight         = 31;
       const tableHeaderHeight = 120;
       const paginatorHeight   = 40;
 

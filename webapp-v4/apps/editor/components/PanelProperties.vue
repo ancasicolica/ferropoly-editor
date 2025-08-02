@@ -3,17 +3,22 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  .grid
-    prime-toast
-    .col-6
-      ferropoly-map(ref="map"
-        :map-options="mapOptions"
-        @map="onNewMap")
-    .col-6
-      property-count.mt-1(@size-update="onSizeUpdate")
-      property-selected.mt-1(:property="selectedProperty" @save-selected-property="onSaveSelectedProperty")
-      property-list.mt-1(ref="list" @filter-changed="onFilterChanged" @property-selected="onPropertySelected")
+<template>
+  <div class="ml-1 mr-1">
+    <prime-toast></prime-toast>
+    <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2">
+      <ferropoly-map ref="map"
+                     :map-options="mapOptions"
+                     @map="onNewMap"></ferropoly-map>
+      <div>
+        <property-count class="mt-1" @size-update="onSizeUpdate"></property-count>
+        <property-selected class="mt-1" :property="selectedProperty"
+                           @save-selected-property="onSaveSelectedProperty"></property-selected>
+        <property-list class="mt-1" ref="list" @filter-changed="onFilterChanged"
+                       @property-selected="onPropertySelected"></property-list>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 
