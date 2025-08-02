@@ -3,19 +3,33 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  h1 Preisliste erstellen
-  p Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
-  p Um ein versehentliches Bearbeiten zu verhindern, kann eine kontrollierte und für gut befundene Preisliste finalisiert werden. Dann sind keine Änderungen mehr möglich.
-  div(v-if="gameplayConflicts.length === 0")
-    prime-message(severity="success") Super! Die Spieldaten sind soweit komplett und gültig, die Preisliste kann erstellt werden.
-    prime-button.mt-5(@click="createPricelist" :disabled="priceListCreationPending") Preisliste erstellen
-    prime-message.mt-5(severity="error" v-if="errorMessage") {{errorMessage}}
-
-  div(v-if="gameplayConflicts.length > 0")
-    prime-message(severity="error") Folgende Probleme sind vorhanden und müssen vor der Erstellung einer Preisliste behoben werden:
-    ul
-      li(v-for="item in gameplayConflicts") {{item.message}}
+<template>
+  <div class="ferropoly-container">
+    <h1>Preisliste erstellen</h1>
+    <p>Sofern die Spieldaten gültig sind, kann eine Preisliste jederzeit erstellt werden. Es ist auch möglich, die
+      Preisliste später noch weiter zu bearbeiten. Nach einer Veröffentlichung der Preisliste sollte dies jedoch nicht
+      mehr getan werden, da sonst die Spieler möglicherweise mit falschen Daten arbeiten!
+    </p>
+    <p class="mt-2"> Um ein versehentliches Bearbeiten zu verhindern, kann eine kontrollierte und für gut befundene Preisliste
+      finalisiert werden. Dann sind keine Änderungen mehr möglich.
+    </p>
+    <div class="mt-5" v-if="gameplayConflicts.length === 0">
+      <prime-message severity="success">Super! Die Spieldaten sind soweit komplett und gültig, die Preisliste kann
+        erstellt werden.
+      </prime-message>
+      <prime-button class="mt-5" @click="createPricelist" :disabled="priceListCreationPending">Preisliste erstellen
+      </prime-button>
+    </div>
+    <prime-message class="mt-5" severity="error" v-if="errorMessage">{{ errorMessage }}</prime-message>
+    <div class="mt-5" v-if="gameplayConflicts.length > 0">
+      <prime-message severity="error">Folgende Probleme sind vorhanden und müssen vor der Erstellung einer Preisliste
+        behoben werden:
+        <ul>
+          <li v-for="item in gameplayConflicts" v-bind:key="item.message">{{ item.message }}</li>
+        </ul>
+      </prime-message>
+    </div>
+  </div>
 </template>
 <script>
 
@@ -86,7 +100,7 @@ export default {
           .catch(err => {
             this.errorMessage = err.message;
           })
-          .finally(()=> {
+          .finally(() => {
             this.priceListCreationPending = false;
           })
     }

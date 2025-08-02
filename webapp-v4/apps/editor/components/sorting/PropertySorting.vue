@@ -3,42 +3,53 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 31.12.2024
 -->
-<template lang="pug">
-  .grid
-    .col-4
-      div(v-if="properties.length > 0")
-        slick-list#property-list(axis="y" v-model:list="properties" useDragHandle)
-          slick-item.property(:class="`group-${(p.pricelist.propertyGroup % 2) || 0}`"  v-for="(p, i) in properties" :key="p" :index="i")
-            div.slick-item-content.flex.justify-content-between.align-items-center(@click="selectProperty(p)")
-              drag-handle.draghandle
-                i(class="pi pi-bars")
-              span.location-name &nbsp;{{p.location.name}}
-              span &nbsp;
-      div(v-if="properties.length === 0")
-        p Aktuell sind keine Orte dieser Preisklasse vorhanden.
-    .col-8
-      div
-        .title.mb-2(v-if="selectedProperty") {{selectedPropertyGroupItemCaption}}
-        .title.mb-2(v-if="!selectedProperty") Bitte Ort aus Liste auswählen
+<template>
+  <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-2 md:grid-cols-3">
+    <div>
+      <div v-if="properties.length > 0">
+        <slick-list id="property-list" axis="y" v-model:list="properties" useDragHandle="useDragHandle">
+          <slick-item :class="`group-${(p.pricelist.propertyGroup % 2) || 0}`" v-for="(p, i) in properties" :key="p"
+                      :index="i">
+            <div class="slick-item-content flex justify-content-between align-items-center" @click="selectProperty(p)">
+              <drag-handle class="draghandle">
+                <i class="pi pi-bars"></i>
+              </drag-handle>
+              <span class="location-name pl-3">{{ p.location.name }}</span>
+            </div>
+          </slick-item>
+        </slick-list>
+      </div>
+      <div v-if="properties.length &gt; 0">
 
-        ferropoly-map(ref="map"
-          :map-options="mapOptions"
-          @map="onNewMap")
+      </div>
+
+      <div v-if="properties.length === 0">
+        <p>Aktuell sind keine Orte dieser Preisklasse vorhanden.</p>
+      </div>
+    </div>
+    <div class="col-span-2">
+      <div class="title" v-if="selectedProperty"> {{ selectedPropertyGroupItemCaption }}</div>
+      <div class="title" v-if="!selectedProperty">Bitte Ort aus Liste auswählen</div>
+      <ferropoly-map ref="map"
+                     :map-options="mapOptions"
+                     @map="onNewMap"></ferropoly-map>
+    </div>
+  </div>
 </template>
 <script>
 
 import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesStore';
 import {mapWritableState} from 'pinia';
-import PrimeButton from 'primevue/button';
 import {SlickList, SlickItem, DragHandle} from 'vue-slicksort'
 import $ from 'jquery';
 import FerropolyMap from '../../../../common/components/FerropolyMap.vue';
 import Property from '../../../../common/lib/Property';
+
 let activeMap = null;
 
 export default {
   name:       'PropertySorting',
-  components: {FerropolyMap, PrimeButton, SlickList, SlickItem, DragHandle},
+  components: {FerropolyMap, SlickList, SlickItem, DragHandle},
   filters:    {},
   mixins:     [],
   model:      {},
@@ -61,10 +72,9 @@ export default {
       selectedProperty: 'selectedProperty'
     }),
     mapOptions() {
-      let opts = {
+      return {
         zoom: 14
       }
-      return opts;
     },
     selectedPropertyGroupItemCaption() {
       if (this.selectedProperty === null || this.selectedProperty.pricelist.propertyGroup < 0) {
@@ -98,7 +108,7 @@ export default {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler();
     this.selectedProperty = null;
-   },
+  },
   mounted() {
     this.resizeHandler();
     this.editorPropertyStore.getPropertyList().on('property-selected', this.propertySelected);
@@ -153,7 +163,7 @@ export default {
      */
     onNewMap(map) {
       console.log('new Map!', map);
-      activeMap = map;
+      activeMap          = map;
       const propertyList = this.editorPropertyStore.getPropertyList();
       this.$refs.map.setCenter(propertyList.getCenter());
       this.$refs.map.fitBounds(propertyList.getBounds());

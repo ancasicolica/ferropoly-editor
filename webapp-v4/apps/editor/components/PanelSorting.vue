@@ -3,30 +3,42 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  h1 Reihenfolge
-  progress-spinner(v-if="!ready")
-  tabs(value="0" v-if="ready" lazy)
-    tab-list
-      tab(value="0") Sehr billig
-      tab(value="1") Billig
-      tab(value="2") Unteres Mittelfeld
-      tab(value="3") Oberes Mittelfeld
-      tab(value="4") Teuer
-      tab(value="5") Sehr teuer
-    tab-panels
-      tab-panel(value="0")
-        property-sorting(range=0)
-      tab-panel(value="1")
-        property-sorting(range=1)
-      tab-panel(value="2")
-        property-sorting(range=2)
-      tab-panel(value="3")
-        property-sorting(range=3)
-      tab-panel(value="4")
-        property-sorting(range=4)
-      tab-panel(value="5")
-        property-sorting(range=5)
+<template>
+  <div class="ferropoly-container">
+    <h1>Reihenfolge</h1>
+    <progress-spinner v-if="!ready"></progress-spinner>
+    <tabs value="0" v-if="ready" lazy>
+      <tab-list>
+        <tab value="0">Sehr billig</tab>
+        <tab value="1">Billig</tab>
+        <tab value="2">Unteres Mittelfeld</tab>
+        <tab value="3">Oberes Mittelfeld</tab>
+        <tab value="4">Teuer</tab>
+        <tab value="5">Sehr teuer</tab>
+      </tab-list>
+      <tab-panels>
+        <tab-panel value="0">
+          <property-sorting range="0"></property-sorting>
+        </tab-panel>
+        <tab-panel value="1">
+          <property-sorting range="1"></property-sorting>
+        </tab-panel>
+        <tab-panel value="2">
+          <property-sorting range="2"></property-sorting>
+        </tab-panel>
+        <tab-panel value="3">
+          <property-sorting range="3"></property-sorting>
+        </tab-panel>
+        <tab-panel value="4">
+          <property-sorting range="4"></property-sorting>
+        </tab-panel>
+        <tab-panel value="5">
+          <property-sorting range="5"></property-sorting>
+        </tab-panel>
+      </tab-panels>
+    </tabs>
+  </div>
+
 </template>
 <script>
 
@@ -38,21 +50,22 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import ProgressSpinner from 'primevue/progressspinner';
 import {mapWritableState} from 'pinia';
-import { defineAsyncComponent } from 'vue';
+import {defineAsyncComponent} from 'vue';
 import {useEditorStore} from '../store/editorStore';
 
 export default {
   name:       'PanelSorting',
-  components: {PropertySorting: defineAsyncComponent(() =>
+  components: {
+    PropertySorting: defineAsyncComponent(() =>
         import('./sorting/PropertySorting.vue')
-    ), Tabs, TabList, Tab, TabPanels, TabPanel, ProgressSpinner},
+    ), Tabs, TabList, Tab, TabPanels, TabPanel, ProgressSpinner
+  },
   filters:    {},
   mixins:     [],
   model:      {},
   props:      {},
   data:       function () {
-    return {
-    }
+    return {}
   },
   computed:   {
     /**
