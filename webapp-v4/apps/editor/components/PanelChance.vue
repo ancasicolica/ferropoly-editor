@@ -3,16 +3,21 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  .grid.mt-2
-    .col-6
-      chance-settings
-    .col-6
-      gambling-settings
-      prime-button.mt-3(severity="primary" @click="onSave") Speichern und weiter
-      .div.mt-2(v-if="apiErrorMessage")
-        prime-message(severity="error") {{apiErrorMessage}}
-
+<template>
+  <div class="ferropoly-container">
+    <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2">
+      <chance-settings></chance-settings>
+      <div>
+        <gambling-settings></gambling-settings>
+        <div class="mt-4">
+          <prime-button severity="primary" @click="onSave">Speichern und weiter</prime-button>
+        </div>
+      </div>
+    </div>
+    <div v-if="apiErrorMessage">
+      <prime-message severity="error">{{ apiErrorMessage }}</prime-message>
+    </div>
+  </div>
 </template>
 <script>
 

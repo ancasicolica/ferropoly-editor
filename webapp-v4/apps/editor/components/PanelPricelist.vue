@@ -3,15 +3,18 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  .grid.mt-2
-    .col-6
-      pricelist-settings
-    .col-3
-      prime-button(severity="primary" @click="onSave") Speichern und weiter
-  .grid.m1(v-if="apiErrorMessage")
-    .col-12
-      prime-message(severity="error") {{apiErrorMessage}}
+<template>
+  <div class="ferropoly-container">
+    <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2 ">
+      <pricelist-settings></pricelist-settings>
+      <div>
+        <prime-button severity="primary" @click="onSave">Speichern und weiter</prime-button>
+      </div>
+    </div>
+    <div v-if="apiErrorMessage">
+      <prime-message severity="error">{{apiErrorMessage}}</prime-message>
+    </div>
+  </div>
 </template>
 <script>
 

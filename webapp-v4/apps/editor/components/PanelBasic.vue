@@ -9,7 +9,13 @@
     <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       <contact-info></contact-info>
       <game-timing></game-timing>
-      <game-info></game-info>
+      <div>
+        <game-info></game-info>
+        <div class="mt-4">
+          <prime-button severity="primary" @click="onSave">Speichern und weiter</prime-button>
+        </div>
+      </div>
+
     </div>
     <div v-if="apiErrorMessage">
       <prime-message severity="error">{{apiErrorMessage}}</prime-message>

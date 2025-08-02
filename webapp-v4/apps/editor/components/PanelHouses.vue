@@ -3,24 +3,29 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 24.12.2024
 -->
-<template lang="pug">
-  .grid.mt-2
-    .col-4
-      rent-factor-settings
-    .col-8
-      .grid.align-items-stretch
-        .col-6
-          house-cost-settings
-        .col-6
-          property-group-setting
-      .grid
-        .col-12
-          rent-preview
-  .grid.mt-1
-    .col-12.flex.align-items-center.justify-content-end
-      prime-button(severity="primary" @click="onSave") Speichern und weiter
-    .col-12(v-if="apiErrorMessage")
-      prime-message(severity="error") {{apiErrorMessage}}
+<template>
+  <div class="ferropoly-container">
+    <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <rent-factor-settings></rent-factor-settings>
+      <div class="col-span-2">
+        <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2">
+        <house-cost-settings></house-cost-settings>
+        <property-group-setting></property-group-setting>
+        </div>
+        <div>
+          <rent-preview></rent-preview>
+          <div class="mt-4 flex justify-end">
+            <prime-button severity="primary" @click="onSave">Speichern und weiter</prime-button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div v-if="apiErrorMessage">
+      <prime-message severity="error">{{ apiErrorMessage }}</prime-message>
+    </div>
+  </div>
 </template>
 <script>
 
