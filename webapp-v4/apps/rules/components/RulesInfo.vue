@@ -5,14 +5,15 @@
 -->
 
 <template>
-  <h1>Spielregeln</h1>
-  <general-rules-info></general-rules-info>
+  <div>
+    <h1>Spielregeln</h1>
+    <general-rules-info></general-rules-info>
+  </div>
 </template>
 
 <script setup>
 
 import GeneralRulesInfo from './info/GeneralRulesInfo.vue';
-import RulesActivator from './info/RulesActivator.vue';
 </script>
 
 <style scoped lang="scss">

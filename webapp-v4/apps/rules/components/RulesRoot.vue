@@ -7,7 +7,7 @@
 <template>
   <menu-bar :elements="menuBarElements">
   </menu-bar>
-  <div class="ml-3 mr-3 mt-2">
+  <div class="ferropoly-container">
     <router-view></router-view>
   </div>
 </template>

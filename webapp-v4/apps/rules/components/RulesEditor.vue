@@ -5,23 +5,29 @@
 -->
 
 <template>
-  <div class="grid">
+  <div>
     <Toast/>
     <ConfirmDialog></ConfirmDialog>
-    <div class="col-12 md:col-7 lg:col-7 xl:col-8">
-      <Editor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed">
-      </Editor>
-    </div>
-    <div v-if="rulesStore.editAllowed" class="col-12 md:col-5 lg:col-5 xl:col-4">
-      <Button label="Speichern" :disabled="saveDisabled" @click="onSaveRules"></Button>
-      <Button label="Spielregeln zurücksetzen" severity="secondary" @click="onResetRules" class="ml-5"></Button>
-      <Divider/>
-      <editor-help></editor-help>
-    </div>
-    <div class="mt-2" v-if="!rulesStore.editAllowed">
-      <message severity="error">Die Spielregeln können nicht mehr bearbeitet werden.</message>
+    <div class="grid grid-cols-12 gap-4">
+      <div class="sm:col-span-12 lg:col-span-8">
+        <Editor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed">
+        </Editor>
+      </div>
+      <div class="sm:col-span-12 lg:col-span-4">
+        <div v-if="rulesStore.editAllowed">
+          <Button label="Speichern" :disabled="saveDisabled" @click="onSaveRules"></Button>
+          <Button label="Spielregeln zurücksetzen" severity="secondary" @click="onResetRules" class="ml-5"></Button>
+          <Divider/>
+          <editor-help></editor-help>
+        </div>
+        <div v-if="!rulesStore.editAllowed">
+          <message severity="error">Die Spielregeln können nicht mehr bearbeitet werden.</message>
+        </div>
+      </div>
+
     </div>
   </div>
+
 
 </template>
 
