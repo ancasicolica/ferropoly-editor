@@ -18,7 +18,7 @@
                             :zod-result="playerStore.phoneValidation"></ferropoly-input-text>
       <ferropoly-input-text label="Email" v-model="teamLeaderEmail"
                             :zod-result="playerStore.emailValidation"></ferropoly-input-text>
-      <ferropoly-text-area v-model="remarks"
+      <ferropoly-text-area v-model="remarks" class="mb-3"
                            label="Bemerkungen (Austausch Team und Spielleitung)"></ferropoly-text-area>
       <Button label="Gruppe speichern" icon="pi pi-check" icon-pos="right"
               @click="onSave" :disabled="!teamDataValid"></Button>

@@ -6,16 +6,17 @@
 
 <template>
   <div>
-    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected" ></menu-bar>
+    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected"></menu-bar>
     <Toast/>
-    <div class="grid mr-2 ml-2">
-      <registered-players class="col-12" @new-team-allowed="onNewTeamAllowed"></registered-players>
-      <div class="col-12 mt-5">
-        <registration-info></registration-info>
+    <div class="ferropoly-container">
+      <div>
+        <registered-players class="" @new-team-allowed="onNewTeamAllowed"></registered-players>
+        <div class="mt-5">
+          <registration-info></registration-info>
+        </div>
       </div>
     </div>
   </div>
-
 
 </template>
 
@@ -76,7 +77,7 @@ const onItemSelected = function (item) {
   console.log(item);
 }
 
-const onNewTeamAllowed = function(allowed) {
+const onNewTeamAllowed = function (allowed) {
   newTeamsAllowed.value = allowed && playerStore.newTeamsAllowed;
 }
 </script>

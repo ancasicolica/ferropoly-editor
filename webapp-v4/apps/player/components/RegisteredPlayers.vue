@@ -46,7 +46,14 @@
           </template>
         </Column>
       </DataTable>
-      <div class="mt-2">Es sind {{ playerStore.teamsNb }} Gruppen angemeldet, maximal können sich 20 Gruppen anmelden.
+      <div class="mt-2" v-if="playerStore.teamsNb === 0">Bisher hat sich noch niemand angemeldet, maximal können sich 20
+        Gruppen anmelden.
+        <div class="mt-2" v-if="playerStore.teamsNb === 1">Es ist eine Gruppe angemeldet, maximal können sich 20 Gruppen
+          anmelden.
+          <div class="mt-2" v-if="playerStore.teamsNb > 1">Es sind {{ playerStore.teamsNb }} Gruppen angemeldet, maximal
+            können sich 20 Gruppen anmelden.
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="panel==='edit'">
@@ -55,8 +62,9 @@
     <div v-if="panel==='view'">
       <player-info @action-complete="onEditFinished"></player-info>
     </div>
-  </div>
 
+
+  </div>
 </template>
 
 <script setup>
@@ -76,12 +84,12 @@ import {playerSchema} from '../../../common/schemas/PlayerSchema';
 import PlayerEdit from './PlayerEdit.vue';
 import PlayerInfo from './PlayerInfo.vue';
 
-const confirm       = useConfirm();
-const toast         = useToast();
-const playerStore   = usePlayerStore();
-const panel         = ref('list');
-const emit          = defineEmits(['new-team-allowed']);
-const sortable      = ref(true); // for lint reasons only...
+const confirm     = useConfirm();
+const toast       = useToast();
+const playerStore = usePlayerStore();
+const panel       = ref('list');
+const emit        = defineEmits(['new-team-allowed']);
+const sortable    = ref(true); // for lint reasons only...
 
 onMounted(() => {
   setPanel('list');
@@ -194,7 +202,7 @@ const confirmTeam = function (uuid) {
 
 }
 
-const viewTeam    = function (uuid) {
+const viewTeam = function (uuid) {
   console.log('VIEW')
   playerStore.editTeam(playerStore.getTeamByUuid(uuid));
   setPanel('view');

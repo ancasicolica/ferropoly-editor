@@ -179,15 +179,15 @@ router.post('/store', async function (req, res) {
       // Check if a login is available
       let user   = await users.getUserByMailAddress(storedTeam.data.teamLeader.email);
       storedTeam = storedTeam.toObject();
-      user       = user.toObject();
+      user       = user ? user.toObject() : null;
 
-      if (user.info && !user.personalData.avatar) {
+      if (user?.info && !user?.personalData.avatar) {
         // Use default avatar
         user.personalData.avatar = gravatar.getUrl(user.personalData.email);
       }
       storedTeam.login = {
-        personalData: user.personalData,
-        info:         user.info
+        personalData: user?.personalData,
+        info:         user?.info
       };
       return res.send({team: storedTeam});
 

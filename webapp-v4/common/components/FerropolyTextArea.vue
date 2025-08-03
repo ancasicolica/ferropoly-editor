@@ -3,22 +3,25 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 29.03.2025
 -->
-<template lang="pug">
-  .flex.flex-column.gap-1.mb-3
-    label(for="inputbox") {{label}}
-    div.p-field
-      div.input-wrapper
-        prime-text-area(type="text"
-          :value="modelValue"
-          @valueChange="onValueChange"
-          fluid
-          auto-resize
-        )
-    prime-message#organisatorName(
-      v-if="valid"
-      size="small"
-      variant="simple"
-      severity="secondary") {{info}}
+<template>
+<div>
+<label for="inputbox">{{ label }}</label>
+<div class="">
+  <div class="input-wrapper">
+    <prime-text-area type="text"
+                     :value="modelValue"
+                     @valueChange="onValueChange"
+                     fluid
+                     auto-resize></prime-text-area>
+    <prime-message id="organisatorName"
+                   v-if="valid"
+                   size="small"
+                   variant="simple"
+                   severity="secondary">{{ info }}
+    </prime-message>
+  </div>
+</div>
+</div>
 
 </template>
 <script>
