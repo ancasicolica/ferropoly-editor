@@ -1,6 +1,11 @@
 # Changelog Ferropoly Editor
 
+* Verschiedene Verbesserungen für die Spielerstellung, wie Preislistenvorschau und sortieren der Orte
+* Spielregel-Editor überarbeitet: Spielregeln können flexibler bearbeitet werden - erst nach Update des Spiel-Programmes voll benutzbar
+* Team-Editor überarbeitet: übersichtlicher mit Team-Tabelle
+* Spiele können exportiert und importiert werden
 * Umbau auf vue3 Framework
+* Neue Frontend-Libraries: Primevue und Tailwind
 * Robots.txt hinzugefügt
 
 # v3.6.3 28.4.24
