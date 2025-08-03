@@ -44,7 +44,7 @@
         darauf achten, dass die teuersten Orte gut verteilt und nicht so einfach erreichbar sind.
       </div>
     </div>
-    <h2>Zufällige Orte</h2>
+    <h2 class="mt-4">Zufällige Orte</h2>
     <p>Auf Wunsch werden zufällig Orte der Preisliste zugewiesen. Damit ist ein einfacher Start möglich, die Lage der Orte muss trotzdem noch kritisch überprüft werden!
     </p>
     <div class="block">

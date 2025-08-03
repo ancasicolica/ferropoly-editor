@@ -23,7 +23,7 @@
       <small id="proposed-game-help"> {{ helpText }}</small>
     </div>
     <prime-message severity="error" v-if="newGameStore.errorMessage">{{ newGameStore.errorMessage }}</prime-message>
-    <p v-if="newGameStore.proposedGameIds.length > 0"> Keine Idee? Folgende Vorschläge stehen zur Auswahl:</p>
+    <p v-if="newGameStore.proposedGameIds.length > 0" class="mt-4"> Keine Idee? Lass dich inspirieren:</p>
     <prime-button class="mr-2 mb-2" v-for="(id, index) in newGameStore.proposedGameIds"
                   :key="index"
                   variant="outlined"

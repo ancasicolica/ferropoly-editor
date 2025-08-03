@@ -4,33 +4,26 @@
   Created: 07.07.2024
 -->
 <template>
-  <div>
-    <div class="grid">
-      <div class="col">
-        <h1>Spieldatum</h1>
-      </div>
-    </div>
-    <div class="grid">
-      <div class="col-4">
+  <div class="flex flex-wrap">
+    <div class="basis-1/3 pr-2">
+      <h1>Spieldatum</h1>
+      <p>
         Wann möchtet ihr spielen? Gegenwärtig werden nur eintägige Spiele unterstützt, die Start- und Endzeit kann in
         den Spieleinstellungen später angepasst werden. Spiele können maximal 3 Monate im Voraus geplant werden, das
         früheste Spieldatum ist morgen.
-        <div class="flex-col">
-          <p>Ausgewähltes Datum: {{ selectedDate }}</p>
-        </div>
-      </div>
-      <div clasS="col-8">
-        <date-picker v-model="newGameStore.gameDate"
-                     selectionMode="single"
-                     :minDate="minDate"
-                     :maxDate="maxDate"
-                     :number-of-months="numberOfMonths"
-                     inline></date-picker>
-      </div>
+      </p>
+      <p class="mt-5">Ausgewähltes Datum: {{ selectedDate }}</p>
     </div>
 
+    <div class="basis-2/3">
+      <date-picker v-model="newGameStore.gameDate"
+                   selectionMode="single"
+                   :minDate="minDate"
+                   :maxDate="maxDate"
+                   :number-of-months="numberOfMonths"
+                   inline></date-picker>
+    </div>
   </div>
-
 </template>
 <script setup>
 import {useNewGameStore} from '../store/newGameStore';

@@ -7,7 +7,7 @@
 <template>
   <div>
     <menu-bar :elements="newGameStore.menuBarElements"></menu-bar>
-    <stepper value="1" linear>
+    <stepper value="3" linear>
       <step-list>
         <step value="1">Spielname</step>
         <step value="2">Spieltag</step>
@@ -24,7 +24,7 @@
               </template>
             </card>
           </div>
-          <div class="flex pt-6 justify-content-end">
+          <div class="flex pt-6 justify-end">
             <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('2')"
                           iconPos="right"></prime-button>
           </div>
@@ -37,7 +37,7 @@
               </template>
             </card>
           </div>
-          <div class="flex pt-6 justify-content-between">
+          <div class="flex pt-6 justify-between">
             <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('1')"
                           severity="secondary"></prime-button>
             <prime-button v-if="!newGameStore.importedDataAvailable"
@@ -56,7 +56,7 @@
               </template>
             </card>
           </div>
-          <div class="flex pt-6 justify-content-between">
+          <div class="flex pt-6 justify-between">
             <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('2')"
                           severity="secondary"></prime-button>
             <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('4')"
@@ -71,7 +71,7 @@
               </template>
             </card>
           </div>
-          <div class="flex pt-6 justify-content-between">
+          <div class="flex pt-6 justify-between">
             <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('3')"
                           severity="secondary"></prime-button>
             <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('5')"
@@ -86,7 +86,7 @@
               </template>
             </card>
           </div>
-          <div class="flex pt-6 justify-content-between">
+          <div class="flex pt-6 justify-between">
             <prime-button v-if="!newGameStore.importedDataAvailable"
                           label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')"
                           severity="secondary"></prime-button>
