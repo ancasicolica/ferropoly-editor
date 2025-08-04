@@ -74,7 +74,6 @@ class PropertyList extends EventEmitter {
    * @param data
    */
   updateProperty(property, data) {
-    console.warn('Check if obsolete (from V3)');
     let p = find(this.properties, {uuid: property.uuid});
     if (!p) {
       console.error('Property not found!', property);

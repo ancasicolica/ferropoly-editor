@@ -111,6 +111,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {void} This method does not return a value.
      */
     updateProperties(properties) {
+      console.warn('updateProperties has no effect right now!')
       properties.forEach(p => {
         //  this.propertyList.updateProperty(p, p);
       })
@@ -215,6 +216,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
           property:  rawProperty,
           authToken: this.authToken
         });
+        propertyAuxData.updateProperty(this.selectedProperty, toRaw(this.selectedProperty));
         console.log('Updated Property in backend', resp.data);
         return {success: true};
       }
