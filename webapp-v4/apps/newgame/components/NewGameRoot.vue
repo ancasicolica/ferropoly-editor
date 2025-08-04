@@ -85,6 +85,7 @@
                 <new-game-create></new-game-create>
               </template>
             </card>
+            <Message severity="error" v-if="errorMessage.length > 0">{{errorMessage}}</Message>
           </div>
           <div class="flex pt-6 justify-between">
             <prime-button v-if="!newGameStore.importedDataAvailable"
@@ -113,6 +114,7 @@ import StepPanels from 'primevue/steppanels';
 import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
 import PrimeButton from 'primevue/button';
+import Message from 'primevue/message';
 import NewGameMap from './NewGameMap.vue';
 import NewGameName from './NewGameName.vue';
 import NewGameDate from './NewGameDate.vue';
@@ -120,9 +122,11 @@ import NewGamePricelist from './NewGamePricelist.vue';
 import Card from 'primevue/card';
 import NewGameCreate from './NewGameCreate.vue';
 import {computed, ref} from 'vue';
+import {get} from 'lodash';
 
 const newGameStore       = useNewGameStore();
 const gameCreationActive = ref(false);
+const errorMessage = ref('');
 
 const proposedGameNameInvalid = computed(() => {
   return !newGameStore.proposedGameNameValid;
@@ -137,6 +141,7 @@ const proposedGameNameInvalid = computed(() => {
  */
 const createGame = function() {
   console.log('Game creation process initiated.');
+  errorMessage.value = '';
   gameCreationActive.value = true;
   const newGameStore      = useNewGameStore();
   newGameStore.checkId()
@@ -152,6 +157,7 @@ const createGame = function() {
               })
               .catch(err => {
                 console.error('Error while creating a new game', err);
+                errorMessage.value = get(err, 'response.data.message', 'Fehler beim Anlegen des Spiels');
               })
               .finally(() => {
                 gameCreationActive.value = false;

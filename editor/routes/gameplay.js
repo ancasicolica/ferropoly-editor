@@ -78,7 +78,7 @@ router.post('/createnew', async function (req, res) {
   if (nb > 3) {
     // Maximal number of gameplays reached. Maybe this check or value will disappear some time or we'll have
     // a user specific count. So far we have four.
-    return res.status(403).send({message: 'Max game number reached: ' + nb});
+    return res.status(403).send({message: 'Maximale Anzahl Spiele erreicht: ' + nb});
   }
   try {
     const user = await userModel.getUser(req.session.passport.user);

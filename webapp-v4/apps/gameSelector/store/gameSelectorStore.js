@@ -6,6 +6,7 @@
 
 import {defineStore} from 'pinia'
 import {useUserStore} from '../../../common/store/userStore';
+
 import axios from 'axios';
 import {DateTime} from 'luxon';
 import {get} from 'lodash';
@@ -13,8 +14,8 @@ import {get} from 'lodash';
 export const useGameSelectorStore = defineStore('gameSelector', {
   state:   () => ({
     menuBarElements: [
-      {label: 'Neues Spiel', url: '/newgame', key: 'new-game', active: false},
-      {label: 'Admin Dashboard', url: '/dashboard', key: 'dashboard', active: false},
+      {label: 'Neues Spiel', url: '/newgame', key: 'new-game', active: false, visible: false},
+      {label: 'Admin Dashboard', url: '/dashboard', key: 'dashboard', active: false, visible: false},
     ],
     gameplays:       [],
     dataLoaded:      false,
@@ -33,6 +34,12 @@ export const useGameSelectorStore = defineStore('gameSelector', {
       this.menuBarElements[1].visible = userStore.roles.admin;
       this.dataLoaded                 = true;
     },
+    /**
+     * Deletes a gameplay record by its unique identifier.
+     *
+     * @param {string} gameId - The unique identifier of the gameplay to be deleted.
+     * @return {object} The response data from the deletion request.
+     */
     async deleteGameplay(gameId) {
       let result = await axios.delete(`/gameplay/${gameId}`);
       await this.readMyGames();
@@ -51,8 +58,10 @@ export const useGameSelectorStore = defineStore('gameSelector', {
         gp.scheduling.deleteTs = DateTime.fromISO(gp.scheduling.deleteTs).toJSDate();
         gp.scheduling.gameDate = DateTime.fromISO(gp.scheduling.gameDate).toJSDate();
       });
+
       console.log('Loaded Gameplays', resp.data);
       this.gameplays = get(resp, 'data.gameplays', []);
+      this.menuBarElements[0].visible = this.gameplays.length < 3;
     }
   }
 })
