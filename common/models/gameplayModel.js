@@ -701,6 +701,7 @@ module.exports = {
   getAutopilotGameplays:          getAutopilotGameplays,
   makeGameplayPublic:             makeGameplayPublic,
   updateRegistrationData:         updateRegistrationData,
+  finalizeTime:                   finalizeTime,
   // Constants
   MOBILE_NONE:  MOBILE_NONE,
   MOBILE_BASIC: MOBILE_BASIC,

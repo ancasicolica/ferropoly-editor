@@ -255,7 +255,14 @@ export const useGameplayStore = defineStore('Gameplay', {
           gamename:    toRaw(self.gamename),
           admins:      toRaw(self.admins),
           owner:       toRaw(self.owner),
-          scheduling:  toRaw(self.scheduling),
+          scheduling:  {
+            gameDate:    self.scheduling.gameDate,
+            gameStart:   DateTime.fromJSDate(self.scheduling.gameStart).toFormat("HH:mm"),
+            gameEnd:     DateTime.fromJSDate(self.scheduling.gameEnd).toFormat("HH:mm"),
+            deleteTs:    self.scheduling.deleteTs,
+            gameStartTs: self.scheduling.gameStartTs,
+            gameEndTs:   self.scheduling.gameEndTs,
+          },
           gameParams:  toRaw(self.gameParams),
           rentFactors: toRaw(self.rentFactors),
           chancellery: toRaw(self.chancellery),
@@ -264,6 +271,8 @@ export const useGameplayStore = defineStore('Gameplay', {
           joining:     toRaw(self.joining),
           mobile:      toRaw(self.mobile),
         };
+
+        console.log('fffs', saveObj);
         let resp    = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
         console.log('Gameplay saved', resp);
         this.log.lastEdited = new Date();

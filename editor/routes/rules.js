@@ -25,9 +25,12 @@ router.get('/data/:gameId', async function (req, res) {
   try {
     const gp = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user)
 
-    let gameStart     = _.get(gp, 'scheduling.gameStartTs', DateTime.fromISO('2525-07-06T19:30:00'));
+    let gameStartTime     = _.get(gp, 'scheduling.gameStart', '00:00');
+    let gameDate = _.get(gp, 'scheduling.gameDate', DateTime.now());
+    let startTs = DateTime.fromJSDate(gameplayModel.finalizeTime(gameDate, gameStartTime));
+
     let now           = DateTime.now();
-    const editAllowed = now < gameStart;
+    const editAllowed = now < startTs;
     const gamePlayFinalized = _.get(gp, 'internal.finalized', false);
     const rules       = await rulesModel.getRules(req.params.gameId);
     const text        = rulesCompiler({gp, raw: rules.raw});
