@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+# v4.0.0 17.8.25
+Vollständig überarbeiteter Editor mit Vue3 und PrimeVue Library, zahlreiche Änderungen und Verbesserungen "unter der Haube"
+
 * Verschiedene Verbesserungen für die Spielerstellung, wie Preislistenvorschau und sortieren der Orte
 * Spielregel-Editor überarbeitet: Spielregeln können flexibler bearbeitet werden - erst nach Update des Spiel-Programmes voll benutzbar
 * Team-Editor überarbeitet: übersichtlicher mit Team-Tabelle
