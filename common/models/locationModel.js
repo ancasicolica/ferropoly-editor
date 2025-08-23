@@ -80,7 +80,7 @@ async function getAllLocations(callback) {
  * @param map : map ('zvv', 'sbb' or 'ostwind')
  * @param callback
  */
-async function getAllLocationsForMap(map, callback) {
+async function getAllLocationsForMap(map, callback = null) {
   if (callback) {
     logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getAllLocationsForMap is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
     return callback('NOT SUPPORTED ANYMORE!');

@@ -7,7 +7,7 @@
 <template>
   <div>
     <menu-bar :elements="newGameStore.menuBarElements"></menu-bar>
-    <stepper value="3" linear>
+    <stepper value="1" linear>
       <step-list>
         <step value="1">Spielname</step>
         <step value="2">Spieltag</step>
