@@ -86,7 +86,7 @@ router.get('/', async function (req, res) {
         message: 'Auf diese Seite hast Du keinen Zugriff', error: 'Nur für Admins'
       });
     }
-    const data   = await locationModel.getAllLocations();
+    const data   = await locationModel.getAllLocationsLean();
     let resData  = {
       type:      'LocationDatabase',
       version:   1,
