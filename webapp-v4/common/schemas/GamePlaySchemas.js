@@ -64,7 +64,22 @@ const schedulingSchema = z.object({
   gameStart: gameStartSchema,
   gameEnd:   gameEndSchema,
   deleteTs:  deleteTsSchema
-})
+}).superRefine((data, ctx) => {
+  // Ensure both dates are valid Date objects before comparing
+  if (data.gameStart instanceof Date && data.gameEnd instanceof Date) {
+    const diffMs = data.gameEnd.getTime() - data.gameStart.getTime();
+    const twoHoursMs = (2 * 60 * 60 * 1000) - 1; // 2 hours in milliseconds
+    if (diffMs < twoHoursMs) {
+      // Attach the error to gameEnd (UI typically shows the error near the end field)
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Ein Spiel muss mindestens zwei Stunden dauern.',
+        path: ['gameEnd']
+      });
+    }
+  }
+});
+
 
 const lowestPriceSchema = z.number()
   .min(100, 'Das günstigste Ort auf der Preisliste muss mindestens 100 kosten.')
