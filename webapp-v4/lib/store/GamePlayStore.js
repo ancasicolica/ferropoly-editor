@@ -22,7 +22,7 @@ import {
   startCapitalSchema,
   interestSchema,
   interestIntervalSchema,
-  interestCyclesAtEndOfGameSchema, debtInterestSchema
+  interestCyclesAtEndOfGameSchema, debtInterestSchema, lowestPriceSchema, highestPriceSchema
 } from '../../common/schemas/GamePlaySchemas';
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
@@ -144,6 +144,12 @@ export const useGameplayStore = defineStore('Gameplay', {
         lowestPrice:  state.gameParams.properties.lowestPrice,
         highestPrice: state.gameParams.properties.highestPrice
       });
+    },
+    priceListLowestPriceValidation(state) {
+      return lowestPriceSchema.safeParse(state.gameParams.properties.lowestPrice)
+    },
+    priceListHighestPriceValidation(state) {
+      return highestPriceSchema.safeParse(state.gameParams.properties.highestPrice)
     },
     numberOfPriceLevelsValidation(state) {
       return numberOfPriceLevelsSchema.safeParse(state.gameParams.properties.numberOfPriceLevels);
