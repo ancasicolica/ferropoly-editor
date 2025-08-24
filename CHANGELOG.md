@@ -1,5 +1,10 @@
 # Changelog Ferropoly Editor
 
+# v4.0.1 24.8.25
+
+* Diverse Bugfixes aus Tests
+* über 120 neue Orte, diverse Orte korrigiert
+
 # v4.0.0 17.8.25
 Vollständig überarbeiteter Editor mit Vue3 und PrimeVue Library, zahlreiche Änderungen und Verbesserungen "unter der Haube"
 
