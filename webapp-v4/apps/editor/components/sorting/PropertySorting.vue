@@ -153,6 +153,7 @@ export default {
       self.activePropertiesOnMap = [];
 
       const props = this.editorPropertyStore.getPropertiesOfGroup(this.selectedProperty.pricelist.propertyGroup);
+      console.log('Properties of group', props);
       props.forEach(p => {
         propertyList.showPropertyOnMap(p.uuid, activeMap);
         self.activePropertiesOnMap.push(p);
