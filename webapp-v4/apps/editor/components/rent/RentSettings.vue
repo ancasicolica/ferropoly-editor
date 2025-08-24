@@ -31,6 +31,7 @@
       :options="intervalOptions"
       option-label="name"
       option-value="value"
+      :zod-result="interestIntervalValidation"
       fluid)
     prime-message(
       size="small"
@@ -112,9 +113,10 @@ export default {
   },
   computed:   {
     ...mapWritableState(useGameplayStore, {
-      gameParams:             'gameParams',
-      startCapitalValidation: 'startCapitalValidation',
-      interestlValidation:    'interestlValidation',
+      gameParams:                 'gameParams',
+      startCapitalValidation:     'startCapitalValidation',
+      interestlValidation:        'interestlValidation',
+      interestIntervalValidation: 'interestIntervalValidation'
     }),
 
     startCapital:              {

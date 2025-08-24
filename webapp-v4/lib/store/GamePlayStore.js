@@ -135,8 +135,8 @@ export const useGameplayStore = defineStore('Gameplay', {
       const endNorm   = DateTime.fromJSDate(state.scheduling.gameEnd).set({second: 0, millisecond: 0});
       const startNorm = DateTime.fromJSDate(state.scheduling.gameStart).set({second: 0, millisecond: 0});
       // Debug logging (normalized and raw values)
-      console.log('gameTimesValidation (raw)', state.scheduling.gameEnd, state.scheduling.gameStart);
-      console.log('gameTimesValidation (normalized)', endNorm.toISO(), startNorm.toISO());
+      // console.log('gameTimesValidation (raw)', state.scheduling.gameEnd, state.scheduling.gameStart);
+      // console.log('gameTimesValidation (normalized)', endNorm.toISO(), startNorm.toISO());
       return {success: endNorm >= startNorm.plus({hours: 2})};
     },
     pricelistPriceValidation(state) {
@@ -161,10 +161,10 @@ export const useGameplayStore = defineStore('Gameplay', {
       return startCapitalSchema.safeParse(state.gameParams.startCapital);
     },
     interestlValidation(state) {
-      return interestSchema.safeParse(state.gameParams.startCapital);
+      return interestSchema.safeParse(state.gameParams.interest);
     },
     interestIntervalValidation(state) {
-      return interestIntervalSchema.safeParse(state.gameParams.startCapital);
+      return interestIntervalSchema.safeParse(state.gameParams.interestInterval);
     },
     interestCyclesAtEndOfGameValidation(state) {
       return interestCyclesAtEndOfGameSchema.safeParse(state.gameParams.startCapital);
