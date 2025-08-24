@@ -74,15 +74,15 @@ module.exports = {
 
     try {
       for (const u of demoUsers) {
-        const foundUser = await getUserByMailAddress(u.email);
-        if (foundUser) {
-          foundUser.personalData.forename = u.forename;
-          foundUser.personalData.surname  = u.surename;
-          foundUser.personalData.email    = u.email;
-          foundUser.personalData.avatar   = gravatar.getUrl(u.email);
-          foundUser.login.verifiedEmail   = true;
-          await users.updateUser(foundUser, '12345678');
-        }
+        let user = new users.Model();
+
+        user.personalData.forename = u.forename;
+        user.personalData.surename = u.surename;
+        user.personalData.email = u.email;
+        user.personalData.avatar =gravatar.getUrl(u.email);
+         user.login.verifiedEmail = true;
+
+        await users.updateUser(user, '12345678');
       }
     }
     catch (err) {
