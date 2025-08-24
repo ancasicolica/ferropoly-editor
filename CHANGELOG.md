@@ -1,7 +1,9 @@
 # Changelog Ferropoly Editor
 
-# v4.0.1 24.8.25
+# v4.0.2 24.8.25
+* Spinner bei Spielerzeugung dargestellt
 
+# v4.0.1 24.8.25
 * Diverse Bugfixes aus Tests
 * über 120 neue Orte, diverse Orte korrigiert
 
