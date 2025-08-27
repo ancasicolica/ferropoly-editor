@@ -25,7 +25,6 @@ class EditorProperty extends Property {
   setPositionInPriceRange(pos) {
     this.positionInPriceRangeChanged    = (this.pricelist.positionInPriceRange !== pos);
     this.pricelist.positionInPriceRange = pos;
-    this.location.name += pos;
   }
 
   /**

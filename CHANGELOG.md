@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Bugfix in edit-app
+
 # v4.0.2 24.8.25
 * Spinner bei Spielerzeugung dargestellt
 
