@@ -6,7 +6,7 @@
 
 <template>
   <div>
-    <menu-bar :elements="menuBarElements"></menu-bar>
+    <menu-bar :elements="menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/admins/"></menu-bar>
     <div class="ferropoly-container">
       <h1>Spielleiter*innen</h1>
       <p>Mit zusätzlichen Spielleiter*innen kannst Du dir die Arbeit in der Zentrale auf verschiedene Personen

@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Help-Button wird in Menuzeile dargestellt
+
 # v4.0.3 27.8.25
 * Bugfix in edit-app
 
