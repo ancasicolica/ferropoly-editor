@@ -6,7 +6,7 @@
 
 <template>
   <div>
-    <menu-bar :elements="menuBarElements"></menu-bar>
+    <menu-bar :elements="menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/spiel-exportieren/"></menu-bar>
     <div class="flex justify-center">
       <div class="flex align-items-center justify-content-center m-2">
         <ferro-card title="Spiel exportieren">

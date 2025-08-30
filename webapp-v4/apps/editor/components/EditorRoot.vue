@@ -5,7 +5,7 @@
 -->
 <template>
   <div>
-    <menu-bar :elements="menuBarElements"  show-user-box></menu-bar>
+    <menu-bar :elements="menuBarElements"  :help-url="currentHelpUrl" show-user-box></menu-bar>
     <div>
       <router-view v-if="ready"></router-view>
     </div>
@@ -46,6 +46,30 @@ export default {
     ...mapWritableState(useEditorStore, {
       ready: 'ready'
     }),
+    // Compute help URL based on current route name
+    // Keep this mapping in sync with your router's route names
+    currentHelpUrl() {
+      const base = 'https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/editor/';
+      const map = {
+        basic:       `${base}basic/`,
+        pricelist:   `${base}pricelist/`,
+        rent:        `${base}rent/`,
+        houses:      `${base}houses/`,
+        chance:      `${base}chance/`,
+        properties:  `${base}properties/`,
+        sorting:     `${base}sorting/`,
+        create:      `${base}create/`
+      };
+      // Prefer route name; fall back to default base if unknown
+      const name = this.$route && this.$route.name ? String(this.$route.name) : '';
+      if (name && map[name]) return map[name];
+
+      // Optional: try to infer from path if names differ
+      const path = this.$route && this.$route.path ? this.$route.path : '';
+      const entry = Object.entries(map).find(([key]) => path.includes(key));
+      return entry ? entry[1] : base;
+    }
+
   },
   created:    function () {
 

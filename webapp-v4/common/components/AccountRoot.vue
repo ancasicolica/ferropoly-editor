@@ -4,7 +4,7 @@
   Created: 02.06.2024
 -->
 <template lang="pug">
-  menu-bar(:elements="menuBarElements" show-user-box)
+  menu-bar(:elements="menuBarElements" help-url="https://www.ferropoly.ch/hilfe/general/3-0/account/" show-user-box)
   .grid.ml-3.mr-3.mt-3
     div(class="lg:col-4 md:col-8 sm:col-12")
       account-general(:info="getElement('personalData', {})" :avatarUrl="avatarUrl")

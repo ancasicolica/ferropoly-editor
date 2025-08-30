@@ -6,7 +6,7 @@
 -->
 <template>
   <div>
-    <menu-bar :elements="newGameStore.menuBarElements"></menu-bar>
+    <menu-bar :elements="newGameStore.menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/"></menu-bar>
     <stepper value="1" linear>
       <step-list>
         <step value="1">Spielname</step>

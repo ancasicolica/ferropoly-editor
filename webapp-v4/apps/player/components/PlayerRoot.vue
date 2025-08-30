@@ -6,7 +6,7 @@
 
 <template>
   <div>
-    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected"></menu-bar>
+    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/player/"></menu-bar>
     <Toast/>
     <div class="ferropoly-container">
       <div>

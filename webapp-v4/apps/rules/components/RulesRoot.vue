@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <menu-bar :elements="menuBarElements">
+  <menu-bar :elements="menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/spielregeln/">
   </menu-bar>
   <div class="ferropoly-container">
     <router-view></router-view>
