@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <menu-bar :elements="menuBarElements" class="no-print">
+  <menu-bar :elements="menuBarElements" class="no-print" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/pricelist/">
   </menu-bar>
   <div class="ml-3 mr-3">
     <router-view></router-view>

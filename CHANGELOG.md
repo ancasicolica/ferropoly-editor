@@ -1,5 +1,21 @@
 # Changelog Ferropoly Editor
 
+# v4.0.4 30.8.25
+* Help-Button wird in Menuzeile dargestellt
+
+# v4.0.3 27.8.25
+* Bugfix in edit-app
+
+# v4.0.2 24.8.25
+* Spinner bei Spielerzeugung dargestellt
+
+# v4.0.1 24.8.25
+* Diverse Bugfixes aus Tests
+* über 120 neue Orte, diverse Orte korrigiert
+
+# v4.0.0 17.8.25
+Vollständig überarbeiteter Editor mit Vue3 und PrimeVue Library, zahlreiche Änderungen und Verbesserungen "unter der Haube"
+
 * Verschiedene Verbesserungen für die Spielerstellung, wie Preislistenvorschau und sortieren der Orte
 * Spielregel-Editor überarbeitet: Spielregeln können flexibler bearbeitet werden - erst nach Update des Spiel-Programmes voll benutzbar
 * Team-Editor überarbeitet: übersichtlicher mit Team-Tabelle

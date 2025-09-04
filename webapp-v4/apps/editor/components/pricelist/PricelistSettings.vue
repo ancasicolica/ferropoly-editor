@@ -11,14 +11,14 @@
       show-buttons
       :min="minLowestPrice"
       :max="highestPrice"
-      :zod-result="pricelistPriceValidation")
+      :zod-result="priceListLowestPriceValidation")
     ferropoly-input-number(v-model="highestPrice"
       label="Preis teuerstes Ort"
       info="Empfohlen: 8000, gültiger Bereich ist zwischen 1000 und 10'000."
       show-buttons
       :min="lowestPrice"
       :max="maxHighestPrice"
-      :zod-result="pricelistPriceValidation")
+      :zod-result="priceListHighestPriceValidation")
     ferropoly-input-number(v-model="numberOfPriceLevels"
       label="Anzahl Preisstufen"
       info="Bestimmt die Preisunterschiede zwischen zwei Orten: die Differenz zwischen teuerstem und billigstem Ort wird durch diesen Wert geteilt. Beachte: eine ungerade Anzahl Preisstufen ergibt eine gerade Anzahl unterschiedlicher Preise! Empfohlen sind die Werte '3' und '7'. Beim Spezialwert '1' werden die Preisstufen deaktiviert, alle Orte erhalten einen unterschiedlichen Preis."
@@ -67,7 +67,9 @@ export default {
       gameParams:                           'gameParams',
       pricelistPriceValidation:             'pricelistPriceValidation',
       numberOfPriceLevelsValidation:        'numberOfPriceLevelsValidation',
-      numberOfPropertiesPerGroupValidation: 'numberOfPropertiesPerGroupValidation'
+      numberOfPropertiesPerGroupValidation: 'numberOfPropertiesPerGroupValidation',
+      priceListLowestPriceValidation:       'priceListLowestPriceValidation',
+      priceListHighestPriceValidation:      'priceListHighestPriceValidation',
     }),
     lowestPrice:                {
       get() {

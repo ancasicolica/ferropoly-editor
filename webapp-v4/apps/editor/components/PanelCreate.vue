@@ -64,7 +64,7 @@ export default {
       let issues                = this.gameplayInvalid || [];
       const editorPropertyStore = useEditorPropertiesStore();
       const numberOfProperties  = editorPropertyStore.getNumberOfPropertiesInPricelist();
-      console.log('x', this.gameParams, this.gameParams.properties);
+      console.log('gameplayConflicts', this.gameParams, this.gameParams.properties);
       if ((numberOfProperties < 20)) {
         issues.push({message: `Mindestens 20 Orte müssen in der Preisliste sein, aktuell sind nur ${numberOfProperties} Orte in der Liste.`});
       }
@@ -85,10 +85,20 @@ export default {
      *
      * @return {void} Does not return a value.
      */
-    createPricelist() {
+    async createPricelist() {
       this.priceListCreationPending = true;
       console.log('create pricelist');
       const gamePlayStore = useGameplayStore();
+
+      // Save Gameplay first - make sure local changes are saved!
+      const result        = await useGameplayStore().saveGameplay();
+      if (!result?.success) {
+        // ERROR
+        console.log('no good', result);
+        this.errorMessage = result?.message;
+        return;
+      }
+
       gamePlayStore.createPricelist()
           .then(info => {
             if (info.success) {

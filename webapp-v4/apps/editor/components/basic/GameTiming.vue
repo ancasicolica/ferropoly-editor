@@ -21,7 +21,7 @@
           <prime-message v-if="!valid"
                          severity="error"
                          size="small"
-                         variant="simple">Die Startzeit muss vor dem Spielende liegen!
+                         variant="simple">Die Startzeit muss mindestens zwei Stunden vor dem Spielende liegen!
           </prime-message>
         </div>
         <div class="mb-2">
@@ -36,7 +36,7 @@
           <prime-message v-if="!valid"
                          severity="error"
                          size="small"
-                         variant="simple">Das Spielende muss nach dem Spielstart sein!
+                         variant="simple">Das Spielende muss mindestens zwei Stunden nach dem Spielstart sein!
           </prime-message>
         </div>
         <prime-message v-if="oddDurationMessage" severity="warn"> {{ oddDurationMessage }}</prime-message>
@@ -88,7 +88,7 @@ export default {
         return this.scheduling?.gameStart;
       },
       set(value) {
-        this.scheduling.gameStart = value;
+        this.scheduling.gameStart = DateTime.fromJSDate(value).set({second: 0, millisecond: 0}).toJSDate();
       }
     },
     gameEnd:   {
@@ -96,7 +96,7 @@ export default {
         return this.scheduling?.gameEnd;
       },
       set(value) {
-        this.scheduling.gameEnd = value;
+        this.scheduling.gameEnd = DateTime.fromJSDate(value).set({second: 0, millisecond: 0}).toJSDate();
       }
     },
     oddDurationMessage() {

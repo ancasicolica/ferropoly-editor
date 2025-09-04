@@ -88,41 +88,54 @@ async function createRandomGameplay(gameId, props, nb) {
  * When a new gameplay is created, we have to copy all relevant locations to the properties
  * Also create random values if requested
  *
+ * This function was optimized by AI, and I have to admit it did an excellent job, reducing
+ * the execution times for factors!
+ *
  * @param gpOptions options for gameplay creation
  * @param gameplay  gameplay
  * @returns {*}
  */
 async function copyLocationsToProperties(gpOptions, gameplay) {
-  let props           = [];
-  const gameLocations = await locations.getAllLocationsForMap(gpOptions.map);
+  const { map, properties: importedProps = [], random } = gpOptions;
+  const gameId = gameplay.internal.gameId;
 
-  logger.info(`${gameplay.internal.gameId} : Read ${gameLocations.length} locations for this map`);
+  // Load locations
+  const gameLocations = await locations.getAllLocationsForMap(map);
+  logger.info(`${gameId}: Read ${gameLocations.length} locations for this map`);
 
-  const importProperties   = gpOptions.properties || [];
-  let nbPropertiesImported = 0;
+  // Create Map (key value pair table) for fast lookup of imported properties
+  const pricelistByUuid = new Map(
+    importedProps
+      .filter(p => p?.location?.uuid)
+      .map(p => [p.location.uuid, p.pricelist])
+  );
 
-  for (location of gameLocations) {
-    // Handle import data, new since 2025
-    let importData = _.find(importProperties, p => {
-      return (p.location.uuid === location.uuid)
-    });
-    if (importData) {
-      nbPropertiesImported++;
-    }
+  // Count number of imported properties
+  const importedCount = gameLocations.reduce(
+    (count, loc) => count + (pricelistByUuid.has(loc.uuid) ? 1 : 0),
+    0
+  );
 
-    const prop = await properties.createPropertyFromLocationEx(gameplay.internal.gameId, location, {pricelist: importData?.pricelist});
-    props.push(prop);
+  // Generate Properties in parallel
+  const createdProps = await Promise.all(
+    gameLocations.map(location =>
+      properties.createPropertyFromLocationEx(
+        gameId,
+        location,
+        { pricelist: pricelistByUuid.get(location.uuid) }
+      )
+    )
+  );
+
+  logger.info(`${gameId}: created properties, imported ${importedCount}`);
+
+  // Add random gameplay data (if not imported)
+  if (random && importedCount === 0) {
+    await createRandomGameplay(gameId, createdProps, random);
+    logger.info(`${gameId}: random properties added`);
   }
 
-  logger.info(`${gameplay.internal.gameId}: created properties, imported ${nbPropertiesImported}`);
-
-  if (gpOptions.random && nbPropertiesImported === 0) {
-    await createRandomGameplay(gameplay.internal.gameId, props, gpOptions.random);
-    logger.info(`${gameplay.internal.gameId}: random properties added`);
-    return gameplay;
-  } else {
-    return gameplay;
-  }
+  return gameplay;
 }
 
 /**

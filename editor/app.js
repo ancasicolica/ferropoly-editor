@@ -192,12 +192,6 @@ let initServer = async function () {
   app.set('port', settings.server.port);
   app.set('ip', settings.server.host);
 
-  demoUsers.updateLogins().catch(function (err) {
-    if (err) {
-      logger.error(err);
-      process.exit(-1);
-    }
-  });
   server.listen(app.get('port'), app.get('ip'), async function () {
     logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
     logger.info('Ferropoly Editor, Copyright (C) 2015-2025 Christian Kuster, CH-8342 Wernetshausen');
@@ -213,8 +207,12 @@ let initServer = async function () {
       await gpLib.deleteOldGameplays();
 
       logger.info('old gameplays deleted');
+
+      await demoUsers.updateLogins()
+      logger.info('Demo Users updated')
+
     }
-    catch(err) {
+    catch (err) {
       logger.error(err);
     }
   });
@@ -224,7 +222,6 @@ let initServer = async function () {
 
 
 initServer();
-
 
 
 module.exports = app;

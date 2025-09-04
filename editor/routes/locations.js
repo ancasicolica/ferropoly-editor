@@ -86,7 +86,7 @@ router.get('/', async function (req, res) {
         message: 'Auf diese Seite hast Du keinen Zugriff', error: 'Nur für Admins'
       });
     }
-    const data   = await locationModel.getAllLocations();
+    const data   = await locationModel.getAllLocationsLean();
     let resData  = {
       type:      'LocationDatabase',
       version:   1,
@@ -143,7 +143,7 @@ const uploadHandler = async function (req, res) {
       return res.send({message: 'Either the file or the file path does not look correct'});
     }
 
-    return fs.readFile(req.file.path, 'utf8', function (err, data) {
+    return fs.readFile(req.file.path, 'utf8', async function (err, data) {
       if (err) {
         logger.error(err);
         return res.status(500).send({message: `Had troubles while reading the file: ${err.message}`});
@@ -169,7 +169,7 @@ const uploadHandler = async function (req, res) {
       let unalteredLocations = [];
       let errorLocations     = [];
 
-      locations.forEach(async location => {
+      for (const location of locations) {
         const r          = await importLocation(location);
         let _location    = r.location;
         let importResult = r.result;
@@ -190,7 +190,8 @@ const uploadHandler = async function (req, res) {
               break;
           }
         }
-      });
+      }
+
       return res.send({
         newLocations:       newLocations.length,
         unalteredLocations: unalteredLocations.length,

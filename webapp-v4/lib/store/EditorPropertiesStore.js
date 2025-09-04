@@ -157,7 +157,7 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
      * @return {Array} - An array containing the properties of the specified group.
      */
     getPropertiesOfGroup(group) {
-      return filter(this.properties, {'pricelist': {'propertyGroup': group}});
+      return this.properties.filter(entry => entry.pricelist.propertyGroup === group && entry.pricelist.priceRange >= 0);
     },
     /**
      * Provides direct access to the property list

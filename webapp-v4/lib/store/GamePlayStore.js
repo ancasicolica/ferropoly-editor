@@ -22,7 +22,7 @@ import {
   startCapitalSchema,
   interestSchema,
   interestIntervalSchema,
-  interestCyclesAtEndOfGameSchema, debtInterestSchema
+  interestCyclesAtEndOfGameSchema, debtInterestSchema, lowestPriceSchema, highestPriceSchema
 } from '../../common/schemas/GamePlaySchemas';
 
 import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
@@ -131,13 +131,25 @@ export const useGameplayStore = defineStore('Gameplay', {
       return organisatorPhoneSchema.safeParse(state.owner.organisatorPhone);
     },
     gameTimesValidation(state) {
-      return {success: DateTime.fromJSDate(state.scheduling.gameEnd) > DateTime.fromJSDate(state.scheduling.gameStart).plus({hours: 2})};
+      // Normalize both times to zero seconds and milliseconds for a fair comparison
+      const endNorm   = DateTime.fromJSDate(state.scheduling.gameEnd).set({second: 0, millisecond: 0});
+      const startNorm = DateTime.fromJSDate(state.scheduling.gameStart).set({second: 0, millisecond: 0});
+      // Debug logging (normalized and raw values)
+      // console.log('gameTimesValidation (raw)', state.scheduling.gameEnd, state.scheduling.gameStart);
+      // console.log('gameTimesValidation (normalized)', endNorm.toISO(), startNorm.toISO());
+      return {success: endNorm >= startNorm.plus({hours: 2})};
     },
     pricelistPriceValidation(state) {
       return pricelistPriceSchema.safeParse({
         lowestPrice:  state.gameParams.properties.lowestPrice,
         highestPrice: state.gameParams.properties.highestPrice
       });
+    },
+    priceListLowestPriceValidation(state) {
+      return lowestPriceSchema.safeParse(state.gameParams.properties.lowestPrice)
+    },
+    priceListHighestPriceValidation(state) {
+      return highestPriceSchema.safeParse(state.gameParams.properties.highestPrice)
     },
     numberOfPriceLevelsValidation(state) {
       return numberOfPriceLevelsSchema.safeParse(state.gameParams.properties.numberOfPriceLevels);
@@ -149,10 +161,10 @@ export const useGameplayStore = defineStore('Gameplay', {
       return startCapitalSchema.safeParse(state.gameParams.startCapital);
     },
     interestlValidation(state) {
-      return interestSchema.safeParse(state.gameParams.startCapital);
+      return interestSchema.safeParse(state.gameParams.interest);
     },
     interestIntervalValidation(state) {
-      return interestIntervalSchema.safeParse(state.gameParams.startCapital);
+      return interestIntervalSchema.safeParse(state.gameParams.interestInterval);
     },
     interestCyclesAtEndOfGameValidation(state) {
       return interestCyclesAtEndOfGameSchema.safeParse(state.gameParams.startCapital);
@@ -257,8 +269,8 @@ export const useGameplayStore = defineStore('Gameplay', {
           owner:       toRaw(self.owner),
           scheduling:  {
             gameDate:    self.scheduling.gameDate,
-            gameStart:   DateTime.fromJSDate(self.scheduling.gameStart).toFormat("HH:mm"),
-            gameEnd:     DateTime.fromJSDate(self.scheduling.gameEnd).toFormat("HH:mm"),
+            gameStart:   DateTime.fromJSDate(self.scheduling.gameStart).toFormat('HH:mm'),
+            gameEnd:     DateTime.fromJSDate(self.scheduling.gameEnd).toFormat('HH:mm'),
             deleteTs:    self.scheduling.deleteTs,
             gameStartTs: self.scheduling.gameStartTs,
             gameEndTs:   self.scheduling.gameEndTs,
@@ -272,8 +284,7 @@ export const useGameplayStore = defineStore('Gameplay', {
           mobile:      toRaw(self.mobile),
         };
 
-        console.log('fffs', saveObj);
-        let resp    = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
+        let resp = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
         console.log('Gameplay saved', resp);
         this.log.lastEdited = new Date();
         return ({

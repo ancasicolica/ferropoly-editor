@@ -5,7 +5,8 @@
  **/
 
 import EventEmitter from '../common/lib/eventEmitter';
-import {get, find, merge, filter, maxBy, minBy, findIndex} from 'lodash';
+import {get, merge, filter, maxBy, minBy, findIndex} from 'lodash';
+
 
 class PropertyList extends EventEmitter {
   /**
@@ -13,7 +14,7 @@ class PropertyList extends EventEmitter {
    */
   constructor() {
     super();
-    this.properties = [];
+    this.properties = new Map();
     this.bounds     = {
       north: 0,
       south: 0,
@@ -28,7 +29,7 @@ class PropertyList extends EventEmitter {
    * @param property
    */
   addProperty(property) {
-    this.properties.push(property);
+    this.properties.set(property.uuid, property);
     property.on('property-selected', p => {
       this.emit('property-selected', p);
     });
@@ -53,19 +54,21 @@ class PropertyList extends EventEmitter {
    */
   getProperties() {
     console.warn('Check if obsolete (from V3)');
-    return this.properties;
+    return [...this.properties.values()];
   }
 
   /**
    * Returns the number of properties used in the price list
-   * @returns {[]}
    */
   usedPropertyNb() {
-    let used = filter(this.properties, p => {
-      return p.pricelist.priceRange >= 0;
+    // lodash's filter expects arrays or plain objects; convert Map to array
+    const values = [...this.properties.values()];
+    let used = filter(values, p => {
+      return p.pricelist && p.pricelist.priceRange >= 0;
     });
     console.warn('Check if obsolete (from V3)');
     return used.length;
+
   }
 
   /**
@@ -74,7 +77,7 @@ class PropertyList extends EventEmitter {
    * @param data
    */
   updateProperty(property, data) {
-    let p = find(this.properties, {uuid: property.uuid});
+    let p = this.properties.get(property.uuid);
     if (!p) {
       console.error('Property not found!', property);
     }
@@ -91,7 +94,7 @@ class PropertyList extends EventEmitter {
    * @return {void} - No return value.
    */
   setPositionInPriceRange(uuid, pos) {
-    let element = find(this.properties, {'uuid': uuid});
+    let element = this.properties.get(uuid);
     if (!element) {
       console.warn(`Property with ${uuid} not found`);
       return;
@@ -105,20 +108,27 @@ class PropertyList extends EventEmitter {
    */
   getBounds() {
     if (this.bounds.north === 0) {
-      this.bounds.north = parseFloat(maxBy(this.properties, p => {
-        return parseFloat(get(p, 'location.position.lat', 45.82));
-      }).location.position.lat);
-      this.bounds.south = parseFloat(minBy(this.properties, p => {
-        return parseFloat(get(p, 'location.position.lat', 47.8));
-      }).location.position.lat);
-      this.bounds.east  = parseFloat(maxBy(this.properties, p => {
-        return parseFloat(get(p, 'location.position.lng', 5.8));
-      }).location.position.lng);
-      this.bounds.west  = parseFloat(minBy(this.properties, p => {
-        return parseFloat(get(p, 'location.position.lng', 10.5));
-      }).location.position.lng);
+      // Convert Map to array to use lodash's maxBy/minBy
+      const values = [...this.properties.values()];
+      if (values.length === 0) {
+        // No properties available; keep defaults
+        return this.bounds;
+      }
+      this.bounds.north = parseFloat(
+        maxBy(values, p => parseFloat(get(p, 'location.position.lat', 45.82))).location.position.lat
+      );
+      this.bounds.south = parseFloat(
+        minBy(values, p => parseFloat(get(p, 'location.position.lat', 47.8))).location.position.lat
+      );
+      this.bounds.east = parseFloat(
+        maxBy(values, p => parseFloat(get(p, 'location.position.lng', 5.8))).location.position.lng
+      );
+      this.bounds.west = parseFloat(
+        minBy(values, p => parseFloat(get(p, 'location.position.lng', 10.5))).location.position.lng
+      );
     }
     return this.bounds;
+
   }
 
   /**
@@ -140,9 +150,12 @@ class PropertyList extends EventEmitter {
    * @param map
    */
   showAllPropertiesOnMap(map) {
-    this.properties.forEach(p => {
-      p.setMap(map);
-    })
+// Iterate over the values of the Map explicitly
+    for (const p of this.properties.values()) {
+      // p is a property instance
+      p.setMap(map); // map can be a Map instance or null to hide markers
+    }
+
   }
 
   /**
@@ -150,13 +163,14 @@ class PropertyList extends EventEmitter {
    */
   clearAllPropertiesOnMap() {
     console.warn('Check if obsolete (from V3)');
-    this.properties.forEach(p => {
-      p.setMap(null);
-    })
+    for (const p of this.properties.values()) {
+      // p is a property instance
+      p.setMap(null); // map can be a Map instance or null to hide markers
+    }
   }
 
   showPropertyOnMap(uuid, map) {
-    let e = find(this.properties, {'uuid': uuid});
+    let e = this.properties.get(uuid);
     if (!e) {
       console.log(`Element ${uuid} not found`);
       return;
@@ -169,11 +183,11 @@ class PropertyList extends EventEmitter {
    */
   clearAllMarkers() {
     console.warn('Check if obsolete (from V3)');
-    this.properties.forEach(property => {
+    for (const property of this.properties.values()) {
       if (property.marker) {
         property.marker.map = null
       }
-    });
+    }
   }
 
   /**
@@ -183,9 +197,10 @@ class PropertyList extends EventEmitter {
   applyFilter(f) {
     console.log('applyFilter', f);
 
-    this.properties.forEach(p => {
+    for (const p of this.properties.values()) {
+      // p is a property instance
       p.applyFilter(findIndex(f.entries, {'uuid': p.uuid}) >= 0);
-    });
+    }
   }
 
   /**
@@ -200,7 +215,7 @@ class PropertyList extends EventEmitter {
       this.activeProperty.setMarkerIcon(false);
     }
     
-    let e = find(this.properties, {'uuid': uuid});
+    let e = this.properties.get(uuid);
     if (!e) {
       console.log(`Element ${uuid} not found`);
       return null;

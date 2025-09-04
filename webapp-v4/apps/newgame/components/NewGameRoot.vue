@@ -6,7 +6,7 @@
 -->
 <template>
   <div>
-    <menu-bar :elements="newGameStore.menuBarElements"></menu-bar>
+    <menu-bar :elements="newGameStore.menuBarElements" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/newgame/"></menu-bar>
     <stepper value="1" linear>
       <step-list>
         <step value="1">Spielname</step>
@@ -80,11 +80,20 @@
         </step-panel>
         <step-panel v-slot="{activateCallback}" value="5">
           <div class="block">
-            <card>
-              <template #content>
-                <new-game-create></new-game-create>
-              </template>
-            </card>
+            <!-- Centered spinner area taking ~70% of viewport height -->
+            <div class="spinner-area" v-if="gameCreationActive">
+              <div class="spinner-center">
+                <progress-spinner />
+              </div>
+            </div>
+
+            <div v-if="!gameCreationActive">
+              <card>
+                <template #content>
+                  <new-game-create></new-game-create>
+                </template>
+              </card>
+            </div>
             <Message severity="error" v-if="errorMessage.length > 0">{{errorMessage}}</Message>
           </div>
           <div class="flex pt-6 justify-between">
@@ -120,6 +129,7 @@ import NewGameName from './NewGameName.vue';
 import NewGameDate from './NewGameDate.vue';
 import NewGamePricelist from './NewGamePricelist.vue';
 import Card from 'primevue/card';
+import ProgressSpinner from 'primevue/progressspinner';
 import NewGameCreate from './NewGameCreate.vue';
 import {computed, ref} from 'vue';
 import {get} from 'lodash';
@@ -175,5 +185,21 @@ const createGame = function() {
 
 
 <style scoped lang="scss">
+/* Center a spinner within a 70vh tall area */
+.spinner-area {
+  /* Use ~70% of viewport height */
+  min-height: 50vh;
+  /* Create a flex container to center content */
+  display: flex;
+  align-items: center;   /* vertical centering */
+  justify-content: center; /* horizontal centering */
+}
+
+/* Optional: in case you want an inner wrapper for additional styling later */
+.spinner-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 </style>
