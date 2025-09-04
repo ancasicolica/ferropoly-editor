@@ -5,7 +5,7 @@
  */
 
 const mongoose = require('mongoose');
-const moment   = require('moment');
+const {DateTime}                   = require('luxon');
 const logger   = require('../../lib/logger').getLogger('chancelleryTransaction');
 const isArray  = require('lodash/isArray');
 
@@ -60,8 +60,8 @@ async function dumpChancelleryData(gameId) {
 /***
  * Get the entries of the account
  * @param gameId
- * @param tsStart moment() to start, if undefined all
- * @param tsEnd   moment() to end, if undefined now()
+ * @param tsStart ts to start, if undefined all
+ * @param tsEnd   tsto end, if undefined now()
  * @returns {*}
  */
 async function getEntries(gameId, tsStart, tsEnd) {
@@ -69,14 +69,14 @@ async function getEntries(gameId, tsStart, tsEnd) {
     throw new Error('parameter error');
   }
   if (!tsStart) {
-    tsStart = moment('2015-01-01');
+    tsStart = DateTime.fromISO('2025-01-01').toJSDate();
   }
   if (!tsEnd) {
-    tsEnd = moment();
+    tsEnd = DateTime.now().toJSDate();
   }
   return await ChancelleryTransaction
     .find({gameId: gameId})
-    .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+    .where('timestamp').gte(tsStart).lte(tsEnd)
     .sort('timestamp')
     .lean()
     .exec();

@@ -49,15 +49,14 @@ let GameLog = mongoose.model('GameLog', gameLogSchema);
  * @param p2 was category
  * @param p3 was title
  * @param p4 was options
- * @param p5 was callback
+ * @param p5 was callback (not used anymore!!)
  * @returns {*}
  */
 //let addEntry = function (gameId, category, title, options, callback) {
 async function addEntry(p1, p2, p3, p4, p5) {
   let result;
-  let err;
   let callback;
-  try {
+
     let gameId    = p1;
     let category  = p2;
     let title     = p3;
@@ -65,7 +64,7 @@ async function addEntry(p1, p2, p3, p4, p5) {
     let options   = p4;
     callback      = p5;
 
-    if (_.isFunction(p2) && _.isObject((p1))) {
+    if (_.isObject((p1))) {
       // New API with object as param 1 and callback as param 2
       gameId    = _.get(p1, 'gameId', null);
       category  = _.get(p1, 'category', CAT_GENERAL);
@@ -75,14 +74,17 @@ async function addEntry(p1, p2, p3, p4, p5) {
       callback  = p2;
     }
 
+    if (_.isFunction(callback)) {
+      logger.error('>>>>> No more callbacks in addEntry');
+      return callback(new Error('no more callbacks'));
+    }
+
     if (!gameId) {
-      err = new Error('gameId in addEntry must be set');
-      return;
+      throw new Error('gameId in addEntry must be set');
     }
 
     if (!_.isString(gameId) || !_.isString(title)) {
-      err = new Error('all params in createEntry must be strings');
-      return;
+      throw new Error('all params in createEntry must be strings');
     }
 
     let logEntry       = new GameLog();
@@ -95,15 +97,9 @@ async function addEntry(p1, p2, p3, p4, p5) {
     logEntry.files     = []; // Not used yet
     logEntry._id       = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
     result             = await logEntry.save();
+    return result;
 
-  }
-  catch (ex) {
-    logger.error(ex);
-    err = ex;
-  }
-  finally {
-    callback(err, result);
-  }
+
 }
 
 /**
