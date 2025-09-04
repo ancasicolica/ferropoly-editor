@@ -5,17 +5,17 @@
  */
 
 const mongoose                     = require('mongoose');
-const moment                       = require('moment');
+const {DateTime}                   = require('luxon');
 const logger                       = require('../../lib/logger').getLogger('teamAccountTransaction');
 const _                            = require('lodash');
 /**
  * The mongoose schema for a team account
  */
 const teamAccountTransactionSchema = mongoose.Schema({
-  gameId   : String, // Game the transaction belongs to
+  gameId:    String, // Game the transaction belongs to
   timestamp: {type: Date, default: Date.now}, // Timestamp of the transaction
-  teamId   : String, // This is the uuid of the team the account belongs to
-  user     : {type: String, default: 'admin'}, // The user (one of the admins) which was initiating the transaction
+  teamId:    String, // This is the uuid of the team the account belongs to
+  user:      {type: String, default: 'admin'}, // The user (one of the admins) which was initiating the transaction
 
   transaction: {
     /*
@@ -23,11 +23,11 @@ const teamAccountTransactionSchema = mongoose.Schema({
      by the amount, which is either positive or negative.
      */
     origin: {
-      uuid    : {type: String, default: 'fff'}, // uuid of the origin, can be a property or a team
+      uuid:     {type: String, default: 'fff'}, // uuid of the origin, can be a property or a team
       category: {type: String, default: 'undefined'}  // either "team", "property", "bank", "chancellery"
     },
     amount: {type: Number, default: 0}, // value to be transferred, positive or negative
-    info  : String, // Info about the transaction
+    info:   String, // Info about the transaction
     /*
      If the transaction consists of several other transactions (interests every hour), we do not create
      a specific TeamAccountTransaction for every property. Instead, there is an array having the same
@@ -71,8 +71,8 @@ async function bookTransfer(debitor, creditor) {
  * Get the entries of the account
  * @param gameId
  * @param teamId , if undefined, then all entries of all teams are returned
- * @param tsStart moment() to start, if undefined all. NOT INCLUDING the entry with exactly this timestamp.
- * @param tsEnd   moment() to end, if undefined now()
+ * @param tsStart timestamp to start, if undefined all. NOT INCLUDING the entry with exactly this timestamp.
+ * @param tsEnd   timestamp to end, if undefined now()
  * @returns {*}
  */
 async function getEntries(gameId, teamId, tsStart, tsEnd) {
@@ -81,10 +81,10 @@ async function getEntries(gameId, teamId, tsStart, tsEnd) {
     throw new Error('parameter error, missing gameId');
   }
   if (!tsStart) {
-    tsStart = moment('2015-01-01');
+    tsStart = DateTime.fromISO('2025-01-01').toJSDate();
   }
   if (!tsEnd) {
-    tsEnd = moment();
+    tsEnd = DateTime.now().toJSDate();
   }
 
   if (teamId) {
@@ -92,7 +92,7 @@ async function getEntries(gameId, teamId, tsStart, tsEnd) {
     data = await TeamAccountTransaction
       .find({gameId: gameId})
       .where('teamId').equals(teamId)
-      .where('timestamp').gt(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gt(tsStart).lte(tsEnd)
       .sort('timestamp')
       .lean()
       .exec();
@@ -100,7 +100,7 @@ async function getEntries(gameId, teamId, tsStart, tsEnd) {
     // all teams
     data = await TeamAccountTransaction
       .find({gameId: gameId})
-      .where('timestamp').gt(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gt(tsStart).lte(tsEnd)
       .sort('timestamp')
       .lean()
       .exec()
@@ -138,8 +138,8 @@ async function getRankingList(gameId) {
         }
       }, {
         $group: {
-          _id  : '$teamId',
-          asset: {$sum: "$transaction.amount"}
+          _id:   '$teamId',
+          asset: {$sum: '$transaction.amount'}
         }
       }, {
         $sort: {
@@ -168,8 +168,8 @@ async function getBalance(gameId, teamId) {
         }
       }, {
         $group: {
-          _id  : 'balance',
-          asset: {$sum: "$transaction.amount"}
+          _id:   'balance',
+          asset: {$sum: '$transaction.amount'}
         }
       }
     ])
@@ -192,11 +192,11 @@ async function getBalance(gameId, teamId) {
 
 
 module.exports = {
-  Model         : TeamAccountTransaction,
-  book          : book,
-  bookTransfer  : bookTransfer,
-  getEntries    : getEntries,
+  Model:          TeamAccountTransaction,
+  book:           book,
+  bookTransfer:   bookTransfer,
+  getEntries:     getEntries,
   getRankingList: getRankingList,
-  dumpAccounts  : dumpAccounts,
-  getBalance    : getBalance
+  dumpAccounts:   dumpAccounts,
+  getBalance:     getBalance
 };

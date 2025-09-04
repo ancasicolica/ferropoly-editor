@@ -4,9 +4,8 @@
  * Created by kc on 20.04.15.
  */
 
-
 const mongoose = require('mongoose');
-const moment   = require('moment');
+const {DateTime}                   = require('luxon');
 const logger   = require('../../lib/logger').getLogger('propertyTransaction');
 const _        = require('lodash');
 
@@ -58,8 +57,8 @@ async function dumpAccounts(gameId) {
  * Get the entries of the account
  * @param gameId
  * @param propertyId
- * @param tsStart moment() to start, if undefined all
- * @param tsEnd   moment() to end, if undefined now()
+ * @param tsStart DateTime to start, if undefined all
+ * @param tsEnd   DateTime to end, if undefined now()
  * @returns {*}
  */
 async function getEntries(gameId, propertyId, tsStart, tsEnd) {
@@ -69,16 +68,16 @@ async function getEntries(gameId, propertyId, tsStart, tsEnd) {
   }
 
   if (!tsStart) {
-    tsStart = moment('2015-01-01');
+    tsStart = DateTime.fromISO('2025-01-01').toJSDate();
   }
   if (!tsEnd) {
-    tsEnd = moment();
+    tsEnd = DateTime.now().toJSDate();
   }
   if (!propertyId) {
     // Get all
     data = await PropertyAccountTransaction
       .find({gameId: gameId})
-      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gte(tsStart).lte(tsEnd)
       .sort('timestamp')
       .lean()
       .exec();
@@ -87,7 +86,7 @@ async function getEntries(gameId, propertyId, tsStart, tsEnd) {
     data = await PropertyAccountTransaction
       .find({gameId: gameId})
       .where('propertyId').equals(propertyId)
-      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gte(tsStart).lte(tsEnd)
       .sort('timestamp')
       .lean()
       .exec();
