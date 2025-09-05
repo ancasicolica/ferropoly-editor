@@ -487,6 +487,29 @@ async function countProperties(gameId, callback) {
 }
 
 /**
+ * Adds a property to the DB - used ONLY for unit tests!
+ * @param gameId
+ * @param property
+ * @return {Promise<*>}
+ */
+async function addPropertyForUnitTest(gameId, property) {
+  const prop = await getPropertyByLocationId(gameId, property.location.uuid);
+  if (prop) {
+    logger.info('Property already existing');
+    return prop;
+  }
+
+  let newProperty       = new Property();
+  newProperty.location  = property.location;
+  newProperty.gamedata  = property.gamedata;
+  newProperty.pricelist = property.pricelist;
+  newProperty.gameId    = property.gameId;
+  newProperty.uuid      = property.uuid
+  newProperty._id       = createPropertyId(gameId, property.location);
+  return await updateProperty(gameId, newProperty);
+}
+
+/**
  * The Exports
  * @type {{Model: (*|Model)}}
  */
@@ -506,5 +529,6 @@ module.exports = {
   finalizeProperties:              finalizeProperties,
   allowBuilding:                   allowBuilding,
   getPropertiesIdsForTeam:         getPropertiesIdsForTeam,
-  countProperties:                 countProperties
+  countProperties:                 countProperties,
+  addPropertyForUnitTest:          addPropertyForUnitTest
 };
