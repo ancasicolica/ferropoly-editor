@@ -36,10 +36,8 @@ const ChancelleryTransaction = mongoose.model('ChancelleryTransactions', chancel
  * @param transaction
  */
 async function book(transaction) {
-  //logger.info('Booking transaction', transaction);
-  let res = await transaction.save();
-  console.log('saved', res);
-  return res;
+  logger.debug('Booking transaction', transaction);
+  return await transaction.save();
 }
 
 /**

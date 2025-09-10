@@ -25,7 +25,7 @@ module.exports = function (app) {
     passport.authenticate('google', {failureRedirect: '/login'}),
     function (req, res) {
       // Successful authentication, redirect home.
-      console.log('SUCCESSFUL LOGGED IN WITH GOOGLE ------------------------------------');
+      //console.log('SUCCESSFUL LOGGED IN WITH GOOGLE ------------------------------------');
       res.redirect(req.session.targetUrl || '/');
     });
 
@@ -42,7 +42,7 @@ module.exports = function (app) {
     passport.authenticate('microsoft', {failureRedirect: '/login'}),
     function (req, res) {
       // Successful authentication, redirect home.
-      console.log('SUCCESSFUL LOGGED IN WITH MICROSOFT ------------------------------------');
+      //console.log('SUCCESSFUL LOGGED IN WITH MICROSOFT ------------------------------------');
       res.redirect(req.session.targetUrl || '/');
     });
 

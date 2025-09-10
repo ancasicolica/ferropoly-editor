@@ -82,7 +82,7 @@ module.exports = function (settings, users) {
     function (accessToken, refreshToken, donotknow, profile, done) {
       //console.log('accessToken', accessToken);
       //console.log('refreshToken', refreshToken);
-      console.log('GOOGLE Profile:', profile);
+      //console.log('GOOGLE Profile:', profile);
 
       users.findOrCreateGoogleUser(profile, function (err, foundUser) {
         return done(err, foundUser);
@@ -102,7 +102,7 @@ module.exports = function (settings, users) {
     },
 
     function (accessToken, refreshToken, profile, done) {
-      console.log('Microsoft Profile:', profile);
+      //console.log('Microsoft Profile:', profile);
 
       users.findOrCreateMicrosoftUser(profile, function (err, foundUser) {
         return done(err, foundUser);
