@@ -41,7 +41,8 @@ const Model = mongoose.model('PicBucket', picBucketSchema);
  */
 async function deletePicBucket(gameId) {
   if (!gameId) {
-    throw new Error('No gameId supplied');
+    logger.info('deletePicBucket: No gameId supplied, nothing to do.')
+    return {};
   }
   logger.info(`${gameId}: Deleting Pic Bucket`);
   return await Model
