@@ -1,23 +1,27 @@
 /**
  * Common library for the pricelist
+ * Tests are found in the main sources.
  * Created by kc on 26.04.15.
  */
-
 
 const _             = require('lodash');
 const properties    = require('../models/propertyModel');
 const gameplayModel = require('../models/gameplayModel');
 const logger        = require('./logger').getLogger('lib:pricelist');
-const moment        = require('moment');
+const {DateTime}    = require('luxon');
 
 module.exports = {
   /**
-   * Get the price list for a given game
+   * Get the price list for a given game which is nothing else than an array
    * @param gameId
    * @param callback
    */
-  getPricelist: function (gameId, callback) {
-    properties.getPropertiesForGameplay(gameId, null).then(props => {
+  getPricelist: async function (gameId, callback) {
+    if (callback) {
+      return callback(new Error('No more callbacks in getPricelist'));
+    }
+    try {
+      const props   = await properties.getPropertiesForGameplay(gameId, null);
       let pricelist = _.filter(props, function (p) {
         return p.pricelist.position > -1;
       });
@@ -29,12 +33,15 @@ module.exports = {
         pricelist[i].__v      = undefined;
         pricelist[i].gameId   = undefined;
       }
-      let sortedPricelist = _.sortBy(pricelist, function (p) {
+      return _.sortBy(pricelist, function (p) {
         return p.pricelist.position;
       });
+    }
+    catch (ex) {
+      logger.error(ex);
+      return [];
+    }
 
-      return callback(null, sortedPricelist);
-    }).catch(callback);
   },
 
   /**
@@ -42,40 +49,45 @@ module.exports = {
    * @param gameId
    * @param callback
    */
-  getArray: function (gameId, callback) {
+  getArray: async function (gameId, callback) {
+    if (callback) {
+      return callback(new Error('No more callbacks in pricelist.getArray'));
+    }
     logger.info(`${gameId}: Downloading pricelist array`);
-    this.getPricelist(gameId, function (err, list) {
-      if (err) {
-        return callback(err);
-      }
+    const list = await this.getPricelist(gameId)
+    let gp;
+    try {
+      gp    = await gameplayModel.getGameplay(gameId, null);
+    }
+    catch (ex) {
+      logger.error(ex);
+      gp = {log: { priceListCreated: new Date(), priceListVersion: 0}};
+    }
 
-      gameplayModel.getGameplay(gameId, null).then(gp => {
-        let csvList = [['Preisliste ' + gp.gamename], ['Position', 'Ort', 'Gruppe', 'Kaufpreis', 'Hauspreis', 'Miete', 'Miete 1H', 'Miete 2H', 'Miete 3H', 'Miete 4H', 'Miete Hotel']];
-        for (let i = 0; i < list.length; i++) {
-          let e = list[i];
-          csvList.push([
-            e.pricelist.position + 1,
-            e.location.name,
-            e.pricelist.propertyGroup,
-            e.pricelist.price,
-            e.pricelist.pricePerHouse,
-            e.pricelist.rents.noHouse,
-            e.pricelist.rents.oneHouse,
-            e.pricelist.rents.twoHouses,
-            e.pricelist.rents.threeHouses,
-            e.pricelist.rents.fourHouses,
-            e.pricelist.rents.hotel
-          ]);
-        }
-        csvList.push(['Stand: ' + moment(gp.log.priceListCreated).format('D.M.YYYY') + ', Version: ' + gp.log.priceListVersion]);
+    let csvList = [['Preisliste ' + gp.gamename],
+                   ['Position', 'Ort', 'Gruppe', 'Kaufpreis', 'Hauspreis', 'Miete', 'Miete 1H', 'Miete 2H', 'Miete 3H',
+                    'Miete 4H', 'Miete Hotel']];
+    for (let i = 0; i < list.length; i++) {
+      let e = list[i];
+      csvList.push([
+        e.pricelist.position + 1,
+        e.location.name,
+        e.pricelist.propertyGroup,
+        e.pricelist.price,
+        e.pricelist.pricePerHouse,
+        e.pricelist.rents.noHouse,
+        e.pricelist.rents.oneHouse,
+        e.pricelist.rents.twoHouses,
+        e.pricelist.rents.threeHouses,
+        e.pricelist.rents.fourHouses,
+        e.pricelist.rents.hotel
+      ]);
+    }
+    csvList.push(['Stand: ' + DateTime.fromJSDate(gp.log.priceListCreated).toLocaleString(DateTime.DATE_MED) + ', Version: ' + gp.log.priceListVersion]);
 
-        let fileName  = _.kebabCase(gp.gamename) + '-pricelist.xlsx';
+    let fileName = _.kebabCase(gp.gamename) + '-pricelist.xlsx';
 
-        callback(null, {sheetName: 'Preisliste', fileName: fileName, data: csvList});
-      })
-        .catch(err => {
-          return callback(err);
-        });
-    });
+    return {sheetName: 'Preisliste', fileName: fileName, data: csvList};
+
   }
 };
