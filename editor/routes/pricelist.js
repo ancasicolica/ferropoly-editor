@@ -57,26 +57,24 @@ router.post('/create', async function (req, res) {
 /**
  * Get a pricelist
  */
-router.get('/get/:gameId', function (req, res) {
-  if (!req.params || !req.params.gameId) {
-    return res.status(400).send({message: 'Parameter error'});
+router.get('/get/:gameId', async function (req, res) {
+  try {
+    if (!req.params || !req.params.gameId) {
+      return res.status(400).send({message: 'Parameter error'});
+    }
+    const gpInfo = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
+
+    // Only owners may finalize it
+    let gp         = gpInfo.toObject();
+    gp.isOwner = _.get(gp, 'internal.owner') === req.session.passport.user;
+    const list = await commonPricelistLib.getPricelist(req.params.gameId);
+    return res.send({gameplay: gp, pricelist: list, gameUrl: settings.mainInstances[0]});
+  }
+  catch (err) {
+    logger.error('Getting pricelist failed', err);
+    return res.status(500).send({message: err.message});
   }
 
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user).then(gp => {
-    // Only owners may finalize it
-    gp         = gp.toObject();
-    gp.isOwner = _.get(gp, 'internal.owner') === req.session.passport.user;
-    commonPricelistLib.getPricelist(req.params.gameId, function (err, list) {
-      if (err) {
-        logger.error('getPricelist failed', err);
-        return res.status(500).send({message: err.message});
-      }
-      return res.send({gameplay: gp, pricelist: list, gameUrl: settings.mainInstances[0]});
-    });
-  }).catch(err => {
-      logger.error('getGameplay failed', err);
-      return res.status(500).send({message: err.message});
-  });
 });
 
 module.exports = router;

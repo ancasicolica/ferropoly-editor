@@ -19,27 +19,28 @@ const xlsx      = require('node-xlsx');
  * @param req
  * @param res
  */
-function handler(req, res) {
-  pricelist.getArray(req.params.gameId, function (err, report) {
-    if (err) {
-      return res.send({status: 'error', message: err.message});
-    }
-
+async function handler(req, res) {
+  try {
+    const report = await pricelist.getArray(req.params.gameId);
     const buffer = xlsx.build([{name: report.sheetName, data: report.data}]);
 
     res.set({
-      'Content-Type'       : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Type':        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Description': 'File Transfer',
       'Content-Disposition': 'attachment; filename=' + report.fileName,
-      'Content-Length'     : buffer.length
+      'Content-Length':      buffer.length
     });
     res.send(buffer);
-  })
+  }
+  catch (err) {
+    return res.send({status: 'error', message: err.message});
+  }
+
 }
 
 router.get('/:gameId', handler);
 
 module.exports = {
-  router : router,
+  router:  router,
   handler: handler
 };
