@@ -61,7 +61,7 @@ import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row';
 import {mapWritableState} from 'pinia';
 import {useEditorPropertiesStore} from '../../../../lib/store/EditorPropertiesStore';                   // optional
-import {FilterMatchMode} from '@primevue/core/api';
+import {FilterMatchMode, FilterService} from '@primevue/core/api';
 import {formatAccessibility, formatPriceRange} from '../../../../common/lib/formatters';
 import {toRaw} from 'vue';
 
@@ -79,7 +79,7 @@ export default {
       filters:      {
         'location.name':          {value: null, matchMode: FilterMatchMode.CONTAINS},
         'location.accessibility': {value: null, matchMode: FilterMatchMode.EQUALS},
-        'pricelist.priceRange':   {value: null, matchMode: FilterMatchMode.EQUALS},
+        'pricelist.priceRange':   {value: null, matchMode: 'PRICE_RANGE'},
       },
       filterMode:   'name',
       filterModes:  [
@@ -97,6 +97,7 @@ export default {
       ],
       priceRanges:  [
         {name: 'Alle Orte anzeigen', value: null},
+        {name: 'In der Preisliste', value: -2},
         {name: 'unbenutzt', value: -1},
         {name: 'sehr billig', value: 0},
         {name: 'billig', value: 1},
@@ -157,6 +158,14 @@ export default {
   created:    function () {
     window.addEventListener('resize', this.resizeHandler);
     this.resizeHandler();
+
+    // Woah, that was awful, using an undocumented feature, but finally it works
+    FilterService.register('PRICE_RANGE', (val, filter) => {
+      if (filter > -2 ) {
+        return filter === val;
+      }
+      return val >= 0;
+    })
   },
   unmounted() {
     window.removeEventListener('resize', this.resizeHandler);

@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* Verlorenes Feature nachgerüstet: Update auf Filter "Verwendung" in Editor kann auf Orte in Preisliste filtern
+
 # v4.0.4 30.8.25
 * Help-Button wird in Menuzeile dargestellt
 

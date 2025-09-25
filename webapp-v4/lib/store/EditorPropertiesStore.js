@@ -180,7 +180,12 @@ export const useEditorPropertiesStore = defineStore('EditorProperties', {
         });
       } else if (f.filterType === 'priceRange') {
         // This has to be filtered with the vue data
-        f.entries = filter(this.properties, {'pricelist': {'priceRange': f.filter}});
+        if (f.filter > -2) {
+          f.entries = filter(this.properties, {'pricelist': {'priceRange': f.filter}});
+        }
+        else {
+          f.entries = filter(this.properties,  p =>  p.pricelist.priceRange >= 0);
+        }
       }
       propertyAuxData.applyFilter(f);
     },

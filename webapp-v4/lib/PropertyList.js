@@ -195,7 +195,7 @@ class PropertyList extends EventEmitter {
    * @param f
    */
   applyFilter(f) {
-    console.log('applyFilter', f);
+    // console.log('applyFilter', f);
 
     for (const p of this.properties.values()) {
       // p is a property instance
