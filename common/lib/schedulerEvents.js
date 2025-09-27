@@ -4,8 +4,9 @@
  * Created by kc on 01.05.15.
  */
 
-const eventModel = require('../models/schedulerEventModel');
-const moment     = require('moment');
+ const eventModel = require('../models/schedulerEventModel');
+const {DateTime} = require('luxon');
+const {logger} = require('express-winston');
 
 /**
  * Create all events for a gameplay (during finalization) and insert them in the DB
@@ -20,8 +21,9 @@ async function createEvents(gameplay, callback) {
   let events = [];
 
   // Pre-Start
-  let prestart = eventModel.createEvent(gameplay.internal.gameId,
-    moment(gameplay.scheduling.gameStartTs).subtract({minutes: 5}).toDate(),
+  const startDateTime = DateTime.fromJSDate(gameplay.scheduling.gameStartTs);
+  let prestart        = eventModel.createEvent(gameplay.internal.gameId,
+    startDateTime.minus({minutes: 5}).toJSDate(),
     'prestart');
   events.push(prestart);
 
@@ -33,14 +35,15 @@ async function createEvents(gameplay, callback) {
   events.push(start);
 
   // Interests
-  let m = moment(gameplay.scheduling.gameStartTs);
-  while (m < gameplay.scheduling.gameEndTs) {
+  let dt            = DateTime.fromJSDate(gameplay.scheduling.gameStartTs);
+  const endDateTime = DateTime.fromJSDate(gameplay.scheduling.gameEndTs);
+  while (dt < endDateTime) {
     let interest = eventModel.createEvent(gameplay.internal.gameId,
-      new Date(m.toDate()),
+      dt.toJSDate(),
       'interest');
     events.push(interest);
 
-    m.add(gameplay.gameParams.interestInterval, 'm');
+    dt = dt.plus({minutes: gameplay.gameParams.interestInterval});
   }
 
   // End
@@ -52,13 +55,12 @@ async function createEvents(gameplay, callback) {
 
   // Summary available
   let summary = eventModel.createEvent(gameplay.internal.gameId,
-    moment(gameplay.scheduling.gameStartTs).endOf('day').toDate(),
+    startDateTime.endOf('day').toJSDate(),
     'summary'
   );
   events.push(summary);
 
   await eventModel.saveEvents(events);
-
 }
 
 module.exports = {

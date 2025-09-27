@@ -1,19 +1,12 @@
 /**
  * This is the model for the log of a game: what happened when, who did what
  * The contents are displayed in the summary of the game.
- *
- * What shall be logged (not including all, just ideas for module design):
- * - Start of the game                             CAT_GENERAL
- * - a property is being sold (or one tries to)    CAT_PROPERTY
- * - Chancellery: "Parkplatz" being paid           CAT_CHANCELLERY
- * - End of the game                               CAT_GENERAL
- * Created by kc on 16.04.2020
  */
 
-const mongoose = require('mongoose');
-const logger   = require('../lib/logger').getLogger('gameLogModel');
-const moment   = require('moment');
-const _        = require('lodash');
+const mongoose   = require('mongoose');
+const logger     = require('../lib/logger').getLogger('gameLogModel');
+const {DateTime} = require('luxon');
+const _          = require('lodash');
 
 /**
  * Categories
@@ -21,10 +14,11 @@ const _        = require('lodash');
 const CAT_GENERAL     = 0; // General info: game started, ended
 const CAT_PROPERTY    = 1; // a property was sold or was trying to be bought
 const CAT_CHANCELLERY = 2; // chancellery actions
+
 /**
  * The mongoose schema for a log entry
  */
-const gameLogSchema   = mongoose.Schema({
+const gameLogSchema = mongoose.Schema({
   _id:       String,
   gameId:    String,
   teamId:    String, // Set only if relevant, otherwise undefined
@@ -35,7 +29,6 @@ const gameLogSchema   = mongoose.Schema({
   files:     {type: Array, default: []}, // this is an array with objects for pics
   timestamp: {type: Date, default: Date.now}
 });
-
 
 /**
  * The Game-Log model
@@ -57,49 +50,47 @@ async function addEntry(p1, p2, p3, p4, p5) {
   let result;
   let callback;
 
-    let gameId    = p1;
-    let category  = p2;
-    let title     = p3;
-    let saveTitle = ''; // title without additional infos about locations, "game save"
-    let options   = p4;
-    callback      = p5;
+  let gameId    = p1;
+  let category  = p2;
+  let title     = p3;
+  let saveTitle = ''; // title without additional infos about locations, "game save"
+  let options   = p4;
+  callback      = p5;
 
-    if (_.isObject((p1))) {
-      // New API with object as param 1 and callback as param 2
-      gameId    = _.get(p1, 'gameId', null);
-      category  = _.get(p1, 'category', CAT_GENERAL);
-      saveTitle = _.get(p1, 'saveTitle', '');
-      title     = _.get(p1, 'title', saveTitle);
-      options   = _.get(p1, 'options', {});
-      callback  = p2;
-    }
+  if (_.isObject((p1))) {
+    // New API with object as param 1 and callback as param 2
+    gameId    = _.get(p1, 'gameId', null);
+    category  = _.get(p1, 'category', CAT_GENERAL);
+    saveTitle = _.get(p1, 'saveTitle', '');
+    title     = _.get(p1, 'title', saveTitle);
+    options   = _.get(p1, 'options', {});
+    callback  = p2;
+  }
 
-    if (_.isFunction(callback)) {
-      logger.error('>>>>> No more callbacks in addEntry');
-      return callback(new Error('no more callbacks'));
-    }
+  if (_.isFunction(callback)) {
+    logger.error('>>>>> No more callbacks in addEntry');
+    return callback(new Error('no more callbacks'));
+  }
 
-    if (!gameId) {
-      throw new Error('gameId in addEntry must be set');
-    }
+  if (!gameId) {
+    throw new Error('gameId in addEntry must be set');
+  }
 
-    if (!_.isString(gameId) || !_.isString(title)) {
-      throw new Error('all params in createEntry must be strings');
-    }
+  if (!_.isString(gameId) || !_.isString(title)) {
+    throw new Error('all params in createEntry must be strings');
+  }
 
-    let logEntry       = new GameLog();
-    logEntry.gameId    = gameId;
-    logEntry.title     = title;
-    logEntry.saveTitle = saveTitle;
-    logEntry.message   = _.get(options, 'message', '');
-    logEntry.category  = category
-    logEntry.teamId    = _.get(options, 'teamId', undefined);
-    logEntry.files     = []; // Not used yet
-    logEntry._id       = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
-    result             = await logEntry.save();
-    return result;
-
-
+  let logEntry       = new GameLog();
+  logEntry.gameId    = gameId;
+  logEntry.title     = title;
+  logEntry.saveTitle = saveTitle;
+  logEntry.message   = _.get(options, 'message', '');
+  logEntry.category  = category;
+  logEntry.teamId    = _.get(options, 'teamId', undefined);
+  logEntry.files     = []; // Not used yet
+  logEntry._id       = gameId + '-' + DateTime.now().toFormat('yyMMdd-HHmmss:SSS') + '-' + _.random(100000, 999999);
+  result             = await logEntry.save();
+  return result;
 }
 
 /**
@@ -133,23 +124,24 @@ async function getLogEntries(gameId, teamId, tsStart, tsEnd, callback) {
   }
 
   if (!tsStart) {
-    tsStart = moment('2015-01-01');
+    tsStart = DateTime.fromISO('2015-01-01');
   }
   if (!tsEnd) {
-    tsEnd = moment();
+    tsEnd = DateTime.now();
   }
+
   if (teamId) {
     return await GameLog
       .find({gameId: gameId})
       .where('teamId').equals(teamId)
-      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gte(tsStart.toJSDate()).lte(tsEnd.toJSDate())
       .sort('timestamp')
       .lean()
       .exec();
   } else {
     return await GameLog
       .find({gameId: gameId})
-      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gte(tsStart.toJSDate()).lte(tsEnd.toJSDate())
       .sort('timestamp')
       .lean()
       .exec();
@@ -170,7 +162,6 @@ async function getAllLogEntries(gameId, teamId, callback) {
   }
   return await getLogEntries(gameId, teamId, undefined, undefined);
 }
-
 
 module.exports = {
   Model:            GameLog,

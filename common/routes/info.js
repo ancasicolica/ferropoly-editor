@@ -4,18 +4,18 @@
  */
 
 
-const express = require('express');
-const router  = express.Router();
-const cors    = require('cors');
-const pkg     = require('../../package.json');
-const moment  = require('moment');
-const _       = require('lodash');
+const express              = require('express');
+const router               = express.Router();
+const cors                 = require('cors');
+const pkg                  = require('../../package.json');
+const {DateTime, Duration} = require('luxon');
+const _                    = require('lodash');
 
-const initializationMoment = moment();
+const initializationMoment = DateTime.now();
 const versions             = process.versions;
 
 const corsOptions = {
-  origin              : 'https://ferropoly.ch',
+  origin:               'https://ferropoly.ch',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
@@ -39,30 +39,30 @@ module.exports = function (settings, customData) {
       let memUsage     = process.memoryUsage();
       memUsage.totalMb = Math.ceil((memUsage.rss + memUsage.heapTotal + memUsage.heapUsed) / 1024 / 1024);
 
-      let uptime = moment.duration(process.uptime(), 'seconds');
+      let uptime = Duration.fromObject({seconds: process.uptime()});
       res.send({
-        copyright  : 'Ferropoly ©2015 Christian Kuster, CH-8342 Wernetshausen, Sources provided under GPL licence, see www.ferropoly.ch for details.',
-        app        : {
-          name   : pkg.name,
-          title  : pkg.title,
+        copyright:   'Ferropoly ©2015 Christian Kuster, CH-8342 Wernetshausen, Sources provided under GPL licence, see www.ferropoly.ch for details.',
+        app:         {
+          name:    pkg.name,
+          title:   pkg.title,
           version: pkg.version
         },
-        settings   : {
-          serverId     : settings.server.serverId,
+        settings:    {
+          serverId:      settings.server.serverId,
           debugInstance: settings.debug,
-          preview      : settings.preview
+          preview:       settings.preview
         },
-        memory     : memUsage,
+        memory:      memUsage,
         nodeVersion: versions,
-        uptime     : {
-          asSeconds: uptime.asSeconds(),
-          asMinutes: uptime.asMinutes(),
-          asHours  : uptime.asHours(),
-          asDays   : uptime.asDays(),
-          forHumans: uptime.humanize(),
+        uptime:      {
+          asSeconds: uptime.as('seconds'),
+          asMinutes: uptime.as('minutes'),
+          asHours:   uptime.as('hours'),
+          asDays:    uptime.as('days'),
+          forHumans: uptime.toHuman(),
           startTime: initializationMoment
         },
-        aux        : data
+        aux:         data
       });
     })
   }
@@ -81,15 +81,15 @@ module.exports = function (settings, customData) {
    */
   router.get('/login', cors(corsOptions), (req, res) => {
     res.send({
-      app     : {
-        name   : pkg.name,
-        title  : pkg.title,
+      app:      {
+        name:    pkg.name,
+        title:   pkg.title,
         version: pkg.version
       },
       settings: {
-        serverId     : settings.server.serverId,
+        serverId:      settings.server.serverId,
         debugInstance: settings.debug,
-        preview      : settings.preview
+        preview:       settings.preview
       },
     });
   });

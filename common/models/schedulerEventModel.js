@@ -3,23 +3,23 @@
  * Created by kc on 01.05.15.
  */
 
-const mongoose = require('mongoose');
-const moment   = require('moment');
-const logger   = require('../lib/logger').getLogger('schedulerEventModel');
+const mongoose   = require('mongoose');
+const {DateTime} = require('luxon');
+const logger     = require('../lib/logger').getLogger('schedulerEventModel');
 
 /**
  * The mongoose schema for a scheduleEvent
  */
 const scheduleEventSchema = mongoose.Schema({
-  _id      : String,
-  gameId   : String, // Gameplay this team plays with
+  _id:       String,
+  gameId:    String, // Gameplay this team plays with
   timestamp: Date, // When it is going to happen
-  type     : String, // What it is about
-  handled  : {type: Boolean, default: false},
-  handler  : {
-    id      : String, // ID of the handler
+  type:      String, // What it is about
+  handled:   {type: Boolean, default: false},
+  handler:   {
+    id:       String, // ID of the handler
     reserved: Date,
-    handled : Date
+    handled:  Date
   }
 });
 /**
@@ -35,7 +35,7 @@ function createEvent(gameId, timestamp, type) {
   event.gameId    = gameId;
   event.timestamp = timestamp;
   event.type      = type;
-  event._id       = gameId + '-' + moment(timestamp).format('YYMMDD-HHmm') + '-' + type;
+  event._id       = gameId + '-' + DateTime.fromJSDate(timestamp).toFormat('yyMMdd-HHmm') + '-' + type;
   return event;
 }
 
@@ -66,18 +66,16 @@ async function dumpEvents(gameId) {
     .exec();
 }
 
-
 /**
  * Gets the events of the next few hours
  */
 async function getUpcomingEvents() {
-
-  let untilTime = moment().add(4, 'h');
+  let untilTime = DateTime.now().plus({hours: 4}).toJSDate();
 
   return await scheduleEventModel
     .find()
     .where('handled').equals(false)
-    .where('timestamp').lte(untilTime.toDate())
+    .where('timestamp').lte(untilTime)
     .sort('timestamp')
     .lean()
     .exec();
@@ -89,7 +87,6 @@ async function getUpcomingEvents() {
  * @param serverId
  */
 async function requestEventSave(event, serverId) {
-
   const data = await scheduleEventModel
     .find()
     .where('_id').equals(event._id)
@@ -105,7 +102,7 @@ async function requestEventSave(event, serverId) {
     return;
   }
   ev.handler = {
-    id      : serverId,
+    id:       serverId,
     reserved: new Date()
   };
   return await ev.save();
@@ -133,11 +130,11 @@ async function saveAfterHandling(event) {
 }
 
 module.exports = {
-  Model            : scheduleEventModel,
-  createEvent      : createEvent,
-  saveEvents       : saveEvents,
-  dumpEvents       : dumpEvents,
+  Model:             scheduleEventModel,
+  createEvent:       createEvent,
+  saveEvents:        saveEvents,
+  dumpEvents:        dumpEvents,
   getUpcomingEvents: getUpcomingEvents,
-  requestEventSave : requestEventSave,
+  requestEventSave:  requestEventSave,
   saveAfterHandling: saveAfterHandling
 };
