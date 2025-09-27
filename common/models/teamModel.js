@@ -200,6 +200,7 @@ async function getTeamsAsObject(gameId, callback) {
     logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in getTeamsAsObject is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
     return callback('NOT SUPPORTED ANYMORE!');
   }
+  logger.warn(`${gameId}: getTeamsAsObject is deprecated, use getTeamsAsMap instead`);
   const data = await getTeams(gameId);
 
   // Add all teams to the result
@@ -208,7 +209,22 @@ async function getTeamsAsObject(gameId, callback) {
     teams[data[i].uuid] = data[i];
   }
   return teams;
+}
 
+/**
+ * Returns the teams as a Map
+ * @param gameId
+ */
+async function getTeamsAsMap(gameId) {
+  const data = await getTeams(gameId);
+
+  // Add all teams to the result
+  let teams = new Map()
+  for (const team of data) {
+    teams.set(team.uuid, team);
+  }
+
+  return teams;
 }
 
 /**
@@ -265,6 +281,7 @@ module.exports = {
   deleteAllTeams:   deleteAllTeams,
   getTeams:         getTeams,
   getTeamsAsObject: getTeamsAsObject,
+  getTeamsAsMap:    getTeamsAsMap,
   countTeams:       countTeams,
   getMyTeams:       getMyTeams,
   getMyTeam:        getMyTeam,
