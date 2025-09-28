@@ -99,6 +99,8 @@ module.exports = {
       })
   },
 
+  getNewTokenAsync,
+
   /**
    * Verifies a token
    * @param user
