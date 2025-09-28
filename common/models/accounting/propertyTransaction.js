@@ -119,6 +119,13 @@ async function getSummary(gameId, propertyId) {
         _id    : '$propertyId',
         balance: {$sum: "$transaction.amount"}
       }
+    }, {
+      // rename _id to propertyId and keep balance
+      $project: {
+        _id: 0,
+        propertyId: '$_id',
+        balance: 1
+      }
     }])
     .exec();
 
