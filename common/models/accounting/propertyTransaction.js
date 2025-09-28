@@ -91,6 +91,17 @@ async function getEntries(gameId, propertyId, tsStart, tsEnd) {
       .lean()
       .exec();
   }
+
+  // map _id -> propertyId in all returned objects and remove _id
+  data = (data || []).map(d => {
+    if (d && d._id && !d.propertyId) {
+      return { ...d, propertyId: d._id, _id: undefined };
+    }
+    // If propertyId already exists, just drop _id
+    const { _id, ...rest } = d;
+    return rest;
+  });
+
   return data;
 }
 
