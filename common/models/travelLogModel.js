@@ -6,7 +6,7 @@
 
 const mongoose      = require('mongoose');
 const logger        = require('../lib/logger').getLogger('travelLogModel');
-const moment        = require('moment');
+const {DateTime}    = require('luxon');
 const _             = require('lodash');
 /**
  * The mongoose schema for an user
@@ -55,7 +55,7 @@ let addEntry = async function (gameId, teamId, propertyId, callback) {
   logEntry.gameId     = gameId;
   logEntry.teamId     = teamId;
   logEntry.propertyId = propertyId;
-  logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  logEntry._id        = gameId + '-' + DateTime.now().toFormat('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 };
 
@@ -90,7 +90,7 @@ async function addPropertyEntry(gameId, teamId, property, callback) {
     lng:      property.location.position.lng,
     accuracy: 200
   };
-  logEntry._id        = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  logEntry._id        = gameId + '-' + DateTime.now().toFormat('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 }
 
@@ -121,7 +121,7 @@ async function addPositionEntry(gameId, teamId, user, position, callback) {
   logEntry.teamId   = teamId;
   logEntry.position = position;
   logEntry.user     = user;
-  logEntry._id      = gameId + '-' + moment().format('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  logEntry._id      = gameId + '-' + DateTime.now().toFormat('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 }
 
@@ -153,24 +153,24 @@ let getLogEntries = async function (gameId, teamId, tsStart, tsEnd, callback) {
     throw new Error('No gameId supplied');
   }
   if (!tsStart) {
-    tsStart = moment('2015-01-01');
+    tsStart = DateTime.fromISO('2015-01-01');
   }
   if (!tsEnd) {
-    tsEnd = moment();
+    tsEnd = DateTime.now();
   }
 
   if (teamId) {
     return await TravelLog
       .find({gameId: gameId})
       .where('teamId').equals(teamId)
-      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gte(tsStart.toJSDate()).lte(tsEnd.toJSDate())
       .sort('timestamp')
       .lean()
       .exec();
   } else {
     return await TravelLog
       .find({gameId: gameId})
-      .where('timestamp').gte(tsStart.toDate()).lte(tsEnd.toDate())
+      .where('timestamp').gte(tsStart.toJSDate()).lte(tsEnd.toJSDate())
       .sort('timestamp')
       .lean()
       .exec();
