@@ -4,7 +4,7 @@
  * Created: 12.08.21
  **/
 
-import {Loader} from '@googlemaps/js-api-loader';
+import {setOptions, importLibrary} from '@googlemaps/js-api-loader';
 import {merge} from 'lodash';
 
 // Hell, yes, this is the API Key in code, git and everywhere... So far I was not able
@@ -13,9 +13,10 @@ import {merge} from 'lodash';
 // useless...
 const API_KEY = 'AIzaSyBUF_iMSAIZ4VG6rjpGvTntep-_x2zuAqw';
 
-const loader = new Loader({
-  apiKey: API_KEY, version: 'weekly', libraries: ['places']
-});
+setOptions({
+  key: API_KEY,
+  v:   'weekly'
+})
 
 class GoogleLoader {
   constructor() {
@@ -33,7 +34,6 @@ class GoogleLoader {
   async load() {
 
     try {
-      //this.google = await loader.load();
       return this.google;
     }
     catch (ex) {
@@ -46,11 +46,11 @@ class GoogleLoader {
   async loadEx() {
     try {
       console.log('Loading new Google API 2025 style');
-      const mapApi                              = await loader.importLibrary('maps');
+      const mapApi                              = await importLibrary('maps');
       this.api                                  = merge(this.api, mapApi);
-      const {AdvancedMarkerElement, PinElement} = await loader.importLibrary('marker');
+      const {AdvancedMarkerElement, PinElement} = await importLibrary('marker');
 
-      const markersApi               = await loader.importLibrary('marker');
+      const markersApi               = await importLibrary('marker');
       this.api                       = merge(this.api, markersApi);
       this.api.AdvancedMarkerElement = AdvancedMarkerElement;
       this.api.PinElement            = PinElement;
