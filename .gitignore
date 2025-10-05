@@ -50,3 +50,4 @@ yarn.lock
 .yarn
 /.yarnrc.yml
 /public/build/report.html
+.env

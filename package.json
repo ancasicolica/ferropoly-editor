@@ -82,6 +82,7 @@
     "@tailwindcss/postcss": "4.1.12",
     "autoprefixer": "^10.4.21",
     "css-loader": "7.1.2",
+    "dotenv-webpack": "^8.1.1",
     "eslint": "9.33.0",
     "eslint-plugin-vue": "9.33.0",
     "expect.js": "0.3.1",

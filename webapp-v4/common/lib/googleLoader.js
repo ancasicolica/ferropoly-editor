@@ -11,7 +11,7 @@ import {merge} from 'lodash';
 // to find a better solution, have to check this out. But don't be too happy about finding
 // a 'free' API key, it is restricted to the ferropoly infrastructure, consider it as
 // useless...
-const API_KEY = 'AIzaSyBUF_iMSAIZ4VG6rjpGvTntep-_x2zuAqw';
+const API_KEY = process.env.FERROPOLY_GOOGLE_API_KEY;
 
 setOptions({
   key: API_KEY,
@@ -28,11 +28,10 @@ class GoogleLoader {
       PinElement:            null,
       LatLngBounds:          null,
     }
-
+    console.log(`GoogleLoader constructor success, result code: ${API_KEY.length}`);
   }
 
   async load() {
-
     try {
       return this.google;
     }
