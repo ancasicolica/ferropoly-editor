@@ -158,7 +158,7 @@ async function updateUser(user, password, callback) {
     let editedUser = doc;
     copyUser(user, editedUser);
     // Update User
-    logger.info(`Update user: ${user.personalData.email}`, user);
+    logger.info(`Update user: ${user.personalData.email}`, user.personalData);
     if (password) {
       generatePasswordHash(editedUser, password);
     }

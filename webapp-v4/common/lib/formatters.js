@@ -89,7 +89,8 @@ function formatDateTime(value) {
  * @returns {*}
  */
 function formatTimestampAsAgo(timestamp) {
-  return timestamp.toRelative();
+  const value = createLuxonDate(timestamp);
+  return value.setLocale('de').toRelative();
 }
 
 

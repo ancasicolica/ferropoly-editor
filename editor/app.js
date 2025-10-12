@@ -89,7 +89,7 @@ let initServer = async function () {
       secure: 'auto'
     },
     genid:             function () {
-      return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid();
+      return 'EDITOR_' + moment().format('YYMMDD-HHmmss-') + uuid();
     },
     store:             MongoStore.create({mongoUrl: settings.locationDbSettings.mongoDbUrl, ttl: 2 * 24 * 60 * 60}),
     name:              'ferropoly-editor'

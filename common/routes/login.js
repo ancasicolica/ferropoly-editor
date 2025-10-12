@@ -44,6 +44,9 @@ router.post('/', (req, res, next) => {
       });
     }
 
+    // Do this before calling login! login deletes some of the session data
+    const redirectUri = req.session.targetUrl || '/';
+
     // Login into the session
     req.login(user, (err) => {
       if (err) {
@@ -51,8 +54,7 @@ router.post('/', (req, res, next) => {
       }
 
       // Sucessfully logged in
-      const redirectUri = req.session.targetUrl || '/';
-      logger.info(`User ${_.get(user, 'personalData.email')} logged in`);
+      logger.info(`User ${_.get(user, 'personalData.email')} logged in, redirectUri = ${redirectUri}`, req.session);
 
       res
         .status(200)
@@ -124,7 +126,7 @@ module.exports = {
           logger.info(uri + ' redirected to login');
           res.redirect('/login');
         } else {
-          logger.info(uri + ' is not allowed (401)');
+          logger.info(`${uri} is not allowed (401)`);
           req.session.targetUrl = req.url;
           res.status(401);
 
