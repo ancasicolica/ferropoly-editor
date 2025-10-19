@@ -7,6 +7,8 @@ import {z} from 'zod';
 
 import {organisatorPhoneSchema} from './GamePlaySchemas'
 
+const teamPhoneSchema = organisatorPhoneSchema;
+
 const teamLeaderNameSchema = z.string()
   .min(3, 'Der Name muss mindestens 3 Zeichen lang sein.')
   .max(60, 'Der Name darf höchstens 60 Zeichen lang sein.');
@@ -33,4 +35,4 @@ const playerSchema = z.object({
   name:         teamNameSchema
 })
 
-export {playerSchema, teamLeaderNameSchema, teamNameSchema, organizationNameSchema, teamLeaderEmailSchema};
+export {playerSchema, teamPhoneSchema, teamLeaderNameSchema, teamNameSchema, organizationNameSchema, teamLeaderEmailSchema};

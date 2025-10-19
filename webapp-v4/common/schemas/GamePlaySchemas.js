@@ -5,6 +5,7 @@
  **/
 
 import {z} from 'zod';
+import {phoneSchema} from './GenericSchemas';
 
 const customErrorMap = (issue, _ctx) => {
   switch (issue.code) {
@@ -29,8 +30,6 @@ const customErrorMap = (issue, _ctx) => {
 z.setErrorMap(customErrorMap);
 
 
-const phoneRegex = new RegExp(/(\b(0041|0)|\B\+41)(\s?\(0\))?(\s)?[1-9]{2}(\s)?[0-9]{3}(\s)?[0-9]{2}(\s)?[0-9]{2}\b/);
-
 const gamenameSchema = z.string()
   .min(4, 'Der Spielname muss mindestens 4 Zeichen lang sein.')
   .max(60, 'Der Spielname darf höchstens 60 Zeichen lang sein.');
@@ -42,8 +41,7 @@ const organisatorNameSchema = z.string()
 const organisationSchema = z.optional(z.string()
   .max(60, 'Der Name darf höchstens 60 Zeichen lang sein.'));
 
-const organisatorPhoneSchema = z.string()
-  .regex(phoneRegex, 'Bitte eine gültige Telefonnummer eintragen.');
+const organisatorPhoneSchema = phoneSchema;
 
 const organisatorEmailSchema = z.string().email('Eine gültige Email-Adresse ist notwendig.');
 
