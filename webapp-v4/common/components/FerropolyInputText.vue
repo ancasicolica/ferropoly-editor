@@ -15,7 +15,8 @@
                       :value="modelValue"
                       @valueChange="onValueChange"
                       :invalid="!valid"
-                      :class="{ 'p-invalid': !valid }"></input-text>
+                      :disabled="disabled"
+                      :class="{ 'p-invalid': !valid }" />
         </span>
       </div>
     </div>
@@ -24,7 +25,7 @@
                    variant="simple"
                    severity="secondary">{{ info }}
     </prime-message>
-    <prime-message v-for="err in errors"
+    <prime-message v-for="err in errors" v-bind:key="err.message"
       severity="error"
       size="small"
       variant="simple">{{ err.message }}
@@ -97,6 +98,17 @@ export default {
      */
     validationIconsDisabled: {
       type:    Boolean,
+      default: () => {
+        return false;
+      }
+    },
+    /**
+     * Represents whether the component is disabled.
+     * @property {Boolean} disabled - A boolean value to indicate the disabled state of the component.
+     * @default false
+     */
+    disabled: {
+      type: Boolean,
       default: () => {
         return false;
       }
