@@ -6,12 +6,12 @@
  **/
 import createWebApp from '../../common/lib/appFactory';
 import PricelistRoot from './components/PricelistRoot.vue';
-import PricelistList from '../../common/components/PricelistList.vue';
+import PriceList from './components/PriceList.vue';
 import PricelistSummary from './components/PricelistSummary.vue';
 
 createWebApp({
   routes:     [
-    {path: '/', name: 'pricelist', component: PricelistList},
+    {path: '/', name: 'pricelist', component: PriceList},
     {path: '/summary', name: 'summary', component: PricelistSummary},
   ],
   components: [

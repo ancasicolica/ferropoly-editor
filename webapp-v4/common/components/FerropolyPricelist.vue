@@ -7,8 +7,8 @@
 <template>
   <div>
     <h1>{{ gamename }}</h1>
-    <div>{{ formatGameDate(scheduling?.gameDate) }}, {{ formatGameTime(scheduling?.gameStart) }} -
-      {{ formatGameTime(scheduling?.gameEnd) }}
+    <div>{{ formatGameDate(gameDate) }}, {{ formatGameTime(gameStart) }} -
+      {{ formatGameTime(gameEnd) }}
     </div>
     <data-table
         :value="pricelist"
@@ -66,23 +66,42 @@
     </data-table>
   </div>
 
-
 </template>
 
 <script setup>
 
-import {useGameplayStore} from '../../lib/store/GamePlayStore';
-import {usePricelistStore} from '../../lib/store/pricelistStore';
-import {storeToRefs} from 'pinia';
 import {formatGameDate, formatGameTime, formatPrice} from '../lib/formatters';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
-const gameplayStore  = useGameplayStore();
-const pricelistStore = usePricelistStore();
+defineProps({
+  gamename:  {
+    type:    String,
+    default: ''
+  },
+  gameDate:  {
+    type:    Date,
+    default: null
+  },
+  gameStart: {
+    type:    Date,
+    default: null
+  },
+  gameEnd:   {
+    type:    Date,
+    default: null
+  },
+  /**
+   * This is the list of properties with the pricelist info
+   */
+  pricelist: {
+    type:    Array,
+    default: () => {
+      return [];
+    }
+  },
+});
 
-const {gamename, scheduling} = storeToRefs(gameplayStore);
-const {pricelist}            = storeToRefs(pricelistStore);
 
 </script>
 
