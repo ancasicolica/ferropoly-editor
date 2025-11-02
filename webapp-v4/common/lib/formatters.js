@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
 import {isNumber, find, toUpper} from 'lodash';
-import maps from '../../../common/lib/maps.json';
+import mapData from '../../../common/lib/maps.json';
 
 /**
  * Creates a Luxon DateTime instance from the given value.
@@ -170,7 +170,7 @@ function formatPriceRange(val) {
  * @returns {string|*}
  */
 function formatMap(map) {
-  let m = find(maps, {map: map});
+  let m = find(mapData.maps, {map: map});
   if (!m) {
     return toUpper(map);
   }
