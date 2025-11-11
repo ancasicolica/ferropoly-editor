@@ -36,6 +36,7 @@ const propertySchema = mongoose.Schema({
     propertyGroup:        {type: Number, default: -1},
     price:                {type: Number, default: -1},
     pricePerHouse:        {type: Number, default: -1},
+    priceTag:             {type: Number, default: -1},
     rents:                {
       noHouse:     {type: Number, default: -1},
       oneHouse:    {type: Number, default: -1},
@@ -297,7 +298,7 @@ async function getPropertiesForGameplay(gameId, options, callback) {
     return await Property
       .find()
       .where('gameId').equals(gameId)
-      .select('uuid location pricelist')
+      .select('uuid location pricelist gamedata')
       .lean()
       .exec();
   } else if (options && options.propertyGroup) {

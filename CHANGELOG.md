@@ -1,5 +1,7 @@
 # Changelog Ferropoly Editor
 
+* PriceTags werden bei der Erzeugung der Preisliste berechnet (für Darstellung Karte)
+
 # v4.1.0 25.9.25
 * Verlorenes Feature nachgerüstet: Update auf Filter "Verwendung" in Editor kann auf Orte in Preisliste filtern
 * Diverse Models nachgeführt (für Spiel App)
