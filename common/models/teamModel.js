@@ -31,7 +31,7 @@ const teamSchema = mongoose.Schema({
     registrationDate:   {type: Date, default: Date.now},
     changedDate:        {type: Date, default: Date.now},
     confirmationDate:   {type: Date},
-    members:            {type: Array, default: []} // Array with strings (email) of all team members
+    members:            {type: Array, default: []} // Array with objects (login, personalData) of all team members
   }
 }, {autoIndex: true});
 
@@ -242,7 +242,7 @@ async function getMyTeams(email, callback) {
     .find({
       $or: [
         {'data.teamLeader.email': email},
-        {'data.members': email}
+        {'data.members.login': email}
       ]
     })
     .exec();

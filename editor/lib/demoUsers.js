@@ -3,9 +3,9 @@
  * Created by kc on 06.01.16.
  */
 
-const users                  = require('../../common/models/userModel');
-const gravatar               = require('../../common/lib/gravatar');
-const logger                 = require('../../common/lib/logger').getLogger('demoUsers');
+const users    = require('../../common/models/userModel');
+const gravatar = require('../../common/lib/gravatar');
+const logger   = require('../../common/lib/logger').getLogger('demoUsers');
 
 const demoUsers = [
   {forename: 'Heinz', surname: 'Muster', email: 'demo@ferropoly.ch'},
@@ -61,6 +61,14 @@ module.exports = {
     return demoUsers[1 + index].email;
   },
 
+  getPersonalData: function (index) {
+    return {
+      forename: demoUsers[1 + index].forename,
+      surname:  demoUsers[1 + index].surname,
+      email:    demoUsers[1 + index].email
+    }
+  },
+
   /**
    * Updates (creates if needed) the logins for the users.
    * @param callback
@@ -76,10 +84,10 @@ module.exports = {
         let user = new users.Model();
 
         user.personalData.forename = u.forename;
-        user.personalData.surname = u.surname;
-        user.personalData.email = u.email;
-        user.personalData.avatar =gravatar.getUrl(u.email);
-         user.login.verifiedEmail = true;
+        user.personalData.surname  = u.surname;
+        user.personalData.email    = u.email;
+        user.personalData.avatar   = gravatar.getUrl(u.email);
+        user.login.verifiedEmail   = true;
 
         await users.updateUser(user, '12345678');
       }

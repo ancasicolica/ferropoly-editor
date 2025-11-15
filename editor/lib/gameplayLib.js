@@ -29,7 +29,7 @@ const _                          = require('lodash');
 const fs                         = require('fs');
 const path                       = require('path');
 const axios                      = require('axios');
-const rulesModel = require('../../common/models/rulesModel');
+const rulesModel                 = require('../../common/models/rulesModel');
 const rulesCompiler              = require('./rulesCompiler');
 const demoGameId                 = 'play-a-demo-game';
 const demoOrganisatorMail        = 'demo@ferropoly.ch';
@@ -96,8 +96,8 @@ async function createRandomGameplay(gameId, props, nb) {
  * @returns {*}
  */
 async function copyLocationsToProperties(gpOptions, gameplay) {
-  const { map, properties: importedProps = [], random } = gpOptions;
-  const gameId = gameplay.internal.gameId;
+  const {map, properties: importedProps = [], random} = gpOptions;
+  const gameId                                        = gameplay.internal.gameId;
 
   // Load locations
   const gameLocations = await locations.getAllLocationsForMap(map);
@@ -122,7 +122,7 @@ async function copyLocationsToProperties(gpOptions, gameplay) {
       properties.createPropertyFromLocationEx(
         gameId,
         location,
-        { pricelist: pricelistByUuid.get(location.uuid) }
+        {pricelist: pricelistByUuid.get(location.uuid)}
       )
     )
   );
@@ -350,14 +350,25 @@ async function createDemoTeams(gp, teamNb) {
   let referenceData = [
     createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0),
                                              demoUsers.getTeamLeaderEmail(0), '079 000 00 01',
-                                             [demoUsers.getTeamLeaderEmail(20), demoUsers.getTeamLeaderEmail(21)]]),
+                                             [{login:        demoUsers.getTeamLeaderEmail(20),
+                                               personalData: demoUsers.getPersonalData(20)
+                                             },
+                                              {login:         demoUsers.getTeamLeaderEmail(21),
+                                                personalData: demoUsers.getPersonalData(21)
+                                              }]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
                                              demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
-                                             [demoUsers.getTeamLeaderEmail(22), demoUsers.getTeamLeaderEmail(23),
-                                              demoUsers.getTeamLeaderEmail(24)]]),
+                                             [{login:        demoUsers.getTeamLeaderEmail(22),
+                                               personalData: demoUsers.getPersonalData(22)
+                                             },
+                                              {login:         demoUsers.getTeamLeaderEmail(24),
+                                                personalData: demoUsers.getPersonalData(24)
+                                              }]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
                                              demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
-                                             [demoUsers.getTeamLeaderEmail(20)]]),
+                                             [{login:        demoUsers.getTeamLeaderEmail(20),
+                                               personalData: demoUsers.getPersonalData(20)
+                                             }]]),
     createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3),
                                              demoUsers.getTeamLeaderEmail(3), '079 000 00 04',
                                              'Siegerteam letztes Jahr']),
@@ -491,13 +502,13 @@ async function finalizeGameplay(gameplay, email, callback) {
     return callback('NOT SUPPORTED ANYMORE!');
   }
 
-  const gameId = gameplay.internal.gameId;
+  const gameId  = gameplay.internal.gameId;
   const gpSaved = await gameplays.finalize(gameId, email);
 
   // Creating rules
   logger.info(`${gameId} : creating first rules`);
   const rules = await rulesModel.getRules(gameId);
-  const text = rulesCompiler({gp:gpSaved, raw: rules.raw});
+  const text  = rulesCompiler({gp: gpSaved, raw: rules.raw});
   await rulesModel.releaseRules(gameId, text, 'Automatisch bei Finalisierung erzeugt');
   await gameplays.updateRules(gameId, gpSaved.internal.owner, {text: text});
 
