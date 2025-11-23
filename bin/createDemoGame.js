@@ -23,7 +23,8 @@ async function main() {
       },
       mobile:          {
         level: 5
-      }
+      },
+      admins: ['team20@ferropoly.ch', 'team21@ferropoly.ch']
     });
     await ferropolyDb.close();
     console.log('OK');

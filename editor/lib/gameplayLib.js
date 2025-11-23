@@ -267,6 +267,9 @@ async function createNewGameplay(gpOptions) {
 
   });
 
+  const admins = gpOptions.admins || [];
+  await gameplays.setAdmins(gameId, gpOptions.email, admins)
+
   // Create also the rules
   let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
   await rules.createRules(gameId, pugToHtml(template));
@@ -350,23 +353,28 @@ async function createDemoTeams(gp, teamNb) {
   let referenceData = [
     createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0),
                                              demoUsers.getTeamLeaderEmail(0), '079 000 00 01',
-                                             [{login:        demoUsers.getTeamLeaderEmail(20),
+                                             [{
+                                               login:        demoUsers.getTeamLeaderEmail(20),
                                                personalData: demoUsers.getPersonalData(20)
                                              },
-                                              {login:         demoUsers.getTeamLeaderEmail(21),
+                                              {
+                                                login:        demoUsers.getTeamLeaderEmail(21),
                                                 personalData: demoUsers.getPersonalData(21)
                                               }]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
                                              demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
-                                             [{login:        demoUsers.getTeamLeaderEmail(22),
+                                             [{
+                                               login:        demoUsers.getTeamLeaderEmail(22),
                                                personalData: demoUsers.getPersonalData(22)
                                              },
-                                              {login:         demoUsers.getTeamLeaderEmail(24),
+                                              {
+                                                login:        demoUsers.getTeamLeaderEmail(24),
                                                 personalData: demoUsers.getPersonalData(24)
                                               }]]),
     createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
                                              demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
-                                             [{login:        demoUsers.getTeamLeaderEmail(20),
+                                             [{
+                                               login:        demoUsers.getTeamLeaderEmail(20),
                                                personalData: demoUsers.getPersonalData(20)
                                              }]]),
     createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3),
@@ -456,6 +464,7 @@ async function createDemoGameplay(p1, p2) {
     interestInterval: settings.interestInterval,
     mobile:           settings.mobile || {level: 5},
     presets:          settings.presets,
+    admins:           settings.admins || [],
     isDemo:           true,
     autopilot:        {
       active:    _.get(settings, 'autopilot.active', false),
