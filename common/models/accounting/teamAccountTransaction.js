@@ -156,15 +156,17 @@ async function getRankingList(gameId) {
  * Get the balance of a team
  * @param gameId
  * @param teamId
+ * @param atTime which is a JS date and optional
  */
-async function getBalance(gameId, teamId) {
+async function getBalance(gameId, teamId, atTime= DateTime.fromISO('2525-01-01T00:00:00Z').toJSDate()) {
   let retVal = {};
   const data = await TeamAccountTransaction
     .aggregate([
       {
         $match: {
           gameId: gameId,
-          teamId: teamId
+          teamId: teamId,
+          timestamp: {$lte: atTime}
         }
       }, {
         $group: {
