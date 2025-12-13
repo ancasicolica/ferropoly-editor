@@ -71,6 +71,11 @@ const FerropolyDesign = definePreset(Lara, {
 function createWebApp(options) {
   const app = createApp();
 
+  app.config.errorHandler = (err, vm, info) => {
+    console.error('Ferropoly app - Unhandled Vue error:', err, vm, info);
+    // You can add more specific logging or error reporting here
+  };
+
   if (options.routes) {
     const router = createRouter({
       history: createWebHashHistory(),
