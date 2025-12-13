@@ -30,19 +30,22 @@ async function createEvents(gameplay, callback) {
   // Start
   let start = eventModel.createEvent(gameplay.internal.gameId,
     gameplay.scheduling.gameStartTs,
-    'start'
+    'start',
+    'Startkapital'
   );
   events.push(start);
 
   // Interests
   let dt            = DateTime.fromJSDate(gameplay.scheduling.gameStartTs);
   const endDateTime = DateTime.fromJSDate(gameplay.scheduling.gameEndTs);
+  let round = 1;
   while (dt < endDateTime) {
     let interest = eventModel.createEvent(gameplay.internal.gameId,
       dt.toJSDate(),
-      'interest');
+      'interest',
+      `Startgeld Runde ${round}`);
     events.push(interest);
-
+    round++;
     dt = dt.plus({minutes: gameplay.gameParams.interestInterval});
   }
 
