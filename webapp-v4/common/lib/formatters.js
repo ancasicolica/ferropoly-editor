@@ -198,7 +198,7 @@ function formatPosition(position) {
   if (!position || !position.lat || !position.lng) {
     return '';
   }
-  let retVal = `${position.lat}°N, ${position.lng}°E`;
+  let retVal = `${position.lat.toFixed(5)}°N, ${position.lng.toFixed(5)}°E`;
   if (position.accuracy) {
     retVal += ` ±${position.accuracy}m`
   }
