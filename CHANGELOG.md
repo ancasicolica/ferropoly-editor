@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+* Spielrunden werden nummeriert
 * PriceTags werden bei der Erzeugung der Preisliste berechnet (für Darstellung Karte)
 * BREAKING: Team Members werden mit Name gespeichert -> Anpassung Teams Schema
 
