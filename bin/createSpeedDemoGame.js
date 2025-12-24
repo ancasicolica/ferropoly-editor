@@ -11,12 +11,14 @@ async function main() {
     await ferropolyDb.init(settings);
     await gplib.createDemoGameplay({
       map:              'sbb',
-      gameId:           'local-demo-game',
+      gameId:           'local-speed-game',
       gameStart:        '04:00',
       gameEnd:          '23:30',
       presets:          'moderate',
-      doNotNotifyMain:  true,
+      gamename:         'Speed-Game',
+      doNotNotifyMain:  false,
       random:           480,
+      teamNb:           20,
       interestInterval: 10,
       autopilot:        {
         active:    true,
@@ -31,7 +33,7 @@ async function main() {
     console.log('OK');
     process.exit(code = 0);
   }
-  catch(err) {
+  catch (err) {
     console.error(err);
     process.exit(code = -1);
   }

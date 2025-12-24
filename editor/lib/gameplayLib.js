@@ -52,7 +52,13 @@ async function updateFerropolyMainCache(delay, callback) {
     logger.info('Attempting to update main module caches, delay: ' + delay);
     for (const instance of settings.mainInstances) {
       await sleep(delay);
-      await axios.post(`${instance}/gamecache/refresh`);
+      const resp = await axios.post(`${instance}/gamecache/refresh`);
+      if (resp.status !== 200) {
+        logger.warn(`Main instance ${instance} returned ${resp.status}`, resp);
+      }
+      else {
+        logger.info(`Main instance ${instance} returned ${resp.status}`);
+      }
     }
   }
   catch (err) {
@@ -264,7 +270,6 @@ async function createNewGameplay(gpOptions) {
     isDemo:           gpOptions.isDemo,
     mainInstances:    settings.mainInstances,
     autopilot:        gpOptions.autopilot
-
   });
 
   const admins = gpOptions.admins || [];
@@ -307,7 +312,9 @@ async function deleteGameplay(gpOptions, callback) {
     await gameLog.deleteAllEntries(gpOptions.gameId);
     await rules.deleteRules(gpOptions.gameId);
     logger.info('cleaning task finished');
-    if (!gpOptions.doNotNotifyMain) {
+    if (gpOptions.doNotNotifyMain) {
+      logger.info('Notifying main is disabled (no cache update)');
+    } else {
       // update main instances as we removed the game!
       await updateFerropolyMainCache(100);
     }
@@ -422,24 +429,10 @@ async function createDemoTeams(gp, teamNb) {
 }
 
 /**
- * Creates a demo gameplay
- * @param p1 is parameter 1: either settings or callback
- * @param p2 if settings are used, callback
+ * Create a demo gameplay (and delete if, it already existing)
+ * @param settings
  */
-async function createDemoGameplay(p1, p2) {
-  let callback = p2;
-  let settings = {};
-
-  if (_.isFunction(p1)) {
-    callback = p1;
-  } else {
-    settings = p1;
-  }
-
-  if (callback) {
-    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createDemoGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
-    return callback('NOT SUPPORTED ANYMORE!');
-  }
+async function createDemoGameplay(settings = {}) {
 
   if (settings.tomorrow) {
     settings.gameDate = moment().add(1, 'days').toDate();
@@ -452,7 +445,7 @@ async function createDemoGameplay(p1, p2) {
     email:      settings.email || demoOrganisatorMail,
     ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with
                                                        // email
-    organisatorName:  'Max Muster',
+    organisatorName:  'Arthur Dent',
     gamedate:         settings.gameDate || new Date(),
     gameStart:        settings.gameStart || '06:00',
     gameEnd:          settings.gameEnd || '21:00',
@@ -460,7 +453,6 @@ async function createDemoGameplay(p1, p2) {
     gameId:           gameId,
     random:           settings.random || 120,
     teamNb:           settings.teamNb || 8,
-    doNotNotifyMain:  settings.doNotNotifyMain,
     interestInterval: settings.interestInterval,
     mobile:           settings.mobile || {level: 5},
     presets:          settings.presets,
@@ -472,6 +464,8 @@ async function createDemoGameplay(p1, p2) {
       interval:  _.get(settings, 'autopilot.interval', (30 * 60 * 1000))
     }
   };
+
+  const  doNotNotifyMain = _.get(settings, 'doNotNotifyMain', false);
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
   // will be executed in the late evening (local time). Therefore the date has to be ajusted
@@ -490,9 +484,7 @@ async function createDemoGameplay(p1, p2) {
   await createDemoTeams(gp, options.teamNb);
 
   await pricelistLib.create(gameId, demoOrganisatorMail);
-  gp.internal.finalized       = true;
-  gp.internal.doNotNotifyMain = true;
-  await finalizeGameplay(gp, demoOrganisatorMail);
+  await finalizeGameplay(gp, demoOrganisatorMail, doNotNotifyMain);
   let endTs    = new Date();
   let duration = (endTs.getTime() - startTs.getTime()) / 1000;
   logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
@@ -503,14 +495,9 @@ async function createDemoGameplay(p1, p2) {
  * Finalizes a gameplay
  * @param gameplay
  * @param email
- * @param callback
+ * @param doNotNotifyMain
  */
-async function finalizeGameplay(gameplay, email, callback) {
-  if (callback) {
-    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in finalizeGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
-    return callback('NOT SUPPORTED ANYMORE!');
-  }
-
+async function finalizeGameplay(gameplay, email, doNotNotifyMain = false) {
   const gameId  = gameplay.internal.gameId;
   const gpSaved = await gameplays.finalize(gameId, email);
 
@@ -526,7 +513,9 @@ async function finalizeGameplay(gameplay, email, callback) {
   await schedulerEvents.createEvents(gpSaved);
   logger.info('Scheduler Events created');
 
-  if (!gameplay.internal.doNotNotifyMain) {
+  if (doNotNotifyMain) {
+    logger.info('Notifying main is disabled for finalizeGameplay (no cache update)');
+  } else {
     await updateFerropolyMainCache(4000);
   }
 }
@@ -553,7 +542,7 @@ async function deleteOldGameplays(callback) {
       // This is the code which should run for current (V2) ferropolys
       timeout = moment(gp.scheduling.deleteTs);
     }
-    logger.info(`Deletion timeout for "${gp._id}":`, timeout.toDate());
+    logger.info(`Deletion timeout for "${gp._id}": ${timeout.toDate()}`);
     if (!timeout) {
       // Still no timeout, cancel this one, but still handle others
       logger.error(new Error('No deletion timeout found for ' + gp._id));
