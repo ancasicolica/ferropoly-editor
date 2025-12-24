@@ -10,24 +10,25 @@ const logger          = require('../lib/logger').getLogger('picBucketModel');
  * The mongoose schema for a picture
  */
 const picBucketSchema = mongoose.Schema({
-  _id             : String,
-  gameId          : String,
-  teamId          : String, // Set only if relevant, otherwise undefined
-  filename        : String,
-  message         : String, // This is a message for the picture
-  url             : String, // The public URL
-  thumbnail       : String, // URL to the thumbnail
-  user            : String,
-  propertyId      : String, // Property ID of an associated property (if any)
-  position        : {
-    lat     : Number,
-    lng     : Number,
+  _id:              String,
+  gameId:           String,
+  teamId:           String, // Set only if relevant, otherwise undefined
+  filename:         String,
+  message:          String, // This is a message for the picture
+  url:              String, // The public URL
+  thumbnail:        String, // URL to the thumbnail
+  user:             String,
+  propertyId:       String, // Property ID of an associated property (if any)
+  position:         {
+    lat:      Number,
+    lng:      Number,
     accuracy: Number
   },
-  location        : Object,  // Object retrieved by google geocode API
-  uploaded        : {type: Boolean, default: false},
-  timestamp       : {type: Date, default: Date.now},
-  lastModifiedDate: Date
+  location:         Object,  // Object retrieved by google geocode API
+  uploaded:         {type: Boolean, default: false},
+  timestamp:        {type: Date, default: Date.now},
+  lastModifiedDate: Date,
+  hidden:           {type: Boolean, default: false}
 });
 
 
@@ -95,11 +96,26 @@ async function assignProperty(id, propertyId) {
     .exec();
 }
 
+/**
+ * Updates the hidden status of a document in the database based on the provided ID.
+ *
+ * @param {string} id - The unique identifier of the document to update.
+ * @param {boolean} hidden - The new hidden status to be set for the document.
+ * @return {Promise<Object|null>} A promise that resolves to the updated document if successful, or null if no matching
+ *   document is found.
+ */
+async function setHiddenStatus(id, hidden) {
+  return await Model
+    .findOneAndUpdate({_id: id}, {hidden: hidden})
+    .exec();
+}
+
 module.exports = {
   Model,
   deletePicBucket,
   findPicById,
   findPicsByFilter,
   save,
-  assignProperty
+  assignProperty,
+  setHiddenStatus
 }
