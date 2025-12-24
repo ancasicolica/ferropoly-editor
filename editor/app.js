@@ -68,8 +68,16 @@ let initServer = async function () {
   app.use(compression());
 
   app.use(express.static(path.join(__dirname, 'public')));
+
+  // Serve robots.txt
+  app.get('/robots.txt', function (req, res) {
+    res.type('text/plain');
+    res.send('#Bloody crawlers stay away, there is nothing to see\nUser-agent: *\nDisallow: /');
+  });
+
   app.use('/maps', require('../common/lib/maps').routeHandler); // No user authentication needed here, so place it
                                                                 // before passport
+
 
   // Define Strategy, login
   passport.use(authStrategy.googleStrategy);
