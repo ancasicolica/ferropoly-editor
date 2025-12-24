@@ -12,9 +12,10 @@ async function main() {
     await gplib.createDemoGameplay({
       map:             'sbb',
       gameId:          'local-demo-game',
-      gameStart:       '04:00',
+      gameStart:       '07:00',
       gameEnd:         '23:30',
       presets:         'moderate',
+      interestInterval: 60,
       doNotNotifyMain: true,
       autopilot:       {
         active:    true,

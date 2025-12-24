@@ -17,7 +17,7 @@ async function main() {
       presets:          'moderate',
       doNotNotifyMain:  true,
       random:           480,
-      interestInterval: 15,
+      interestInterval: 10,
       autopilot:        {
         active:    true,
         picBucket: true,
