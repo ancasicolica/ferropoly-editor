@@ -8,6 +8,8 @@ const mongoose                     = require('mongoose');
 const {DateTime}                   = require('luxon');
 const logger                       = require('../../lib/logger').getLogger('teamAccountTransaction');
 const _                            = require('lodash');
+const {TEAM_TRANSACTION_UNDEFINED} = require('./teamAccountTransactionTypes');
+
 /**
  * The mongoose schema for a team account
  */
@@ -28,6 +30,7 @@ const teamAccountTransactionSchema = mongoose.Schema({
     },
     amount: {type: Number, default: 0}, // value to be transferred, positive or negative
     info:   String, // Info about the transaction
+    type:   {type: Number, default: TEAM_TRANSACTION_UNDEFINED}, // Type of the transaction for statistics
     /*
      If the transaction consists of several other transactions (interests every hour), we do not create
      a specific TeamAccountTransaction for every property. Instead, there is an array having the same
@@ -45,14 +48,17 @@ const TeamAccountTransaction = mongoose.model('TeamAccountTransactions', teamAcc
 
 /**
  * Book the transaction
- * @param transaction
+ * @param dataset
  */
-async function book(transaction) {
+async function book(dataset) {
 
-  if (transaction.transaction.parts) {
-    transaction.transaction.parts = _.sortBy(transaction.transaction.parts, 'propertyName');
+  if (dataset.transaction.parts) {
+    dataset.transaction.parts = _.sortBy(dataset.transaction.parts, 'propertyName');
   }
-  return await transaction.save();
+  if (dataset.transaction.type === TEAM_TRANSACTION_UNDEFINED) {
+    logger.warn('Team transaction with default type setting found', dataset);
+  }
+  return await dataset.save();
 }
 
 
@@ -158,14 +164,14 @@ async function getRankingList(gameId) {
  * @param teamId
  * @param atTime which is a JS date and optional
  */
-async function getBalance(gameId, teamId, atTime= DateTime.fromISO('2525-01-01T00:00:00Z').toJSDate()) {
+async function getBalance(gameId, teamId, atTime = DateTime.fromISO('2525-01-01T00:00:00Z').toJSDate()) {
   let retVal = {};
   const data = await TeamAccountTransaction
     .aggregate([
       {
         $match: {
-          gameId: gameId,
-          teamId: teamId,
+          gameId:    gameId,
+          teamId:    teamId,
           timestamp: {$lte: atTime}
         }
       }, {
