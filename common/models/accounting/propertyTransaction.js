@@ -4,10 +4,11 @@
  * Created by kc on 20.04.15.
  */
 
-const mongoose   = require('mongoose');
-const {DateTime} = require('luxon');
-const logger     = require('../../lib/logger').getLogger('propertyTransaction');
-const _          = require('lodash');
+const mongoose                     = require('mongoose');
+const {DateTime}                   = require('luxon');
+const logger                       = require('../../lib/logger').getLogger('propertyTransaction');
+const _                            = require('lodash');
+const {TEAM_TRANSACTION_UNDEFINED} = require('./teamAccountTransactionTypes');
 
 /**
  * The mongoose schema for a team account
@@ -27,7 +28,8 @@ const propertyAccountTransactionSchema = mongoose.Schema({
       category: {type: String, default: 'not defined'}  // either "team" or "bank"
     },
     amount: {type: Number, default: 0}, // value to be transferred, positive or negative
-    info:   String  // Info about the transaction
+    info:   String,  // Info about the transaction
+    type:   {type: Number, default: TEAM_TRANSACTION_UNDEFINED}, // Type of the transaction for statistics
   }
 }, {autoIndex: true});
 
@@ -95,17 +97,17 @@ async function getEntries(gameId, propertyId, tsStart, tsEnd) {
       .lean()
       .exec();
   }
-/*
-  // map _id -> propertyId in all returned objects and remove _id
-  data = (data || []).map(d => {
-    if (d && d._id && !d.propertyId) {
-      return {...d, propertyId: d._id, _id: undefined};
-    }
-    // If propertyId already exists, just drop _id
-    const {_id, ...rest} = d;
-    return rest;
-  });
-*/
+  /*
+   // map _id -> propertyId in all returned objects and remove _id
+   data = (data || []).map(d => {
+   if (d && d._id && !d.propertyId) {
+   return {...d, propertyId: d._id, _id: undefined};
+   }
+   // If propertyId already exists, just drop _id
+   const {_id, ...rest} = d;
+   return rest;
+   });
+   */
   return data;
 }
 
