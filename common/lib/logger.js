@@ -15,7 +15,7 @@ const {LoggingWinston}                    = require('@google-cloud/logging-winst
 // The default settings
 let settings = {
   debugLevel: 'info',
-  google    : {
+  google:     {
     enabled: false
   }
 };
@@ -38,7 +38,8 @@ const logFormat = printf(info => {
 
 /**
  * Exports
- * @type {{add: module.exports.add, getLogger: (function(*=): {warn: warn, debug: debug, test: test, error: error, fatal: fatal, info: info}), remove: module.exports.remove, setExpressLogger: module.exports.setExpressLogger}}
+ * @type {{add: module.exports.add, getLogger: (function(*=): {warn: warn, debug: debug, test: test, error: error,
+ *   fatal: fatal, info: info}), remove: module.exports.remove, setExpressLogger: module.exports.setExpressLogger}}
  */
 module.exports = {
   add: function (transport, options) {
@@ -62,10 +63,19 @@ module.exports = {
       _.set(settings, 'google.logName', _.get(options, 'google.logName', 'not-set'));
       _.set(settings, 'google.keyFile', _.get(options, 'google.keyFile', 'not-set'));
       googleLogger = new LoggingWinston({
-        projectId: _.get(settings, 'google.projectId', 'not_set'),
-        logName  : _.get(settings, 'google.logName', 'not_set'),
-        keyFile  : _.get(settings, 'google.keyFile', 'not_set'),
-        format   : format.json()
+        projectId:   _.get(settings, 'google.projectId', 'not_set'),
+        logName:     _.get(settings, 'google.logName', 'not_set'),
+        keyFile:     _.get(settings, 'google.keyFile', 'not_set'),
+        format:      format.json(),
+        grpcOptions: {
+          'grpc.keepalive_time_ms':              30000,
+          'grpc.keepalive_timeout_ms':           10000,
+          'grpc.http2.max_pings_without_data':   0,
+          'grpc.keepalive_permit_without_calls': 1
+        }
+      });
+      googleLogger.on('error', (error) => {
+        console.error('LoggingWinston Error caught:', error);
       });
       // Allocate enough listeners!
       googleLogger.setMaxListeners(100);
@@ -85,19 +95,22 @@ module.exports = {
     }
 
     app.use(expressWinston.logger({
-      transports   : supportedTransports,
-      format       : combine(
+      transports:    supportedTransports,
+      format:        combine(
         label({label: 'HTTP'}),
         timestamp(),
         logFormat
       ),
-      meta         : true, // optional: control whether you want to log the meta data about the request (default to true)
-      msg          : function (req, res) {
+      meta:          true, // optional: control whether you want to log the meta data about the request (default to
+                           // true)
+      msg:           function (req, res) {
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         return ` ${ip} ${_.get(req, 'user.personalData.email', 'anonymous')} ${req.method} ${res.statusCode}, ${req.url} ${res.responseTime} ms` // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
       },
-      expressFormat: false, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
-      colorize     : false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+      expressFormat: false, // Use the default Express/morgan request formatting. Enabling this will override any msg
+                            // if true. Will only output colors with colorize set to true
+      colorize:      false, // Color the text and status code, using the Express/morgan color palette (text: gray,
+                            // status: default green, 3XX cyan, 4XX yellow, 5XX red).
     }));
   },
 
@@ -122,9 +135,9 @@ module.exports = {
     }
 
     const logger = createLogger({
-      level     : settings.debugLevel,
+      level:      settings.debugLevel,
       transports: supportedTransports,
-      format    : combine(
+      format:     combine(
         label({label: moduleName}),
         timestamp(),
         logFormat)
@@ -161,10 +174,10 @@ module.exports = {
       error: function (message, metadata) {
         log('error', message, metadata);
       },
-      info : function (message, metadata) {
+      info:  function (message, metadata) {
         log('info', message, metadata);
       },
-      warn : function (message, metadata) {
+      warn:  function (message, metadata) {
         log('warn', message, metadata);
       },
       debug: function (message, metadata) {
