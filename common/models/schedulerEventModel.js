@@ -42,6 +42,19 @@ function createEvent(gameId, timestamp, type, message = null) {
 }
 
 /**
+ * Returns all events of a game
+ * @param gameId
+ * @return {Promise<Array<HydratedDocument<InferSchemaType<*>, ObtainSchemaGeneric<*, "TInstanceMethods">, ObtainSchemaGeneric<*, "TVirtuals">>>>}
+ */
+async function getEvents(gameId) {
+  return await scheduleEventModel
+    .find()
+    .where('gameId').equals(gameId)
+    .where('timestamp').gt(new Date())
+    .exec();
+}
+
+/**
  * Save all events. Dumps them all before adding new ones
  * @param events
  */
@@ -134,6 +147,7 @@ async function saveAfterHandling(event) {
 module.exports = {
   Model:             scheduleEventModel,
   createEvent:       createEvent,
+  getEvents:         getEvents,
   saveEvents:        saveEvents,
   dumpEvents:        dumpEvents,
   getUpcomingEvents: getUpcomingEvents,
