@@ -44,6 +44,9 @@ async function getToken(user, callback) {
  *   is found.
  */
 async function getTokenAsync(user) {
+  if (!user) {
+    return Math.ceil(Math.random() * 10000000);
+  }
   return await Token
     .findOne()
     .where('login').equals(user)
