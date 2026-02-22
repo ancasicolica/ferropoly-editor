@@ -1,13 +1,15 @@
 # Changelog Ferropoly Editor
 
+# v4.2.0 22.02.26
 * Spielrunden werden nummeriert
 * PriceTags werden bei der Erzeugung der Preisliste berechnet (für Darstellung Karte)
 * BREAKING: Team Members werden mit Name gespeichert -> Anpassung Teams Schema
 * Anpassungen Logs
 * Speed-Demo Game mit maximalen Settings
 * Bugfix bei Notification Main
+* Sentry Überwachung neu
 
-# v4.1.0 25.9.25
+# v4.1.0 25.9.25 (Release)
 * Verlorenes Feature nachgerüstet: Update auf Filter "Verwendung" in Editor kann auf Orte in Preisliste filtern
 * Diverse Models nachgeführt (für Spiel App)
 
