@@ -20,6 +20,7 @@ import '../style/style.css';    //core css
 import locale from '../resources/de.json';
 
 import {createPinia} from 'pinia'
+import * as Sentry from "@sentry/vue";
 
 const pinia = createPinia();
 
@@ -76,6 +77,14 @@ function createWebApp(options) {
     // You can add more specific logging or error reporting here
   };
 
+  Sentry.init({
+    app,
+    dsn: process.env.FERROPOLY_SENTRY_DSN,
+    // Setting this option to true will send default PII data to Sentry.
+    // For example, automatic IP address collection on events
+    sendDefaultPii: true
+  });
+
   if (options.routes) {
     const router = createRouter({
       history: createWebHashHistory(),
@@ -107,7 +116,7 @@ function createWebApp(options) {
   app.use(ToastService);
   app.use(pinia);
   app.use(ConfirmationService);
-  app.mount(options.appMount)
+  app.mount(options.appMount);
 
   console.log(`app ${options.appMount} created`);
 }

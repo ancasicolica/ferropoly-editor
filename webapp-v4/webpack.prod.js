@@ -6,11 +6,18 @@ const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const ferropolyApps         = require('./ferropolyApps.js');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const webpack           = require('webpack');
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 // Build the webpack list
 let plugins = [
   new BundleAnalyzerPlugin({analyzerMode: 'static', reportFilename: 'report.html'}),
-  new FaviconsWebpackPlugin(path.join(__dirname, 'favicon.png'))
+  new FaviconsWebpackPlugin(path.join(__dirname, 'favicon.png')),
+  sentryWebpackPlugin({
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    org: "ferropoly",
+    project: process.env.FERROPOLY_SENTRY_PROJECT
+  })
 ];
 ferropolyApps.forEach(app => {
   plugins.push(new HtmlWebpackPlugin(({
@@ -30,7 +37,7 @@ ferropolyApps.forEach(app => {
 
 module.exports = merge(common, {
   mode   : 'production',
-  //devtool: 'source-map',
+  devtool: 'source-map',
   output : {
     filename     : '[name].min.js',
     chunkFilename: '[name].bundle.js',

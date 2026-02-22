@@ -5,13 +5,15 @@
  *
  * @type {*|exports}
  */
+// IMPORTANT: Make sure to import `instrument.js` at the top of your file.
+// If you're using ECMAScript Modules (ESM) syntax, use `import "./instrument.js";`
+require("./instrument.js");// IMPORTANT: Make sure to import `instrument.js` at the top of your file.
 
 // Logging has highest prio
 const settings = require('./settings');
 const logging  = require('../common/lib/logger');
 logging.init(settings.logger);
 const logger = logging.getLogger('editor-app');
-
 
 const express      = require('express');
 const path         = require('path');
