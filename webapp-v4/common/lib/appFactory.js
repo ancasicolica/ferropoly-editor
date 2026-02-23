@@ -12,6 +12,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import {createRouter, createWebHashHistory} from 'vue-router'
+import {get} from 'lodash';
 
 import 'primeicons/primeicons.css';
 import '../style/style.css';    //core css
@@ -20,15 +21,15 @@ import '../style/style.css';    //core css
 import locale from '../resources/de.json';
 
 import {createPinia} from 'pinia'
-import * as Sentry from "@sentry/vue";
+import * as Sentry from '@sentry/vue';
 
 const pinia = createPinia();
 
 
 const FerropolyDesign = definePreset(Lara, {
-  semantic  : {
-    primary    : {
-      50 : '{blue.50}',
+  semantic:   {
+    primary:     {
+      50:  '{blue.50}',
       100: '{blue.100}',
       200: '{blue.200}',
       300: '{blue.300}',
@@ -42,17 +43,17 @@ const FerropolyDesign = definePreset(Lara, {
     },
     colorScheme: {
       light: {
-        primary  : {
-          color       : '{primary.500}',
+        primary:   {
+          color:        '{primary.500}',
           inverseColor: '#ffffff',
-          hoverColor  : '{primary.700}',
-          activeColor : '{primary.500}'
+          hoverColor:   '{primary.700}',
+          activeColor:  '{primary.500}'
         },
         highlight: {
-          background     : '{sky.950}',
+          background:      '{sky.950}',
           focusBackground: '{sky.700}',
-          color          : '#ffffff',
-          focusColor     : '#ffffff'
+          color:           '#ffffff',
+          focusColor:      '#ffffff'
         }
       }
     }
@@ -74,21 +75,29 @@ function createWebApp(options) {
 
   app.config.errorHandler = (err, vm, info) => {
     console.error('Ferropoly app - Unhandled Vue error:', err, vm, info);
-    // You can add more specific logging or error reporting here
+    Sentry.captureException(err);
   };
 
   Sentry.init({
     app,
-    dsn: process.env.FERROPOLY_SENTRY_DSN,
-    // Setting this option to true will send default PII data to Sentry.
-    // For example, automatic IP address collection on events
-    sendDefaultPii: true
+    dsn:              process.env.FERROPOLY_SENTRY_VUE_DSN,
+    attachStacktrace: true,
+    sendDefaultPii: false,
+    integrations:     [
+      Sentry.captureConsoleIntegration({
+        levels: ['error']
+      })
+    ],
+    beforeSend(event) {
+      console.log("SENTRY EVENT PAYLOAD:", JSON.parse(JSON.stringify(event)));
+      return event;
+    }
   });
 
   if (options.routes) {
     const router = createRouter({
       history: createWebHashHistory(),
-      routes : options.routes,
+      routes:  options.routes,
     })
     app.use(router)
   }
@@ -104,8 +113,8 @@ function createWebApp(options) {
   app.use(PrimeVue,
     {
       locale: locale['de-ch'],
-      theme: {
-        preset : FerropolyDesign,
+      theme:  {
+        preset:  FerropolyDesign,
         options: {
           darkModeSelector: '.my-app-dark',
         }
