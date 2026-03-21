@@ -67,6 +67,7 @@ module.exports = {
         logName:     _.get(settings, 'google.logName', 'not_set'),
         keyFile:     _.get(settings, 'google.keyFile', 'not_set'),
         format:      format.json(),
+        retry:       true,
         grpcOptions: {
           'grpc.keepalive_time_ms':              30000,
           'grpc.keepalive_timeout_ms':           10000,
