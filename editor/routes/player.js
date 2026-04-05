@@ -3,30 +3,30 @@
  * Created by kc on 24.03.15.
  */
 
-
-
-const express   = require('express');
-const router    = express.Router();
-const teams     = require('../../common/models/teamModel');
+const express = require('express');
+const router = express.Router();
+const teams = require('../../common/models/teamModel');
 const gameplays = require('../../common/models/gameplayModel');
-const users     = require('../../common/models/userModel');
-const logger    = require('../../common/lib/logger').getLogger('routes:player');
-const moment    = require('moment');
-const async     = require('async');
-const gravatar  = require('../../common/lib/gravatar');
-const mailer    = require('../../common/lib/mailer');
-const _         = require('lodash');
-const path      = require('path');
+const users = require('../../common/models/userModel');
+const logger = require('../../common/lib/logger').getLogger('routes:player');
+const { DateTime } = require('luxon');
+const async = require('async');
+const gravatar = require('../../common/lib/gravatar');
+const mailer = require('../../common/lib/mailer');
+const _ = require('lodash');
+const path = require('path');
 
 const MAX_NB_TEAMS = 20;
-
 
 /**
  * Get the home page
  */
 router.get('/edit/:gameId', async function (req, res) {
   try {
-    const gp = await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
+    const gp = await gameplays.getGameplay(
+      req.params.gameId,
+      req.session.passport.user
+    );
 
     // Only the owner is allowed to edit the game, not the team mates!
     if (_.get(gp, 'internal.owner', 'none') === req.session.passport.user) {
@@ -34,17 +34,16 @@ router.get('/edit/:gameId', async function (req, res) {
     } else {
       res.render('error/401', {
         message: 'Zugriff nicht erlaubt',
-        error:   {status: 401, stack: {}}
+        error: { status: 401, stack: {} },
       });
     }
-  }
-  catch {
+  } catch {
     return res.render('error/403', {
-      message: 'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
-      error:   {status: 403, stack: {}}
+      message:
+        'Das gesuchte Spiel steht für diesen Benutzer nicht zur Verfügung',
+      error: { status: 403, stack: {} },
     });
   }
-
 });
 
 /**
@@ -59,7 +58,9 @@ router.post('/create', async function (req, res) {
     }
 
     if (req.params.gameId === 'play-a-demo-game') {
-      return res.status(403).send('Demo Game Teams können nicht erstellt werden');
+      return res
+        .status(403)
+        .send('Demo Game Teams können nicht erstellt werden');
     }
 
     let gameId = req.body.gameId;
@@ -71,7 +72,7 @@ router.post('/create', async function (req, res) {
     const gp = await gameplays.getGameplay(gameId, req.session.passport.user);
 
     if (gp.scheduling.gameStartTs) {
-      if (moment().isAfter(gp.scheduling.gameStartTs)) {
+      if (DateTime.now() > DateTime.fromJSDate(gp.scheduling.gameStartTs)) {
         // Creating teams is not allowed after game start, send Forbidden status code
         res.status(403).send('Spielbeginn ist bereits vorbei');
         return;
@@ -91,16 +92,14 @@ router.post('/create', async function (req, res) {
     team.data.name = 'Team ' + c;
     teams
       .createTeam(team, gameId)
-      .then(newTeam => {
-        res.send({team: newTeam});
+      .then((newTeam) => {
+        res.send({ team: newTeam });
       })
-      .catch(err => {
+      .catch((err) => {
         logger.error('createTeam Error', err);
         res.status(500).send('Fehler beim Erstellen des Teams: ' + err.message);
       });
-
-  }
-  catch (err) {
+  } catch (err) {
     if (err) {
       res.status(500).send('Fehler bei Gameplay laden: ' + err.message);
     }
@@ -113,46 +112,61 @@ router.post('/create', async function (req, res) {
  * Return teams and authToken
  */
 router.get('/get/:gameId', function (req, res) {
-  teams.getTeams(req.params.gameId).then(gameTeams => {
-    async.each(gameTeams,
-      function (team, cb) {
-        if (!team || !team.data || !team.data.teamLeader || !team.data.teamLeader.email) {
-          team.login = {};
-          return cb();
-        }
-        users.getUserByMailAddress(team.data.teamLeader.email).then(user => {
-          if (!user) {
+  teams
+    .getTeams(req.params.gameId)
+    .then((gameTeams) => {
+      async.each(
+        gameTeams,
+        function (team, cb) {
+          if (
+            !team ||
+            !team.data ||
+            !team.data.teamLeader ||
+            !team.data.teamLeader.email
+          ) {
+            team.login = {};
             return cb();
           }
-          user = user.toObject();
+          users
+            .getUserByMailAddress(team.data.teamLeader.email)
+            .then((user) => {
+              if (!user) {
+                return cb();
+              }
+              user = user.toObject();
 
-          if (user.info && !user.personalData.avatar) {
-            // Use default avatar
-            user.personalData.avatar = gravatar.getUrl(user.personalData.email);
+              if (user.info && !user.personalData.avatar) {
+                // Use default avatar
+                user.personalData.avatar = gravatar.getUrl(
+                  user.personalData.email
+                );
+              }
+              team.login = {
+                personalData: user.personalData,
+                info: user.info,
+              };
+              return cb();
+            })
+            .catch(cb);
+        },
+        function (err) {
+          if (err) {
+            logger.error('/get Error 2:', err);
+            res
+              .status(500)
+              .send({ message: 'Fehler bei Abfrage: ' + err.message });
+            return;
           }
-          team.login = {
-            personalData: user.personalData,
-            info:         user.info
-          };
-          return cb();
-        }).catch(cb);
-      },
-      function (err) {
-        if (err) {
-          logger.error('/get Error 2:', err);
-          res.status(500).send({message: 'Fehler bei Abfrage: ' + err.message});
-          return;
+
+          return res.send({ teams: gameTeams });
         }
-
-        return res.send({teams: gameTeams});
-      }
-    );
-  }).catch(err => {
-    logger.error('/get Error', err);
-    res.status(500).send({message: 'Fehler bei Abfrage: ' + err.message});
-  });
+      );
+    })
+    .catch((err) => {
+      logger.error('/get Error', err);
+      res.status(500).send({ message: 'Fehler bei Abfrage: ' + err.message });
+    });
 });
-
 
 /**
  * Store a team
@@ -160,47 +174,55 @@ router.get('/get/:gameId', function (req, res) {
 router.post('/store', async function (req, res) {
   if (!req.body.authToken || req.body.authToken !== req.session.authToken) {
     logger.info('Auth token missing, access denied');
-    res.status(404).send({message: 'Kein Zugriff möglich, bitte einloggen'});
+    res.status(404).send({ message: 'Kein Zugriff möglich, bitte einloggen' });
     return;
   }
 
   let team = req.body.team;
   if (!team) {
-    return res.status(400).send({message: 'Team fehlt'});
+    return res.status(400).send({ message: 'Team fehlt' });
   }
 
   if (team.gameId === 'play-a-demo-game') {
-    return res.status(403).send({message: 'Demo Game Teams können nicht bearbeitet werden'});
+    return res
+      .status(403)
+      .send({ message: 'Demo Game Teams können nicht bearbeitet werden' });
   }
   try {
     await gameplays.getGameplay(team.gameId, req.session.passport.user);
 
-    teams.updateTeam(team).then(async storedTeam => {
-      // Check if a login is available
-      let user   = await users.getUserByMailAddress(storedTeam.data.teamLeader.email);
-      storedTeam = storedTeam.toObject();
-      user       = user ? user.toObject() : null;
+    teams
+      .updateTeam(team)
+      .then(async (storedTeam) => {
+        // Check if a login is available
+        let user = await users.getUserByMailAddress(
+          storedTeam.data.teamLeader.email
+        );
+        storedTeam = storedTeam.toObject();
+        user = user ? user.toObject() : null;
 
-      if (user?.info && !user?.personalData.avatar) {
-        // Use default avatar
-        user.personalData.avatar = gravatar.getUrl(user.personalData.email);
-      }
-      storedTeam.login = {
-        personalData: user?.personalData,
-        info:         user?.info
-      };
-      return res.send({team: storedTeam});
-
-    }).catch(err => {
-      logger.error('updateTeam Error', err);
-      res.status(500).send({message: 'Fehler beim speichern: ' + err.message});
-    })
-  }
-  catch (err) {
-    res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
+        if (user?.info && !user?.personalData.avatar) {
+          // Use default avatar
+          user.personalData.avatar = gravatar.getUrl(user.personalData.email);
+        }
+        storedTeam.login = {
+          personalData: user?.personalData,
+          info: user?.info,
+        };
+        return res.send({ team: storedTeam });
+      })
+      .catch((err) => {
+        logger.error('updateTeam Error', err);
+        res
+          .status(500)
+          .send({ message: 'Fehler beim speichern: ' + err.message });
+      });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ message: 'Fehler bei Gameplay laden: ' + err.message });
   }
 });
-
 
 /**
  * Confirm a team
@@ -216,72 +238,92 @@ router.post('/confirm', function (req, res) {
   let gameId = req.body.gameId;
   if (!teamId || !gameId) {
     logger.info('no teamId supplied');
-    return res.status(400).send({message: 'Team oder GameId fehlt'});
+    return res.status(400).send({ message: 'Team oder GameId fehlt' });
   }
 
   if (gameId === 'play-a-demo-game') {
-    return res.status(403).send({message: 'Demo Game Teams können nicht bestätigt werden'});
+    return res
+      .status(403)
+      .send({ message: 'Demo Game Teams können nicht bestätigt werden' });
   }
 
-  teams.getTeam(gameId, teamId).then(async team => {
-    try {
-      const gp                   = await gameplays.getGameplay(team.gameId, req.session.passport.user);
-      team.data.confirmed        = true;
-      team.data.confirmationDate = new Date();
-      const updatedTeam = await teams.updateTeam(team);
+  teams
+    .getTeam(gameId, teamId)
+    .then(async (team) => {
+      try {
+        const gp = await gameplays.getGameplay(
+          team.gameId,
+          req.session.passport.user
+        );
+        team.data.confirmed = true;
+        team.data.confirmationDate = new Date();
+        const updatedTeam = await teams.updateTeam(team);
 
-      logger.info(`${gameId}: Confirmed team ${team.data.name}`);
-      sendConfirmationMail(gp, team, err => {
-        let mailSent = true;
-        if (err) {
-          logger.error(`${gameId}: Error while sending email`, err);
-          mailSent = false;
-        }
-        return res.send({mailSent: mailSent, team: updatedTeam});
-      });
-    }
-    catch (err) {
-      res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
-    }
-  }).catch(err => {
-    logger.error(`${gameId}: Error while getting team`, err);
-    res.status(500).send({message: 'Fehler beim laden des Teams: ' + err.message});
-  });
+        logger.info(`${gameId}: Confirmed team ${team.data.name}`);
+        sendConfirmationMail(gp, team, (err) => {
+          let mailSent = true;
+          if (err) {
+            logger.error(`${gameId}: Error while sending email`, err);
+            mailSent = false;
+          }
+          return res.send({ mailSent: mailSent, team: updatedTeam });
+        });
+      } catch (err) {
+        res
+          .status(500)
+          .send({ message: 'Fehler bei Gameplay laden: ' + err.message });
+      }
+    })
+    .catch((err) => {
+      logger.error(`${gameId}: Error while getting team`, err);
+      res
+        .status(500)
+        .send({ message: 'Fehler beim laden des Teams: ' + err.message });
+    });
 });
-
 
 /**
  * Delete a team
  */
 router.delete('/:gameId/:teamId', function (req, res) {
-
   if (!req.params.gameId) {
-    return res.status(400).send({message: 'Keine GameId gefunden'});
+    return res.status(400).send({ message: 'Keine GameId gefunden' });
   }
   if (req.params.gameId === 'play-a-demo-game') {
-    return res.status(403).send({message: 'Teams im Demospiel können nicht gelöscht werden'});
+    return res
+      .status(403)
+      .send({ message: 'Teams im Demospiel können nicht gelöscht werden' });
   }
 
-  gameplays.getGameplay(req.params.gameId, req.session.passport.user).then(gp => {
-    if (gp.scheduling.gameStartTs) {
-      if (moment().isAfter(gp.scheduling.gameStartTs)) {
-        // Deleting is not allowed after game start
-        res.status(403).send({message: 'Spielbeginn ist bereits vorbei'});
-        return;
+  gameplays
+    .getGameplay(req.params.gameId, req.session.passport.user)
+    .then((gp) => {
+      if (gp.scheduling.gameStartTs) {
+        if (DateTime.now() > DateTime.fromJSDate(gp.scheduling.gameStartTs)) {
+          // Deleting is not allowed after game start
+          res.status(403).send({ message: 'Spielbeginn ist bereits vorbei' });
+          return;
+        }
       }
-    }
-    teams.deleteTeam(req.params.teamId).then(info => {
-      return res.send(info);
-    }).catch(err => {
-      logger.error('deleteTeam Error', err);
-      res.status(500).send({message: 'Fehler bei Team löschen: ' + err.message});
+      teams
+        .deleteTeam(req.params.teamId)
+        .then((info) => {
+          return res.send(info);
+        })
+        .catch((err) => {
+          logger.error('deleteTeam Error', err);
+          res
+            .status(500)
+            .send({ message: 'Fehler bei Team löschen: ' + err.message });
+        });
+    })
+    .catch((err) => {
+      logger.error('getGameplay Error', err);
+      res
+        .status(500)
+        .send({ message: 'Fehler bei Gameplay laden: ' + err.message });
     });
-  }).catch(err => {
-    logger.error('getGameplay Error', err);
-    res.status(500).send({message: 'Fehler bei Gameplay laden: ' + err.message});
-  });
 });
-
 
 /**
  * Sends the signup mail
@@ -290,31 +332,40 @@ router.delete('/:gameId/:teamId', function (req, res) {
  * @param callback
  */
 function sendConfirmationMail(gameplay, team, callback) {
-
-  let html    = '';
-  let text    = '';
+  let html = '';
+  let text = '';
   let subject = 'Bestätigung Ferropoly Anmeldung';
 
   html += '<h1>Bestätigung Ferropoly Anmeldung</h1>';
   html += `<p>Hallo ${team.data.teamLeader.name}</p><p>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.</p>`;
-  html += '<p>Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!</p>';
+  html +=
+    '<p>Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!</p>';
 
   text += 'Bestätigung Ferropoly Anmeldung\n';
   text += `Hallo ${team.data.teamLeader.name}\n>Deine Anmeldung des Teams "${team.data.name}" für das Ferropoly "${gameplay.gamename}" wurde bestätigt.\n`;
-  text += 'Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!\n';
+  text +=
+    'Weitere Informationen dürften demnächst folgen, wir vom Ferropoly wünschen schon jetzt viel Spass!\n';
 
   html += '<p></p>';
-  html += '<p>Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly:<a href="http://www.ferropoly.ch">www.ferropoly.ch</a></p>';
-  text += 'Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly: www.ferropoly.ch\n';
+  html +=
+    '<p>Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly:<a href="http://www.ferropoly.ch">www.ferropoly.ch</a></p>';
+  text +=
+    'Bitte auf dieses Mail nicht antworten, Mails an diese Adresse werden nicht gelesen. Infos und Kontakt zum Ferropoly: www.ferropoly.ch\n';
 
-  logger.info(`${gameplay.internal.gameId}: Mailtext created, receiver: ${team.data.teamLeader.email}`, text);
-  mailer.send({
-    to:      team.data.teamLeader.email,
-    cc:      gameplay.owner.organisatorEmail,
-    subject: subject,
-    html:    html,
-    text:    text
-  }, callback);
+  logger.info(
+    `${gameplay.internal.gameId}: Mailtext created, receiver: ${team.data.teamLeader.email}`,
+    text
+  );
+  mailer.send(
+    {
+      to: team.data.teamLeader.email,
+      cc: gameplay.owner.organisatorEmail,
+      subject: subject,
+      html: html,
+      text: text,
+    },
+    callback
+  );
 }
 
 module.exports = router;

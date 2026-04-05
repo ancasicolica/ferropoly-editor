@@ -4,42 +4,44 @@
  * Created by kc on 14.02.15.
  */
 
-const gameplays                  = require('../../common/models/gameplayModel');
-const properties                 = require('../../common/models/propertyModel');
-const rules                      = require('../../common/models/rulesModel');
-const locations                  = require('../../common/models/locationModel');
-const travelLog                  = require('../../common/models/travelLogModel');
-const teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
+const gameplays = require('../../common/models/gameplayModel');
+const properties = require('../../common/models/propertyModel');
+const rules = require('../../common/models/rulesModel');
+const locations = require('../../common/models/locationModel');
+const travelLog = require('../../common/models/travelLogModel');
+const teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
 const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
-const chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
-const teams                      = require('../../common/models/teamModel');
-const gameLog                    = require('../../common/models/gameLogModel');
-const schedulerEvents            = require('../../common/lib/schedulerEvents');
-const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
-const picBucketModel             = require('../../common/models/picBucketModel');
-const userModel                  = require('../../common/models/userModel');
-const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
-const demoUsers                  = require('./demoUsers');
-const pricelistLib               = require('./pricelist');
-const Moniker                    = require('moniker');
-const pugToHtml                  = require('./pugToHtml');
-const settings                   = require('../settings');
-const moment                     = require('moment');
-const _                          = require('lodash');
-const fs                         = require('fs');
-const path                       = require('path');
-const axios                      = require('axios');
-const rulesModel                 = require('../../common/models/rulesModel');
-const rulesCompiler              = require('./rulesCompiler');
-const demoGameId                 = 'play-a-demo-game';
-const demoOrganisatorMail        = 'demo@ferropoly.ch';
+const chancelleryTransaction = require('../../common/models/accounting/chancelleryTransaction');
+const teams = require('../../common/models/teamModel');
+const gameLog = require('../../common/models/gameLogModel');
+const schedulerEvents = require('../../common/lib/schedulerEvents');
+const schedulerEventsModel = require('../../common/models/schedulerEventModel');
+const picBucketModel = require('../../common/models/picBucketModel');
+const userModel = require('../../common/models/userModel');
+const logger = require('../../common/lib/logger').getLogger('gameplayLib');
+const demoUsers = require('./demoUsers');
+const pricelistLib = require('./pricelist');
+const Moniker = require('moniker');
+const pugToHtml = require('./pugToHtml');
+const settings = require('../settings');
+const { DateTime } = require('luxon');
+const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const rulesModel = require('../../common/models/rulesModel');
+const rulesCompiler = require('./rulesCompiler');
+const demoGameId = 'play-a-demo-game';
+const demoOrganisatorMail = 'demo@ferropoly.ch';
 
 /**
  * Updates the ferropoly main program cache
  */
 async function updateFerropolyMainCache(delay, callback) {
   if (callback) {
-    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in updateFerropolyMainCache is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    logger.error(
+      '>>>>>>>>>>>>>>>>>>>>>> Callback in updateFerropolyMainCache is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!'
+    );
     return callback('NOT SUPPORTED ANYMORE!');
   }
   if (!settings.mainInstances || settings.mainInstances.length === 0) {
@@ -47,7 +49,7 @@ async function updateFerropolyMainCache(delay, callback) {
     return;
   }
   try {
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     logger.info('Attempting to update main module caches, delay: ' + delay);
     for (const instance of settings.mainInstances) {
@@ -55,14 +57,15 @@ async function updateFerropolyMainCache(delay, callback) {
       const resp = await axios.post(`${instance}/gamecache/refresh`);
       if (resp.status !== 200) {
         logger.warn(`Main instance ${instance} returned ${resp.status}`, resp);
-      }
-      else {
+      } else {
         logger.info(`Main instance ${instance} returned ${resp.status}`);
       }
     }
-  }
-  catch (err) {
-    logger.info('Error in updateFerropolyMainCache (which is not a killer)', err.message);
+  } catch (err) {
+    logger.info(
+      'Error in updateFerropolyMainCache (which is not a killer)',
+      err.message
+    );
   }
 }
 
@@ -76,16 +79,16 @@ async function createRandomGameplay(gameId, props, nb) {
   let gplen = Math.min(nb, props.length);
   logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   let priceRange = 0;
-  let generated  = 0;
+  let generated = 0;
 
   while (generated < gplen) {
     let index = _.random(0, props.length - 1);
-    let p     = _.pullAt(props, [index]);
+    let p = _.pullAt(props, [index]);
     if (p[0].pricelist.priceRange === -1) {
       p[0].pricelist.priceRange = priceRange % 6;
       priceRange++;
       generated++;
-      await properties.updateProperty(gameId, p[0])
+      await properties.updateProperty(gameId, p[0]);
     }
   }
 }
@@ -102,8 +105,8 @@ async function createRandomGameplay(gameId, props, nb) {
  * @returns {*}
  */
 async function copyLocationsToProperties(gpOptions, gameplay) {
-  const {map, properties: importedProps = [], random} = gpOptions;
-  const gameId                                        = gameplay.internal.gameId;
+  const { map, properties: importedProps = [], random } = gpOptions;
+  const gameId = gameplay.internal.gameId;
 
   // Load locations
   const gameLocations = await locations.getAllLocationsForMap(map);
@@ -112,8 +115,8 @@ async function copyLocationsToProperties(gpOptions, gameplay) {
   // Create Map (key value pair table) for fast lookup of imported properties
   const pricelistByUuid = new Map(
     importedProps
-      .filter(p => p?.location?.uuid)
-      .map(p => [p.location.uuid, p.pricelist])
+      .filter((p) => p?.location?.uuid)
+      .map((p) => [p.location.uuid, p.pricelist])
   );
 
   // Count number of imported properties
@@ -124,12 +127,10 @@ async function copyLocationsToProperties(gpOptions, gameplay) {
 
   // Generate Properties in parallel
   const createdProps = await Promise.all(
-    gameLocations.map(location =>
-      properties.createPropertyFromLocationEx(
-        gameId,
-        location,
-        {pricelist: pricelistByUuid.get(location.uuid)}
-      )
+    gameLocations.map((location) =>
+      properties.createPropertyFromLocationEx(gameId, location, {
+        pricelist: pricelistByUuid.get(location.uuid),
+      })
     )
   );
 
@@ -154,80 +155,80 @@ function getGameParamsPresetSet(presets) {
   switch (presets) {
     case 'easy':
       return {
-        presets:                   'easy',
-        interestInterval:          60,
-        interest:                  4000,
+        presets: 'easy',
+        interestInterval: 60,
+        interest: 4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital:              4000,
-        debtInterest:              20,
-        housePrices:               0.5,
-        properties:                {
-          lowestPrice:                1000,
-          highestPrice:               2000,
-          numberOfPriceLevels:        6,
-          numberOfPropertiesPerGroup: 2
+        startCapital: 4000,
+        debtInterest: 20,
+        housePrices: 0.5,
+        properties: {
+          lowestPrice: 1000,
+          highestPrice: 2000,
+          numberOfPriceLevels: 6,
+          numberOfPropertiesPerGroup: 2,
         },
-        rentFactors:               {
-          noHouse:              0.25,
-          oneHouse:             2,
-          twoHouses:            2.75,
-          threeHouses:          3,
-          fourHouses:           3.5,
-          hotel:                4,
-          allPropertiesOfGroup: 2
-        }
+        rentFactors: {
+          noHouse: 0.25,
+          oneHouse: 2,
+          twoHouses: 2.75,
+          threeHouses: 3,
+          fourHouses: 3.5,
+          hotel: 4,
+          allPropertiesOfGroup: 2,
+        },
       };
 
     case 'moderate':
       return {
-        presets:                   'moderate',
-        interestInterval:          60,
-        interest:                  4000,
+        presets: 'moderate',
+        interestInterval: 60,
+        interest: 4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital:              4000,
-        debtInterest:              20,
-        housePrices:               0.5,
-        properties:                {
-          lowestPrice:                1000,
-          highestPrice:               4000,
-          numberOfPriceLevels:        7,
-          numberOfPropertiesPerGroup: 2
+        startCapital: 4000,
+        debtInterest: 20,
+        housePrices: 0.5,
+        properties: {
+          lowestPrice: 1000,
+          highestPrice: 4000,
+          numberOfPriceLevels: 7,
+          numberOfPropertiesPerGroup: 2,
         },
-        rentFactors:               {
-          noHouse:              0.2,
-          oneHouse:             0.8,
-          twoHouses:            2.5,
-          threeHouses:          3.5,
-          fourHouses:           4,
-          hotel:                5,
-          allPropertiesOfGroup: 2
-        }
+        rentFactors: {
+          noHouse: 0.2,
+          oneHouse: 0.8,
+          twoHouses: 2.5,
+          threeHouses: 3.5,
+          fourHouses: 4,
+          hotel: 5,
+          allPropertiesOfGroup: 2,
+        },
       };
 
     default:
       return {
-        presets:                   'classic',
-        interestInterval:          60,
-        interest:                  4000,
+        presets: 'classic',
+        interestInterval: 60,
+        interest: 4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital:              4000,
-        debtInterest:              20,
-        housePrices:               0.5,
-        properties:                {
-          lowestPrice:                1000,
-          highestPrice:               8000,
-          numberOfPriceLevels:        8,
-          numberOfPropertiesPerGroup: 2
+        startCapital: 4000,
+        debtInterest: 20,
+        housePrices: 0.5,
+        properties: {
+          lowestPrice: 1000,
+          highestPrice: 8000,
+          numberOfPriceLevels: 8,
+          numberOfPropertiesPerGroup: 2,
         },
-        rentFactors:               {
-          noHouse:              0.125,
-          oneHouse:             0.5,
-          twoHouses:            2,
-          threeHouses:          3,
-          fourHouses:           4,
-          hotel:                5,
-          allPropertiesOfGroup: 2
-        }
+        rentFactors: {
+          noHouse: 0.125,
+          oneHouse: 0.5,
+          twoHouses: 2,
+          threeHouses: 3,
+          fourHouses: 4,
+          hotel: 5,
+          allPropertiesOfGroup: 2,
+        },
       };
   }
 }
@@ -238,47 +239,64 @@ function getGameParamsPresetSet(presets) {
  */
 async function createNewGameplay(gpOptions) {
   // Verify options
-  if (!gpOptions.email || !gpOptions.map || !gpOptions.gamename || !gpOptions.gamedate) {
+  if (
+    !gpOptions.email ||
+    !gpOptions.map ||
+    !gpOptions.gamename ||
+    !gpOptions.gamedate
+  ) {
     throw new Error('Options are not complete');
   }
 
-  logger.info('New game for ' + gpOptions.email + ' using map ' + gpOptions.map);
+  logger.info(
+    'New game for ' + gpOptions.email + ' using map ' + gpOptions.map
+  );
 
   const dbUser = await userModel.getUserByMailAddress(gpOptions.email);
 
   // as default we use the email address as user id
-  const user = dbUser || {id: gpOptions.email};
+  const user = dbUser || { id: gpOptions.email };
 
   let gameId = gpOptions.gameId;
   if (!gameId || gameId.length === 0) {
-    gameId = Moniker.generator([Moniker.adjective, Moniker.adjective, Moniker.noun]).choose();
+    gameId = Moniker.generator([
+      Moniker.adjective,
+      Moniker.adjective,
+      Moniker.noun,
+    ]).choose();
   }
   const gameplay = await gameplays.createGameplay({
-    gameId:           gameId,
-    map:              gpOptions.map,
-    name:             gpOptions.gamename,
-    ownerEmail:       gpOptions.email,
-    organisatorName:  gpOptions.organisatorName,
-    ownerId:          user.id,
-    gameStart:        gpOptions.gameStart || '05:00',
-    gameEnd:          gpOptions.gameEnd || '18:00',
-    gameDate:         gpOptions.gamedate,
-    instance:         settings.server.serverId,
-    mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
-    gameParams:       gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
+    gameId: gameId,
+    map: gpOptions.map,
+    name: gpOptions.gamename,
+    ownerEmail: gpOptions.email,
+    organisatorName: gpOptions.organisatorName,
+    ownerId: user.id,
+    gameStart: gpOptions.gameStart || '05:00',
+    gameEnd: gpOptions.gameEnd || '18:00',
+    gameDate: gpOptions.gamedate,
+    instance: settings.server.serverId,
+    mobile: gpOptions.mobile || { level: gameplays.MOBILE_BASIC },
+    gameParams:
+      gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
     interestInterval: gpOptions.interestInterval,
-    isDemo:           gpOptions.isDemo,
-    mainInstances:    settings.mainInstances,
-    autopilot:        gpOptions.autopilot
+    isDemo: gpOptions.isDemo,
+    mainInstances: settings.mainInstances,
+    autopilot: gpOptions.autopilot,
   });
 
   const admins = gpOptions.admins || [];
-  await gameplays.setAdmins(gameId, gpOptions.email, admins)
+  await gameplays.setAdmins(gameId, gpOptions.email, admins);
 
   // Create also the rules
-  let template = fs.readFileSync(path.join(__dirname, 'rulesTemplate.pug'), 'utf8');
+  let template = fs.readFileSync(
+    path.join(__dirname, 'rulesTemplate.pug'),
+    'utf8'
+  );
   await rules.createRules(gameId, pugToHtml(template));
-  logger.info(`New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`);
+  logger.info(
+    `New gameplay with id "${gameplay._id}" created. Is demo: ${gpOptions.isDemo}`
+  );
   return await copyLocationsToProperties(gpOptions, gameplay);
 }
 
@@ -290,7 +308,9 @@ async function createNewGameplay(gpOptions) {
  */
 async function deleteGameplay(gpOptions, callback) {
   if (callback) {
-    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in deleteGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    logger.error(
+      '>>>>>>>>>>>>>>>>>>>>>> Callback in deleteGameplay is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!'
+    );
     return callback('NOT SUPPORTED ANYMORE!');
   }
 
@@ -299,11 +319,14 @@ async function deleteGameplay(gpOptions, callback) {
   }
 
   try {
-    const gp = await gameplays.getGameplay(gpOptions.gameId, gpOptions.ownerEmail);
+    const gp = await gameplays.getGameplay(
+      gpOptions.gameId,
+      gpOptions.ownerEmail
+    );
     await properties.removeAllPropertiesFromGameplay(gpOptions.gameId);
     await teams.deleteAllTeams(gpOptions.gameId);
     await propertyAccountTransaction.dumpAccounts(gpOptions.gameId);
-    await teamAccountTransaction.dumpAccounts(gpOptions.gameId)
+    await teamAccountTransaction.dumpAccounts(gpOptions.gameId);
     await chancelleryTransaction.dumpChancelleryData(gpOptions.gameId);
     await schedulerEventsModel.dumpEvents(gpOptions.gameId);
     await picBucketModel.deletePicBucket(gpOptions.gameId);
@@ -318,8 +341,7 @@ async function deleteGameplay(gpOptions, callback) {
       // update main instances as we removed the game!
       await updateFerropolyMainCache(100);
     }
-  }
-  catch (err) {
+  } catch (err) {
     logger.error('Error while deleting gameplays', err);
     return callback(err);
   }
@@ -332,16 +354,15 @@ async function deleteGameplay(gpOptions, callback) {
  * @returns {{gameId: string, data: {name: *, organization: *, teamLeader: {name: *, email: *, phone: *}, remarks: *}}}
  */
 function createDemoTeamEntry(gameId, entry) {
-
   return {
     gameId: gameId,
-    data:   {
-      name:         entry[0],
+    data: {
+      name: entry[0],
       organization: entry[1],
-      teamLeader:   {name: entry[2], email: entry[3], phone: entry[4]},
-      remarks:      '',
-      members:      entry[5] || []
-    }
+      teamLeader: { name: entry[2], email: entry[3], phone: entry[4] },
+      remarks: '',
+      members: entry[5] || [],
+    },
   };
 }
 
@@ -358,70 +379,174 @@ async function createDemoTeams(gp, teamNb) {
   }
 
   let referenceData = [
-    createDemoTeamEntry(gp.internal.gameId, ['Ferropoly Riders', 'Pfadi Züri Oberland', demoUsers.getTeamLeaderName(0),
-                                             demoUsers.getTeamLeaderEmail(0), '079 000 00 01',
-                                             [{
-                                               login:        demoUsers.getTeamLeaderEmail(20),
-                                               personalData: demoUsers.getPersonalData(20)
-                                             },
-                                              {
-                                                login:        demoUsers.getTeamLeaderEmail(21),
-                                                personalData: demoUsers.getPersonalData(21)
-                                              }]]),
-    createDemoTeamEntry(gp.internal.gameId, ['Bahnfreaks', 'Cevi Bern', demoUsers.getTeamLeaderName(1),
-                                             demoUsers.getTeamLeaderEmail(1), '079 000 00 02',
-                                             [{
-                                               login:        demoUsers.getTeamLeaderEmail(22),
-                                               personalData: demoUsers.getPersonalData(22)
-                                             },
-                                              {
-                                                login:        demoUsers.getTeamLeaderEmail(24),
-                                                personalData: demoUsers.getPersonalData(24)
-                                              }]]),
-    createDemoTeamEntry(gp.internal.gameId, ['Bahnschwellen', 'Sek Hinwil', demoUsers.getTeamLeaderName(2),
-                                             demoUsers.getTeamLeaderEmail(2), '079 000 00 03',
-                                             [{
-                                               login:        demoUsers.getTeamLeaderEmail(20),
-                                               personalData: demoUsers.getPersonalData(20)
-                                             }]]),
-    createDemoTeamEntry(gp.internal.gameId, ['Schmalspurfans', 'Gewerbeschule Chur', demoUsers.getTeamLeaderName(3),
-                                             demoUsers.getTeamLeaderEmail(3), '079 000 00 04',
-                                             'Siegerteam letztes Jahr']),
-    createDemoTeamEntry(gp.internal.gameId, ['Pufferbillies', 'Oberstufe Basel', demoUsers.getTeamLeaderName(4),
-                                             demoUsers.getTeamLeaderEmail(4), '079 000 00 05']),
-    createDemoTeamEntry(gp.internal.gameId, ['Mecaronis', 'Mechatronik Team', demoUsers.getTeamLeaderName(5),
-                                             demoUsers.getTeamLeaderEmail(5), '079 000 00 06']),
-    createDemoTeamEntry(gp.internal.gameId, ['Ticketeria', 'Team Kriens', demoUsers.getTeamLeaderName(6),
-                                             demoUsers.getTeamLeaderEmail(6), '079 000 00 07']),
-    createDemoTeamEntry(gp.internal.gameId, ['Sackbahnhof', 'Jungwacht St. Gallen', demoUsers.getTeamLeaderName(7),
-                                             demoUsers.getTeamLeaderEmail(7), '079 000 00 08']),
-    createDemoTeamEntry(gp.internal.gameId, ['Paratore', 'Lehrerseminar Zürich', demoUsers.getTeamLeaderName(8),
-                                             demoUsers.getTeamLeaderEmail(8), '079 000 00 09']),
-    createDemoTeamEntry(gp.internal.gameId, ['Sacco per Rifiuti', 'Volleyballclub Luzern',
-                                             demoUsers.getTeamLeaderName(9), demoUsers.getTeamLeaderEmail(9),
-                                             '079 000 00 10']),
-    createDemoTeamEntry(gp.internal.gameId, ['Quartiersau', 'Rover Wetzikon', demoUsers.getTeamLeaderName(10),
-                                             demoUsers.getTeamLeaderEmail(10), '079 000 00 11']),
-    createDemoTeamEntry(gp.internal.gameId, ['Adventure Club', 'Sängerbund Burgdorf', demoUsers.getTeamLeaderName(11),
-                                             demoUsers.getTeamLeaderEmail(11), '079 000 00 12']),
-    createDemoTeamEntry(gp.internal.gameId, ['Los Tigurinos', 'Oberstufe Herisau', demoUsers.getTeamLeaderName(12),
-                                             demoUsers.getTeamLeaderEmail(12), '079 000 00 13']),
-    createDemoTeamEntry(gp.internal.gameId, ['Exivos', 'Fachhochschule Bern', demoUsers.getTeamLeaderName(13),
-                                             demoUsers.getTeamLeaderEmail(13), '079 000 00 14']),
-    createDemoTeamEntry(gp.internal.gameId, ['Matchwinner', 'Kantonsschule Aarau', demoUsers.getTeamLeaderName(14),
-                                             demoUsers.getTeamLeaderEmail(14), '079 000 00 15']),
-    createDemoTeamEntry(gp.internal.gameId, ['Broncos', 'Pfadicorps Glockenhof', demoUsers.getTeamLeaderName(15),
-                                             demoUsers.getTeamLeaderEmail(15), '079 000 00 16']),
-    createDemoTeamEntry(gp.internal.gameId, ['Tornados', 'Turnverein Aadorf', demoUsers.getTeamLeaderName(16),
-                                             demoUsers.getTeamLeaderEmail(16), '079 000 00 17']),
-    createDemoTeamEntry(gp.internal.gameId, ['Know-Nothing Bozo the Non-Wonder Dog & Wonko the sane',
-                                             'Verkehrsverein Interlaken', demoUsers.getTeamLeaderName(17),
-                                             demoUsers.getTeamLeaderEmail(17), '079 000 00 18']),
-    createDemoTeamEntry(gp.internal.gameId, ['Routeburn Hoppser', 'Swiss Kiwis', 'Jim Toms',
-                                             demoUsers.getTeamLeaderName(18), demoUsers.getTeamLeaderEmail(18),
-                                             '079 000 00 19']),
-    createDemoTeamEntry(gp.internal.gameId, ['Die Letzten', '', demoUsers.getTeamLeaderName(19),
-                                             demoUsers.getTeamLeaderEmail(19), '079 000 00 20'])
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Ferropoly Riders',
+      'Pfadi Züri Oberland',
+      demoUsers.getTeamLeaderName(0),
+      demoUsers.getTeamLeaderEmail(0),
+      '079 000 00 01',
+      [
+        {
+          login: demoUsers.getTeamLeaderEmail(20),
+          personalData: demoUsers.getPersonalData(20),
+        },
+        {
+          login: demoUsers.getTeamLeaderEmail(21),
+          personalData: demoUsers.getPersonalData(21),
+        },
+      ],
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Bahnfreaks',
+      'Cevi Bern',
+      demoUsers.getTeamLeaderName(1),
+      demoUsers.getTeamLeaderEmail(1),
+      '079 000 00 02',
+      [
+        {
+          login: demoUsers.getTeamLeaderEmail(22),
+          personalData: demoUsers.getPersonalData(22),
+        },
+        {
+          login: demoUsers.getTeamLeaderEmail(24),
+          personalData: demoUsers.getPersonalData(24),
+        },
+      ],
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Bahnschwellen',
+      'Sek Hinwil',
+      demoUsers.getTeamLeaderName(2),
+      demoUsers.getTeamLeaderEmail(2),
+      '079 000 00 03',
+      [
+        {
+          login: demoUsers.getTeamLeaderEmail(20),
+          personalData: demoUsers.getPersonalData(20),
+        },
+      ],
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Schmalspurfans',
+      'Gewerbeschule Chur',
+      demoUsers.getTeamLeaderName(3),
+      demoUsers.getTeamLeaderEmail(3),
+      '079 000 00 04',
+      'Siegerteam letztes Jahr',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Pufferbillies',
+      'Oberstufe Basel',
+      demoUsers.getTeamLeaderName(4),
+      demoUsers.getTeamLeaderEmail(4),
+      '079 000 00 05',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Mecaronis',
+      'Mechatronik Team',
+      demoUsers.getTeamLeaderName(5),
+      demoUsers.getTeamLeaderEmail(5),
+      '079 000 00 06',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Ticketeria',
+      'Team Kriens',
+      demoUsers.getTeamLeaderName(6),
+      demoUsers.getTeamLeaderEmail(6),
+      '079 000 00 07',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Sackbahnhof',
+      'Jungwacht St. Gallen',
+      demoUsers.getTeamLeaderName(7),
+      demoUsers.getTeamLeaderEmail(7),
+      '079 000 00 08',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Paratore',
+      'Lehrerseminar Zürich',
+      demoUsers.getTeamLeaderName(8),
+      demoUsers.getTeamLeaderEmail(8),
+      '079 000 00 09',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Sacco per Rifiuti',
+      'Volleyballclub Luzern',
+      demoUsers.getTeamLeaderName(9),
+      demoUsers.getTeamLeaderEmail(9),
+      '079 000 00 10',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Quartiersau',
+      'Rover Wetzikon',
+      demoUsers.getTeamLeaderName(10),
+      demoUsers.getTeamLeaderEmail(10),
+      '079 000 00 11',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Adventure Club',
+      'Sängerbund Burgdorf',
+      demoUsers.getTeamLeaderName(11),
+      demoUsers.getTeamLeaderEmail(11),
+      '079 000 00 12',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Los Tigurinos',
+      'Oberstufe Herisau',
+      demoUsers.getTeamLeaderName(12),
+      demoUsers.getTeamLeaderEmail(12),
+      '079 000 00 13',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Exivos',
+      'Fachhochschule Bern',
+      demoUsers.getTeamLeaderName(13),
+      demoUsers.getTeamLeaderEmail(13),
+      '079 000 00 14',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Matchwinner',
+      'Kantonsschule Aarau',
+      demoUsers.getTeamLeaderName(14),
+      demoUsers.getTeamLeaderEmail(14),
+      '079 000 00 15',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Broncos',
+      'Pfadicorps Glockenhof',
+      demoUsers.getTeamLeaderName(15),
+      demoUsers.getTeamLeaderEmail(15),
+      '079 000 00 16',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Tornados',
+      'Turnverein Aadorf',
+      demoUsers.getTeamLeaderName(16),
+      demoUsers.getTeamLeaderEmail(16),
+      '079 000 00 17',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Know-Nothing Bozo the Non-Wonder Dog & Wonko the sane',
+      'Verkehrsverein Interlaken',
+      demoUsers.getTeamLeaderName(17),
+      demoUsers.getTeamLeaderEmail(17),
+      '079 000 00 18',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Routeburn Hoppser',
+      'Swiss Kiwis',
+      'Jim Toms',
+      demoUsers.getTeamLeaderName(18),
+      demoUsers.getTeamLeaderEmail(18),
+      '079 000 00 19',
+    ]),
+    createDemoTeamEntry(gp.internal.gameId, [
+      'Die Letzten',
+      '',
+      demoUsers.getTeamLeaderName(19),
+      demoUsers.getTeamLeaderEmail(19),
+      '079 000 00 20',
+    ]),
   ];
   for (i = 0; i < teamNb; i++) {
     await teams.createTeam(referenceData[i], gp.internal.gameId);
@@ -433,62 +558,67 @@ async function createDemoTeams(gp, teamNb) {
  * @param settings
  */
 async function createDemoGameplay(settings = {}) {
-
   if (settings.tomorrow) {
-    settings.gameDate = moment().add(1, 'days').toDate();
+    settings.gameDate = DateTime.now().plus({ days: 1 }).toJSDate();
   }
 
   let gameId = settings.gameId || demoGameId;
 
   let options = {
-    map:        settings.map || 'sbb',
-    email:      settings.email || demoOrganisatorMail,
+    map: settings.map || 'sbb',
+    email: settings.email || demoOrganisatorMail,
     ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with
-                                                       // email
-    organisatorName:  'Arthur Dent',
-    gamedate:         settings.gameDate || new Date(),
-    gameStart:        settings.gameStart || '06:00',
-    gameEnd:          settings.gameEnd || '21:00',
-    gamename:         settings.gamename || 'Demo Spiel',
-    gameId:           gameId,
-    random:           settings.random || 120,
-    teamNb:           settings.teamNb || 8,
+    // email
+    organisatorName: 'Arthur Dent',
+    gamedate: settings.gameDate || new Date(),
+    gameStart: settings.gameStart || '06:00',
+    gameEnd: settings.gameEnd || '21:00',
+    gamename: settings.gamename || 'Demo Spiel',
+    gameId: gameId,
+    random: settings.random || 120,
+    teamNb: settings.teamNb || 8,
     interestInterval: settings.interestInterval,
-    mobile:           settings.mobile || {level: 5},
-    presets:          settings.presets,
-    admins:           settings.admins || [],
-    isDemo:           true,
-    autopilot:        {
-      active:    _.get(settings, 'autopilot.active', false),
+    mobile: settings.mobile || { level: 5 },
+    presets: settings.presets,
+    admins: settings.admins || [],
+    isDemo: true,
+    autopilot: {
+      active: _.get(settings, 'autopilot.active', false),
       picBucket: _.get(settings, 'autopilot.picBucket', false),
-      interval:  _.get(settings, 'autopilot.interval', (30 * 60 * 1000))
-    }
+      interval: _.get(settings, 'autopilot.interval', 30 * 60 * 1000),
+    },
   };
 
-  const  doNotNotifyMain = _.get(settings, 'doNotNotifyMain', false);
+  const doNotNotifyMain = _.get(settings, 'doNotNotifyMain', false);
 
   // The openshift server is located on the East Coast of the USA, thats why the cron job
   // will be executed in the late evening (local time). Therefore the date has to be ajusted
   if (settings.demoGameplay && settings.demoGameplay.addDays) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
-    logger.info('Date shifted for ' + settings.demoGameplay.addDays + ' days, date is ' + options.gamedate);
+    logger.info(
+      'Date shifted for ' +
+        settings.demoGameplay.addDays +
+        ' days, date is ' +
+        options.gamedate
+    );
   }
 
-  let startTs      = new Date();
+  let startTs = new Date();
   const isExisting = await gameplays.checkIfGameIdExists(options.gameId);
   if (isExisting) {
     await deleteGameplay(options);
   }
   // Create new gameplay now
-  const gp = await createNewGameplay(options)
+  const gp = await createNewGameplay(options);
   await createDemoTeams(gp, options.teamNb);
 
   await pricelistLib.create(gameId, demoOrganisatorMail);
   await finalizeGameplay(gp, demoOrganisatorMail, doNotNotifyMain);
-  let endTs    = new Date();
+  let endTs = new Date();
   let duration = (endTs.getTime() - startTs.getTime()) / 1000;
-  logger.info('Created the demo again and I needed ' + duration + ' seconds for it!');
-
+  logger.info(
+    'Created the demo again and I needed ' + duration + ' seconds for it!'
+  );
 }
 
 /**
@@ -498,23 +628,29 @@ async function createDemoGameplay(settings = {}) {
  * @param doNotNotifyMain
  */
 async function finalizeGameplay(gameplay, email, doNotNotifyMain = false) {
-  const gameId  = gameplay.internal.gameId;
+  const gameId = gameplay.internal.gameId;
   const gpSaved = await gameplays.finalize(gameId, email);
 
   // Creating rules
   logger.info(`${gameId} : creating first rules`);
   const rules = await rulesModel.getRules(gameId);
-  const text  = rulesCompiler({gp: gpSaved, raw: rules.raw});
-  await rulesModel.releaseRules(gameId, text, 'Automatisch bei Finalisierung erzeugt');
-  await gameplays.updateRules(gameId, gpSaved.internal.owner, {text: text});
+  const text = rulesCompiler({ gp: gpSaved, raw: rules.raw });
+  await rulesModel.releaseRules(
+    gameId,
+    text,
+    'Automatisch bei Finalisierung erzeugt'
+  );
+  await gameplays.updateRules(gameId, gpSaved.internal.owner, { text: text });
 
-  await properties.finalizeProperties(gameplay.internal.gameId)
+  await properties.finalizeProperties(gameplay.internal.gameId);
 
   await schedulerEvents.createEvents(gpSaved);
   logger.info('Scheduler Events created');
 
   if (doNotNotifyMain) {
-    logger.info('Notifying main is disabled for finalizeGameplay (no cache update)');
+    logger.info(
+      'Notifying main is disabled for finalizeGameplay (no cache update)'
+    );
   } else {
     await updateFerropolyMainCache(4000);
   }
@@ -526,7 +662,9 @@ async function finalizeGameplay(gameplay, email, doNotNotifyMain = false) {
  */
 async function deleteOldGameplays(callback) {
   if (callback) {
-    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in deleteOldGameplays is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
+    logger.error(
+      '>>>>>>>>>>>>>>>>>>>>>> Callback in deleteOldGameplays is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!'
+    );
     return callback('NOT SUPPORTED ANYMORE!');
   }
 
@@ -537,23 +675,26 @@ async function deleteOldGameplays(callback) {
     if (!gp.scheduling.deleteTs) {
       // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
       // the game took place. This code can be removed in the next ferropoly release
-      timeout = moment(gp.scheduling.gameDate).add(1, 'M');
+      timeout = DateTime.fromJSDate(gp.scheduling.gameDate).plus({ months: 1 });
     } else {
       // This is the code which should run for current (V2) ferropolys
-      timeout = moment(gp.scheduling.deleteTs);
+      timeout = DateTime.fromJSDate(gp.scheduling.deleteTs);
     }
-    logger.info(`Deletion timeout for "${gp._id}": ${timeout.toDate()}`);
+    logger.info(`Deletion timeout for "${gp._id}": ${timeout.toISODate()}`);
     if (!timeout) {
       // Still no timeout, cancel this one, but still handle others
       logger.error(new Error('No deletion timeout found for ' + gp._id));
     } else {
-      if (moment().isAfter(timeout)) {
-        await deleteGameplay({gameId: gp._id, ownerEmail: gp.internal.owner, doNotNotifyMain: true});
+      if (DateTime.now() > timeout) {
+        await deleteGameplay({
+          gameId: gp._id,
+          ownerEmail: gp.internal.owner,
+          doNotNotifyMain: true,
+        });
       }
     }
   }
 }
-
 
 module.exports = {
   /**
@@ -587,5 +728,5 @@ module.exports = {
   /**
    * Deletes all expired gameplays
    */
-  deleteOldGameplays: deleteOldGameplays
+  deleteOldGameplays: deleteOldGameplays,
 };

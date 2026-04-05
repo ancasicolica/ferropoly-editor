@@ -1,5 +1,9 @@
 # Changelog Ferropoly Editor
 
+* Dependency Updates
+* Intern: Prettier für Code Formatierung hinzugefügt
+* moment.js komplett durch luxon ersetzt
+
 # v4.2.0 22.02.26
 * Spielrunden werden nummeriert
 * PriceTags werden bei der Erzeugung der Preisliste berechnet (für Darstellung Karte)
