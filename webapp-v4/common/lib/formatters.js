@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
 import {isNumber, find, toUpper} from 'lodash';
-import maps from '../../../common/lib/maps.json';
+import mapData from '../../../common/lib/maps.json';
 
 /**
  * Creates a Luxon DateTime instance from the given value.
@@ -89,7 +89,8 @@ function formatDateTime(value) {
  * @returns {*}
  */
 function formatTimestampAsAgo(timestamp) {
-  return timestamp.toRelative();
+  const value = createLuxonDate(timestamp);
+  return value.setLocale('de').toRelative();
 }
 
 
@@ -169,7 +170,7 @@ function formatPriceRange(val) {
  * @returns {string|*}
  */
 function formatMap(map) {
-  let m = find(maps, {map: map});
+  let m = find(mapData.maps, {map: map});
   if (!m) {
     return toUpper(map);
   }
@@ -197,7 +198,7 @@ function formatPosition(position) {
   if (!position || !position.lat || !position.lng) {
     return '';
   }
-  let retVal = `${position.lat}°N, ${position.lng}°E`;
+  let retVal = `${position.lat.toFixed(5)}°N, ${position.lng.toFixed(5)}°E`;
   if (position.accuracy) {
     retVal += ` ±${position.accuracy}m`
   }

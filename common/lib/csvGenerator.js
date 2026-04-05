@@ -3,8 +3,8 @@
  * Created by kc on 17.07.15.
  */
 
-const _ = require('lodash');
-const moment = require('moment-timezone');
+const _          = require('lodash');
+const {DateTime} = require('luxon');
 
 module.exports = {
   /**
@@ -14,31 +14,30 @@ module.exports = {
    * @returns {string}
    */
   create: function (columns, data) {
-    var i = 0;
-    var retVal = '';
-    var keys = _.keys(columns);
-    var values = _.values(columns);
+    let i      = 0;
+    let retVal = '';
+    let keys   = _.keys(columns);
+    let values = _.values(columns);
 
-    var header = '';
+    let header = '';
     for (i = 0; i < values.length; i++) {
       header += values[i] + ';';
     }
     retVal += header + '\n';
 
     for (i = 0; i < data.length; i++) {
-      var row = '';
+      let row = '';
       _.forEach(keys, function (key) {
         if (data[i] && data[i][key]) {
           row += data[i][key] + ';'
-        }
-        else {
+        } else {
           row += ';';
         }
       });
       retVal += row + '\n';
     }
 
-    retVal += '\n\nStand:' + moment.tz(moment(), 'Europe/Zurich').format('D.M.YYYY HH:mm:ss');
+    retVal += '\n\nStand:' + DateTime.now().setZone('Europe/Zurich').toFormat('d.M.yyyy HH:mm:ss');
     return retVal;
   }
 };

@@ -32,6 +32,8 @@ function createPriceList(gp, props, loggerFct) {
   priceList = setPropertyHousePricing(gp, priceList);
   loggerFunction(`${gpName}: Pricelist creation, set property groups`);
   priceList = setPropertyGroups(gp, priceList);
+  loggerFunction(`${gpName}: Pricelist creation, set price tags`);
+  priceList = setPriceTags(gp, priceList);
   if (!priceList) {
     return null;
   }
@@ -229,6 +231,88 @@ let setPropertyGroups = function (gameplay, pricelist) {
     return null;
   }
 };
+
+/**
+ * Represents predefined pricing tiers based on the number of items.
+ *
+ * Each index in the array corresponds to the number of items for which pricing is defined.
+ * For example, `priceTags[3]` contains pricing tiers applicable when there are 3 items.
+ * The value at each index is an array of price thresholds, progressively increasing.
+ *
+ * The tiers are structured as follows:
+ * - Index 0: No pricing tiers (empty array).
+ * - Index 1: Indicates all items have different prices (empty array).
+ * - Remaining indices: Arrays containing progressive price thresholds.
+ *
+ * @type {Array<Array<number>>}
+ */
+const priceTags = [
+  /* 0 = does not exist  */ [],
+  /* 1 = all have different price */ [],
+  /* 2 */ [1, 10],
+  /* 3 */ [1, 5, 10],
+  /* 4 */ [1, 3, 6, 10],
+  /* 5 */ [1, 3, 5, 7, 10],
+  /* 6 */ [1, 3, 5, 7, 9, 10],
+  /* 7 */ [1, 2, 3, 5, 7, 9, 10],
+  /* 8 */ [1, 2, 3, 4, 6, 7, 9, 10],
+  /* 9 */ [1, 2, 3, 4, 6, 7, 8, 9, 10],
+  /* 10 */ [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+]
+
+
+/**
+ * Calculates the price tag for a given property based on the price levels defined in the gameplay parameters.
+ *
+ * @param gameplay
+ * @param {object} property - The property for which the price tag is calculated.
+ * @return {number} - The price tag of the property.
+ */
+function getPriceTag(gameplay, property) {
+  const lowestPrice         = gameplay.gameParams.properties.lowestPrice;
+  const highestPrice        = gameplay.gameParams.properties.highestPrice;
+  const priceDelta          = highestPrice - lowestPrice;
+  const numberOfPriceLevels = gameplay.gameParams.properties.numberOfPriceLevels
+  let step                  = priceDelta / numberOfPriceLevels;
+  let priceTag              = -1;
+
+  if (numberOfPriceLevels > 1 && numberOfPriceLevels < 11) {
+    // When there are between 2 and 10 Price levels, use mapping
+    for (let i = 0; i < numberOfPriceLevels; i++) {
+      let priceLevel = lowestPrice + i * step;
+      if (property.pricelist.price >= priceLevel) {
+        priceTag = priceTags[numberOfPriceLevels][i];
+      }
+    }
+    return priceTag;
+  } else {
+    // The less common situation: more than 10 different price levels. This is only approximate calculation
+    step = priceDelta / 10;
+    for (let i = 0; i < 10; i++) {
+      let priceLevel = lowestPrice + i * step;
+      if (property.pricelist.price >= priceLevel) {
+        priceTag = priceTags[10][i];
+      }
+    }
+    return priceTag;
+  }
+}
+
+/**
+ * Updates the price tags for all items in the pricelist based on gameplay data.
+ *
+ * @param {Object} gameplay - The gameplay data used to determine the price tags.
+ * @param {Array} pricelist - The list of items with pricing information to be updated.
+ * @return {Array} The updated pricelist with modified price tags.
+ */
+function setPriceTags(gameplay, pricelist) {
+
+  for (const property of pricelist) {
+    property.pricelist.priceTag = getPriceTag(gameplay, property);
+  }
+
+  return pricelist;
+}
 
 module.exports = {
   createPriceList:         createPriceList,

@@ -115,7 +115,7 @@ class Property extends EventEmitter {
         map:      null,
         title:    this.location.name,
       }));
-      this.marker.addListener('click', () => {
+      this.marker.addListener('gmp-click', () => {
         this.emit('property-selected', this);
       });
       this.setMarkerIcon(false);

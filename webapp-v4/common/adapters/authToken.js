@@ -2,7 +2,6 @@
  * Auth Token functions
  * 13.4.21 KC
  */
-import $ from 'jquery';
 import axios from 'axios';
 
 
@@ -12,9 +11,9 @@ import axios from 'axios';
  * @param {function} callback - Callback function to be executed when the token is retrieved. Will be called with two arguments: error and authToken.
  * @return {Promise<string>} - A Promise that resolves with the authentication token when it is successfully retrieved.
  */
-async function getAuthToken(callback) {
+async function getAuthToken(callback = null) {
   if (callback) {
-    $.ajax('/authtoken', {dataType: 'json'})
+    axios.get('/authtoken')
       .done(function (data) {
         callback(null, data.authToken);
       })
@@ -23,8 +22,8 @@ async function getAuthToken(callback) {
       });
   }
   else {
-    let res = await $.ajax('/authtoken', {dataType: 'json'});
-    return res.authToken;
+    let res = await axios.get('/authtoken');
+    return res?.data.authToken;
   }
 }
 
@@ -35,7 +34,7 @@ async function getAuthToken(callback) {
  * @param authToken
  * @param callback
  */
-function verifyAuthToken(authToken, callback) {
+function verifyAuthToken(authToken, callback = null) {
   axios.post('/authtoken/test', {authToken})
     .then(() => {
       console.log('Auth-Token verification suceeded');

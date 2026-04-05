@@ -12,9 +12,10 @@ async function main() {
     await gplib.createDemoGameplay({
       map:             'sbb',
       gameId:          'local-demo-game',
-      gameStart:       '04:00',
+      gameStart:       '07:00',
       gameEnd:         '23:30',
       presets:         'moderate',
+      interestInterval: 60,
       doNotNotifyMain: true,
       autopilot:       {
         active:    true,
@@ -23,7 +24,8 @@ async function main() {
       },
       mobile:          {
         level: 5
-      }
+      },
+      admins: ['team20@ferropoly.ch', 'team21@ferropoly.ch']
     });
     await ferropolyDb.close();
     console.log('OK');

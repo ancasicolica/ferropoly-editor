@@ -2,16 +2,17 @@
  * Adapter to the user infp
  * 24.4.21 KC
  */
-import $ from 'jquery';
 import {get, isObject} from 'lodash';
+import axios from 'axios';
 
 /**
  * Returns the information about the current user
  * @param callback
  */
 function getUserInfo(callback) {
-  $.ajax('/userinfo', {dataType: 'json'})
-    .done(function (data) {
+  axios.get('/userinfo')
+    .then( resp => {
+      const data = resp.data;
       let info                = get(data, 'info', {});
       let hasGoogleAccount    = isObject(get(info, 'info.google', null));
       let hasFacebookAccount  = isObject(get(info, 'info.facebook', null));
@@ -52,7 +53,7 @@ function getUserInfo(callback) {
       console.log('userinfo', data, retVal);
       callback(null, retVal);
     })
-    .fail(function (err) {
+    .catch(function (err) {
       let info = {status: err.status, statusText: err.statusText};
       callback(info);
     });

@@ -99,7 +99,7 @@ describe('Chancellery Transaction Tests', function () {
     it('should return it for a property', done => {
       pt.getSummary(gameId, propertyId).then(entries => {
         expect(entries.length).to.be(1);
-        expect(entries[0]._id).to.be(propertyId);
+        expect(entries[0].propertyId).to.be(propertyId);
         expect(entries[0].balance).to.be(4000)
         console.log(entries);
         done();

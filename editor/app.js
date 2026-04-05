@@ -5,45 +5,47 @@
  *
  * @type {*|exports}
  */
+// IMPORTANT: Make sure to import `instrument.js` at the top of your file.
+// If you're using ECMAScript Modules (ESM) syntax, use `import "./instrument.js";`
+require('./instrument.js'); // IMPORTANT: Make sure to import `instrument.js` at the top of your file.
 
 // Logging has highest prio
 const settings = require('./settings');
-const logging  = require('../common/lib/logger');
+const logging = require('../common/lib/logger');
 logging.init(settings.logger);
 const logger = logging.getLogger('editor-app');
 
-
-const express      = require('express');
-const path         = require('path');
-const bodyParser   = require('body-parser');
-const routes       = require('./routes/index');
-const login        = require('./routes/login');
-const useradmin    = require('./routes/useradmin');
-const edit         = require('./routes/edit');
-const newgame      = require('./routes/newgame');
-const gameplay     = require('./routes/gameplay');
-const authtoken    = require('./routes/authtoken');
-const infoRoute    = require('../common/routes/info');
-const debugRoute   = require('../common/routes/debug');
-const aboutRoute   = require('../common/routes/about');
-const passport     = require('passport');
-const session      = require('express-session');
-const MongoStore   = require('connect-mongo');
-const flash        = require('connect-flash');
-const app          = express();
-const users        = require('../common/models/userModel');
-const gameplays    = require('../common/models/gameplayModel');
-const properties   = require('../common/models/propertyModel');
-const ferropolyDb  = require('../common/lib/ferropolyDb');
-const pricelist    = require('./routes/pricelist');
-const cronjobs     = require('./lib/cronjobs');
-const mailer       = require('../common/lib/mailer');
-const moment       = require('moment');
-const compression  = require('compression');
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const routes = require('./routes/index');
+const login = require('./routes/login');
+const useradmin = require('./routes/useradmin');
+const edit = require('./routes/edit');
+const newgame = require('./routes/newgame');
+const gameplay = require('./routes/gameplay');
+const authtoken = require('./routes/authtoken');
+const infoRoute = require('../common/routes/info');
+const debugRoute = require('../common/routes/debug');
+const aboutRoute = require('../common/routes/about');
+const passport = require('passport');
+const session = require('express-session');
+const { MongoStore } = require('connect-mongo');
+const flash = require('connect-flash');
+const app = express();
+const users = require('../common/models/userModel');
+const gameplays = require('../common/models/gameplayModel');
+const properties = require('../common/models/propertyModel');
+const ferropolyDb = require('../common/lib/ferropolyDb');
+const pricelist = require('./routes/pricelist');
+const cronjobs = require('./lib/cronjobs');
+const mailer = require('../common/lib/mailer');
+const compression = require('compression');
 const authStrategy = require('../common/lib/authStrategy')(settings, users);
-const demoUsers    = require('./lib/demoUsers');
-const {v4: uuid}   = require('uuid');
-const gpLib        = require('./lib/gameplayLib');
+const demoUsers = require('./lib/demoUsers');
+const { v4: uuid } = require('uuid');
+const gpLib = require('./lib/gameplayLib');
+const { DateTime } = require('luxon');
 
 let initServer = async function () {
   await ferropolyDb.init(settings);
@@ -54,22 +56,27 @@ let initServer = async function () {
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'pug');
 
-  //morgan.token('prefix', function getId(req) {
-  //  return 'http: ' + moment().format();
-  //});
-  // app.use(morgan(':prefix :method :status :remote-addr :url'));
   logging.setExpressLogger(app);
 
-  app.use(bodyParser.json({limit: '50mb'}));
-  app.use(bodyParser.urlencoded({extended: false}));
-  app.use(express.urlencoded({limit: '50mb', extended: true}));
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   // Using compression speeds up the connection (and uses much less data for mobile)
   app.use(compression());
 
   app.use(express.static(path.join(__dirname, 'public')));
+
+  // Serve robots.txt
+  app.get('/robots.txt', function (req, res) {
+    res.type('text/plain');
+    res.send(
+      '#Bloody crawlers stay away, there is nothing to see\nUser-agent: *\nDisallow: /'
+    );
+  });
+
   app.use('/maps', require('../common/lib/maps').routeHandler); // No user authentication needed here, so place it
-                                                                // before passport
+  // before passport
 
   // Define Strategy, login
   passport.use(authStrategy.googleStrategy);
@@ -80,20 +87,25 @@ let initServer = async function () {
   // Session deserialisation of the user
   passport.deserializeUser(authStrategy.deserializeUser);
   // required for passport: configuration
-  app.use(session({
-    secret:            'ferropolyIsAGameWithAVeryLargePlayground',
-    resave:            true,
-    saveUninitialized: false,
-    httpOnly:          false,
-    cookie:            {
-      secure: 'auto'
-    },
-    genid:             function () {
-      return 'E_' + moment().format('YYMMDD-HHmmss-') + uuid();
-    },
-    store:             MongoStore.create({mongoUrl: settings.locationDbSettings.mongoDbUrl, ttl: 2 * 24 * 60 * 60}),
-    name:              'ferropoly-editor'
-  }));
+  app.use(
+    session({
+      secret: 'ferropolyIsAGameWithAVeryLargePlayground',
+      resave: true,
+      saveUninitialized: false,
+      httpOnly: false,
+      cookie: {
+        secure: 'auto',
+      },
+      genid: function () {
+        return 'EDITOR_' + DateTime.now().toISO() + uuid();
+      },
+      store: MongoStore.create({
+        mongoUrl: settings.locationDbSettings.mongoDbUrl,
+        ttl: 2 * 24 * 60 * 60,
+      }),
+      name: 'ferropoly-editor',
+    })
+  );
   app.use(passport.initialize());
   app.use(passport.session()); // persistent login sessions
   app.use(flash()); // use connect-flash for flash messages stored in session
@@ -126,12 +138,11 @@ let initServer = async function () {
   app.use('/export', require('./routes/export'));
   require('./routes/locations')(app);
 
-
   const server = require('http').Server(app);
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
-    const err  = new Error(`Page ${req?.originalUrl} not found`);
+    const err = new Error(`Page ${req?.originalUrl} not found`);
     err.status = 404;
     next(err);
   });
@@ -142,7 +153,7 @@ let initServer = async function () {
   // will print stacktrace
   if (app.get('env') === 'development') {
     app.use(function (err, req, res) {
-      let status    = err.status || 500;
+      let status = err.status || 500;
       let errorPage = 'error';
       res.status(status);
       switch (status) {
@@ -161,7 +172,7 @@ let initServer = async function () {
       }
       res.render(errorPage, {
         message: err.message,
-        error:   err
+        error: err,
       });
     });
   }
@@ -169,7 +180,7 @@ let initServer = async function () {
   // production error handler
   // no stacktraces leaked to user
   app.use(function (err, req, res) {
-    let status    = err.status || 500;
+    let status = err.status || 500;
     let errorPage = 'error';
     res.status(status);
     switch (status) {
@@ -185,7 +196,7 @@ let initServer = async function () {
     }
     res.render(errorPage, {
       message: err.message,
-      error:   {}
+      error: {},
     });
   });
 
@@ -194,12 +205,16 @@ let initServer = async function () {
 
   server.listen(app.get('port'), app.get('ip'), async function () {
     logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
-    logger.info('Ferropoly Editor, Copyright (C) 2015-2025 Christian Kuster, CH-8342 Wernetshausen');
+    logger.info(
+      'Ferropoly Editor, Copyright (C) 2015-2025 Christian Kuster, CH-8342 Wernetshausen'
+    );
     logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
-    logger.info('This is free software, and you are welcome to redistribute it');
+    logger.info(
+      'This is free software, and you are welcome to redistribute it'
+    );
     logger.info('under certain conditions; see www.ferropoly.ch for details.');
     logger.info('Ferropoly Editor server listening on port ' + app.get('port'));
-    logger.info(`Google Cloud Logging: ${settings.logger.google.enabled}`)
+    logger.info(`Google Cloud Logging: ${settings.logger.google.enabled}`);
 
     try {
       // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
@@ -208,20 +223,14 @@ let initServer = async function () {
 
       logger.info('old gameplays deleted');
 
-      await demoUsers.updateLogins()
-      logger.info('Demo Users updated')
-
-    }
-    catch (err) {
+      await demoUsers.updateLogins();
+      logger.info('Demo Users updated');
+    } catch (err) {
       logger.error(err);
     }
   });
-
-
 };
 
-
 initServer();
-
 
 module.exports = app;

@@ -1,5 +1,7 @@
 const path              = require('path');
 const {VueLoaderPlugin} = require('vue-loader');
+const Dotenv = require('dotenv-webpack');
+
 const ferropolyApps     = require('./ferropolyApps.js');
 
 module.exports = {
@@ -63,5 +65,8 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
+    new Dotenv({
+      systemvars: true
+    })
   ]
 };

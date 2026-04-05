@@ -6,19 +6,15 @@
 
 const _          = require('lodash');
 const {DateTime} = require('luxon');
-const moment     = require('moment');
 
 module.exports = {
 
   /**
-   * Returns a JS Time object, no matter if a luxon, moment, string od JS date was supplied. NULL and UNDEFINED
+   * Returns a JS Time object, no matter if a luxon, string od JS date was supplied. NULL and UNDEFINED
    * keep their value
    * @param t
    */
   getJsDate: function (t) {
-    if (moment.isMoment(t)) {
-      return t.toDate();
-    }
     if (t instanceof DateTime) {
       return t.toJSDate();
     }
