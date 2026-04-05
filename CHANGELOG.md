@@ -1,8 +1,10 @@
 # Changelog Ferropoly Editor
 
+# v4.2.1 5.4.26
 * Dependency Updates
 * Intern: Prettier für Code Formatierung hinzugefügt
 * moment.js komplett durch luxon ersetzt
+* Bugfix: Demo Users werden bei Neustart nun immer neu erzeugt
 
 # v4.2.0 22.02.26
 * Spielrunden werden nummeriert
