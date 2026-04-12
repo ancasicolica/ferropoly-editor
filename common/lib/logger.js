@@ -22,6 +22,7 @@ let settings = {
 
 // Google Logging instance (if configured)
 let googleLogger;
+let shutdownLogger; // Logger instance for managing graceful shutdown
 
 let testCounter = 0;
 
@@ -35,6 +36,37 @@ const logFormat = printf((info) => {
   }
   return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
 });
+
+/**
+ * Flushes the logger and exits the process.
+ * @param {number} exitCode
+ */
+function flushAndExit(exitCode = 0) {
+  if (shutdownLogger) {
+    console.log('Flushing logs before exit...');
+    const flushPromise = new Promise((resolve) => {
+      shutdownLogger.on('finish', resolve);
+      shutdownLogger.close();
+    });
+
+    Promise.race([
+      flushPromise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Flush timeout')), 5000)
+      ),
+    ])
+      .then(() => {
+        console.log('Logs flushed.');
+        process.exit(exitCode);
+      })
+      .catch((err) => {
+        console.error(err.message);
+        process.exit(1);
+      });
+  } else {
+    process.exit(exitCode);
+  }
+}
 
 /**
  * Exports
@@ -80,6 +112,7 @@ module.exports = {
         keyFile: _.get(settings, 'google.keyFile', 'not_set'),
         format: format.json(),
         retry: true,
+        timeout: 20000, // 20 seconds
         grpcOptions: {
           'grpc.keepalive_time_ms': 30000,
           'grpc.keepalive_timeout_ms': 10000,
@@ -92,6 +125,21 @@ module.exports = {
       });
       // Allocate enough listeners!
       googleLogger.setMaxListeners(100);
+
+      // Create a logger instance specifically for managing the transport's lifecycle
+      shutdownLogger = createLogger({
+        transports: [googleLogger],
+      });
+
+      // Add shutdown hooks to flush logs
+      process.on('SIGINT', () => {
+        console.log('Caught SIGINT.');
+        flushAndExit(0);
+      });
+      process.on('SIGTERM', () => {
+        console.log('Caught SIGTERM.');
+        flushAndExit(0);
+      });
     }
   },
 
