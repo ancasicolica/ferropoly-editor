@@ -1,5 +1,8 @@
 # Changelog Ferropoly Editor
 
+# v4.2.2 12.4.26
+* Google Logs verbessert
+
 # v4.2.1 5.4.26
 * Dependency Updates
 * Intern: Prettier für Code Formatierung hinzugefügt
