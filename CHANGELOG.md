@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+# v4.2.3 21.6.26
 * AuthTokens verbessert: mehrere Zugriffe mit gleichem Account sind möglich
 
 # v4.2.2 12.4.26
