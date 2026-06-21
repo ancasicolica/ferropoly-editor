@@ -4,136 +4,154 @@
  * Created by kc on 10.05.15.
  */
 
-const {v4: uuid} = require('uuid');
-const mongoose   = require('mongoose');
-const tokens     = {};
-const logger     = require('../lib/logger').getLogger('authTokenManager');
+const { v4: uuid } = require('uuid');
+const mongoose = require('mongoose');
+const { DateTime } = require('luxon');
+const tokens = new Map();
+const logger = require('../lib/logger').getLogger('authTokenManager');
 
 const tokenSchema = mongoose.Schema({
-  login:      String,
-  id:         String,
-  issueDate:  {type: Date, default: Date.now},
-  expiryDate: Date
+  login: String,
+  id: String,
+  issueDate: { type: Date, default: Date.now },
+  expiryDate: Date,
 });
 
 const Token = mongoose.model('Token', tokenSchema);
 
-/**
- * Retrieves a token associated with the specified user.
- *
- * @param {string} user The login or identifier of the user for whom the token is being retrieved.
- * @param {function} callback The callback function to be executed once the token is retrieved or an error occurs.
- *                            It receives two arguments: an error object or null, and the retrieved token or null.
- * @return {Promise<void>} A promise that resolves when the token retrieval process is complete and the callback is
- *   invoked.
- */
-async function getToken(user, callback) {
-
-  if (callback) {
-    logger.info('>>>> NO more callbacks in getToken');
-    return callback(new Error('no more callbacks in getToken'));
-  }
-  return getTokenAsync(user);
-}
-
-/**
- * Retrieves an asynchronous token for a given user.
- *
- * @param {string} user - The login identifier of the user for token retrieval.
- * @return {Promise<Object>} A promise that resolves to the token object associated with the user, or null if no token
- *   is found.
- */
-async function getTokenAsync(user) {
-  if (!user) {
-    return Math.ceil(Math.random() * 10000000);
-  }
-  return await Token
-    .findOne()
-    .where('login').equals(user)
-    .exec();
-}
-
-/**
- * Generates and retrieves a new authentication token for a specified user.
- *
- * @param {Object} options - The options for generating the token.
- * @param {string} options.user - The username for which the token is requested.
- * @param {string} [options.proposedToken] - The proposed token value, if available.
- * @return {Promise<string>} A promise that resolves to the ID of the newly generated or existing token.
- */
-async function getNewTokenAsync(options) {
-  logger.silly(`New authtoken requested for ${options.user} suggesting '${options.proposedToken}'`)
-  let token = await getTokenAsync(options.user);
-  if (token && token.id === options.proposedToken) {
-    // when the authtoken is available and the same, we quit now
-    logger.silly(`${options.user} has already authtoken '${options.proposedToken}'`)
-    return options.proposedToken;
-  }
-  if (!token) {
-    // Create a new token if not existing
-    token = new Token();
-  }
-  token.id    = options.proposedToken || uuid();
-  token.login = options.user;
-  let res     = await token.save();
-  logger.info(`User ${options.user} has now authtoken ${token.id}`);
-  return res.id;
-}
-
 module.exports = {
   /**
-   * Generate a new token (or uses the proposed one)
-   * @param options
-   * @param callback
+   * Retrieves or generates a token for the given user. If a token exists in memory but is expired, it retrieves a fresh one from the database
+   * or creates a new token if none exists. The token is cached in memory with an updated expiration date.
+   *
+   * @param {string} user - The username for which the token is being requested.
+   * @return {Promise<Object>} A promise that resolves to a token object containing `login`, `id`, `issueDate`, and `expiryDate` properties.
    */
-  getNewToken: function (options, callback) {
-    getNewTokenAsync(options)
-      .then(token => {
-        return callback(null, token);
-      })
-      .catch(err => {
-        return callback(err);
-      })
-  },
+  getToken: async function (user) {
+    try {
+      const entry = tokens.get('user');
+      if (entry) {
+        if (entry.expiryDate < DateTime.now().toJSDate()) {
+          return entry;
+        }
+      }
 
-  getNewTokenAsync,
+      let token = await Token.findOne().where('login').equals(user).exec();
+
+      if (token) {
+        logger.info(`Known authtoken for '${user}': ${token.id}`);
+      } else {
+        token = new Token();
+        token.login = user;
+        token.id = uuid();
+        logger.info(`New authtoken for '${user}': ${token.id}`);
+      }
+
+      token.expiryDate = DateTime.now()
+        .plus({ days: 1 })
+        .startOf('day')
+        .toJSDate();
+
+      tokens.set(user, token);
+      await token.save();
+      return token;
+    } catch (err) {
+      // Return a random token, not a default one
+      return {
+        login: user,
+        id: 'xtra' + Math.ceil(Math.random() * 10000000),
+        issueDate: DateTime.now().toJSDate(),
+        expiryDate: DateTime.now().minus({ minutes: 1 }).toJSDate(),
+      };
+    }
+  },
 
   /**
    * Verifies a token
    * @param user
    * @param userToken
-   * @param callback
    * @returns boolean
    */
-  verifyToken: async function (user, userToken, callback) {
-    if (callback) {
-      logger.info('>>>> NO more callbacks in verifyToken');
-      return callback(new Error('no more callbacks in verifyToken'));
-    }
-
+  verifyToken: async function (user, userToken) {
     try {
-      if (tokens[user]) {
-        if (tokens[user].id === userToken) {
+      // Try if it is in the cache
+      const entry = tokens.get(user);
+      if (entry) {
+        if (
+          entry.id === userToken &&
+          entry.expiryDate < DateTime.now().toJSDate()
+        ) {
           return true;
         }
       }
-      const token = await getToken(user);
+      // Not in cache or expired, try to get it out of the DB
+      const token = await Token.findOne().where('login').equals(user).exec();
 
       if (!token) {
         logger.info(`Not able to find any authtoken for '${user}'`);
+        return false;
+      }
+      if (token.expiryDate < DateTime.now().toJSDate()) {
+        logger.info(`authtoken for ${user} expired`, token);
         return false;
       }
       if (userToken === token.id) {
         tokens[user] = token;
         return true;
       }
-      logger.info(`Authtoken invalid, supplied '${userToken}' but got ${token.id} for ${user}`);
+      logger.info(
+        `Authtoken invalid, supplied '${userToken}' but got ${token.id} for ${user}`,
+        token
+      );
       return false;
-    }
-    catch (err) {
+    } catch (err) {
       logger.error(err);
       return false;
     }
+  },
 
-  }
+  /**
+   * Cleans up expired tokens from both the in-memory cache and the database.
+   * Removes expired entries from the tokens Map based on their expiry date,
+   * and deletes matching entries from the database.
+   *
+   * @return {Promise<{cacheRemoved: number, dbRemoved: number}>} An object containing the count of tokens removed
+   * from the in-memory cache and the database.
+   * @throws Will throw an error if the cleanup process encounters an issue.
+   */
+  cleanUp: async function () {
+    try {
+      const now = DateTime.now().toJSDate();
+      const expiredUsers = [];
+
+      // Find expired entries in the Map
+      for (const [user, token] of tokens.entries()) {
+        if (token.expiryDate < now) {
+          expiredUsers.push(user);
+        }
+      }
+
+      // Remove expired tokens from the Map
+      for (const user of expiredUsers) {
+        tokens.delete(user);
+      }
+
+      // Remove expired tokens from the database
+      const result = await Token.deleteMany({
+        expiryDate: { $lt: now },
+      }).exec();
+
+      logger.info(
+        `Cleanup completed: removed ${expiredUsers.length} entries from cache and ${result.deletedCount} from database`
+      );
+
+      return {
+        cacheRemoved: expiredUsers.length,
+        dbRemoved: result.deletedCount,
+      };
+    } catch (err) {
+      logger.error('Error during cleanup', err);
+      throw err;
+    }
+  },
 };

@@ -46,6 +46,7 @@ const demoUsers = require('./lib/demoUsers');
 const { v4: uuid } = require('uuid');
 const gpLib = require('./lib/gameplayLib');
 const { DateTime } = require('luxon');
+const authTokenManager = require('../common/lib/authTokenManager');
 
 let initServer = async function () {
   await ferropolyDb.init(settings);
@@ -220,11 +221,12 @@ let initServer = async function () {
       // Delete exipred gameplays when starting up. This is primary for local usage (PC) where the
       // CRON task never executes (FERE-9)
       await gpLib.deleteOldGameplays();
-
       logger.info('old gameplays deleted');
 
       await demoUsers.updateLogins();
       logger.info('Demo Users updated');
+
+      await authTokenManager.cleanUp();
     } catch (err) {
       logger.error(err);
     }
