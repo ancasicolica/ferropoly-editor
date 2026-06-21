@@ -4,10 +4,10 @@
  * Created: 26.12.2024
  **/
 
-import {defineStore} from 'pinia'
-import {DateTime} from 'luxon';
+import { defineStore } from 'pinia';
+import { DateTime } from 'luxon';
 import axios from 'axios';
-import {merge, get} from 'lodash';
+import { merge, get } from 'lodash';
 
 import {
   gamenameSchema,
@@ -22,82 +22,85 @@ import {
   startCapitalSchema,
   interestSchema,
   interestIntervalSchema,
-  interestCyclesAtEndOfGameSchema, debtInterestSchema, lowestPriceSchema, highestPriceSchema
+  interestCyclesAtEndOfGameSchema,
+  debtInterestSchema,
+  lowestPriceSchema,
+  highestPriceSchema,
 } from '../../common/schemas/GamePlaySchemas';
 
-import {useAuthTokenStoreStore} from '../../common/store/authTokenStore';
-import {useEditorPropertiesStore} from './EditorPropertiesStore';
-import {toRaw} from 'vue';
+import { useAuthTokenStoreStore } from '../../common/store/authTokenStore';
+import { useEditorPropertiesStore } from './EditorPropertiesStore';
+import { toRaw } from 'vue';
 
 export const useGameplayStore = defineStore('Gameplay', {
-  state:   () => ({
-    gamename:   '',
-    admins:     {
-      logins: []
+  state: () => ({
+    gamename: '',
+    admins: {
+      logins: [],
     },
-    owner:      {
-      organisatorName:  '',
-      organisation:     '',
+    owner: {
+      organisatorName: '',
+      organisation: '',
       organisatorEmail: '',
-      organisatorPhone: ''
+      organisatorPhone: '',
     },
     scheduling: {
-      gameDate:    new Date(),
-      gameStart:   new Date(),
-      gameEnd:     new Date(),
-      deleteTs:    new Date(),
+      gameDate: new Date(),
+      gameStart: new Date(),
+      gameEnd: new Date(),
+      deleteTs: new Date(),
       gameStartTs: new Date(),
-      gameEndTs:   new Date()
+      gameEndTs: new Date(),
     },
     gameParams: {
-      startCapital:              0,
-      interestInterval:          0,
-      interest:                  0,
+      startCapital: 0,
+      interestInterval: 0,
+      interest: 0,
       interestCyclesAtEndOfGame: 0,
-      debtInterest:              0,
-      housePrices:               0,
-      properties:                {
-        lowestPrice:                0,
-        highestPrice:               0,
-        numberOfPriceLevels:        0,
-        numberOfPropertiesPerGroup: 0
+      debtInterest: 0,
+      housePrices: 0,
+      properties: {
+        lowestPrice: 0,
+        highestPrice: 0,
+        numberOfPriceLevels: 0,
+        numberOfPropertiesPerGroup: 0,
       },
-      rentFactors:               {
-        noHouse:              0,
-        oneHouse:             0,
-        twoHouses:            0,
-        threeHouses:          0,
-        fourHouses:           0,
-        hotel:                0,
-        allPropertiesOfGroup: 0
+      rentFactors: {
+        noHouse: 0,
+        oneHouse: 0,
+        twoHouses: 0,
+        threeHouses: 0,
+        fourHouses: 0,
+        hotel: 0,
+        allPropertiesOfGroup: 0,
       },
-      chancellery:               {
-        minGambling:      0,
-        maxGambling:      0,
-        minLottery:       0,
-        maxLottery:       0,
-        maxJackpotSize:   0,
-        probabilityWin:   0,
-        probabilityLoose: 0
-      }
+      chancellery: {
+        minGambling: 0,
+        maxGambling: 0,
+        minLottery: 0,
+        maxLottery: 0,
+        maxJackpotSize: 0,
+        probabilityWin: 0,
+        probabilityLoose: 0,
+      },
     },
-    log:        {
-      created:    new Date(),
-      lastEdited: new Date()
+    log: {
+      created: new Date(),
+      lastEdited: new Date(),
     },
-    internal:   {
+    internal: {
       gameId: '',
-      map:    '',
-      owner:  ''
+      map: '',
+      owner: '',
     },
-    joining:    {
+    joining: {
       possibleUntil: new Date(),
-      infotext:      '',
-      url:           ''
+      infotext: '',
+      url: '',
     },
-    mobile:     {
-      level: 0
-    }
+    mobile: {
+      level: 0,
+    },
   }),
   getters: {
     /**
@@ -132,30 +135,44 @@ export const useGameplayStore = defineStore('Gameplay', {
     },
     gameTimesValidation(state) {
       // Normalize both times to zero seconds and milliseconds for a fair comparison
-      const endNorm   = DateTime.fromJSDate(state.scheduling.gameEnd).set({second: 0, millisecond: 0});
-      const startNorm = DateTime.fromJSDate(state.scheduling.gameStart).set({second: 0, millisecond: 0});
+      const endNorm = DateTime.fromJSDate(state.scheduling.gameEnd).set({
+        second: 0,
+        millisecond: 0,
+      });
+      const startNorm = DateTime.fromJSDate(state.scheduling.gameStart).set({
+        second: 0,
+        millisecond: 0,
+      });
       // Debug logging (normalized and raw values)
       // console.log('gameTimesValidation (raw)', state.scheduling.gameEnd, state.scheduling.gameStart);
       // console.log('gameTimesValidation (normalized)', endNorm.toISO(), startNorm.toISO());
-      return {success: endNorm >= startNorm.plus({hours: 2})};
+      return { success: endNorm >= startNorm.plus({ hours: 2 }) };
     },
     pricelistPriceValidation(state) {
       return pricelistPriceSchema.safeParse({
-        lowestPrice:  state.gameParams.properties.lowestPrice,
-        highestPrice: state.gameParams.properties.highestPrice
+        lowestPrice: state.gameParams.properties.lowestPrice,
+        highestPrice: state.gameParams.properties.highestPrice,
       });
     },
     priceListLowestPriceValidation(state) {
-      return lowestPriceSchema.safeParse(state.gameParams.properties.lowestPrice)
+      return lowestPriceSchema.safeParse(
+        state.gameParams.properties.lowestPrice
+      );
     },
     priceListHighestPriceValidation(state) {
-      return highestPriceSchema.safeParse(state.gameParams.properties.highestPrice)
+      return highestPriceSchema.safeParse(
+        state.gameParams.properties.highestPrice
+      );
     },
     numberOfPriceLevelsValidation(state) {
-      return numberOfPriceLevelsSchema.safeParse(state.gameParams.properties.numberOfPriceLevels);
+      return numberOfPriceLevelsSchema.safeParse(
+        state.gameParams.properties.numberOfPriceLevels
+      );
     },
     numberOfPropertiesPerGroupValidation(state) {
-      return numberOfPropertiesPerGroupSchema.safeParse(state.gameParams.properties.numberOfPropertiesPerGroup);
+      return numberOfPropertiesPerGroupSchema.safeParse(
+        state.gameParams.properties.numberOfPropertiesPerGroup
+      );
     },
     startCapitalValidation(state) {
       return startCapitalSchema.safeParse(state.gameParams.startCapital);
@@ -164,19 +181,29 @@ export const useGameplayStore = defineStore('Gameplay', {
       return interestSchema.safeParse(state.gameParams.interest);
     },
     interestIntervalValidation(state) {
-      return interestIntervalSchema.safeParse(state.gameParams.interestInterval);
+      return interestIntervalSchema.safeParse(
+        state.gameParams.interestInterval
+      );
     },
     interestCyclesAtEndOfGameValidation(state) {
-      return interestCyclesAtEndOfGameSchema.safeParse(state.gameParams.startCapital);
+      return interestCyclesAtEndOfGameSchema.safeParse(
+        state.gameParams.startCapital
+      );
     },
     debtInterestValidation(state) {
       return debtInterestSchema.safeParse(state.gameParams.startCapital);
     },
     numberOfInterestRounds(state) {
-      let start    = DateTime.fromJSDate(state.scheduling.gameStart);
-      let end      = DateTime.fromJSDate(state.scheduling.gameEnd);
+      let start = DateTime.fromJSDate(state.scheduling.gameStart);
+      let end = DateTime.fromJSDate(state.scheduling.gameEnd);
       let duration = end.diff(start, 'minutes');
-      console.log('numberOfInterestRounds', start, end, duration, duration.minutes);
+      console.log(
+        'numberOfInterestRounds',
+        start,
+        end,
+        duration,
+        duration.minutes
+      );
       return Math.floor(duration.minutes / state.gameParams.interestInterval);
     },
     gameId(state) {
@@ -186,14 +213,20 @@ export const useGameplayStore = defineStore('Gameplay', {
       return state.internal.finalized;
     },
     latestJoiningDate(state) {
-      return DateTime.fromISO(state.scheduling.gameDate).minus({day: 1}).toISO();
+      return DateTime.fromISO(state.scheduling.gameDate)
+        .minus({ day: 1 })
+        .toISO();
     },
     registrationActive(state) {
-      const limit = DateTime.fromJSDate(state.joining.possibleUntil).startOf('day').minus({days: 1});
+      const limit = DateTime.fromJSDate(state.joining.possibleUntil)
+        .startOf('day')
+        .minus({ days: 1 });
       return DateTime.local() <= limit.startOf('day');
     },
     registrationFinished(state) {
-      return DateTime.local() > DateTime.fromJSDate(state.joining.possibleUntil);
+      return (
+        DateTime.local() > DateTime.fromJSDate(state.joining.possibleUntil)
+      );
     },
     registrationEndingSoon() {
       return !(this.registrationActive || this.registrationFinished);
@@ -202,10 +235,15 @@ export const useGameplayStore = defineStore('Gameplay', {
       return state.joining.infotext;
     },
     gameStart(state) {
-      const hour   = DateTime.fromJSDate(state.scheduling.gameStart).get('hour');
-      const minute = DateTime.fromJSDate(state.scheduling.gameStart).get('minute');
-      return DateTime.fromJSDate(state.scheduling.gameDate).set({hour: hour, minute: minute});
-    }
+      const hour = DateTime.fromJSDate(state.scheduling.gameStart).get('hour');
+      const minute = DateTime.fromJSDate(state.scheduling.gameStart).get(
+        'minute'
+      );
+      return DateTime.fromJSDate(state.scheduling.gameDate).set({
+        hour: hour,
+        minute: minute,
+      });
+    },
   },
   actions: {
     /**
@@ -234,15 +272,29 @@ export const useGameplayStore = defineStore('Gameplay', {
     setGameplayData(gameplay) {
       merge(this, gameplay);
       // Convert Times to JS Date objects
-      this.scheduling.deleteTs    = DateTime.fromISO(this.scheduling.deleteTs).toJSDate();
-      this.scheduling.gameDate    = DateTime.fromISO(this.scheduling.gameDate).toJSDate();
-      this.scheduling.gameStart   = DateTime.fromISO(this.scheduling.gameStart).toJSDate();
-      this.scheduling.gameEnd     = DateTime.fromISO(this.scheduling.gameEnd).toJSDate();
-      this.scheduling.gameStartTs = DateTime.fromISO(this.scheduling.gameStartTs).toJSDate();
-      this.scheduling.gameEndTs   = DateTime.fromISO(this.scheduling.gameEndTs).toJSDate();
-      this.joining.possibleUntil  = DateTime.fromISO(this.joining.possibleUntil).toJSDate();
-      this.log.created            = DateTime.fromISO(this.log.created).toJSDate();
-      this.log.lastEdited         = DateTime.fromISO(this.log.lastEdited).toJSDate();
+      this.scheduling.deleteTs = DateTime.fromISO(
+        this.scheduling.deleteTs
+      ).toJSDate();
+      this.scheduling.gameDate = DateTime.fromISO(
+        this.scheduling.gameDate
+      ).toJSDate();
+      this.scheduling.gameStart = DateTime.fromISO(
+        this.scheduling.gameStart
+      ).toJSDate();
+      this.scheduling.gameEnd = DateTime.fromISO(
+        this.scheduling.gameEnd
+      ).toJSDate();
+      this.scheduling.gameStartTs = DateTime.fromISO(
+        this.scheduling.gameStartTs
+      ).toJSDate();
+      this.scheduling.gameEndTs = DateTime.fromISO(
+        this.scheduling.gameEndTs
+      ).toJSDate();
+      this.joining.possibleUntil = DateTime.fromISO(
+        this.joining.possibleUntil
+      ).toJSDate();
+      this.log.created = DateTime.fromISO(this.log.created).toJSDate();
+      this.log.lastEdited = DateTime.fromISO(this.log.lastEdited).toJSDate();
 
       const result = gameplaySchema.safeParse(this);
       console.log('Checked gameplay, result:', result);
@@ -264,37 +316,93 @@ export const useGameplayStore = defineStore('Gameplay', {
         const authToken = await useAuthTokenStoreStore().getAuthToken();
         console.log('self', self, toRaw(self));
         let saveObj = {
-          gamename:    toRaw(self.gamename),
-          admins:      toRaw(self.admins),
-          owner:       toRaw(self.owner),
-          scheduling:  {
-            gameDate:    self.scheduling.gameDate,
-            gameStart:   DateTime.fromJSDate(self.scheduling.gameStart).toFormat('HH:mm'),
-            gameEnd:     DateTime.fromJSDate(self.scheduling.gameEnd).toFormat('HH:mm'),
-            deleteTs:    self.scheduling.deleteTs,
+          gamename: toRaw(self.gamename),
+          admins: toRaw(self.admins),
+          owner: toRaw(self.owner),
+          scheduling: {
+            gameDate: self.scheduling.gameDate,
+            gameStart: DateTime.fromJSDate(self.scheduling.gameStart).toFormat(
+              'HH:mm'
+            ),
+            gameEnd: DateTime.fromJSDate(self.scheduling.gameEnd).toFormat(
+              'HH:mm'
+            ),
+            deleteTs: self.scheduling.deleteTs,
             gameStartTs: self.scheduling.gameStartTs,
-            gameEndTs:   self.scheduling.gameEndTs,
+            gameEndTs: self.scheduling.gameEndTs,
           },
-          gameParams:  toRaw(self.gameParams),
+          gameParams: toRaw(self.gameParams),
           rentFactors: toRaw(self.rentFactors),
           chancellery: toRaw(self.chancellery),
-          log:         toRaw(self.log),
-          internal:    toRaw(self.internal),
-          joining:     toRaw(self.joining),
-          mobile:      toRaw(self.mobile),
+          log: toRaw(self.log),
+          internal: toRaw(self.internal),
+          joining: toRaw(self.joining),
+          mobile: toRaw(self.mobile),
         };
 
-        let resp = await axios.post(`/gameplay/save/${self.internal.gameId}`, {gameplay: saveObj, authToken});
+        let resp = await axios.post(`/gameplay/save/${self.internal.gameId}`, {
+          gameplay: saveObj,
+          authToken,
+        });
         console.log('Gameplay saved', resp);
         this.log.lastEdited = new Date();
-        return ({
-          success: true
-        });
-      }
-      catch (err) {
+        return {
+          success: true,
+        };
+      } catch (err) {
         console.error('Error while saving gameplay', err);
         let additionalInfo = get(err, 'response.data.message', '');
-        return {success: false, message: `Fehler beim Speichern: ${err.message}. ${additionalInfo}`}
+        return {
+          success: false,
+          message: `Fehler beim Speichern: ${err.message}. ${additionalInfo}`,
+        };
+      }
+    },
+    /**
+     * Asynchronously saves gameplay registration data by sending a POST request
+     * to the server with the internal and joining state of the current instance.
+     *
+     * Handles authentication by retrieving the auth token and attaches it to the
+     * request payload. The response from the server is logged to the console upon
+     * success. If an error occurs during the process, it is caught and logged,
+     * and a descriptive error message is returned.
+     *
+     * @async
+     * @function saveRegistrationData
+     * @returns {Promise<object>} A promise that resolves to an object with
+     *                            `success` indicating the operation status and
+     *                            an optional `message` property in case of failure.
+     */
+    saveRegistrationData: async function () {
+      const self = this;
+
+      try {
+        const authToken = await useAuthTokenStoreStore().getAuthToken();
+
+        let saveObj = {
+          internal: toRaw(self.internal),
+          joining: toRaw(self.joining),
+        };
+
+        let resp = await axios.post(
+          `/gameplay/registration/${self.internal.gameId}`,
+          {
+            gameplay: saveObj,
+            authToken,
+          }
+        );
+        console.log('Gameplay saved', resp);
+        this.log.lastEdited = new Date();
+        return {
+          success: true,
+        };
+      } catch (err) {
+        console.error('Error while saving registration data', err);
+        let additionalInfo = get(err, 'response.data.message', '');
+        return {
+          success: false,
+          message: `Fehler beim Speichern der Anmeldedaten: ${err.message}. ${additionalInfo}`,
+        };
       }
     },
     /**
@@ -318,19 +426,23 @@ export const useGameplayStore = defineStore('Gameplay', {
       const self = this;
       try {
         const authToken = await useAuthTokenStoreStore().getAuthToken();
-        let resp        = await axios.post('/pricelist/create',
-          {gameId: self.internal.gameId, authToken});
+        let resp = await axios.post('/pricelist/create', {
+          gameId: self.internal.gameId,
+          authToken,
+        });
         console.log('Pricelist created', resp);
-        return {success: true, gameId: self.internal.gameId};
-      }
-      catch (err) {
+        return { success: true, gameId: self.internal.gameId };
+      } catch (err) {
         console.error('Error while creating pricelist', err);
         let additionalInfo = get(err, 'response.data.message', '');
-        return {success: false, message: `Fehler beim Erstellen der Preisliste: ${err.message}. ${additionalInfo}`}
+        return {
+          success: false,
+          message: `Fehler beim Erstellen der Preisliste: ${err.message}. ${additionalInfo}`,
+        };
       }
     },
     setJoiningInfotext(text) {
       this.joining.infotext = text;
     },
-  }
-})
+  },
+});

@@ -1,18 +1,21 @@
 # Changelog Ferropoly Editor
 
-# v4.2.3 21.6.26
+
+* Bugfix: finalisierte Spiele konnte Anmeldung nicht bearbeitet werden
+
+## v4.2.3 21.6.26
 * AuthTokens verbessert: mehrere Zugriffe mit gleichem Account sind möglich
 
-# v4.2.2 12.4.26
+## v4.2.2 12.4.26
 * Google Logs verbessert
 
-# v4.2.1 5.4.26
+## v4.2.1 5.4.26
 * Dependency Updates
 * Intern: Prettier für Code Formatierung hinzugefügt
 * moment.js komplett durch luxon ersetzt
 * Bugfix: Demo Users werden bei Neustart nun immer neu erzeugt
 
-# v4.2.0 22.02.26
+## v4.2.0 22.02.26
 * Spielrunden werden nummeriert
 * PriceTags werden bei der Erzeugung der Preisliste berechnet (für Darstellung Karte)
 * BREAKING: Team Members werden mit Name gespeichert -> Anpassung Teams Schema
@@ -21,24 +24,24 @@
 * Bugfix bei Notification Main
 * Sentry Überwachung neu
 
-# v4.1.0 25.9.25 (Release)
+## v4.1.0 25.9.25 (Release)
 * Verlorenes Feature nachgerüstet: Update auf Filter "Verwendung" in Editor kann auf Orte in Preisliste filtern
 * Diverse Models nachgeführt (für Spiel App)
 
-# v4.0.4 30.8.25
+## v4.0.4 30.8.25
 * Help-Button wird in Menuzeile dargestellt
 
-# v4.0.3 27.8.25
+## v4.0.3 27.8.25
 * Bugfix in edit-app
 
-# v4.0.2 24.8.25
+## v4.0.2 24.8.25
 * Spinner bei Spielerzeugung dargestellt
 
-# v4.0.1 24.8.25
+## v4.0.1 24.8.25
 * Diverse Bugfixes aus Tests
 * über 120 neue Orte, diverse Orte korrigiert
 
-# v4.0.0 17.8.25
+## v4.0.0 17.8.25
 Vollständig überarbeiteter Editor mit Vue3 und PrimeVue Library, zahlreiche Änderungen und Verbesserungen "unter der Haube"
 
 * Verschiedene Verbesserungen für die Spielerstellung, wie Preislistenvorschau und sortieren der Orte
@@ -49,23 +52,23 @@ Vollständig überarbeiteter Editor mit Vue3 und PrimeVue Library, zahlreiche Ä
 * Neue Frontend-Libraries: Primevue und Tailwind
 * Robots.txt hinzugefügt
 
-# v3.6.3 28.4.24
+## v3.6.3 28.4.24
 * Demo Games sind auf verschiedenen Instanzen an einem anderen Tag (Test Logs auf Google Cloud)
 * Log Entries fixed
 
-# v3.6.2
+## v3.6.2
 * Auth Token Logs aktualisiert
 
-# v3.6.1 Interne Verbesserungen
+## v3.6.1 Interne Verbesserungen
 * HTTP Logs verbessert
 * Logs in Google Cloud Logging verbunden
 * ESlint Fixes
 
-# v3.5.1 23.2.24 Release
+## v3.5.1 23.2.24 Release
 * Grenzen für Gambling können gesetzt werden
 * Dependency Updates
 
-# v3.5.0 21.2.24
+## v3.5.0 21.2.24
 * Mehr Orte
 * Neue Icons für Orte (abhängig vom Preis)
 
