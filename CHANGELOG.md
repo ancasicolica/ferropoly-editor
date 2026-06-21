@@ -1,6 +1,6 @@
 # Changelog Ferropoly Editor
 
-
+## v4.2.4 21.6.26 Released
 * Bugfix: finalisierte Spiele konnte Anmeldung nicht bearbeitet werden
 
 ## v4.2.3 21.6.26
