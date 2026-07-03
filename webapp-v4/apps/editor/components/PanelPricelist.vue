@@ -8,6 +8,7 @@
     <div class="grid gap-x-4 grid-flow-row-dense sm:grid-cols-1 md:grid-cols-2 ">
       <pricelist-settings></pricelist-settings>
       <div>
+        <pricelist-preview></pricelist-preview>
         <prime-button severity="primary" @click="onSave">Speichern und weiter</prime-button>
       </div>
     </div>
@@ -22,10 +23,11 @@ import PricelistSettings from './pricelist/PricelistSettings.vue';
 import PrimeButton from 'primevue/button';
 import PrimeMessage from 'primevue/message';
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
+import PricelistPreview from './pricelist/PricelistPreview.vue';
 
 export default {
   name:       'PanelPricelist',
-  components: {PricelistSettings, PrimeButton, PrimeMessage},
+  components: {PricelistPreview, PricelistSettings, PrimeButton, PrimeMessage},
   filters:    {},
   mixins:     [],
   model:      {},

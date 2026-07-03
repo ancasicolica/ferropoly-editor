@@ -55,6 +55,16 @@
           :max="maxPriceLevels"
           :zod-result="numberOfPriceLevelsValidation"
       />
+      <ferropoly-input-number
+          v-for="(index) in priceStepsArray"
+          :key="index"
+          v-model="priceStepsArray[index]"
+          :label="`Preisstufe ${index + 1} - ${index + 2}`"
+          show-buttons
+          :min="minLowestPrice"
+          :max="maxHighestPrice"
+          :step="100"
+       />
     </div>
     <ferropoly-input-number
         v-model="numberOfPropertiesPerGroup"
@@ -69,7 +79,7 @@
   </ferro-card>
 </template>
 <script setup>
-import {computed, ref} from 'vue';
+import {computed, ref, watch} from 'vue';
 import Select from 'primevue/select';
 import FerroCard from '../../../../common/components/FerroCard.vue';
 import FerropolyInputNumber from '../../../../common/components/FerropolyInputNumber.vue';
@@ -97,6 +107,7 @@ const {
         numberOfPropertiesPerGroupValidation,
         priceListLowestPriceValidation,
         priceListHighestPriceValidation,
+        priceSteps,
       }             = storeToRefs(gameplayStore);
 
 const lowestPrice = computed({
@@ -134,6 +145,56 @@ const numberOfPropertiesPerGroup = computed({
     gameParams.value.properties.numberOfPropertiesPerGroup = value;
   }
 });
+
+const priceStepsArray = computed({
+  get() {
+    return gameParams.value.properties.priceSteps || [];
+  },
+  set(value) {
+    gameParams.value.properties.priceSteps = value;
+  }
+});
+
+watch([numberOfPriceLevels, lowestPrice, highestPrice,
+       () => gameplayStore.gameParams.properties.calculationMethod], () => {
+
+  console.log('xxx');
+  const targetSteps = numberOfPriceLevels.value;
+
+  if (isLinear.value) {
+    // Calculate linear price steps
+    const newSteps = [];
+    const lowest   = lowestPrice.value;
+    const highest  = highestPrice.value;
+
+    if (targetSteps === 1) {
+      // Special case: single price level, no steps needed
+      newSteps.push(lowest);
+    } else {
+      const step = (highest - lowest) / targetSteps;
+      console.log('step', step, highest, lowest);
+      for (let i = 0; i < targetSteps; i++) {
+        newSteps.push(Math.round(step ));
+      }
+    }
+    priceStepsArray.value = newSteps;
+  } else {
+    // Custom mode: maintain user-defined steps or initialize with zeros
+    // Array size should be numberOfPriceLevels - 1 (representing gaps between levels)
+    const targetSteps  = numberOfPriceLevels.value - 1;
+    const currentSteps = priceStepsArray.value.length;
+
+    if (currentSteps < targetSteps) {
+      const newSteps = [...priceStepsArray.value];
+      for (let i = currentSteps; i < targetSteps; i++) {
+        newSteps.push(0);
+      }
+      priceStepsArray.value = newSteps;
+    } else if (currentSteps > targetSteps) {
+      priceStepsArray.value = priceStepsArray.value.slice(0, targetSteps);
+    }
+  }
+}, {immediate: true});
 </script>
 
 
