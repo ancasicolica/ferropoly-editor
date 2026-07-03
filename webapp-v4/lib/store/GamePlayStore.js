@@ -64,6 +64,8 @@ export const useGameplayStore = defineStore('Gameplay', {
         highestPrice: 0,
         numberOfPriceLevels: 0,
         numberOfPropertiesPerGroup: 0,
+        calculationMethod: 'linear',
+        priceSteps: [],
       },
       rentFactors: {
         noHouse: 0,

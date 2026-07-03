@@ -57,7 +57,10 @@ const gameplaySchema = mongoose.Schema({
       lowestPrice:                {type: Number, default: 1000},
       highestPrice:               {type: Number, default: 8000},
       numberOfPriceLevels:        {type: Number, default: 8},
-      numberOfPropertiesPerGroup: {type: Number, default: 2}
+      numberOfPropertiesPerGroup: {type: Number, default: 2},
+      // New since 2026: available is "linear" (as we had before) and "custom" which creates custom steps
+      calculationMethod:          {type: String, default: 'linear'},
+      priceSteps:                 {type: Array, default: []},
     },
     rentFactors:               {
       noHouse:              {type: Number, default: .125},
