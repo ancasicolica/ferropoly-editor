@@ -11,6 +11,7 @@
         Eine Vorschau ist mit dieser Anzahl Preisstufen nicht möglich.
       </div>
       <div v-else>
+        <div>Die Preise werden für die Preisliste auf 100er Schritte gerundet.</div>
         <DataTable :value="priceLevels" striped-rows>
           <Column field="level" header="Ort Stufe"></Column>
           <Column field="price" header="Kaufpreis"></Column>
@@ -42,7 +43,7 @@ const priceLevels = computed(() => {
 
   for (let i = 0; i < priceSteps.length; i++) {
     currentPrice += priceSteps[i];
-    levels.push({level: i + 2, price: currentPrice});
+    levels.push({level: i + 2, price: Math.round(currentPrice / 100) * 100});
   }
 
   return levels;

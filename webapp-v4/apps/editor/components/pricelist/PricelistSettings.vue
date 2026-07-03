@@ -48,7 +48,7 @@
       <ferropoly-input-number
           v-model="numberOfPriceLevels"
           label="Anzahl Preisstufen"
-          info="Anzahl Preisstufen, welche im Profi-Modus definiert werden müssen."
+          info="Anzahl Preisstufen, welche im Profi-Modus definiert werden müssen. Die Anzahl Orte ist in jeder Preisstufe gleich."
           show-buttons
           :step="smallStep"
           :min="minPriceStepsCustom"
@@ -56,7 +56,7 @@
           :zod-result="numberOfPriceLevelsValidation"
       />
       <ferropoly-input-number
-          v-for="(index) in priceStepsArray"
+          v-for="(notUsedByIntention,index) in priceStepsArray"
           :key="index"
           v-model="priceStepsArray[index]"
           :label="`Preisstufe ${index + 1} - ${index + 2}`"
@@ -158,42 +158,8 @@ const priceStepsArray = computed({
 watch([numberOfPriceLevels, lowestPrice, highestPrice,
        () => gameplayStore.gameParams.properties.calculationMethod], () => {
 
-  console.log('xxx');
-  const targetSteps = numberOfPriceLevels.value;
+  gameplayStore.calculatePriceSteps();
 
-  if (isLinear.value) {
-    // Calculate linear price steps
-    const newSteps = [];
-    const lowest   = lowestPrice.value;
-    const highest  = highestPrice.value;
-
-    if (targetSteps === 1) {
-      // Special case: single price level, no steps needed
-      newSteps.push(lowest);
-    } else {
-      const step = (highest - lowest) / targetSteps;
-      console.log('step', step, highest, lowest);
-      for (let i = 0; i < targetSteps; i++) {
-        newSteps.push(Math.round(step ));
-      }
-    }
-    priceStepsArray.value = newSteps;
-  } else {
-    // Custom mode: maintain user-defined steps or initialize with zeros
-    // Array size should be numberOfPriceLevels - 1 (representing gaps between levels)
-    const targetSteps  = numberOfPriceLevels.value - 1;
-    const currentSteps = priceStepsArray.value.length;
-
-    if (currentSteps < targetSteps) {
-      const newSteps = [...priceStepsArray.value];
-      for (let i = currentSteps; i < targetSteps; i++) {
-        newSteps.push(0);
-      }
-      priceStepsArray.value = newSteps;
-    } else if (currentSteps > targetSteps) {
-      priceStepsArray.value = priceStepsArray.value.slice(0, targetSteps);
-    }
-  }
 }, {immediate: true});
 </script>
 

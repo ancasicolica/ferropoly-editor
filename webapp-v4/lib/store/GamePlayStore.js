@@ -446,5 +446,41 @@ export const useGameplayStore = defineStore('Gameplay', {
     setJoiningInfotext(text) {
       this.joining.infotext = text;
     },
+    calculatePriceSteps() {
+      const targetSteps = this.gameParams.properties.numberOfPriceLevels;
+
+      if (this.gameParams.properties.calculationMethod === 'linear') {
+        // Calculate linear price steps
+        const newSteps = [];
+        const lowest   = this.gameParams.properties.lowestPrice;
+        const highest  = this.gameParams.properties.highestPrice;
+
+        if (targetSteps === 1) {
+          // Special case: single price level, no steps needed
+          newSteps.push(lowest);
+        } else {
+          const step = (highest - lowest) / targetSteps;
+          for (let i = 0; i < targetSteps; i++) {
+            newSteps.push(step);
+          }
+        }
+        this.gameParams.properties.priceSteps = newSteps;
+      } else {
+        // Custom mode: maintain user-defined steps or initialize with zeros
+        // Array size should be numberOfPriceLevels - 1 (representing gaps between levels)
+        const targetSteps  = this.gameParams.properties.numberOfPriceLevels - 1;
+        const currentSteps = this.gameParams.properties.priceSteps.length;
+
+        if (currentSteps < targetSteps) {
+          const newSteps = [...this.gameParams.properties.priceSteps];
+          for (let i = currentSteps; i < targetSteps; i++) {
+            newSteps.push(0);
+          }
+          this.gameParams.properties.priceSteps = newSteps;
+        } else if (currentSteps > targetSteps) {
+          this.gameParams.properties.priceSteps = this.gameParams.properties.priceSteps.slice(0, targetSteps);
+        }
+      }
+    }
   },
 });
