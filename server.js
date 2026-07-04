@@ -13,7 +13,4 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  */
-//require('debug')('ferropoly');
-console.log(process.env);
-
 require('./editor/app');
