@@ -317,6 +317,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       try {
         const authToken = await useAuthTokenStoreStore().getAuthToken();
         console.log('self', self, toRaw(self));
+        this.calculatePriceSteps();
         let saveObj = {
           gamename: toRaw(self.gamename),
           admins: toRaw(self.admins),
@@ -468,7 +469,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       } else {
         // Custom mode: maintain user-defined steps or initialize with zeros
         // Array size should be numberOfPriceLevels - 1 (representing gaps between levels)
-        const targetSteps  = this.gameParams.properties.numberOfPriceLevels - 1;
+        const targetSteps  = this.gameParams.properties.numberOfPriceLevels;
         const currentSteps = this.gameParams.properties.priceSteps.length;
 
         if (currentSteps < targetSteps) {

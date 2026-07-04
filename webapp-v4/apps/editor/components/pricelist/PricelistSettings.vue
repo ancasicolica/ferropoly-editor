@@ -24,25 +24,25 @@
         :zod-result="priceListLowestPriceValidation"
     />
     <div v-if="isLinear">
-    <ferropoly-input-number
-        v-model="highestPrice"
-        label="Preis teuerstes Ort"
-        info="Empfohlen: 8000, gültiger Bereich ist zwischen 1000 und 10'000."
-        show-buttons
-        :min="lowestPrice"
-        :max="maxHighestPrice"
-        :zod-result="priceListHighestPriceValidation"
-    />
-    <ferropoly-input-number
-        v-model="numberOfPriceLevels"
-        label="Anzahl Preisstufen"
-        info="Bestimmt die Preisunterschiede zwischen zwei Orten: die Differenz zwischen teuerstem und billigstem Ort wird durch diesen Wert geteilt. Beachte: eine ungerade Anzahl Preisstufen ergibt eine gerade Anzahl unterschiedlicher Preise! Empfohlen sind die Werte '3' und '7'. Beim Spezialwert '1' werden die Preisstufen deaktiviert, alle Orte erhalten einen unterschiedlichen Preis."
-        show-buttons
-        :step="smallStep"
-        :min="min"
-        :max="maxPriceLevels"
-        :zod-result="numberOfPriceLevelsValidation"
-    />
+      <ferropoly-input-number
+          v-model="highestPrice"
+          label="Preis teuerstes Ort"
+          info="Empfohlen: 8000, gültiger Bereich ist zwischen 1000 und 10'000."
+          show-buttons
+          :min="lowestPrice"
+          :max="maxHighestPrice"
+          :zod-result="priceListHighestPriceValidation"
+      />
+      <ferropoly-input-number
+          v-model="numberOfPriceLevels"
+          label="Anzahl Preisstufen"
+          info="Bestimmt die Preisunterschiede zwischen zwei Orten: die Differenz zwischen teuerstem und billigstem Ort wird durch diesen Wert geteilt. Beachte: eine ungerade Anzahl Preisstufen ergibt eine gerade Anzahl unterschiedlicher Preise! Empfohlen sind die Werte '3' und '7'. Beim Spezialwert '1' werden die Preisstufen deaktiviert, alle Orte erhalten einen unterschiedlichen Preis."
+          show-buttons
+          :step="smallStep"
+          :min="min"
+          :max="maxPriceLevels"
+          :zod-result="numberOfPriceLevelsValidation"
+      />
     </div>
     <div v-else>
       <ferropoly-input-number
@@ -55,16 +55,18 @@
           :max="maxPriceLevels"
           :zod-result="numberOfPriceLevelsValidation"
       />
-      <ferropoly-input-number
-          v-for="(notUsedByIntention,index) in priceStepsArray"
-          :key="index"
-          v-model="priceStepsArray[index]"
-          :label="`Preisstufe ${index + 1} - ${index + 2}`"
-          show-buttons
-          :min="minLowestPrice"
-          :max="maxHighestPrice"
-          :step="100"
-       />
+      <div style="background-color: #f5f5f5; padding: 0.5rem; border-radius: 4px;">
+        <ferropoly-input-number
+            v-for="(notUsedByIntention,index) in priceStepsArray"
+            :key="index"
+            v-model="priceStepsArray[index]"
+            :label="`Preisschritt Stufe ${index + 1} - ${index + 2}`"
+            show-buttons
+            :min="minLowestPrice"
+            :max="maxHighestPrice"
+            :step="100"
+        />
+      </div>
     </div>
     <ferropoly-input-number
         v-model="numberOfPropertiesPerGroup"
@@ -96,7 +98,7 @@ const maxNumberOfPropertiesPerGroup = ref(4);
 const priceListCalculationMethods   = ref([{label: 'Linear (Standard)', value: 'linear'},
                                            {label: 'Abgestuft (Profis)', value: 'custom'}])
 
-const isLinear = computed(()=> {
+const isLinear      = computed(() => {
   return gameplayStore.gameParams.properties.calculationMethod !== 'custom';
 })
 const gameplayStore = useGameplayStore();
