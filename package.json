@@ -122,5 +122,11 @@
     "webpack-cli": "7.0.3",
     "webpack-merge": "6.0.1"
   },
-  "bundleDependencies": []
+  "bundleDependencies": [],
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "@sentry/cli@2.58.6": true,
+    "protobufjs@7.6.5": true,
+    "@parcel/watcher@2.5.1": true
+  }
 }
