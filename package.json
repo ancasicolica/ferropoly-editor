@@ -126,7 +126,7 @@
   "allowScripts": {
     "sharp@0.34.5": true,
     "@sentry/cli@2.58.6": true,
-    "protobufjs@7.6.5": true,
-    "@parcel/watcher@2.5.1": true
+    "@parcel/watcher@2.5.1": true,
+    "protobufjs@7.6.4": true
   }
 }
