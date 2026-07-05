@@ -36,7 +36,7 @@
       <ferropoly-input-number
           v-model="numberOfPriceLevels"
           label="Anzahl Preisstufen"
-          info="Bestimmt die Preisunterschiede zwischen zwei Orten: die Differenz zwischen teuerstem und billigstem Ort wird durch diesen Wert geteilt. Beachte: eine ungerade Anzahl Preisstufen ergibt eine gerade Anzahl unterschiedlicher Preise! Empfohlen sind die Werte '3' und '7'. Beim Spezialwert '1' werden die Preisstufen deaktiviert, alle Orte erhalten einen unterschiedlichen Preis."
+          info="Die Anzahl der unterschiedlichen Preise in der Preisliste."
           show-buttons
           :step="smallStep"
           :min="min"

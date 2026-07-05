@@ -1,5 +1,5 @@
 <!---
-
+  Preview for the pricelist levels
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 03.07.2026
 -->
@@ -11,10 +11,14 @@
         Eine Vorschau ist mit dieser Anzahl Preisstufen nicht möglich.
       </div>
       <div v-else>
-        <div>Die Preise werden für die Preisliste auf 100er Schritte gerundet.</div>
+        <div>Die Preise werden für die Preisliste auf 10er Schritte gerundet.</div>
         <DataTable :value="priceLevels" striped-rows>
           <Column field="level" header="Ort Stufe"></Column>
-          <Column field="price" header="Kaufpreis"></Column>
+          <Column field="price" header="Kaufpreis">
+            <template #body="{data}">
+              <span>{{ formatPrice(data.price) }}</span>
+            </template>
+          </Column>
         </DataTable>
       </div>
     </ferro-card>
@@ -29,6 +33,7 @@ import {useGameplayStore} from '../../../../lib/store/GamePlayStore';
 import FerroCard from '../../../../common/components/FerroCard.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import {formatPrice} from '../../../../common/lib/formatters';
 
 const gameplayStore = useGameplayStore();
 const {gameParams}  = storeToRefs(gameplayStore);
@@ -43,7 +48,7 @@ const priceLevels = computed(() => {
 
   for (let i = 0; i < priceSteps.length; i++) {
     currentPrice += priceSteps[i];
-    levels.push({level: i + 2, price: Math.round(currentPrice / 100) * 100});
+    levels.push({level: i + 2, price: Math.round(currentPrice / 10) * 10});
   }
 
   return levels;

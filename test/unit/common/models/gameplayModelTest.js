@@ -8,7 +8,6 @@ const expect     = require('expect.js');
 const db         = require('./../../../../common/lib/ferropolyDb');
 const gameplays  = require('./../../../../common/models/gameplayModel');
 const settings   = require('./../../../../editor/settings');
-const moment     = require('moment');
 const {DateTime} = require('luxon');
 
 const users = ['admin1@ferropoly.ch', 'admin2@ferropoly.ch'];
@@ -266,8 +265,8 @@ describe('GameplayModel Tests', function () {
       const gpSaved           = await gameplays.updateGameplay(gp);
       expect(gpSaved.log.priceListVersion).to.be(1);
       const fgp = await gameplays.finalize(gp3.internal.gameId, users[1]);
-      expect(moment(fgp.scheduling.gameStartTs).dayOfYear()).to.be(moment().dayOfYear());
-      expect(moment(fgp.scheduling.gameEndTs).dayOfYear()).to.be(moment().dayOfYear());
+      expect(DateTime.fromJSDate(fgp.scheduling.gameStartTs).ordinal).to.be(DateTime.now().ordinal);
+      expect(DateTime.fromJSDate(fgp.scheduling.gameEndTs).ordinal).to.be(DateTime.now().ordinal);
       expect(fgp.scheduling.gameStartTs.getMinutes()).to.be(30);
       expect(fgp.scheduling.gameStartTs.getHours()).to.be(4);
       expect(fgp.scheduling.gameEndTs.getMinutes()).to.be(22);

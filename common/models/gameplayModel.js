@@ -426,6 +426,12 @@ async function updateGameplayPartial(gp, callback) {
   _.merge(loadedGp, gp);
   _.set(loadedGp, 'internal', internal);
 
+  // Arrays with flexible size can't be merged
+  const priceSteps = _.get(gp, 'gameParams.properties.priceSteps', null);
+  if (priceSteps) {
+    _.set(loadedGp, 'gameParams.properties.priceSteps', priceSteps);
+  }
+
   // Save in DB
   if (loadedGp.internal.finalized) {
     // We can't save it, it is finalized!

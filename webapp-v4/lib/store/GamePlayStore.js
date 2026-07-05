@@ -460,8 +460,8 @@ export const useGameplayStore = defineStore('Gameplay', {
           // Special case: single price level, no steps needed
           newSteps.push(lowest);
         } else {
-          const step = (highest - lowest) / targetSteps;
-          for (let i = 0; i < targetSteps; i++) {
+          const step = (highest - lowest) / (targetSteps - 1);
+          for (let i = 0; i < targetSteps - 1; i++) {
             newSteps.push(step);
           }
         }
@@ -469,7 +469,7 @@ export const useGameplayStore = defineStore('Gameplay', {
       } else {
         // Custom mode: maintain user-defined steps or initialize with zeros
         // Array size should be numberOfPriceLevels - 1 (representing gaps between levels)
-        const targetSteps  = this.gameParams.properties.numberOfPriceLevels;
+        const targetSteps  = this.gameParams.properties.numberOfPriceLevels - 1;
         const currentSteps = this.gameParams.properties.priceSteps.length;
 
         if (currentSteps < targetSteps) {
