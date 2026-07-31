@@ -4,12 +4,13 @@
  * Created by kc on 06.04.15.
  */
 
-const cron       = require('node-schedule');
-const gpLib      = require('./gameplayLib');
-const settings   = require('../settings');
-const logger     = require('../../common/lib/logger').getLogger('cronjobs');
-const _          = require('lodash');
-const {DateTime} = require('luxon');
+const cron = require('node-schedule');
+const gpLib = require('./gameplayLib');
+const settings = require('../settings');
+const logger = require('../../common/lib/logger').getLogger('cronjobs');
+const _ = require('lodash');
+const { DateTime } = require('luxon');
+const { cleanUp } = require('../../common/lib/authTokenManager');
 
 /**
  * Set game options, different for different days
@@ -17,53 +18,56 @@ const {DateTime} = require('luxon');
 function generateGameOptions() {
   let gameOptions = {
     autopilot: {
-      active:    _.get(settings, 'autopilot.enabled', false),
-      picBucket: _.get(settings, 'autopilot.picBucket', true)
+      active: _.get(settings, 'autopilot.enabled', false),
+      picBucket: _.get(settings, 'autopilot.picBucket', true),
     },
-    presets:   'moderate',
+    presets: 'moderate',
   };
 
-  switch ((DateTime.now().ordinal + _.get(settings, 'demoGameplay.seed', 0)) % 5) {
+  switch (
+    (DateTime.now().ordinal + _.get(settings, 'demoGameplay.seed', 0)) %
+    5
+  ) {
     case 0:
-      gameOptions.gameId             = 'play-a-ostwind-game';
-      gameOptions.map                = 'ostwind';
-      gameOptions.random             = 80;
-      gameOptions.teamNb             = 12;
+      gameOptions.gameId = 'play-a-ostwind-game';
+      gameOptions.map = 'ostwind';
+      gameOptions.random = 80;
+      gameOptions.teamNb = 12;
       gameOptions.autopilot.interval = 15 * 60 * 1000;
       break;
 
     case 1:
-      gameOptions.gameId             = 'play-a-zvv-game';
-      gameOptions.map                = 'zvv';
-      gameOptions.random             = 80;
-      gameOptions.teamNb             = 8;
+      gameOptions.gameId = 'play-a-zvv-game';
+      gameOptions.map = 'zvv';
+      gameOptions.random = 80;
+      gameOptions.teamNb = 8;
       gameOptions.autopilot.interval = 20 * 60 * 1000;
       break;
 
     case 2:
-      gameOptions.gameId             = 'play-a-zvv110-game';
-      gameOptions.map                = 'zvv110';
-      gameOptions.random             = 240;
-      gameOptions.teamNb             = 5;
-      gameOptions.gameStart          = '10:15';
-      gameOptions.gameEnd            = '19:30';
-      gameOptions.interestInterval   = 15;
+      gameOptions.gameId = 'play-a-zvv110-game';
+      gameOptions.map = 'zvv110';
+      gameOptions.random = 240;
+      gameOptions.teamNb = 5;
+      gameOptions.gameStart = '10:15';
+      gameOptions.gameEnd = '19:30';
+      gameOptions.interestInterval = 15;
       gameOptions.autopilot.interval = 3.5 * 60 * 1000;
       break;
 
     case 3:
-      gameOptions.gameId             = 'play-a-libero100-game';
-      gameOptions.map                = 'libero100';
-      gameOptions.random             = 80;
-      gameOptions.teamNb             = 7;
+      gameOptions.gameId = 'play-a-libero100-game';
+      gameOptions.map = 'libero100';
+      gameOptions.random = 80;
+      gameOptions.teamNb = 7;
       gameOptions.autopilot.interval = 15 * 60 * 1000;
       break;
 
     default:
-      gameOptions.gameId             = 'play-a-demo-game';
-      gameOptions.map                = 'sbb';
-      gameOptions.random             = 120;
-      gameOptions.teamNb             = 16;
+      gameOptions.gameId = 'play-a-demo-game';
+      gameOptions.map = 'sbb';
+      gameOptions.random = 120;
+      gameOptions.teamNb = 16;
       gameOptions.autopilot.interval = 10 * 60 * 1000;
       break;
   }
@@ -71,26 +75,29 @@ function generateGameOptions() {
   return gameOptions;
 }
 
-
 /**
  * Set up the demo gameplay depending on the configuration
  */
 function setUpDemoGamemplayCreation() {
   if (settings.cron.createDemoGameplay) {
-    logger.info('CRON: setting up the demo gameplay job', settings.cron.createDemoGameplay);
+    logger.info(
+      'CRON: setting up the demo gameplay job',
+      settings.cron.createDemoGameplay
+    );
     cron.scheduleJob(settings.cron.createDemoGameplay, function () {
       logger.info('CRON: starting demo gameplay creation');
       let gameOpts = generateGameOptions();
-      gpLib.createDemoGameplay(gameOpts).then(function () {
+      gpLib
+        .createDemoGameplay(gameOpts)
+        .then(function () {
           logger.info('CRON: demo set created');
-        }
-      ).catch(err => {
-        logger.error('CRON: error while creating demo gameplay', err);
-      })
+        })
+        .catch((err) => {
+          logger.error('CRON: error while creating demo gameplay', err);
+        });
     });
   }
 }
-
 
 /**
  * Sets up the cron job for deleting old gameplays if the corresponding setting is enabled.
@@ -99,17 +106,34 @@ function setUpDemoGamemplayCreation() {
  */
 function setupDeletingOldGameplays() {
   if (settings.cron.deleteOldGameplays) {
-    logger.info('CRON: setting up the delete-old-games job', settings.cron.deleteOldGameplays);
+    logger.info(
+      'CRON: setting up the delete-old-games job',
+      settings.cron.deleteOldGameplays
+    );
     cron.scheduleJob(settings.cron.deleteOldGameplays, function () {
-      gpLib.deleteOldGameplays()
+      gpLib
+        .deleteOldGameplays()
         .then(() => {
           logger.info('CRON: old gameplays deleted');
         })
-        .catch(err => {
+        .catch((err) => {
           logger.error('CRON: error while deleting old gameplays', err);
-        })
+        });
     });
   }
+}
+
+function setupCleaningUpAuthTokens() {
+  logger.info('CRON: setting up cleaning expired authtokens');
+  cron.scheduleJob('0 0 * * *', () => {
+    cleanUp()
+      .then((result) => {
+        logger.info('Cleaned up the auth tokens', result);
+      })
+      .catch((err) => {
+        logger.error('CRON: error while cleaning up authtokens', err);
+      });
+  });
 }
 
 /**
@@ -120,5 +144,6 @@ module.exports = {
   init: function () {
     setUpDemoGamemplayCreation();
     setupDeletingOldGameplays();
-  }
+    setupCleaningUpAuthTokens();
+  },
 };

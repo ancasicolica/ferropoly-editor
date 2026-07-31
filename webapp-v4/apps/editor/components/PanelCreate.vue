@@ -102,7 +102,7 @@ export default {
       gamePlayStore.createPricelist()
           .then(info => {
             if (info.success) {
-              window.location = '/pricelist/view/' + info.gameId;
+            //  window.location = '/pricelist/view/' + info.gameId;
             } else {
               this.errorMessage = info.message;
             }

@@ -56,4 +56,15 @@ describe('Scheduler Event Tests', function () {
     })
   })
 
+  describe('Getting some events', () => {
+    it('should hopefully return some', done => {
+      schedulerEventsModel.getEvents(gameId).then(events => {
+        // This hardly depends on the games in the DB, do not analyse too much
+        console.log(events);
+        expect(events.length > 1).to.be(true);
+        done();
+      }).catch();
+    })
+  })
+
 });

@@ -13,8 +13,9 @@ const logger     = require('../lib/logger').getLogger('schedulerEventModel');
 const scheduleEventSchema = mongoose.Schema({
   _id:       String,
   gameId:    String, // Gameplay this team plays with
-  timestamp: Date, // When it is going to happen
+  timestamp: Date,   // When it is going to happen
   type:      String, // What it is about
+  message:   String, // Info text, optional
   handled:   {type: Boolean, default: false},
   handler:   {
     id:       String, // ID of the handler
@@ -30,13 +31,27 @@ const scheduleEventModel  = mongoose.model('schedulerEvent', scheduleEventSchema
 /**
  * Creates an event
  */
-function createEvent(gameId, timestamp, type) {
+function createEvent(gameId, timestamp, type, message = null) {
   let event       = new scheduleEventModel();
   event.gameId    = gameId;
   event.timestamp = timestamp;
   event.type      = type;
   event._id       = gameId + '-' + DateTime.fromJSDate(timestamp).toFormat('yyMMdd-HHmm') + '-' + type;
+  event.message   = message;
   return event;
+}
+
+/**
+ * Returns all events of a game
+ * @param gameId
+ * @return {Promise<Array<HydratedDocument<InferSchemaType<*>, ObtainSchemaGeneric<*, "TInstanceMethods">, ObtainSchemaGeneric<*, "TVirtuals">>>>}
+ */
+async function getEvents(gameId) {
+  return await scheduleEventModel
+    .find()
+    .where('gameId').equals(gameId)
+    .where('timestamp').gt(new Date())
+    .exec();
 }
 
 /**
@@ -132,6 +147,7 @@ async function saveAfterHandling(event) {
 module.exports = {
   Model:             scheduleEventModel,
   createEvent:       createEvent,
+  getEvents:         getEvents,
   saveEvents:        saveEvents,
   dumpEvents:        dumpEvents,
   getUpcomingEvents: getUpcomingEvents,

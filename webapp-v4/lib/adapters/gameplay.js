@@ -3,9 +3,11 @@
  */
 import $ from 'jquery';
 import axios from 'axios';
-import {pick, get} from 'lodash';
-import {getAuthToken} from '../../common/adapters/authToken';
+import { pick, get } from 'lodash';
+import { getAuthToken } from '../../common/adapters/authToken';
+import { useAuthTokenStoreStore } from '../../common/store/authTokenStore';
 
+let authTokenStore = useAuthTokenStoreStore();
 
 /**
  * Returns informational data (basic) of a specific game
@@ -13,7 +15,7 @@ import {getAuthToken} from '../../common/adapters/authToken';
  * @param callback
  */
 function getGameInfo(gameId, callback) {
-  $.ajax(`/gameplay/info/${gameId}`, {dataType: 'json'})
+  $.ajax(`/gameplay/info/${gameId}`, { dataType: 'json' })
     .done(function (resp) {
       callback(null, resp);
     })
@@ -29,7 +31,7 @@ function getGameInfo(gameId, callback) {
  * @param callback with {gameplay, properties}
  */
 function loadGame(gameId, callback) {
-  $.ajax(`/gameplay/load/${gameId}`, {dataType: 'json'})
+  $.ajax(`/gameplay/load/${gameId}`, { dataType: 'json' })
     .done(function (resp) {
       console.log(resp);
       callback(null, resp);
@@ -46,7 +48,7 @@ function loadGame(gameId, callback) {
  * @param callback with the error text (if any)
  */
 function deleteGameplay(id, callback) {
-  $.ajax(`/gameplay/${id}`, {method: 'DELETE', dataType: 'json'})
+  $.ajax(`/gameplay/${id}`, { method: 'DELETE', dataType: 'json' })
     .done(function () {
       console.log(`deleted ${id}`);
       callback(null);
@@ -68,14 +70,16 @@ function finalizeGameplay(id, callback) {
     if (err) {
       return callback(err);
     }
-    $.post('/gameplay/finalize', {gameId: id, authToken})
+    $.post('/gameplay/finalize', { gameId: id, authToken })
       .done(function () {
         console.log(`finalized ${id}`);
         callback(null);
       })
       .fail(function (resp) {
         console.error(`Error while finalizing ${id}`, resp);
-        callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
+        callback(
+          `Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`
+        );
       });
   });
 }
@@ -86,23 +90,25 @@ function finalizeGameplay(id, callback) {
  * @param callback with the error text (if any)
  */
 function saveGameplay(gp, callback) {
-  getAuthToken((err, authToken) => {
-    if (err) {
-      return callback(err);
-    }
-    axios.post(`/gameplay/save/${gp.internal.gameId}`,
-      {
-        gameplay: gp,
-        authToken
-      })
-      .then(function () {
-        callback(null);
-      })
-      .catch(function (error) {
-        let message = get(error, 'response.data.message', error);
-        callback({message});
-      });
-  });
+  authTokenStore
+    .getAuthToken()
+    .then((authToken) => {
+      axios
+        .post(`/gameplay/save/${gp.internal.gameId}`, {
+          gameplay: gp,
+          authToken,
+        })
+        .then(function () {
+          callback(null);
+        })
+        .catch(function (error) {
+          let message = get(error, 'response.data.message', error);
+          callback({ message });
+        });
+    })
+    .catch((err) => {
+      callback(err);
+    });
 }
 
 /**
@@ -114,28 +120,27 @@ function saveGameplay(gp, callback) {
 function saveRegistrationData(gp) {
   return new Promise((resolve, reject) => {
     getAuthToken()
-      .then(authToken => {
-        console.log('pre post', authToken)
-        axios.post(`/gameplay/registration/${gp.internal.gameId}`, {
-          gameplay: gp,
-          authToken
-        })
+      .then((authToken) => {
+        axios
+          .post(`/gameplay/registration/${gp.internal.gameId}`, {
+            gameplay: gp,
+            authToken,
+          })
           .then(() => {
             resolve();
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
             reject({
               message: get(err, 'message', 'Fehler beim Speichern'),
             });
           });
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err);
       });
-  })
+  });
 }
-
 
 /**
  * Saves data of a property
@@ -148,17 +153,17 @@ function saveProperty(property, gameId, callback) {
     if (err) {
       return callback(err);
     }
-    axios.post(`/gameplay/saveProperty/${gameId}`,
-      {
+    axios
+      .post(`/gameplay/saveProperty/${gameId}`, {
         property: pick(property, ['gameId', 'uuid', 'location', 'pricelist']),
-        authToken
+        authToken,
       })
       .then(function () {
         callback(null);
       })
       .catch(function (error) {
         let message = get(error, 'response.data.message', error);
-        callback({message});
+        callback({ message });
       });
   });
 }
@@ -174,17 +179,17 @@ function savePositionInPricelist(saveSet, gameId, callback) {
     if (err) {
       return callback(err);
     }
-    axios.post(`/gameplay/savePositionInPricelist/${gameId}`,
-      {
+    axios
+      .post(`/gameplay/savePositionInPricelist/${gameId}`, {
         properties: saveSet,
-        authToken
+        authToken,
       })
       .then(function () {
         callback(null);
       })
       .catch(function (error) {
         let message = get(error, 'response.data.message', error);
-        callback({message});
+        callback({ message });
       });
   });
 }
@@ -194,12 +199,14 @@ function savePositionInPricelist(saveSet, gameId, callback) {
  * @param callback
  */
 function getProposedGameIds(callback) {
-  $.post('/gameplay/checkid', {gameId: ''})
+  $.post('/gameplay/checkid', { gameId: '' })
     .done(function (resp) {
       callback(null, resp.ids);
     })
     .fail(function (resp) {
-      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`);
+      callback(
+        `Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`
+      );
     });
 }
 
@@ -209,16 +216,18 @@ function getProposedGameIds(callback) {
  * @param callback
  */
 function checkId(gameId, callback) {
-  $.post('/gameplay/checkid', {gameId})
+  $.post('/gameplay/checkid', { gameId })
     .done(function (resp) {
       callback(null, resp.valid);
     })
     .fail(function (resp) {
       console.error('Error while validating', resp);
-      callback(`Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`, false);
+      callback(
+        `Fehler: der Server meldet Status ${resp.status} mit der Meldung "${resp.responseText}"`,
+        false
+      );
     });
 }
-
 
 export {
   saveGameplay,
@@ -230,5 +239,5 @@ export {
   loadGame,
   saveProperty,
   savePositionInPricelist,
-  saveRegistrationData
+  saveRegistrationData,
 };

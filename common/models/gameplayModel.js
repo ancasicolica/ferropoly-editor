@@ -57,7 +57,10 @@ const gameplaySchema = mongoose.Schema({
       lowestPrice:                {type: Number, default: 1000},
       highestPrice:               {type: Number, default: 8000},
       numberOfPriceLevels:        {type: Number, default: 8},
-      numberOfPropertiesPerGroup: {type: Number, default: 2}
+      numberOfPropertiesPerGroup: {type: Number, default: 2},
+      // New since 2026: available is "linear" (as we had before) and "custom" which creates custom steps
+      calculationMethod:          {type: String, default: 'linear'},
+      priceSteps:                 {type: Array, default: []},
     },
     rentFactors:               {
       noHouse:              {type: Number, default: .125},
@@ -422,6 +425,12 @@ async function updateGameplayPartial(gp, callback) {
   let internal = loadedGp.internal;
   _.merge(loadedGp, gp);
   _.set(loadedGp, 'internal', internal);
+
+  // Arrays with flexible size can't be merged
+  const priceSteps = _.get(gp, 'gameParams.properties.priceSteps', null);
+  if (priceSteps) {
+    _.set(loadedGp, 'gameParams.properties.priceSteps', priceSteps);
+  }
 
   // Save in DB
   if (loadedGp.internal.finalized) {

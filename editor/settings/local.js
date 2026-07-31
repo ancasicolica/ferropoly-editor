@@ -6,8 +6,8 @@ const path     = require('path');
 module.exports = function (settings) {
 
   settings.server = {
-    port    : 3002,
-    host    : 'localhost',
+    port:     3002,
+    host:     'localhost',
     serverId: 'localhost-editor'
   };
 
@@ -18,7 +18,7 @@ module.exports = function (settings) {
 
   settings.locationDbSettings = {
     mongoDbUrl: 'mongodb://localhost/ferropoly',
-    poolSize  : 3
+    poolSize:   3
   };
 
   settings.autopilot = {
@@ -32,10 +32,10 @@ module.exports = function (settings) {
 
   settings.mailer = {
     senderAddress: process.env.MAILER_SENDER,
-    host         : process.env.MAILER_HOST,
-    port         : 465,
-    secure       : true,
-    auth         : {
+    host:          process.env.MAILER_HOST,
+    port:          465,
+    secure:        true,
+    auth:          {
       pass: process.env.MAILER_PASS,
       user: process.env.MAILER_USER
     }
@@ -54,19 +54,23 @@ module.exports = function (settings) {
   // Ferropoly main instances to update when a gameplay was added / removed
   settings.mainInstances = ['http://localhost:3004'];
 
-  process.env.GOOGLE_APPLICATION_CREDENTIALS =  path.join(__dirname, '..', '..', '..', 'ferropoly-service.json');
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(__dirname, '..', '..', '..', 'ferropoly-service.json');
 
   // Logger
   settings.logger = {
     debugLevel: 'silly',
-    google: {
-      enabled: true,
+    google:     {
+      enabled:   true,
       projectId: 'crack-lamp-784',
-      logName: 'editor_local',
-      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS
+      logName:   'editor_local',
+      keyFile:   process.env.GOOGLE_APPLICATION_CREDENTIALS
     }
   };
 
+  // Avoid "unable to verify the first certificate"
+  // https://stackoverflow.com/questions/10888610/ignore-invalid-self-signed-ssl-certificate-in-node-js-with-https-request
+  // ONLY LOCAL
+  // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
   return settings;

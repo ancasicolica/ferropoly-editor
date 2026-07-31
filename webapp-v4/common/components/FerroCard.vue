@@ -4,82 +4,74 @@
   Created: 20.05.2024
 -->
 <template>
-  <div :class="class" >
-    <Panel :header="title" :toggleable="toggleable" :class="class">
+  <div :class="cardClass">
+    <Panel :header="title" :toggleable="toggleable" :class="cardClass">
       <slot></slot>
+      <template #icons>
+        <slot name="controls"></slot>
+
+      </template>
     </Panel>
   </div>
 
 
 </template>
-<script>
-
-import Card from 'primevue/card';
-
+<script setup>
 import Panel from 'primevue/panel';
+import {computed} from 'vue';
 
-export default {
-  name:       'FerroCard',
-  components: {Card, Panel},
-  filters:    {},
-  mixins:     [],
-  model:      {},
-  props:      {
-    title:      {
-      type:    String,
-      default: function () {
-        return 'Ferropoly';
-      }
-    },
-    size:       {
-      type:    String,
-      default: function () {
-        return 'md';
-      }
-    },
-    toggleable: {
-      type:    Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    fullSize:   {
-      type:    Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    condensed: {
-      type:    Boolean,
-      default: function () {
-        return false;
-      }
-    },
-  },
-  data:       function () {
-    return {}
-  },
-  computed:   {
-    class() {
-      const classes = [];
-      // Basis-Klassen
-      if (this.fullSize) {
-        classes.push('full-size');
-      } else {
-        classes.push('normal-size');
-      }
-      // Optionales Hinzufügen von 'is-condensed'
-      if (this.condensed) {
-        classes.push('is-condensed');
-      }
-      return classes;
+const emit  = defineEmits(['download']);
+const props = defineProps({
+  title:            {
+    type:    String,
+    default: function () {
+      return 'Ferropoly';
     }
   },
-  created:    function () {
+  size:             {
+    type:    String,
+    default: function () {
+      return 'md';
+    }
   },
-  methods:    {}
-}
+  toggleable:       {
+    type:    Boolean,
+    default: function () {
+      return false;
+    }
+  },
+  fullSize:         {
+    type:    Boolean,
+    default: function () {
+      return false;
+    }
+  },
+  condensed:        {
+    type:    Boolean,
+    default: function () {
+      return false;
+    }
+  },
+  showDownloadIcon: {
+    type:    Boolean,
+    default: false
+  }
+})
 
+const cardClass = computed(() => {
+  const classes = [];
+  // Basis-Klassen
+  if (props.fullSize) {
+    classes.push('full-size');
+  } else {
+    classes.push('normal-size');
+  }
+  // Optionales Hinzufügen von 'is-condensed'
+  if (props.condensed) {
+    classes.push('is-condensed');
+  }
+  return classes;
+})
 </script>
 
 
@@ -97,6 +89,7 @@ export default {
   padding-top: 8px;
   padding-bottom: 8px;
 }
+
 ::v-deep(.is-condensed  .p-panel-content) {
   padding-top: 8px;
   padding-bottom: 8px;

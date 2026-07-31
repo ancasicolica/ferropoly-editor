@@ -18,6 +18,12 @@
       FerroCard(title="Test 3" toggleable)
         p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
 
+    div(class="lg:col-3 md:col-8 sm:col-12")
+      FerroCard(title="Test 3" toggleable show-download-icon @download="console.log('download')")
+        template(#controls)
+          p ddd
+        p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
+
 
 </template>
 <script>

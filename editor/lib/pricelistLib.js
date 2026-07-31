@@ -113,6 +113,140 @@ function createPriceListArray(ranges) {
 }
 
 /**
+ * Retrieves the price steps for a gameplay configuration. If predefined price steps exist, they are returned directly.
+ * Otherwise, the price steps are calculated based on the configuration's minimum price, maximum price, and the number of price levels.
+ *
+ * @param {object} gameplay - The gameplay configuration object containing game parameters and properties.
+ * @param {object} gameplay.gameParams - The game parameters object.
+ * @param {object} gameplay.gameParams.properties - The properties object containing pricing details.
+ * @param {number} gameplay.gameParams.properties.lowestPrice - The minimum price value.
+ * @param {number} gameplay.gameParams.properties.highestPrice - The maximum price value.
+ * @param {number} gameplay.gameParams.properties.numberOfPriceLevels - The total number of price levels to calculate the steps.
+ * @param {Array<number>} [gameplay.gameParams.properties.priceSteps] - An optional predefined array of price steps.
+ *
+ * @return {Array<number>} An array representing the price steps, either predefined or calculated.
+ */
+function getPriceSteps(gameplay) {
+  // Created by UI: the price steps are defined there. Created by editor bin file: no price steps.
+  let priceSteps = _.get(gameplay, 'gameParams.properties.priceSteps', []);
+
+  if (priceSteps.length > 0) {
+    return priceSteps;
+  }
+
+  // Calculate the steps now, as we did it before
+  const priceMin      = gameplay.gameParams.properties.lowestPrice;
+  const priceMax      = gameplay.gameParams.properties.highestPrice;
+  let priceDifference = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
+
+  for (let i = 0; i < gameplay.gameParams.properties.numberOfPriceLevels - 1; i++) {
+    priceSteps.push(priceDifference)
+  }
+  return priceSteps;
+}
+
+/**
+ * Calculates the highest price based on the gameplay configuration and price steps.
+ *
+ * @param {object} gameplay - The gameplay object containing game parameters and properties.
+ * @param {number[]} priceSteps - An array of price step increments to be used in the calculation.
+ * @return {number} - The highest price calculated based on the provided gameplay parameters and price steps.
+ */
+function getHighestPrice(gameplay, priceSteps) {
+  if (gameplay.gameParams.properties.calculationMethod === 'linear') {
+    return gameplay.gameParams.properties.highestPrice;
+  }
+
+  let price = gameplay.gameParams.properties.lowestPrice;
+  priceSteps.forEach(s => {
+    price += s;
+  })
+  return Math.round(price);
+}
+
+/**
+ * Adjusts the prices of all individual properties within the provided price list.
+ *
+ * This method calculates the prices for properties based on a range defined by gameplay parameters
+ * and sets them in the price list. The prices are evenly distributed between the lowest and highest
+ * price values and are rounded down to the nearest multiple of 10. The maximum price is explicitly
+ * set to the highest value.
+ *
+ * @param {Object} gameplay - The gameplay object containing game parameters and configurations.
+ * @param {Array} pricelist - An array of property objects where each object contains a `pricelist`
+ *                            property that will be updated with the calculated price.
+ * @return {Array} - The updated pricelist with revised prices for each property.
+ */
+function setPropertyPricesAllIndividual(gameplay, pricelist) {
+
+  const priceMin      = gameplay.gameParams.properties.lowestPrice;
+  const priceMax      = gameplay.gameParams.properties.highestPrice;
+  let i;
+  let priceDifference = 0;
+  let p               = 0;
+
+  priceDifference = (priceMax - priceMin) / (pricelist.length - 1);
+  for (i = 0, p = priceMin; i < pricelist.length; i++, p += priceDifference) {
+    pricelist[i].pricelist.price = Math.floor(p / 10) * 10;
+  }
+  // make sure that the maximum price is the max!
+  pricelist[pricelist.length - 1].pricelist.price = priceMax;
+  return pricelist;
+}
+
+
+/**
+ * Distributes property prices into specified ranges based on gameplay parameters and price levels.
+ *
+ * @param {Object} gameplay - The gameplay settings object, containing parameters like price levels and lowest price.
+ * @param {Array} pricelist - An array of property objects where prices will be assigned within specific ranges.
+ * @return {Array} Updated pricelist with assigned prices based on specified price steps and constraints.
+ */
+function setPropertyPricesInRanges(gameplay, pricelist) {
+  const priceSteps = getPriceSteps(gameplay);
+  const priceMin   = gameplay.gameParams.properties.lowestPrice;
+  const priceMax   = getHighestPrice(gameplay, priceSteps);
+  let i;
+  let p            = 0;
+
+  const nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
+
+  let nbOfPropertiesLeft = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
+  let t                  = 0;
+  let currentPriceStep   = 0;
+  p                      = priceMin;
+  do {
+    let target = nbOfPropertiesInSameGroup;
+    if (nbOfPropertiesLeft) {
+      nbOfPropertiesLeft--;
+      target++;
+    }
+    for (i = 0; i < target; i++) {
+      if (!pricelist[i + t]) {
+        console.log(i + ' / ' + t);
+      }
+      if ((i + t) < pricelist.length) {
+        // The last group of prices can be larger (not handled with the nbOfProbertiesInSameGroup, e.g. 150 places
+        // with a numberOfPriceLevels = 8 leads to 148 handled places, leaving two with a wrong price).
+        // ==> if the price is higher han priceMax, set it to priceMax in linear games
+        let price                        = Math.floor(p / 10) * 10;
+        pricelist[i + t].pricelist.price = (price < priceMax) ? price : priceMax;
+
+      }
+    }
+    p += priceSteps[currentPriceStep];
+    currentPriceStep++;
+    t += i;
+  }
+  while (t < pricelist.length);
+
+  // make sure that the maximum price is the max!
+  pricelist[pricelist.length - 1].pricelist.price = priceMax;
+  return pricelist;
+}
+
+
+/**
  * Sets the property prices according to the number of price levels, min and max
  * @param gameplay
  * @param pricelist
@@ -120,55 +254,12 @@ function createPriceListArray(ranges) {
  */
 function setPropertyPrices(gameplay, pricelist) {
   try {
-    const priceMin      = gameplay.gameParams.properties.lowestPrice;
-    const priceMax      = gameplay.gameParams.properties.highestPrice;
-    let i;
-    let priceDifference = 0;
-    let p               = 0;
-
     if (gameplay.gameParams.properties.numberOfPriceLevels === 1) {
       // Special case: every property has its own value
-      priceDifference = (priceMax - priceMin) / (pricelist.length - 1);
-      for (i = 0, p = priceMin; i < pricelist.length; i++, p += priceDifference) {
-        pricelist[i].pricelist.price = Math.floor(p / 10) * 10;
-      }
-      // make sure that the maximum price is the max!
-      pricelist[pricelist.length - 1].pricelist.price = priceMax;
-      return pricelist;
+      return setPropertyPricesAllIndividual(gameplay, pricelist);
     } else {
       // several properties together in one price group
-      priceDifference                 = (priceMax - priceMin) / (gameplay.gameParams.properties.numberOfPriceLevels - 1);
-      const nbOfPropertiesInSameGroup = Math.floor(pricelist.length / gameplay.gameParams.properties.numberOfPriceLevels);
-      let nbOfPropertiesLeft          = pricelist.length % gameplay.gameParams.properties.numberOfPriceLevels;
-      let t                           = 0;
-      p                               = priceMin;
-      do {
-        let target = nbOfPropertiesInSameGroup;
-        if (nbOfPropertiesLeft) {
-          nbOfPropertiesLeft--;
-          target++;
-        }
-        for (i = 0; i < target; i++) {
-          if (!pricelist[i + t]) {
-            console.log(i + ' / ' + t);
-          }
-          if ((i + t) < pricelist.length) {
-            // The last group of prices can be larger (not handled with the nbOfProbertiesInSameGroup, e.g. 150 places
-            // with a numberOfPriceLevels = 8 leads to 148 handled places, leaving two with a wrong price).
-            // ==> if the price is higher han priceMax, set it to priceMax
-            let price                        = Math.floor(p / 10) * 10;
-            pricelist[i + t].pricelist.price = (price < priceMax) ? price : priceMax;
-          }
-        }
-
-        p += priceDifference;
-        t += i;
-      }
-      while (t < pricelist.length);
-
-      // make sure that the maximum price is the max!
-      pricelist[pricelist.length - 1].pricelist.price = priceMax;
-      return pricelist;
+      return setPropertyPricesInRanges(gameplay, pricelist);
     }
   }
   catch (e) {
