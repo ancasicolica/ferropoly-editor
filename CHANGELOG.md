@@ -1,7 +1,9 @@
 # Changelog Ferropoly Editor
 
+## v4.3.0 8.8.26
 * Nicht lineare Preisliste umgesetzt (Wunsch Silvan)
 * Prettier wieder entfernt und durch EditorConfig ersetzt
+* Dependency Updates
 
 ## v4.2.4 21.6.26 Released
 * Bugfix: finalisierte Spiele konnte Anmeldung nicht bearbeitet werden
