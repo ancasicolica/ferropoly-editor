@@ -167,7 +167,7 @@ export default {
           .catch(error => {
             if (error.response) {
               // Fehler vom Server (z. B. 401, 403, 500, ... )
-              console.error('Serverfehler:', error.response.status, error.response.data);
+              console.warn('Serverfehler:', error.response.status, error.response.data);
               this.loginError = `Leider funktioniert diese Kombination aus Benutzername und Passwort nicht (Error Code = ${error.response.status}).`
             } else {
               // Netzwerkfehler oder andere Probleme

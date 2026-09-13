@@ -1,5 +1,11 @@
 # Changelog Ferropoly Editor
 
+## 4.3.1 13.9.26
+* Bugfixes:
+  * Kein Sentry Eintrag mehr aufgrund falschem Login
+  * Timeout bei Anlegen Spiel explizit auf 12s gesetzt (Sentry)
+* Depencendy Updates
+
 ## v4.3.0 8.8.26
 * Nicht lineare Preisliste umgesetzt (Wunsch Silvan)
 * Prettier wieder entfernt und durch EditorConfig ersetzt

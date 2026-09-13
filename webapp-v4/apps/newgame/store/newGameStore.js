@@ -9,6 +9,7 @@ import {DateTime} from 'luxon';
 import axios from 'axios';
 import {useAuthTokenStoreStore} from '../../../common/store/authTokenStore';
 import {toRaw} from 'vue'
+
 export const useNewGameStore = defineStore('NewGame', {
   state:   () => ({
     menuBarElements:  [],
@@ -94,10 +95,10 @@ export const useNewGameStore = defineStore('NewGame', {
      *   in case of any error.
      */
     async createGame() {
-      const authToken = await useAuthTokenStoreStore().getAuthToken();
+      const authToken  = await useAuthTokenStoreStore().getAuthToken();
       const importData = toRaw(this.importData);
 
-      const creationSet =         {
+      const creationSet = {
         gamename:   this.gameName,
         map:        importData?.gameplay?.internal?.map || this.gameMap,
         gamedate:   this.gameDate,
@@ -111,7 +112,7 @@ export const useNewGameStore = defineStore('NewGame', {
 
       console.log('Creating new game', creationSet);
 
-      let result = await axios.post('/gameplay/createnew',creationSet);
+      let result = await axios.post('/gameplay/createnew', creationSet, {timeout: 12000});
 
       if (result.status === 200) {
         return this.proposedGameName;

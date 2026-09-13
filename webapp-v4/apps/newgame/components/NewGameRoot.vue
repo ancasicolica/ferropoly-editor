@@ -166,8 +166,8 @@ const createGame = function() {
                 }
               })
               .catch(err => {
-                console.error('Error while creating a new game', err);
                 errorMessage.value = get(err, 'response.data.message', 'Fehler beim Anlegen des Spiels');
+                console.error('Error while creating a new game', errorMessage.value);
               })
               .finally(() => {
                 gameCreationActive.value = false;
