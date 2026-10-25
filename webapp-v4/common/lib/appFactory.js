@@ -11,7 +11,7 @@ import {definePreset} from '@primevue/themes';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
-
+import {createRouter, createWebHashHistory} from 'vue-router'
 import 'primeicons/primeicons.css';
 import '../style/style.css';    //core css
 
