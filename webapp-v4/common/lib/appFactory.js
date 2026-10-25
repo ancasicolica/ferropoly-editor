@@ -11,8 +11,6 @@ import {definePreset} from '@primevue/themes';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
-import {createRouter, createWebHashHistory} from 'vue-router'
-import {get} from 'lodash';
 
 import 'primeicons/primeicons.css';
 import '../style/style.css';    //core css
@@ -82,14 +80,21 @@ function createWebApp(options) {
     app,
     dsn:              process.env.FERROPOLY_SENTRY_VUE_DSN,
     attachStacktrace: true,
-    sendDefaultPii: false,
+    dataCollection: {
+      userInfo: true,      // keine automatisch ermittelte Nutzer-IP
+      cookies: false,       // keine Cookie-Werte
+      httpHeaders: true,   // keine HTTP-Header
+      urlQueryParams: true // keine Query-Parameter in erfassten URLs
+    },
     integrations:     [
       Sentry.captureConsoleIntegration({
         levels: ['error']
       })
     ],
     beforeSend(event) {
-      console.log("SENTRY EVENT PAYLOAD:", JSON.parse(JSON.stringify(event)));
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('SENTRY EVENT PAYLOAD:', JSON.parse(JSON.stringify(event)));
+      }
       return event;
     }
   });
