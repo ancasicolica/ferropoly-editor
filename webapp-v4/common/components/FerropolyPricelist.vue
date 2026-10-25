@@ -10,6 +10,16 @@
     <div>{{ formatGameDate(gameDate) }}, {{ formatGameTime(gameStart) }} -
       {{ formatGameTime(gameEnd) }}
     </div>
+    <div class="flex justify-content-end mt-2 no-print">
+      <Button
+          :label="showPriceRange ? 'Preiskategorie verbergen' : 'Preiskategorie anzeigen'"
+          :icon="showPriceRange ? 'pi pi-eye-slash' : 'pi pi-eye'"
+          size="small"
+          severity="secondary"
+          text
+          @click="showPriceRange = !showPriceRange"
+      />
+    </div>
     <data-table
         :value="pricelist"
         size="small"
@@ -22,6 +32,15 @@
       </column>
       <column field="location.name" header="Ort"></column>
       <column field="pricelist.propertyGroup" header="Gruppe"></column>
+      <column
+          v-if="showPriceRange"
+          field="pricelist.priceRange"
+          header="Preiskategorie"
+      >
+        <template #body="{data}">
+          <span>{{ formatPriceRange(data.pricelist.priceRange) }}</span>
+        </template>
+      </column>
       <column field="pricelist.price" header="Kaufpreis">
         <template #body="{data}">
           <span>{{ formatPrice(data.pricelist.price) }}</span>
@@ -70,9 +89,11 @@
 
 <script setup>
 
-import {formatGameDate, formatGameTime, formatPrice} from '../lib/formatters';
+import {formatGameDate, formatGameTime, formatPrice, formatPriceRange} from '../lib/formatters';
 import DataTable from 'primevue/datatable';
+import Button from 'primevue/button';
 import Column from 'primevue/column';
+import {ref} from 'vue';
 
 defineProps({
   gamename:  {
@@ -102,6 +123,7 @@ defineProps({
   },
 });
 
+const showPriceRange = ref(false);
 
 </script>
 
@@ -110,6 +132,10 @@ defineProps({
 @media print {
   ::v-global( body) {
     font-size: 10px;
+  }
+
+  .no-print {
+    display: none !important;
   }
 }
 </style>
