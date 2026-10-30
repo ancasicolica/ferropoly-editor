@@ -22,7 +22,8 @@ let travelLogSchema = mongoose.Schema({
     lng:      Number,
     accuracy: Number
   },
-  timestamp:  {type: Date, default: Date.now}
+  timestamp:  {type: Date, default: Date.now},
+  test:       {type: Boolean, default: false}
 });
 
 
@@ -36,11 +37,11 @@ let TravelLog = mongoose.model('TravelLog', travelLogSchema);
  * @param gameId
  * @param teamId
  * @param propertyId
- * @param callback
+ * @param options
  * @returns {*}
  */
-let addEntry = async function (gameId, teamId, propertyId, callback) {
-  if (callback) {
+let addEntry = async function (gameId, teamId, propertyId, options = {}) {
+  if (_.isFunction(options)) {
     logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in addEntry is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
     return callback('NOT SUPPORTED ANYMORE!');
   }
@@ -55,6 +56,7 @@ let addEntry = async function (gameId, teamId, propertyId, callback) {
   logEntry.gameId     = gameId;
   logEntry.teamId     = teamId;
   logEntry.propertyId = propertyId;
+  logEntry.timestamp  = options.timestamp || DateTime.now().toJSDate();
   logEntry._id        = gameId + '-' + DateTime.now().toFormat('YYMMdd-HHmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 };
