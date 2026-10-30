@@ -101,15 +101,9 @@ module.exports = {
         'google.logName',
         _.get(options, 'google.logName', 'not-set')
       );
-      _.set(
-        settings,
-        'google.keyFile',
-        _.get(options, 'google.keyFile', 'not-set')
-      );
       googleLogger = new LoggingWinston({
         projectId: _.get(settings, 'google.projectId', 'not_set'),
         logName: _.get(settings, 'google.logName', 'not_set'),
-        keyFile: _.get(settings, 'google.keyFile', 'not_set'),
         format: format.json(),
         retry: true,
         timeout: 20000, // 20 seconds
