@@ -2,6 +2,8 @@
 
 * Testscript für TravelLog Stresstest hinzugefügt
 
+* Dependency Updates, inkl. Anpassung Google Log Credentials API
+
 ## 4.3.2 25.10.26
 * Dependency Updates
 
