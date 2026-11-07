@@ -33,6 +33,11 @@
 
 import FerropolyInputNumber from '../../../common/components/FerropolyInputNumber.vue';
 import {z} from 'zod';
+
+const testSchema = z.number()
+                    .min(1, 'Der Mindestwert ist 1.')
+                    .max(1000, 'Der Maximalwert ist 1000.');
+
 export default {
   name:  "FerropolyInputNumberTest",
   components: {FerropolyInputNumber},
@@ -44,15 +49,12 @@ export default {
     return {
       test1 : 4,
       min: 1,
-      max: 1000,
-      testSchema: z.number()
-                      .min(1, 'Der Mindestwert ist 1.')
-                      .max(1000, 'Der Maximalwert ist 1000.')
+      max: 1000
     }
   },
   computed  : {
     testValidator() {
-      return this.testSchema.safeParse(this.test1);
+      return testSchema.safeParse(this.test1);
     }
   },
   created   : function () {

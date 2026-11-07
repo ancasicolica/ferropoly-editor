@@ -20,6 +20,9 @@
 import FerropolyInputText from '../../../common/components/FerropolyInputText.vue';
 import {z} from 'zod';
 
+const testSchema = z.string()
+                    .min(4, 'Der Text muss mindestens 4 Zeichen lang sein.')
+                    .max(12, '12 ist die maximale Länge.');
 
 export default {
   name:       'FerropolyInputTextTest',
@@ -30,16 +33,12 @@ export default {
   props:      {},
   data:       function () {
     return {
-      test1:      'abcd',
-      testSchema: z.string()
-                      .min(4, 'Der Text muss mindestens 4 Zeichen lang sein.')
-                      .max(12, '12 ist die maximale Länge.')
-
+      test1:      'abcd'
     }
   },
   computed:   {
     testValidator() {
-      return this.testSchema.safeParse(this.test1);
+      return testSchema.safeParse(this.test1);
     }
   },
   created:    function () {
