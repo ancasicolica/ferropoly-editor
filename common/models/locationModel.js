@@ -20,6 +20,9 @@ const locationSchema = mongoose.Schema({
   uuid:          {type: String, index: true},  // UUID of the location, this is the key we are referencing to
   position:      {lat: String, lng: String},   // position of the location
   accessibility: String,                       // How do we access it?
+  isoCountryCode: String,                       // ISO country code of the location
+  transportOrg:  String,                       // German abbreviation of the operating organisation
+  height:        Number,                       // Height of the location in meters
   maps:          {
     zvv:       {type: Boolean, default: false},
     zvv110:    {type: Boolean, default: false},
@@ -159,6 +162,9 @@ function convertModelDataToObject(data) {
   retVal.uuid          = data.uuid;
   retVal.position      = data.position;
   retVal.accessibility = data.accessibility;
+  retVal.isoCountryCode = data.isoCountryCode;
+  retVal.transportOrg  = data.transportOrg;
+  retVal.height        = data.height;
   retVal.maps          = data.maps;
   return retVal;
 }
