@@ -16,11 +16,14 @@ const _        = require('lodash');
  * The mongoose schema for a location
  */
 const locationSchema = mongoose.Schema({
-  name:          String,                       // Name of the location
-  uuid:          {type: String, index: true},  // UUID of the location, this is the key we are referencing to
-  position:      {lat: String, lng: String},   // position of the location
-  accessibility: String,                       // How do we access it?
-  maps:          {
+  name:           String,                       // Name of the location
+  uuid:           {type: String, index: true},  // UUID of the location, this is the key we are referencing to
+  position:       {lat: String, lng: String},   // position of the location
+  accessibility:  String,                       // How do we access it?
+  isoCountryCode: String,                       // ISO country code of the location
+  transportOrg:   String,                       // German abbreviation of the operating organisation
+  height:         Number,                       // Height of the location
+  maps:           {
     zvv:       {type: Boolean, default: false},
     zvv110:    {type: Boolean, default: false},
     sbb:       {type: Boolean, default: false},
@@ -154,12 +157,15 @@ async function countLocations(callback) {
  * @returns {{}} Ferropoly alike object
  */
 function convertModelDataToObject(data) {
-  let retVal           = {};
-  retVal.name          = data.name;
-  retVal.uuid          = data.uuid;
-  retVal.position      = data.position;
-  retVal.accessibility = data.accessibility;
-  retVal.maps          = data.maps;
+  let retVal            = {};
+  retVal.name           = data.name;
+  retVal.uuid           = data.uuid;
+  retVal.position       = data.position;
+  retVal.accessibility  = data.accessibility;
+  retVal.isoCountryCode = data.isoCountryCode;
+  retVal.transportOrg   = data.transportOrg;
+  retVal.height         = data.height;
+  retVal.maps           = data.maps;
   return retVal;
 }
 

@@ -32,6 +32,9 @@ const importLocation = async function (location) {
       uuid:          location.uuid,
       position:      location.position,
       accessibility: location.accessibility,
+      isoCountryCode: location.isoCountryCode,
+      transportOrg:  location.transportOrg,
+      height:        location.height,
       maps:          location.maps
     });
     // Save the new location
@@ -53,6 +56,18 @@ const importLocation = async function (location) {
     if (foundLocation.accessibility !== location.accessibility) {
       foundLocation.accessibility = location.accessibility;
       saveNeeded                  = true;
+    }
+    if (location.isoCountryCode !== undefined && foundLocation.isoCountryCode !== location.isoCountryCode) {
+      foundLocation.isoCountryCode = location.isoCountryCode;
+      saveNeeded                    = true;
+    }
+    if (location.transportOrg !== undefined && foundLocation.transportOrg !== location.transportOrg) {
+      foundLocation.transportOrg = location.transportOrg;
+      saveNeeded = true;
+    }
+    if (location.height !== undefined && foundLocation.height !== location.height) {
+      foundLocation.height = location.height;
+      saveNeeded           = true;
     }
     // For this comparison we need to change it to a plain object
     let foundLocationObj = foundLocation.toObject();
@@ -156,7 +171,7 @@ const uploadHandler = async function (req, res) {
         return res.status(400).send({message: 'This seems not to be a valid LocationDb Export file.'});
       }
 
-      if (locationDb.version !== 1) {
+      if (locationDb.version !== 1 && locationDb.version !== 2026.11) {
         return res.status(400).send({message: 'This location file version is not supported.'});
       }
       if (locationDb.type !== 'LocationDatabase') {
