@@ -67,7 +67,7 @@ const importLocation = async function (location) {
     }
     if (location.height !== undefined && foundLocation.height !== location.height) {
       foundLocation.height = location.height;
-      saveNeeded = true;
+      saveNeeded           = true;
     }
     // For this comparison we need to change it to a plain object
     let foundLocationObj = foundLocation.toObject();
@@ -171,7 +171,7 @@ const uploadHandler = async function (req, res) {
         return res.status(400).send({message: 'This seems not to be a valid LocationDb Export file.'});
       }
 
-      if (locationDb.version !== 1) {
+      if (locationDb.version !== 1 && locationDb.version !== 2026.11) {
         return res.status(400).send({message: 'This location file version is not supported.'});
       }
       if (locationDb.type !== 'LocationDatabase') {

@@ -11,7 +11,7 @@
       <file-upload ref="fileupload"
                    @upload="onUpload"
                    mode="basic"
-                   :maxFileSize="1000000"
+                   :maxFileSize="4000000"
                    accept=".json"
                    url="/locations"
                    name="locations"

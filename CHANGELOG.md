@@ -1,17 +1,18 @@
 # Changelog Ferropoly Editor
 
+## v4.4.0 12.11.26
+* Update Location Model für Synchronisation mit opentransportdata.swiss (ferropoly-locations Projekt, https://github.com/ancasicolica/ferropoly-locations)
 * Testscript für TravelLog Stresstest hinzugefügt
-
 * Dependency Updates, inkl. Anpassung Google Log Credentials API
 
-## 4.3.2 25.10.26
+## v4.3.2 25.10.26
 * Dependency Updates
 
-## 4.3.1 13.9.26
+## v4.3.1 13.9.26
 * Bugfixes:
   * Kein Sentry Eintrag mehr aufgrund falschem Login
   * Timeout bei Anlegen Spiel explizit auf 12s gesetzt (Sentry)
-* Depencendy Updates
+* Dependency Updates
 
 ## v4.3.0 8.8.26
 * Nicht lineare Preisliste umgesetzt (Wunsch Silvan)
