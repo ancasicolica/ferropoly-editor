@@ -1,6 +1,7 @@
 # Changelog Ferropoly Editor
 
 * Info Text wird neu bei Login-Screen angezeigt
+* Weg vom PrimeVue Editor, neu eigener QuillEditor
 
 ## v4.4.0 12.11.26
 * Update Location Model für Synchronisation mit opentransportdata.swiss (ferropoly-locations Projekt, https://github.com/ancasicolica/ferropoly-locations)
