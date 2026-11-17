@@ -9,7 +9,7 @@
       <template #start>
         <div class="flex align-content-center">
           <div class="flex">
-            <img class="logo" src="/favicon/apple-touch-icon-180x180.png"/></div>
+            <img class="logo" src="/favicon/apple-touch-icon-180x180.png" /></div>
           <div class="flex m-0">
             <p class="title">Ferropoly</p>
           </div>
@@ -25,11 +25,13 @@
         <div class="basis-1/4 pt-2 mr-2 ml-2">
           <Form v-slot="$form" @submit="loginWithPassword" :initialValues="initialValues">
             <div class="field mb-1">
-              <input-text class="form-control" fluid type="text" name="username" id="inputUserName" placeholder="Benutzername"
+              <input-text class="form-control" fluid type="text" name="username" id="inputUserName"
+                          placeholder="Benutzername"
                           required="required" autofocus="autofocus"></input-text>
             </div>
             <div class="field mb-2">
-              <input-text class="form-control" fluid type="password" name="password" id="inputPassword" placeholder="Passwort"
+              <input-text class="form-control" fluid type="password" name="password" id="inputPassword"
+                          placeholder="Passwort"
                           required="required" autocomplete="autocomplete"></input-text>
             </div>
             <prime-button class="button-login btn btn-primary btn-block mb-4" type="submit"
@@ -61,122 +63,107 @@
           </p>
         </div>
       </div>
+      <div v-if="infoText" v-html="infoText"></div>
     </div>
   </div>
 
 </template>
-<script>
+<script setup>
 
 import axios from 'axios';
 import {get} from 'lodash';
+import {onMounted, ref} from 'vue';
 import PrimeButton from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Menubar from 'primevue/menubar';
 import {Form} from '@primevue/forms';
 import PrimeMessage from 'primevue/message';
 
-
-export default {
-  name: 'LoginRoot',
-  // eslint-disable-next-line vue/no-reserved-component-names
-  components: {PrimeButton, InputText, Menubar, Form, PrimeMessage},
-  filters:    {},
-  mixins:     [],
-  model:      {},
-  props:      {
-    appName: {
-      type:    String,
-      default: function () {
-        return 'Ferropoly Editor';
-      }
-    }
-  },
-  data:       function () {
-    return {
-      preview:       false,
-      loginError:    null,
-      menuItems:     [],
-      initialValues: {
-        username: '',
-        password: ''
-      },
-    }
-  },
-  computed:   {},
-  created:    function () {
-    let self = this;
-
-    axios.get('/appinfo/login')
-        .then(resp => {
-          self.preview = get(resp, 'data.settings.preview', false);
-          self.debug   = get(resp, 'data.settings.preview', false);
-          console.log('Welcome to Ferropoly!', resp.data);
-        })
-        .catch(ex => {
-          console.error(ex);
-        })
-  },
-  mounted() {
-    // document.documentElement.style.setProperty('background', `url('/images/background.jpg?v=${Date.now()}')`);
-    document.documentElement.style.setProperty('--bg-image', `url('/images/background.jpg?v=${Date.now()}')`);
-
-
-  },
-  methods: {
-    goToGoogleAuth() {
-      window.location.href = '/auth/google';
-    },
-    goToMicrosoftAuth() {
-      window.location.href = '/auth/microsoft';
-    },
-    goToImpressum() {
-      window.location.href = 'https://www.ferropoly.ch';
-    },
-
-    /**
-     * Handles user login process using a username and password.
-     *
-     * @param {object} params - An object containing the parameter for login.
-     * @param {object} params.states - Object holding the state values of username and password.
-     * @param {object} params.states.username - State object for the username input.
-     * @param {string} params.states.username.value - The username value to be sent to the server.
-     * @param {object} params.states.password - State object for the password input.
-     * @param {string} params.states.password.value - The password value to be sent to the server.
-     * @return {void} The method does not return a value but handles navigation and error processing internally.
-     */
-    loginWithPassword({states}) {
-      axios.post('/login', {username: states.username.value, password: states.password.value})
-          .then(response => {
-            if (response.status === 200) {
-              console.log('Login erfolgreich:', response.data);
-
-              // Getting the URI of the login page, if available
-              const urlParams = new URLSearchParams(window.location.search);
-              const uri       = urlParams.get('uri');
-
-              const redirectUrl = response.headers['location'];
-              if (uri) {
-                window.location.href = uri;
-              } else if (redirectUrl) {
-                window.location.href = redirectUrl;
-              } else {
-                window.location.href = '/'
-              }
-            }
-          })
-          .catch(error => {
-            if (error.response) {
-              // Fehler vom Server (z. B. 401, 403, 500, ... )
-              console.warn('Serverfehler:', error.response.status, error.response.data);
-              this.loginError = `Leider funktioniert diese Kombination aus Benutzername und Passwort nicht (Error Code = ${error.response.status}).`
-            } else {
-              // Netzwerkfehler oder andere Probleme
-              console.error('Netzwerkproblem:', error.message);
-              this.loginError = 'Irgendetwas lief grundlegend schief. Vielleicht hilft es, diese Seite neu zu laden?';
-            }
-          });
-    }
+defineProps({
+  appName: {
+    type:    String,
+    default: 'Ferropoly Editor'
   }
+});
+
+const preview       = ref(false);
+const infoText      = ref(null);
+const loginError    = ref(null);
+const menuItems     = [];
+const initialValues = {
+  username: '',
+  password: ''
+};
+
+axios.get('/appinfo/login')
+    .then(resp => {
+      preview.value  = get(resp, 'data.settings.preview', false);
+      infoText.value = get(resp, 'data.info.text', null);
+      console.log('Welcome to Ferropoly!', resp.data);
+    })
+    .catch(ex => {
+      console.error(ex);
+    });
+
+onMounted(() => {
+  // document.documentElement.style.setProperty('background', `url('/images/background.jpg?v=${Date.now()}')`);
+  document.documentElement.style.setProperty('--bg-image', `url('/images/background.jpg?v=${Date.now()}')`);
+});
+
+function goToGoogleAuth() {
+  window.location.href = '/auth/google';
+}
+
+function goToMicrosoftAuth() {
+  window.location.href = '/auth/microsoft';
+}
+
+function goToImpressum() {
+  window.location.href = 'https://www.ferropoly.ch';
+}
+
+/**
+ * Handles user login process using a username and password.
+ *
+ * @param {object} params - An object containing the parameter for login.
+ * @param {object} params.states - Object holding the state values of username and password.
+ * @param {object} params.states.username - State object for the username input.
+ * @param {string} params.states.username.value - The username value to be sent to the server.
+ * @param {object} params.states.password - State object for the password input.
+ * @param {string} params.states.password.value - The password value to be sent to the server.
+ * @return {void} The method does not return a value but handles navigation and error processing internally.
+ */
+function loginWithPassword({states}) {
+  axios.post('/login', {username: states.username.value, password: states.password.value})
+      .then(response => {
+        if (response.status === 200) {
+          console.log('Login erfolgreich:', response.data);
+
+          // Getting the URI of the login page, if available
+          const urlParams = new URLSearchParams(window.location.search);
+          const uri       = urlParams.get('uri');
+
+          const redirectUrl = response.headers['location'];
+          if (uri) {
+            window.location.href = uri;
+          } else if (redirectUrl) {
+            window.location.href = redirectUrl;
+          } else {
+            window.location.href = '/'
+          }
+        }
+      })
+      .catch(error => {
+        if (error.response) {
+          // Fehler vom Server (z. B. 401, 403, 500, ... )
+          console.warn('Serverfehler:', error.response.status, error.response.data);
+          loginError.value = `Leider funktioniert diese Kombination aus Benutzername und Passwort nicht (Error Code = ${error.response.status}).`
+        } else {
+          // Netzwerkfehler oder andere Probleme
+          console.error('Netzwerkproblem:', error.message);
+          loginError.value = 'Irgendetwas lief grundlegend schief. Vielleicht hilft es, diese Seite neu zu laden?';
+        }
+      });
 }
 
 </script>
