@@ -11,10 +11,10 @@
       .grid
         .col-6
           div Spieldatum
-          Calendar(v-model="gameplay.scheduling.gameDate")
+          DatePicker(v-model="gameplay.scheduling.gameDate")
         .col-6
           div Anmeldeschluss
-          Calendar(v-model="gameplay.joining.possibleUntil")
+          DatePicker(v-model="gameplay.joining.possibleUntil")
         .col-6
           div Finalisiert
           Checkbox(v-model="gameplay.internal.finalized" :binary="true")
@@ -31,12 +31,12 @@
 import GameCard from '../../../apps/gameSelector/components/GameCard.vue'
 import fixtures from '../fixtures/edit-gameplay.json';
 
-import Calendar from 'primevue/calendar';
+import DatePicker from 'primevue/datepicker';
 import Checkbox from 'primevue/checkbox';
 
 export default {
   name      : 'GameCardTest',
-  components: {GameCard,Checkbox, Calendar},
+  components: {GameCard,Checkbox, DatePicker},
   filters   : {},
   mixins    : [],
   model     : {},

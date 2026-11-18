@@ -10,6 +10,8 @@ const cors                 = require('cors');
 const pkg                  = require('../../package.json');
 const {DateTime, Duration} = require('luxon');
 const _                    = require('lodash');
+const {access, constants, readFile}  = require('node:fs/promises');
+const path                 = require('path');
 
 const initializationMoment = DateTime.now();
 const versions             = process.versions;
@@ -18,6 +20,22 @@ const corsOptions = {
   origin:               'https://ferropoly.ch',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
+
+/**
+ * Checks if a file exitsts
+ * @param path
+ * @return {Promise<boolean>}
+ */
+async function fileExists(path) {
+  try {
+    await access(path, constants.F_OK);
+    return true;
+  }
+  catch {
+    return false;
+  }
+}
+
 
 module.exports = function (settings, customData) {
 
@@ -79,7 +97,16 @@ module.exports = function (settings, customData) {
   /**
    * Used for login screens
    */
-  router.get('/login', cors(corsOptions), (req, res) => {
+  router.get('/login', cors(corsOptions), async (req, res) => {
+
+    const infoFile = path.join(__dirname, '..', '..', '..', 'info.html');
+    let infoText   = 'nada';
+    if (await fileExists(infoFile)) {
+      infoText = await readFile(infoFile, 'utf8');
+    } else {
+      infoText = null;
+    }
+
     res.send({
       app:      {
         name:    pkg.name,
@@ -91,6 +118,9 @@ module.exports = function (settings, customData) {
         debugInstance: settings.debug,
         preview:       settings.preview
       },
+      info:     {
+        text: infoText
+      }
     });
   });
 

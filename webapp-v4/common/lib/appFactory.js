@@ -117,6 +117,7 @@ function createWebApp(options) {
   })
   app.use(PrimeVue,
     {
+      license: process.env.PRIMEUI_LICENSE,
       locale: locale['de-ch'],
       theme:  {
         preset:  FerropolyDesign,
@@ -131,6 +132,7 @@ function createWebApp(options) {
   app.use(pinia);
   app.use(ConfirmationService);
   app.mount(options.appMount);
+
 
   console.log(`app ${options.appMount} created`);
 }
