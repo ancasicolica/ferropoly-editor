@@ -23,6 +23,7 @@ const login = require('./routes/login');
 const useradmin = require('./routes/useradmin');
 const edit = require('./routes/edit');
 const newgame = require('./routes/newgame');
+const templates = require('./routes/templates');
 const gameplay = require('./routes/gameplay');
 const authtoken = require('./routes/authtoken');
 const infoRoute = require('../common/routes/info');
@@ -123,6 +124,7 @@ let initServer = async function () {
 
   app.use('/', routes);
   newgame.init(app);
+  templates.init(app);
   edit.init(app, gameplays, users, properties);
   gameplay.init(app);
   app.use('/pricelist', pricelist);

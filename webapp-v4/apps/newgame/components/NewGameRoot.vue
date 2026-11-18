@@ -131,7 +131,7 @@ import NewGamePricelist from './NewGamePricelist.vue';
 import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import NewGameCreate from './NewGameCreate.vue';
-import {computed, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {get} from 'lodash';
 
 const newGameStore       = useNewGameStore();
@@ -140,6 +140,10 @@ const errorMessage = ref('');
 
 const proposedGameNameInvalid = computed(() => {
   return !newGameStore.proposedGameNameValid;
+})
+
+onMounted(()=> {
+  newGameStore.getTemplates();
 })
 
 /**

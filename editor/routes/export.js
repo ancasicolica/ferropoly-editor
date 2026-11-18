@@ -8,12 +8,8 @@ const express                    = require('express');
 const router                     = express.Router();
 const logger                     = require('../../common/lib/logger').getLogger('routes:export');
 const path                       = require('path');
-const _                          = require('lodash');
 const gameplayModel              = require('../../common/models/gameplayModel');
-const {getPropertiesForGameplay} = require('../../common/models/propertyModel');
-const crypto                     = require('crypto');
-const {getUserByMailAddress}     = require('../../common/models/userModel');
-const {DateTime}                 = require('luxon');
+const exportGameplay             = require('../lib/export');
 
 /**
  * Get the home page
@@ -47,48 +43,7 @@ router.get('/:gameId', async (req, res) => {
 
     logger.info(`${gameId}: Export started`);
 
-    const gameplay = await gameplayModel.getGameplay(req.params.gameId, req.session.passport.user);
-    const props    = await getPropertiesForGameplay(req.params.gameId, {lean: true});
-    const user     = await getUserByMailAddress(req.session.passport.user);
-
-    let exportData = {
-      gameplay:   {
-        gameParams: gameplay.gameParams,
-        internal:   {
-          map: gameplay.internal.map
-        }
-      },
-      properties: []
-    };
-
-    props.forEach(p => {
-      exportData.properties.push({
-        location:  {
-          uuid: p.location.uuid
-        },
-        pricelist: p.pricelist
-      });
-    })
-
-    const exportDataBuffer = Buffer.from(JSON.stringify(exportData));
-
-    let result = {
-      version: 1,
-      meta:    {
-        creator: _.get(user, 'personalData.forename', 'unbekannt') + ' ' + _.get(user, 'personalData.surname'),
-        date:    DateTime.now().toISO({format: 'extended'})
-      },
-      data:    exportDataBuffer.toString('base64')
-    }
-
-    // Generate SHA1 hash for `data`
-    const hash = crypto.createHash('sha256');
-    hash.update(result.data);
-
-    // Generate hash as hex string
-    result.meta.signature = hash.digest('hex');
-
-    const buffer = Buffer.from(JSON.stringify(result));
+    const buffer = await exportGameplay(gameId, req.session.passport.user);
 
     res.set({
       'Content-Type':        'application/json',

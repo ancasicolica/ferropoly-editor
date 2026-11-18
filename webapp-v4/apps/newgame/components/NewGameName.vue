@@ -16,29 +16,41 @@
                   min-length="3"
                   max-length="60"></input-text>
     </div>
-    <h2>Spiel importieren</h2>
-    <p class="mb-4">Falls Du ein neues Spiel aus gespeicherten Spieldaten erstellen willst, dann lade diese Datei hoch,
-      andernfalls direkt auf "Weiter".</p>
+    <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+      <Card>
+        <template #title>Spiel importieren</template>
+        <template #content>
+          <p class="mb-4">Falls Du ein neues Spiel aus gespeicherten Spieldaten erstellen willst, dann lade diese Datei hoch,
+            andernfalls direkt auf "Weiter".</p>
 
-    <file-upload @select="handleFileUpload"
-                 mode="basic"
-                 :maxFileSize="500000"
-                 custom-upload
-                 accept=".ferropoly"
-                 invalid-file-limit-message="Es kann nur eine Datei hochgeladen werden."
-                 invalid-file-size-message="Die hochgeladene Datei ist zu hoch, muss kleiner als 500kB sein."
-                 invalid-file-type-message="{0}: ungültiges Dateiformat."></file-upload>
-    <message v-if="errorMessage" severity="error" class="mt-3">{{ errorMessage }}</message>
-    <Card v-if="newGameStore.importedDataAvailable">
-      <template #title>Import erfolgreich</template>
-      <template #content>
-        <p>Diese Daten werden als Grundlage für ein neues Spiel verwendet:</p>
-        <p>Ersteller: {{ newGameStore.importedGpCreator }}</p>
-        <p>Erstellt am: {{ importedGpDate }}</p>
-        <p>Karte: {{ importedGpMap }}</p>
-        <p>Anzahl Orte: {{ newGameStore.importedGpPropertyNb }}</p>
-      </template>
-    </Card>
+          <file-upload @select="handleFileUpload"
+                       mode="basic"
+                       :maxFileSize="500000"
+                       custom-upload
+                       accept=".ferropoly"
+                       invalid-file-limit-message="Es kann nur eine Datei hochgeladen werden."
+                       invalid-file-size-message="Die hochgeladene Datei ist zu hoch, muss kleiner als 500kB sein."
+                       invalid-file-type-message="{0}: ungültiges Dateiformat."></file-upload>
+          <message v-if="errorMessage" severity="error" class="mt-3">{{ errorMessage }}</message>
+          <Card v-if="newGameStore.importedDataAvailable">
+            <template #title>Import erfolgreich</template>
+            <template #content>
+              <p>Diese Daten werden als Grundlage für ein neues Spiel verwendet:</p>
+              <p>Ersteller: {{ newGameStore.importedGpCreator }}</p>
+              <p>Erstellt am: {{ importedGpDate }}</p>
+              <p>Karte: {{ importedGpMap }}</p>
+              <p>Anzahl Orte: {{ newGameStore.importedGpPropertyNb }}</p>
+            </template>
+          </Card>
+        </template>
+      </Card>
+      <Card v-if="newGameStore.templates && newGameStore.templates.length > 0">
+        <template #title>Vorlagen</template>
+        <template #content>
+          <GameTemplates />
+        </template>
+      </Card>
+    </div>
   </div>
 
 
@@ -56,6 +68,7 @@ import FileUpload from 'primevue/fileupload';
 import {GameplayImporter} from '../../../common/lib/GameplayImporter';
 import {formatDateTime, formatMap} from '../../../common/lib/formatters';
 import {usePrimeVue} from 'primevue/config';
+import GameTemplates from './GameTemplates.vue';
 
 const primevue                             = usePrimeVue();
 primevue.config.locale.noFileChosenMessage = 'Keine Datei ausgewählt';

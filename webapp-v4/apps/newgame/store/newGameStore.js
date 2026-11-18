@@ -21,7 +21,8 @@ export const useNewGameStore = defineStore('NewGame', {
     randomNb:         0,
     errorMessage:     undefined,
     proposedGameIds:  [],
-    importData:       {}
+    importData:       {},
+    templates:        []
   }),
   getters: {
     /**
@@ -53,6 +54,21 @@ export const useNewGameStore = defineStore('NewGame', {
     }
   },
   actions: {
+    /**
+     * Gets the templates
+     * @return {Promise<void>}
+     */
+    async getTemplates() {
+      try {
+        let result = await axios.get('/templates/list');
+        console.log(result);
+        this.templates = result.data.templates;
+
+      }
+      catch(err) {
+        console.error(err);
+      }
+    },
     /**
      * Sends a POST request to check the validity of a game ID and processes the response.
      * Updates the proposed game IDs and error message based on the server's response.
