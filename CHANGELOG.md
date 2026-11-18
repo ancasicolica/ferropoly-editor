@@ -2,6 +2,7 @@
 
 * Info Text wird neu bei Login-Screen angezeigt
 * Weg vom PrimeVue Editor, neu eigener QuillEditor
+* Alle Dependencies auf neustem Stand
 
 ## v4.4.0 12.11.26
 * Update Location Model für Synchronisation mit opentransportdata.swiss (ferropoly-locations Projekt, https://github.com/ancasicolica/ferropoly-locations)
