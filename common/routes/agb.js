@@ -8,7 +8,7 @@ const router    = express.Router();
 const userModel = require('../models/userModel');
 const logger    = require('../lib/logger').getLogger('agb');
 
-const currentAgbVersion = 3; // Has to correlate with the ferropoly web page
+const currentAgbVersion = 4; // Has to correlate with the ferropoly web page
 
 /* GET if the user accepted the AGB or not */
 router.get('/', async function (req, res) {
