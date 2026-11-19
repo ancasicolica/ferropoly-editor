@@ -14,7 +14,6 @@ const gameplayPresets = require('../../common/lib/gameplayPresets');
 /**
  * Saves a game as template
  * @param gameId
- * @return {Promise<void>}
  */
 async function saveGame(gameId) {
 
@@ -22,7 +21,11 @@ async function saveGame(gameId) {
     const gp = await gameplays.Model.findById({_id: gameId});
     if (!gp) {
       logger.warn('Gameplay not found in saveGame', gameId);
-      return;
+      return { success: false, message: 'Game ID nicht gefunden'};
+    }
+    if (!gp.internal.finalized) {
+      logger.warn('Gameplay is not finalized, not suitable for template');
+      return { success: false, message: 'Spiel ist nicht finalisiert, für Template nicht geeignet'};
     }
 
 
@@ -48,13 +51,15 @@ async function saveGame(gameId) {
     const templateCheck = await mapTemplates.MapTemplate.findOne({gameDate: template.gameDate, gameId: gameId});
     if (templateCheck) {
       logger.info(`Template "${gameId}" already in DB, not saving`);
-      return;
+      return { success: false, message: 'Spiel ist bereits als Template vorhanden'};
     }
 
     await template.save();
+    return { success: true, message: `Das Spiel "${gameId}" wurde als Template gespeichert`};
   }
   catch (err) {
     logger.error('There was an exception in templateGames.saveGame', err);
+    return { success: false, message: err.message};
   }
 }
 
