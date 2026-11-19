@@ -11,6 +11,7 @@ const logger = require('../../common/lib/logger').getLogger('cronjobs');
 const _ = require('lodash');
 const { DateTime } = require('luxon');
 const { cleanUp } = require('../../common/lib/authTokenManager');
+const gameplayPresets = require('../../common/lib/gameplayPresets');
 
 /**
  * Set game options, different for different days
@@ -21,7 +22,7 @@ function generateGameOptions() {
       active: _.get(settings, 'autopilot.enabled', false),
       picBucket: _.get(settings, 'autopilot.picBucket', true),
     },
-    presets: 'moderate',
+    presets: gameplayPresets.MODERATE,
   };
 
   switch (

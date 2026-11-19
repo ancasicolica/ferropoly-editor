@@ -41,6 +41,12 @@ const mapTemplateSchema = new Schema(
       type: Boolean,
       default: true
     },
+    // Difficulty level of the game
+    difficulty: {
+      type: String,
+      trim: true,
+      required: true
+    },
     // Denormalised metadata for the overview map (avoids parsing mapData!)
     stats: {
       propertyCount: { type: Number, required: true, min: 1 },

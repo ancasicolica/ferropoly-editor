@@ -15,6 +15,7 @@ const chancelleryTransaction = require('../../common/models/accounting/chancelle
 const teams = require('../../common/models/teamModel');
 const gameLog = require('../../common/models/gameLogModel');
 const schedulerEvents = require('../../common/lib/schedulerEvents');
+const gameplayPresets = require('../../common/lib/gameplayPresets');
 const schedulerEventsModel = require('../../common/models/schedulerEventModel');
 const picBucketModel = require('../../common/models/picBucketModel');
 const userModel = require('../../common/models/userModel');
@@ -153,9 +154,9 @@ async function copyLocationsToProperties(gpOptions, gameplay) {
 function getGameParamsPresetSet(presets) {
   logger.info(`Using '${presets}' for new gameplay as preset`);
   switch (presets) {
-    case 'easy':
+    case gameplayPresets.EASY:
       return {
-        presets: 'easy',
+        presets: gameplayPresets.EASY,
         interestInterval: 60,
         interest: 4000,
         interestCyclesAtEndOfGame: 2,
@@ -179,9 +180,9 @@ function getGameParamsPresetSet(presets) {
         },
       };
 
-    case 'moderate':
+    case gameplayPresets.MODERATE:
       return {
-        presets: 'moderate',
+        presets: gameplayPresets.MODERATE,
         interestInterval: 60,
         interest: 4000,
         interestCyclesAtEndOfGame: 2,
@@ -207,7 +208,7 @@ function getGameParamsPresetSet(presets) {
 
     default:
       return {
-        presets: 'classic',
+        presets: gameplayPresets.CLASSIC,
         interestInterval: 60,
         interest: 4000,
         interestCyclesAtEndOfGame: 2,

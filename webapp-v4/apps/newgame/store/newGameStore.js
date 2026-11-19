@@ -9,6 +9,7 @@ import {DateTime} from 'luxon';
 import axios from 'axios';
 import {useAuthTokenStoreStore} from '../../../common/store/authTokenStore';
 import {toRaw} from 'vue'
+import gameplayPresets from '../../../../common/lib/gameplayPresets';
 
 export const useNewGameStore = defineStore('NewGame', {
   state:   () => ({
@@ -17,7 +18,7 @@ export const useNewGameStore = defineStore('NewGame', {
     proposedGameName: '',
     gameMap:          'zvv',
     gameDate:         DateTime.now().plus({days: 7}).toJSDate(),
-    presets:          'moderate',
+    presets:          gameplayPresets.MODERATE,
     randomNb:         0,
     errorMessage:     undefined,
     proposedGameIds:  [],

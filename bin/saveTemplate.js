@@ -6,7 +6,7 @@ const settings = require('../editor/settings');
 async function main() {
   try {
     await ferropolyDb.init(settings);
-    await templateGames.saveGame('play-a-demo-game')
+    await templateGames.saveGame('local-demo-game')
 
 
     console.log('Saved, reading all games');

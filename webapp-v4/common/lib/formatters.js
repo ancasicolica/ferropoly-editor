@@ -1,6 +1,7 @@
 import {DateTime} from 'luxon';
-import {isNumber, find, toUpper} from 'lodash';
+import {isNumber, find, toUpper, capitalize} from 'lodash';
 import mapData from '../../../common/lib/maps.json';
+import gameplayPresets from '../../../common/lib/gameplayPresets';
 
 /**
  * Creates a Luxon DateTime instance from the given value.
@@ -9,7 +10,7 @@ import mapData from '../../../common/lib/maps.json';
  *
  * @return {DateTime} - The Luxon DateTime instance created from the value.
  */
-function createLuxonDate(value ) {
+function createLuxonDate(value) {
   if (value instanceof DateTime) {
     return value;
   }
@@ -18,6 +19,7 @@ function createLuxonDate(value ) {
   }
   return DateTime.fromISO(value);
 }
+
 /**
  * Formatter for the Game Date (when we play):
  *
@@ -32,6 +34,23 @@ function formatGameDate(value) {
   }
   value = createLuxonDate(value);
   return value.setLocale('de').toLocaleString(DateTime.DATE_HUGE);
+}
+
+
+/**
+ * Formatter for a date
+ *
+ * 	19. Nov. 2026
+ *
+ * @param value
+ * @returns {string}
+ */
+function formatDateOnly(value) {
+  if (!value) {
+    return '';
+  }
+  value = createLuxonDate(value);
+  return value.setLocale('de').toLocaleString(DateTime.DATE_MED);
 }
 
 
@@ -235,12 +254,43 @@ function buildingStatus(bs) {
   }
 }
 
+/**
+ * Returns the difficulty level of a pricelist
+ * @param level
+ * @param startWithCapitalLetter
+ * @return {string}
+ */
+function formatDifficulty(level, startWithCapitalLetter = false) {
+  let result = 'unbekannt';
+  switch (level) {
+    case gameplayPresets.EASY:
+      result = 'einfach';
+      break;
+
+    case gameplayPresets.CLASSIC:
+      result = 'anspruchsvoll';
+      break;
+
+    case gameplayPresets.MODERATE:
+      result = 'mittel';
+      break;
+
+    case gameplayPresets.EXPERT:
+      result = 'experte';
+      break;
+  }
+  if (startWithCapitalLetter) {
+    return capitalize(result);
+  }
+  return result;
+}
 
 export {
   formatMap,
   formatTime,
   formatGameTime,
   formatGameDate,
+  formatDateOnly,
   formatDateTime,
   formatPrice,
   formatAccessibility,
@@ -249,5 +299,6 @@ export {
   buildingStatus,
   formatTimestampAsAgo,
   formatPosition,
-  createLuxonDate
+  createLuxonDate,
+  formatDifficulty
 };

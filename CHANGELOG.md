@@ -1,5 +1,6 @@
 # Changelog Ferropoly Editor
 
+* Templates: Templates von Spielen können gespeichert und wieder geladen werden
 * Info Text wird neu bei Login-Screen angezeigt
 * Weg vom PrimeVue Editor, neu eigener QuillEditor
 * Alle Dependencies auf neustem Stand

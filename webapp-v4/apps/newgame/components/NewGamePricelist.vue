@@ -12,7 +12,7 @@
     </p>
     <div class="flex">
       <div class="flex">
-        <radio-button class="ml-5 mr-5" v-model="newGameStore.presets" inputId="easy" name="presets" value="easy"></radio-button>
+        <radio-button class="ml-5 mr-5" v-model="newGameStore.presets" :inputId="gameplayPresets.EASY" name="presets" :value="gameplayPresets.EASY"></radio-button>
       </div>
       <div class="flex">
         Einfach: Die Preisspanne zwischen dem günstigsten und teuersten Ort ist klein. Es kommt im Spiel mehr darauf an
@@ -22,8 +22,8 @@
     </div>
     <div class="flex mt-4">
       <div class="flex">
-        <radio-button class="ml-5 mr-5" v-model="newGameStore.presets" inputId="moderate" name="presets"
-                      value="moderate"></radio-button>
+        <radio-button class="ml-5 mr-5" v-model="newGameStore.presets" :inputId="gameplayPresets.MODERATE" name="presets"
+                      :value="gameplayPresets.MODERATE"></radio-button>
       </div>
       <div class="flex">
         Mittel: Das teuerste Ort ist vier mal so teuer wie das billigste und der Häuserbau wird wichtig. Eine
@@ -34,8 +34,8 @@
     </div>
     <div class="flex mt-4">
       <div class="flex">
-        <radio-button class="ml-5 mr-5" v-model="newGameStore.presets" inputId="classic" name="presets"
-                      value="classic"></radio-button>
+        <radio-button class="ml-5 mr-5" v-model="newGameStore.presets" :inputId="gameplayPresets.CLASSIC" name="presets"
+                      :value="gameplayPresets.CLASSIC"></radio-button>
       </div>
       <div class="flex">
         Anspruchsvoll: Die Preisspanne zwischen dem günstigsten und teuersten Ort ist gross: das teuerste Ort kostet
@@ -59,6 +59,7 @@ import {useNewGameStore} from '../store/newGameStore';
 import RadioButton from 'primevue/radiobutton';
 import PrimeSelect from 'primevue/select';
 import {ref} from 'vue';
+import gameplayPresets from '../../../../common/lib/gameplayPresets';
 
 const newGameStore = useNewGameStore();
 

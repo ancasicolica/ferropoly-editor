@@ -9,6 +9,7 @@ const properties     = require('../../common/models/propertyModel');
 const mapTemplates   = require('../../common/models/mapTemplateModel');
 const logger         = require('../../common/lib/logger').getLogger('templateGames');
 const exportGameplay = require('./export');
+const gameplayPresets = require('../../common/lib/gameplayPresets');
 
 /**
  * Saves a game as template
@@ -36,6 +37,13 @@ async function saveGame(gameId) {
     template.stats.map           = gp.internal.map;
     template.stats.propertyCount = await properties.countProperties(gameId);
     template.mapData             = await exportGameplay(gameId, gp.internal.owner);
+
+    // The difficulty bases on different levels
+    if (gp.gameParams.calculationMethod === 'custom') {
+      template.difficulty = gameplayPresets.EXPERT;
+    } else {
+      template.difficulty = gp.gameParams.presets;
+    }
 
     const templateCheck = await mapTemplates.MapTemplate.findOne({gameDate: template.gameDate, gameId: gameId});
     if (templateCheck) {

@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const gameplayLib = require('../lib/gameplayLib');
+const gameplayPresets = require('../../common/lib/gameplayPresets');
 const gameplayModel = require('../../common/models/gameplayModel');
 const userModel = require('../../common/models/userModel');
 const rulesModel = require('../../common/models/rulesModel');
@@ -103,7 +104,7 @@ router.post('/createnew', async function (req, res) {
       gamename: req.body.gamename,
       gamedate: req.body.gamedate,
       gameId: req.body.gameId || '',
-      presets: req.body.presets || 'classic',
+      presets: req.body.presets || gameplayPresets.CLASSIC,
       random: req.body.random,
       gameParams: req.body.gameParams,
       properties: req.body.properties,

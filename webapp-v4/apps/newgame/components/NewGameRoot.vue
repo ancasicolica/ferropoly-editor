@@ -11,9 +11,10 @@
       <step-list>
         <step value="1">Spielname</step>
         <step value="2">Spieltag</step>
-        <step value="3">Karte</step>
-        <step value="4">Preisliste</step>
-        <step value="5">Abschluss</step>
+        <step value="3">Import</step>
+        <step value="4">Karte</step>
+        <step value="5">Preisliste</step>
+        <step value="6">Abschluss</step>
       </step-list>
       <step-panels>
         <step-panel v-slot="{activateCallback}" value="1">
@@ -29,6 +30,7 @@
                           iconPos="right"></prime-button>
           </div>
         </step-panel>
+
         <step-panel v-slot="{activateCallback}" value="2">
           <div class="block">
             <card>
@@ -40,34 +42,37 @@
           <div class="flex pt-6 justify-between">
             <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('1')"
                           severity="secondary"></prime-button>
-            <prime-button v-if="!newGameStore.importedDataAvailable"
-                   label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('3')"
+            <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('3')"
                           iconPos="right"></prime-button>
-            <prime-button v-if="newGameStore.importedDataAvailable"
-                   label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('5')"
-                          iconPos="right"></prime-button>
+
           </div>
         </step-panel>
+
         <step-panel v-slot="{activateCallback}" value="3">
           <div class="block">
             <card>
               <template #content>
-                <new-game-map></new-game-map>
+                <import-game />
               </template>
             </card>
           </div>
           <div class="flex pt-6 justify-between">
             <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('2')"
                           severity="secondary"></prime-button>
-            <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('4')"
+            <prime-button v-if="!newGameStore.importedDataAvailable"
+                   label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('4')"
+                          iconPos="right"></prime-button>
+            <prime-button v-if="newGameStore.importedDataAvailable"
+                   label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('6')"
                           iconPos="right"></prime-button>
           </div>
         </step-panel>
+
         <step-panel v-slot="{activateCallback}" value="4">
           <div class="block">
             <card>
               <template #content>
-                <new-game-pricelist></new-game-pricelist>
+                <new-game-map></new-game-map>
               </template>
             </card>
           </div>
@@ -78,7 +83,24 @@
                           iconPos="right"></prime-button>
           </div>
         </step-panel>
+
         <step-panel v-slot="{activateCallback}" value="5">
+          <div class="block">
+            <card>
+              <template #content>
+                <new-game-pricelist></new-game-pricelist>
+              </template>
+            </card>
+          </div>
+          <div class="flex pt-6 justify-between">
+            <prime-button label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')"
+                          severity="secondary"></prime-button>
+            <prime-button label="Weiter" icon="pi pi-arrow-right" @click="activateCallback('6')"
+                          iconPos="right"></prime-button>
+          </div>
+        </step-panel>
+
+        <step-panel v-slot="{activateCallback}" value="6">
           <div class="block">
             <!-- Centered spinner area taking ~70% of viewport height -->
             <div class="spinner-area" v-if="gameCreationActive">
@@ -98,10 +120,10 @@
           </div>
           <div class="flex pt-6 justify-between">
             <prime-button v-if="!newGameStore.importedDataAvailable"
-                          label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('4')"
+                          label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('5')"
                           severity="secondary"></prime-button>
             <prime-button v-if="newGameStore.importedDataAvailable"
-                          label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('2')"
+                          label="Zurück" icon="pi pi-arrow-left" @click="activateCallback('3')"
                           severity="secondary"></prime-button>
             <prime-button label="Spiel anlegen" @click="createGame"
                           :disabled="gameCreationActive || proposedGameNameInvalid"></prime-button>
@@ -133,6 +155,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import NewGameCreate from './NewGameCreate.vue';
 import {computed, onMounted, ref} from 'vue';
 import {get} from 'lodash';
+import ImportGame from './ImportGame.vue';
 
 const newGameStore       = useNewGameStore();
 const gameCreationActive = ref(false);
