@@ -69,11 +69,15 @@ module.exports = [
     entry   : path.join(__dirname, 'apps', 'export', 'app.js'),
     htmlFile: 'export.html'
   },
-
   {
     name    : 'dashboard',
     entry   : path.join(__dirname, 'apps', 'dashboard', 'app.js'),
     htmlFile: 'dashboard.html'
+  },
+  {
+    name    : 'challenges',
+    entry   : path.join(__dirname, 'apps', 'challenges', 'app.js'),
+    htmlFile: 'challenges.html'
   },
 
 ];
