@@ -6,8 +6,9 @@
 
 <template>
   <div class="challenges-page">
-    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/player/"></menu-bar>
+    <menu-bar :elements="menuBarElements" @item-selected="onItemSelected" help-url="https://www.ferropoly.ch/hilfe/ferropoly-editor/3-0/challenges/"></menu-bar>
     <Toast/>
+    <ConfirmDialog />
     <div class="ferropoly-container">
       <div class="challenges-layout">
         <div class="challenges-list">
@@ -26,6 +27,7 @@
 
 import MenuBar from '../MenuBar.vue';
 import Toast from 'primevue/toast';
+import ConfirmDialog from 'primevue/confirmdialog';
 import {useToast} from 'primevue/usetoast';
 import {gameIdExtractor} from '../../lib/gameIdExtractor';
 import {useChallengesStore} from '../../store/challengesStore';
@@ -42,7 +44,10 @@ const menuBarElements = ref([
 ]);
 
 onBeforeMount(()=> {
-  challengesStore.fetchData(gameId);
+  challengesStore.fetchData(gameId.value).catch(err => {
+    toast.add({severity: 'error', summary: 'Challenges konnten nicht geladen werden',
+      detail: err.message, life: 5000});
+  });
 })
 
 const onItemSelected = function (item) {

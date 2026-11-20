@@ -31,6 +31,12 @@ class Challenge {
   }
 }
 
+/**
+ * Creates a new challenge
+ * @param gameId
+ * @param options
+ * @return {Challenge|void}
+ */
 const createNewChallenge = function(gameId, options = {}) {
   if (!gameId) {
     return console.error('createNewChallenge expects a gameId');

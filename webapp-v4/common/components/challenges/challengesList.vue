@@ -10,8 +10,13 @@
       <input v-model="sortByStart" type="checkbox" /> Nach Startzeit sortieren
     </label>
     <div class="challenge-entries">
-      <challenges-list-entry v-for="(challenge, index) in displayedChallenges" :key="challenge._id ?? index"
-                             :challenge="challenge" />
+      <button v-for="(challenge, index) in displayedChallenges" :key="challenge._id ?? index"
+              type="button" class="challenge-select"
+              :class="{selected: challengesStore.currentChallenge === challenge}"
+              :aria-pressed="challengesStore.currentChallenge === challenge"
+              @click="challengesStore.currentChallenge = challenge">
+        <challenges-list-entry :challenge="challenge" />
+      </button>
     </div>
   </div>
 </template>
@@ -22,7 +27,7 @@ import {computed, ref} from 'vue';
 import ChallengesListEntry from './challengesListEntry.vue';
 
 const challengesStore = useChallengesStore();
-const sortByStart     = ref(false);
+const sortByStart     = ref(true);
 
 const displayedChallenges = computed(() => {
   if (!sortByStart.value) {
@@ -53,5 +58,26 @@ const displayedChallenges = computed(() => {
 .challenge-entries {
   min-height: 0;
   overflow-y: auto;
+}
+
+.challenge-select {
+  display: block;
+  width: 100%;
+  padding: 0 0.75rem;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.challenge-select:hover, .challenge-select.selected {
+  background: var(--p-primary-50, #eff6ff);
+}
+
+.challenge-select:focus-visible {
+  outline: 2px solid var(--p-primary-color, #3b82f6);
+  outline-offset: -2px;
 }
 </style>

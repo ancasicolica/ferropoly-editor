@@ -62,49 +62,86 @@ const challengeSchema = new Schema({
     timestamps: true // Automatically creates createdAt and updatedAt
   });
 
+challengeSchema.path('schedule.end').validate(function (end) {
+  return !this.schedule?.start || !end || end.getTime() - this.schedule.start.getTime() >= 15 * 60 * 1000;
+}, 'Eine Challenge muss mindestens 15 Minuten aktiv sein.');
+
 challengeSchema.index({gameId: 1, 'schedule.start': 1, 'schedule.end': 1})
 
 const Challenge = mongoose.model('Challenge', challengeSchema);
 
+/**
+ * Creates a new challenge
+ * @param gameId
+ * @param options
+ */
 async function createChallenge(gameId, options) {
-  const challenge = new Challenge();
-  Object.assign(challenge, options);
+  const challenge = new Challenge({...options, _id: undefined});
   challenge.gameId = gameId;
   return await challenge.save();
 }
 
+/**
+ * Returns all challenges for a gameplay
+ * @param gameId
+ */
 async function getChallenges(gameId) {
   return await Challenge.find({gameId: gameId})
+    .select('+description')
     .lean()
     .exec();
 }
 
+/**
+ * Gets a single challenge
+ * @param gameId
+ * @param challengeId
+ */
 async function getChallenge(gameId, challengeId) {
   return await Challenge.find({gameId: gameId, _id: challengeId})
+    .select('+description')
     .lean()
     .exec();
 }
 
+async function deleteChallenge(gameId, challengeId, now = new Date()) {
+  return await Challenge.findOneAndDelete({
+    _id: challengeId, gameId, 'schedule.start': {$gt: now}
+  }).exec();
+}
+
+/**
+ * Deletes all challenges for a gameplay
+ * @param gameId
+ */
 async function deleteAllChallenges(gameId) {
   return await Challenge.teleteMany({gameId: gameId}).exec();
 }
 
+/**
+ * Updates (creates) a challenge
+ * @param gameId
+ * @param challenge
+ */
 async function updateChallenge(gameId, challenge) {
-  let doc = await Challenge
+  let doc = challenge._id ? await Challenge
     .findOne({_id: challenge._id, gameId})
-    .exec();
+    .select('+description')
+    .exec() : null;
 
   if (!doc) {
-    // Challenge not existing yet
     if (!gameId) {
       throw new Error('no game id');
+    }
+    if (challenge._id) {
+      throw new Error('Challenge not found');
     }
     return await createChallenge(gameId, challenge);
   }
 
   // Challenge existing
   Object.assign(doc, challenge);
-  challenge.gameId = gameId;
+  doc.gameId = gameId;
   return doc.save();
 }
 
@@ -114,6 +151,7 @@ module.exports = {
   createChallenge,
   getChallenges,
   getChallenge,
+  deleteChallenge,
   deleteAllChallenges,
   updateChallenge
 }

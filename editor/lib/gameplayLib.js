@@ -4,36 +4,37 @@
  * Created by kc on 14.02.15.
  */
 
-const gameplays = require('../../common/models/gameplayModel');
-const properties = require('../../common/models/propertyModel');
-const rules = require('../../common/models/rulesModel');
-const locations = require('../../common/models/locationModel');
-const travelLog = require('../../common/models/travelLogModel');
-const teamAccountTransaction = require('../../common/models/accounting/teamAccountTransaction');
+const gameplays                  = require('../../common/models/gameplayModel');
+const properties                 = require('../../common/models/propertyModel');
+const rules                      = require('../../common/models/rulesModel');
+const locations                  = require('../../common/models/locationModel');
+const travelLog                  = require('../../common/models/travelLogModel');
+const teamAccountTransaction     = require('../../common/models/accounting/teamAccountTransaction');
 const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
-const chancelleryTransaction = require('../../common/models/accounting/chancelleryTransaction');
-const teams = require('../../common/models/teamModel');
-const gameLog = require('../../common/models/gameLogModel');
-const schedulerEvents = require('../../common/lib/schedulerEvents');
-const gameplayPresets = require('../../common/lib/gameplayPresets');
-const schedulerEventsModel = require('../../common/models/schedulerEventModel');
-const picBucketModel = require('../../common/models/picBucketModel');
-const userModel = require('../../common/models/userModel');
-const logger = require('../../common/lib/logger').getLogger('gameplayLib');
-const demoUsers = require('./demoUsers');
-const pricelistLib = require('./pricelist');
-const Moniker = require('moniker');
-const pugToHtml = require('./pugToHtml');
-const settings = require('../settings');
-const { DateTime } = require('luxon');
-const _ = require('lodash');
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const rulesModel = require('../../common/models/rulesModel');
-const rulesCompiler = require('./rulesCompiler');
-const demoGameId = 'play-a-demo-game';
-const demoOrganisatorMail = 'demo@ferropoly.ch';
+const chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
+const challenges                 = require('../../common/models/challengeModel');
+const teams                      = require('../../common/models/teamModel');
+const gameLog                    = require('../../common/models/gameLogModel');
+const schedulerEvents            = require('../../common/lib/schedulerEvents');
+const gameplayPresets            = require('../../common/lib/gameplayPresets');
+const schedulerEventsModel       = require('../../common/models/schedulerEventModel');
+const picBucketModel             = require('../../common/models/picBucketModel');
+const userModel                  = require('../../common/models/userModel');
+const logger                     = require('../../common/lib/logger').getLogger('gameplayLib');
+const demoUsers                  = require('./demoUsers');
+const pricelistLib               = require('./pricelist');
+const Moniker                    = require('moniker');
+const pugToHtml                  = require('./pugToHtml');
+const settings                   = require('../settings');
+const {DateTime}                 = require('luxon');
+const _                          = require('lodash');
+const fs                         = require('fs');
+const path                       = require('path');
+const axios                      = require('axios');
+const rulesModel                 = require('../../common/models/rulesModel');
+const rulesCompiler              = require('./rulesCompiler');
+const demoGameId                 = 'play-a-demo-game';
+const demoOrganisatorMail        = 'demo@ferropoly.ch';
 
 /**
  * Updates the ferropoly main program cache
@@ -62,7 +63,8 @@ async function updateFerropolyMainCache(delay, callback) {
         logger.info(`Main instance ${instance} returned ${resp.status}`);
       }
     }
-  } catch (err) {
+  }
+  catch (err) {
     logger.info(
       'Error in updateFerropolyMainCache (which is not a killer)',
       err.message
@@ -80,11 +82,11 @@ async function createRandomGameplay(gameId, props, nb) {
   let gplen = Math.min(nb, props.length);
   logger.info('CREATING RANDOM GAMEPLAY with ' + gplen + ' nb');
   let priceRange = 0;
-  let generated = 0;
+  let generated  = 0;
 
   while (generated < gplen) {
     let index = _.random(0, props.length - 1);
-    let p = _.pullAt(props, [index]);
+    let p     = _.pullAt(props, [index]);
     if (p[0].pricelist.priceRange === -1) {
       p[0].pricelist.priceRange = priceRange % 6;
       priceRange++;
@@ -106,8 +108,8 @@ async function createRandomGameplay(gameId, props, nb) {
  * @returns {*}
  */
 async function copyLocationsToProperties(gpOptions, gameplay) {
-  const { map, properties: importedProps = [], random } = gpOptions;
-  const gameId = gameplay.internal.gameId;
+  const {map, properties: importedProps = [], random} = gpOptions;
+  const gameId                                        = gameplay.internal.gameId;
 
   // Load locations
   const gameLocations = await locations.getAllLocationsForMap(map);
@@ -156,78 +158,78 @@ function getGameParamsPresetSet(presets) {
   switch (presets) {
     case gameplayPresets.EASY:
       return {
-        presets: gameplayPresets.EASY,
-        interestInterval: 60,
-        interest: 4000,
+        presets:                   gameplayPresets.EASY,
+        interestInterval:          60,
+        interest:                  4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital: 4000,
-        debtInterest: 20,
-        housePrices: 0.5,
-        properties: {
-          lowestPrice: 1000,
-          highestPrice: 2000,
-          numberOfPriceLevels: 6,
+        startCapital:              4000,
+        debtInterest:              20,
+        housePrices:               0.5,
+        properties:                {
+          lowestPrice:                1000,
+          highestPrice:               2000,
+          numberOfPriceLevels:        6,
           numberOfPropertiesPerGroup: 2,
         },
-        rentFactors: {
-          noHouse: 0.25,
-          oneHouse: 2,
-          twoHouses: 2.75,
-          threeHouses: 3,
-          fourHouses: 3.5,
-          hotel: 4,
+        rentFactors:               {
+          noHouse:              0.25,
+          oneHouse:             2,
+          twoHouses:            2.75,
+          threeHouses:          3,
+          fourHouses:           3.5,
+          hotel:                4,
           allPropertiesOfGroup: 2,
         },
       };
 
     case gameplayPresets.MODERATE:
       return {
-        presets: gameplayPresets.MODERATE,
-        interestInterval: 60,
-        interest: 4000,
+        presets:                   gameplayPresets.MODERATE,
+        interestInterval:          60,
+        interest:                  4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital: 4000,
-        debtInterest: 20,
-        housePrices: 0.5,
-        properties: {
-          lowestPrice: 1000,
-          highestPrice: 4000,
-          numberOfPriceLevels: 7,
+        startCapital:              4000,
+        debtInterest:              20,
+        housePrices:               0.5,
+        properties:                {
+          lowestPrice:                1000,
+          highestPrice:               4000,
+          numberOfPriceLevels:        7,
           numberOfPropertiesPerGroup: 2,
         },
-        rentFactors: {
-          noHouse: 0.2,
-          oneHouse: 0.8,
-          twoHouses: 2.5,
-          threeHouses: 3.5,
-          fourHouses: 4,
-          hotel: 5,
+        rentFactors:               {
+          noHouse:              0.2,
+          oneHouse:             0.8,
+          twoHouses:            2.5,
+          threeHouses:          3.5,
+          fourHouses:           4,
+          hotel:                5,
           allPropertiesOfGroup: 2,
         },
       };
 
     default:
       return {
-        presets: gameplayPresets.CLASSIC,
-        interestInterval: 60,
-        interest: 4000,
+        presets:                   gameplayPresets.CLASSIC,
+        interestInterval:          60,
+        interest:                  4000,
         interestCyclesAtEndOfGame: 2,
-        startCapital: 4000,
-        debtInterest: 20,
-        housePrices: 0.5,
-        properties: {
-          lowestPrice: 1000,
-          highestPrice: 8000,
-          numberOfPriceLevels: 8,
+        startCapital:              4000,
+        debtInterest:              20,
+        housePrices:               0.5,
+        properties:                {
+          lowestPrice:                1000,
+          highestPrice:               8000,
+          numberOfPriceLevels:        8,
           numberOfPropertiesPerGroup: 2,
         },
-        rentFactors: {
-          noHouse: 0.125,
-          oneHouse: 0.5,
-          twoHouses: 2,
-          threeHouses: 3,
-          fourHouses: 4,
-          hotel: 5,
+        rentFactors:               {
+          noHouse:              0.125,
+          oneHouse:             0.5,
+          twoHouses:            2,
+          threeHouses:          3,
+          fourHouses:           4,
+          hotel:                5,
           allPropertiesOfGroup: 2,
         },
       };
@@ -256,7 +258,7 @@ async function createNewGameplay(gpOptions) {
   const dbUser = await userModel.getUserByMailAddress(gpOptions.email);
 
   // as default we use the email address as user id
-  const user = dbUser || { id: gpOptions.email };
+  const user = dbUser || {id: gpOptions.email};
 
   let gameId = gpOptions.gameId;
   if (!gameId || gameId.length === 0) {
@@ -267,23 +269,23 @@ async function createNewGameplay(gpOptions) {
     ]).choose();
   }
   const gameplay = await gameplays.createGameplay({
-    gameId: gameId,
-    map: gpOptions.map,
-    name: gpOptions.gamename,
-    ownerEmail: gpOptions.email,
-    organisatorName: gpOptions.organisatorName,
-    ownerId: user.id,
-    gameStart: gpOptions.gameStart || '05:00',
-    gameEnd: gpOptions.gameEnd || '18:00',
-    gameDate: gpOptions.gamedate,
-    instance: settings.server.serverId,
-    mobile: gpOptions.mobile || { level: gameplays.MOBILE_BASIC },
+    gameId:           gameId,
+    map:              gpOptions.map,
+    name:             gpOptions.gamename,
+    ownerEmail:       gpOptions.email,
+    organisatorName:  gpOptions.organisatorName,
+    ownerId:          user.id,
+    gameStart:        gpOptions.gameStart || '05:00',
+    gameEnd:          gpOptions.gameEnd || '18:00',
+    gameDate:         gpOptions.gamedate,
+    instance:         settings.server.serverId,
+    mobile:           gpOptions.mobile || {level: gameplays.MOBILE_BASIC},
     gameParams:
-      gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
+                      gpOptions.gameParams || getGameParamsPresetSet(gpOptions.presets),
     interestInterval: gpOptions.interestInterval,
-    isDemo: gpOptions.isDemo,
-    mainInstances: settings.mainInstances,
-    autopilot: gpOptions.autopilot,
+    isDemo:           gpOptions.isDemo,
+    mainInstances:    settings.mainInstances,
+    autopilot:        gpOptions.autopilot,
   });
 
   const admins = gpOptions.admins || [];
@@ -335,6 +337,7 @@ async function deleteGameplay(gpOptions, callback) {
     await travelLog.deleteAllEntries(gpOptions.gameId);
     await gameLog.deleteAllEntries(gpOptions.gameId);
     await rules.deleteRules(gpOptions.gameId);
+    await challenges.deleteAllChallenges(gpOptions.gameId);
     logger.info('cleaning task finished');
     if (gpOptions.doNotNotifyMain) {
       logger.info('Notifying main is disabled (no cache update)');
@@ -342,7 +345,8 @@ async function deleteGameplay(gpOptions, callback) {
       // update main instances as we removed the game!
       await updateFerropolyMainCache(100);
     }
-  } catch (err) {
+  }
+  catch (err) {
     logger.error('Error while deleting gameplays', err);
     return callback(err);
   }
@@ -357,12 +361,12 @@ async function deleteGameplay(gpOptions, callback) {
 function createDemoTeamEntry(gameId, entry) {
   return {
     gameId: gameId,
-    data: {
-      name: entry[0],
+    data:   {
+      name:         entry[0],
       organization: entry[1],
-      teamLeader: { name: entry[2], email: entry[3], phone: entry[4] },
-      remarks: '',
-      members: entry[5] || [],
+      teamLeader:   {name: entry[2], email: entry[3], phone: entry[4]},
+      remarks:      '',
+      members:      entry[5] || [],
     },
   };
 }
@@ -388,11 +392,11 @@ async function createDemoTeams(gp, teamNb) {
       '079 000 00 01',
       [
         {
-          login: demoUsers.getTeamLeaderEmail(20),
+          login:        demoUsers.getTeamLeaderEmail(20),
           personalData: demoUsers.getPersonalData(20),
         },
         {
-          login: demoUsers.getTeamLeaderEmail(21),
+          login:        demoUsers.getTeamLeaderEmail(21),
           personalData: demoUsers.getPersonalData(21),
         },
       ],
@@ -405,11 +409,11 @@ async function createDemoTeams(gp, teamNb) {
       '079 000 00 02',
       [
         {
-          login: demoUsers.getTeamLeaderEmail(22),
+          login:        demoUsers.getTeamLeaderEmail(22),
           personalData: demoUsers.getPersonalData(22),
         },
         {
-          login: demoUsers.getTeamLeaderEmail(24),
+          login:        demoUsers.getTeamLeaderEmail(24),
           personalData: demoUsers.getPersonalData(24),
         },
       ],
@@ -422,7 +426,7 @@ async function createDemoTeams(gp, teamNb) {
       '079 000 00 03',
       [
         {
-          login: demoUsers.getTeamLeaderEmail(20),
+          login:        demoUsers.getTeamLeaderEmail(20),
           personalData: demoUsers.getPersonalData(20),
         },
       ],
@@ -560,33 +564,33 @@ async function createDemoTeams(gp, teamNb) {
  */
 async function createDemoGameplay(settings = {}) {
   if (settings.tomorrow) {
-    settings.gameDate = DateTime.now().plus({ days: 1 }).toJSDate();
+    settings.gameDate = DateTime.now().plus({days: 1}).toJSDate();
   }
 
   let gameId = settings.gameId || demoGameId;
 
   let options = {
-    map: settings.map || 'sbb',
-    email: settings.email || demoOrganisatorMail,
+    map:        settings.map || 'sbb',
+    email:      settings.email || demoOrganisatorMail,
     ownerEmail: settings.email || demoOrganisatorMail, // for delete options, todo: should be harmonized with
     // email
-    organisatorName: 'Arthur Dent',
-    gamedate: settings.gameDate || new Date(),
-    gameStart: settings.gameStart || '06:00',
-    gameEnd: settings.gameEnd || '21:00',
-    gamename: settings.gamename || 'Demo Spiel',
-    gameId: gameId,
-    random: settings.random || 120,
-    teamNb: settings.teamNb || 8,
+    organisatorName:  'Arthur Dent',
+    gamedate:         settings.gameDate || new Date(),
+    gameStart:        settings.gameStart || '06:00',
+    gameEnd:          settings.gameEnd || '21:00',
+    gamename:         settings.gamename || 'Demo Spiel',
+    gameId:           gameId,
+    random:           settings.random || 120,
+    teamNb:           settings.teamNb || 8,
     interestInterval: settings.interestInterval,
-    mobile: settings.mobile || { level: 5 },
-    presets: settings.presets,
-    admins: settings.admins || [],
-    isDemo: true,
-    autopilot: {
-      active: _.get(settings, 'autopilot.active', false),
+    mobile:           settings.mobile || {level: 5},
+    presets:          settings.presets,
+    admins:           settings.admins || [],
+    isDemo:           true,
+    autopilot:        {
+      active:    _.get(settings, 'autopilot.active', false),
       picBucket: _.get(settings, 'autopilot.picBucket', false),
-      interval: _.get(settings, 'autopilot.interval', 30 * 60 * 1000),
+      interval:  _.get(settings, 'autopilot.interval', 30 * 60 * 1000),
     },
   };
 
@@ -598,13 +602,13 @@ async function createDemoGameplay(settings = {}) {
     options.gamedate.addDays(settings.demoGameplay.addDays);
     logger.info(
       'Date shifted for ' +
-        settings.demoGameplay.addDays +
-        ' days, date is ' +
-        options.gamedate
+      settings.demoGameplay.addDays +
+      ' days, date is ' +
+      options.gamedate
     );
   }
 
-  let startTs = new Date();
+  let startTs      = new Date();
   const isExisting = await gameplays.checkIfGameIdExists(options.gameId);
   if (isExisting) {
     await deleteGameplay(options);
@@ -615,7 +619,7 @@ async function createDemoGameplay(settings = {}) {
 
   await pricelistLib.create(gameId, demoOrganisatorMail);
   await finalizeGameplay(gp, demoOrganisatorMail, doNotNotifyMain);
-  let endTs = new Date();
+  let endTs    = new Date();
   let duration = (endTs.getTime() - startTs.getTime()) / 1000;
   logger.info(
     'Created the demo again and I needed ' + duration + ' seconds for it!'
@@ -629,19 +633,19 @@ async function createDemoGameplay(settings = {}) {
  * @param doNotNotifyMain
  */
 async function finalizeGameplay(gameplay, email, doNotNotifyMain = false) {
-  const gameId = gameplay.internal.gameId;
+  const gameId  = gameplay.internal.gameId;
   const gpSaved = await gameplays.finalize(gameId, email);
 
   // Creating rules
   logger.info(`${gameId} : creating first rules`);
   const rules = await rulesModel.getRules(gameId);
-  const text = rulesCompiler({ gp: gpSaved, raw: rules.raw });
+  const text  = rulesCompiler({gp: gpSaved, raw: rules.raw});
   await rulesModel.releaseRules(
     gameId,
     text,
     'Automatisch bei Finalisierung erzeugt'
   );
-  await gameplays.updateRules(gameId, gpSaved.internal.owner, { text: text });
+  await gameplays.updateRules(gameId, gpSaved.internal.owner, {text: text});
 
   await properties.finalizeProperties(gameplay.internal.gameId);
 
@@ -676,7 +680,7 @@ async function deleteOldGameplays(callback) {
     if (!gp.scheduling.deleteTs) {
       // This is legacy handling: games created before introducing the deleteTs flag will be deleted 1 month after
       // the game took place. This code can be removed in the next ferropoly release
-      timeout = DateTime.fromJSDate(gp.scheduling.gameDate).plus({ months: 1 });
+      timeout = DateTime.fromJSDate(gp.scheduling.gameDate).plus({months: 1});
     } else {
       // This is the code which should run for current (V2) ferropolys
       timeout = DateTime.fromJSDate(gp.scheduling.deleteTs);
@@ -688,8 +692,8 @@ async function deleteOldGameplays(callback) {
     } else {
       if (DateTime.now() > timeout) {
         await deleteGameplay({
-          gameId: gp._id,
-          ownerEmail: gp.internal.owner,
+          gameId:          gp._id,
+          ownerEmail:      gp.internal.owner,
           doNotNotifyMain: true,
         });
       }
