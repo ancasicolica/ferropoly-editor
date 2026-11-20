@@ -7,10 +7,12 @@
 import {defineStore} from 'pinia'
 import {ref} from 'vue'
 import axios from 'axios';
+import {createNewChallenge} from '../lib/Challenge';
 
 export const useChallengesStore = defineStore('Challenges', () => {
   const gameId       = ref('')
   const challenges  = ref([]);
+  const currentChallenge = ref(null);
 
   async function fetchData(_gameId) {
     gameId.value = _gameId;
@@ -20,5 +22,9 @@ export const useChallengesStore = defineStore('Challenges', () => {
    console.log('challenges read', challenges.value);
   }
 
-  return {gameId, challenges, fetchData}
+  function addNewChallenge() {
+    challenges.value.push(createNewChallenge(gameId.value,{title: `Challenge ${challenges.value.length + 1}`}));
+  }
+
+  return {gameId, challenges, fetchData, currentChallenge, addNewChallenge}
 })
