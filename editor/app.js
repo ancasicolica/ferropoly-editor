@@ -49,6 +49,7 @@ const { v4: uuid } = require('uuid');
 const gpLib = require('./lib/gameplayLib');
 const { DateTime } = require('luxon');
 const authTokenManager = require('../common/lib/authTokenManager');
+const {chromeDevtoolsWorkspace} = require('../common/lib/devtoolsWorkspace');
 
 let initServer = async function () {
   await ferropolyDb.init(settings);
@@ -67,6 +68,9 @@ let initServer = async function () {
 
   // Using compression speeds up the connection (and uses much less data for mobile)
   app.use(compression());
+
+  // Chrome tools
+  app.use(chromeDevtoolsWorkspace());
 
   app.use(express.static(path.join(__dirname, 'public')));
 
