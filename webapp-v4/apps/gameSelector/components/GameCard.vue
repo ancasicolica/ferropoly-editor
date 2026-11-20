@@ -71,7 +71,8 @@
     <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Spielleiter*innen" icon="pi pi-user"
                   @click="gotoUrl(url.editAdmins)" severity="secondary"></prime-button>
 
-    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Challenges"
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Challenges" icon="pi pi-trophy"
+                  :disabled="challengesDisabled"
                   @click="gotoUrl(url.challenges)" severity="secondary"></prime-button>
 
     <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Export" icon="pi pi-download"
@@ -155,6 +156,22 @@ const deletingAllowed        = computed(() => {
   //  Must be owner and not a demo game
   return getGpProperty('isOwner') && !getGpProperty('internal.isDemo')
 });
+const challengesDisabled = computed(()=> {
+  // At the time of playing, we do not delete gameplays
+  const gameDate  = getGpProperty('scheduling.gameDate');
+  if (DateTime.now().hasSame(gameDate, 'day')) {
+    console.log('Today we use the main prog for challenges');
+    return true;
+  }
+
+  if (DateTime.now() > gameDate) {
+    console.log('Game expired, no challenges');
+    return true;
+  }
+
+
+  return false;
+})
 
 /**
  * Returns a formatted timestamp as an "ago" string representing the time elapsed since the given ISO date string.
