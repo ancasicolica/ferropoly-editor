@@ -168,8 +168,6 @@ const challengesDisabled = computed(()=> {
     console.log('Game expired, no challenges');
     return true;
   }
-
-
   return false;
 })
 

@@ -9,12 +9,16 @@ describe('Challenge Model', function () {
   let originalFindOne;
   let originalSave;
   let originalFindOneAndDelete;
+  let originalInsertOne;
+  let originalUpdateOne;
 
   beforeEach(function () {
     originalFind = Challenge.find;
     originalFindOne = Challenge.findOne;
     originalSave = Challenge.prototype.save;
     originalFindOneAndDelete = Challenge.findOneAndDelete;
+    originalInsertOne = Challenge.collection.insertOne;
+    originalUpdateOne = Challenge.collection.updateOne;
   });
 
   afterEach(function () {
@@ -22,6 +26,8 @@ describe('Challenge Model', function () {
     Challenge.findOne = originalFindOne;
     Challenge.prototype.save = originalSave;
     Challenge.findOneAndDelete = originalFindOneAndDelete;
+    Challenge.collection.insertOne = originalInsertOne;
+    Challenge.collection.updateOne = originalUpdateOne;
   });
 
   it('loads the HTML description for the editor', async function () {
@@ -54,6 +60,32 @@ describe('Challenge Model', function () {
     expect(saved._id).to.be.ok();
     expect(saved.gameId).to.be('spiel');
     expect(saved.description).to.be('<p><strong>Text</strong></p>');
+  });
+
+  it('starts new challenges at revision 1 and ignores client-provided revisions', async function () {
+    Challenge.collection.insertOne = async doc => {
+      expect(doc.revision).to.be(1);
+      return {acknowledged: true, insertedId: doc._id};
+    };
+    const saved = await model.createChallenge('spiel', {revision: 99, title: 'Aufgabe',
+      schedule: {start: new Date('2026-11-20T10:00:00Z'), end: new Date('2026-11-20T11:00:00Z')}});
+    expect(saved.revision).to.be(1);
+  });
+
+  it('increments the revision once per save, including legacy challenges without one', async function () {
+    const existing = Challenge.hydrate({_id: '507f1f77bcf86cd799439011', gameId: 'spiel', title: 'Alt',
+      schedule: {start: new Date('2026-11-20T10:00:00Z'), end: new Date('2026-11-20T11:00:00Z')}});
+    Challenge.findOne = () => ({select: () => ({exec: async () => existing})});
+    const revisions = [];
+    Challenge.collection.updateOne = async (filter, update) => {
+      revisions.push(update.$set.revision);
+      return {acknowledged: true, matchedCount: 1, modifiedCount: 1};
+    };
+    const first = await model.updateChallenge('spiel', {_id: existing.id, revision: 99, title: 'Neu'});
+    expect(first.revision).to.be(1);
+    const second = await model.updateChallenge('spiel', {_id: existing.id, revision: -5, title: 'Nochmal'});
+    expect(second.revision).to.be(2);
+    expect(revisions).to.eql([1, 2]);
   });
 
   it('requires a duration of at least 15 minutes', async function () {

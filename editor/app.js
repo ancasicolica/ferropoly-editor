@@ -215,7 +215,7 @@ let initServer = async function () {
   server.listen(app.get('port'), app.get('ip'), async function () {
     logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
     logger.info(
-      'Ferropoly Editor, Copyright (C) 2015-2025 Christian Kuster, CH-8342 Wernetshausen'
+      'Ferropoly Editor, Copyright (C) 2015-2026 Christian Kuster, CH-8342 Wernetshausen'
     );
     logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
     logger.info(

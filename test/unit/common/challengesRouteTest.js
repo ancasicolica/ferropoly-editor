@@ -75,7 +75,7 @@ describe('Challenge save route', function () {
       return {...challenge, _id: '507f1f77bcf86cd799439011', gameId: id};
     };
     const response = await post({authToken: 'token', challenge: {
-      title: 'Test', description: '<p>Text</p>', gameId: 'other', createdAt: 'fake'
+      title: 'Test', description: '<p>Text</p>', gameId: 'other', createdAt: 'fake', revision: 99
     }});
     expect(response.status).to.be(200);
     expect((await response.json()).description).to.be('<p>Text</p>');

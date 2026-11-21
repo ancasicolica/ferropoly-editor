@@ -8,7 +8,7 @@ import {defineStore} from 'pinia'
 import {ref} from 'vue'
 import axios from 'axios';
 import {createNewChallenge} from '../lib/Challenge';
-import {onGameDate} from '../lib/challengeSchedule';
+import {onGameDate, defaultChallengeStart, challengeEndForDuration} from '../lib/challengeSchedule';
 import {getAuthToken} from '../adapters/authToken';
 import {createChallengeTracker} from '../lib/challengeChanges';
 
@@ -62,6 +62,9 @@ export const useChallengesStore = defineStore('Challenges', () => {
    */
   function addNewChallenge() {
     const challenge = createNewChallenge(gameId.value, {title: `Challenge ${challenges.value.length + 1}`});
+    challenge.schedule.start = defaultChallengeStart(gameDate.value);
+    challenge.schedule.end = challengeEndForDuration(gameDate.value, challenge.schedule.start, 60,
+        gameStart.value, gameEnd.value);
     challenges.value.push(challenge);
     currentChallenge.value = challenge;
   }

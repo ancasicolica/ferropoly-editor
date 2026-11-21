@@ -23,6 +23,10 @@ const challengeSchema = new Schema({
       trim:   true,
       select: false // IMPORTANT: Excluded from standard queries (.find()) by default!
     },
+    revision:    {
+      type:    Number,
+      default: 0
+    },
     schedule:    {
       start: {
         type:     Date,
@@ -66,6 +70,10 @@ challengeSchema.path('schedule.end').validate(function (end) {
   return !this.schedule?.start || !end || end.getTime() - this.schedule.start.getTime() >= 15 * 60 * 1000;
 }, 'Eine Challenge muss mindestens 15 Minuten aktiv sein.');
 
+challengeSchema.pre('save', function () {
+  this.revision = (this.revision ?? 0) + 1;
+});
+
 challengeSchema.index({gameId: 1, 'schedule.start': 1, 'schedule.end': 1})
 
 const Challenge = mongoose.model('Challenge', challengeSchema);
@@ -76,7 +84,8 @@ const Challenge = mongoose.model('Challenge', challengeSchema);
  * @param options
  */
 async function createChallenge(gameId, options) {
-  const challenge = new Challenge({...options, _id: undefined});
+  const {revision, ...data} = options;
+  const challenge = new Challenge({...data, _id: undefined});
   challenge.gameId = gameId;
   return await challenge.save();
 }
@@ -115,7 +124,7 @@ async function deleteChallenge(gameId, challengeId, now = new Date()) {
  * @param gameId
  */
 async function deleteAllChallenges(gameId) {
-  return await Challenge.teleteMany({gameId: gameId}).exec();
+  return await Challenge.deleteMany({gameId: gameId}).exec();
 }
 
 /**
@@ -140,7 +149,8 @@ async function updateChallenge(gameId, challenge) {
   }
 
   // Challenge existing
-  Object.assign(doc, challenge);
+  const {revision, ...updates} = challenge;
+  Object.assign(doc, updates);
   doc.gameId = gameId;
   return doc.save();
 }
