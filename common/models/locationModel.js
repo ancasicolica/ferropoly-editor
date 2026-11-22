@@ -34,7 +34,7 @@ const locationSchema = mongoose.Schema({
     tvlu:      {type: Boolean, default: false},
     tnw:       {type: Boolean, default: false}
   }
-}, {autoIndex: true});
+}, {timestamps: true, autoIndex: true});
 
 /**
  * The Location model

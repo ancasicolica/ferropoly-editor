@@ -119,7 +119,7 @@ const gameplaySchema = mongoose.Schema({
     priceListCreated: Date,
     priceListVersion: {type: Number, default: 0}
   }
-}, {autoIndex: false});
+}, {timestamps: true, autoIndex: false});
 
 /**
  * The Gameplay model
