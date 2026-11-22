@@ -4,10 +4,18 @@
  * Created: 19.11.2026
  **/
 
-const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const mongoose   = require('mongoose');
+const {Schema}   = mongoose;
+const {v4: uuid} = require('uuid');
 
 const challengeSchema = new Schema({
+    _id:         {
+      type:      String,
+      required:  true,
+      trim:      true,
+      lowercase: true,
+      match:     [/^[a-z0-9-]+$/, 'Die ID darf nur Kleinbuchstaben, Zahlen und Bindestriche enthalten.']
+    },
     gameId:      {
       type:     String,
       required: true
@@ -85,8 +93,9 @@ const Challenge = mongoose.model('Challenge', challengeSchema);
  */
 async function createChallenge(gameId, options) {
   const {revision, ...data} = options;
-  const challenge = new Challenge({...data, _id: undefined});
-  challenge.gameId = gameId;
+  const challenge           = new Challenge({...data});
+  challenge.gameId          = gameId;
+  challenge._id             = uuid();
   return await challenge.save();
 }
 

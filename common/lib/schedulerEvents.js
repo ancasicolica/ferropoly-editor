@@ -4,33 +4,28 @@
  * Created by kc on 01.05.15.
  */
 
- const eventModel = require('../models/schedulerEventModel');
+const eventModel = require('../models/schedulerEventModel');
 const {DateTime} = require('luxon');
-const {logger} = require('express-winston');
+const {PRESTART, START, INTEREST, END, SUMMARY} = require('../lib/schedulerEventTypes');
 
 /**
  * Create all events for a gameplay (during finalization) and insert them in the DB
  * @param gameplay
- * @param callback
  */
-async function createEvents(gameplay, callback) {
-  if (callback) {
-    logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in createEvents is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
-    return callback('NOT SUPPORTED ANYMORE!');
-  }
+async function createEvents(gameplay) {
   let events = [];
 
   // Pre-Start
   const startDateTime = DateTime.fromJSDate(gameplay.scheduling.gameStartTs);
   let prestart        = eventModel.createEvent(gameplay.internal.gameId,
     startDateTime.minus({minutes: 5}).toJSDate(),
-    'prestart');
+    PRESTART);
   events.push(prestart);
 
   // Start
   let start = eventModel.createEvent(gameplay.internal.gameId,
     gameplay.scheduling.gameStartTs,
-    'start',
+    START,
     'Startkapital'
   );
   events.push(start);
@@ -42,7 +37,7 @@ async function createEvents(gameplay, callback) {
   while (dt < endDateTime) {
     let interest = eventModel.createEvent(gameplay.internal.gameId,
       dt.toJSDate(),
-      'interest',
+      INTEREST,
       `Startgeld Runde ${round}`);
     events.push(interest);
     round++;
@@ -52,14 +47,14 @@ async function createEvents(gameplay, callback) {
   // End
   let end = eventModel.createEvent(gameplay.internal.gameId,
     gameplay.scheduling.gameEndTs,
-    'end'
+    END
   );
   events.push(end);
 
   // Summary available
   let summary = eventModel.createEvent(gameplay.internal.gameId,
     startDateTime.endOf('day').toJSDate(),
-    'summary'
+    SUMMARY
   );
   events.push(summary);
 

@@ -3,14 +3,17 @@
  * Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
  * Created: 19.11.2026
  **/
-const express    = require('express');
-const router     = express.Router();
-const _          = require('lodash');
-const path       = require('path');
-const challenges = require('../models/challengeModel');
-const gameplays  = require('../models/gameplayModel');
-const logger     = require('../../common/lib/logger').getLogger('routes:challenge');
-let settings     = {};
+const express       = require('express');
+const router        = express.Router();
+const _             = require('lodash');
+const path          = require('path');
+const challenges    = require('../models/challengeModel');
+const gameplays     = require('../models/gameplayModel');
+const logger        = require('../../common/lib/logger').getLogger('routes:challenge');
+const getChallenger = require('../lib/Challenger');
+let settings        = {};
+let challenger      = null;
+
 /**
  * Get the challenges HTML page
  */
@@ -38,7 +41,8 @@ router.post('/:gameId', async function (req, res) {
   }
   try {
     await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
-  } catch (err) {
+  }
+  catch (err) {
     return res.status(403).send({message: 'Kein Zugriff auf dieses Spiel'});
   }
   try {
@@ -46,9 +50,13 @@ router.post('/:gameId', async function (req, res) {
     if (challenge._id && !(await challenges.getChallenge(req.params.gameId, challenge._id)).length) {
       return res.status(404).send({message: 'Challenge nicht gefunden'});
     }
-    const result = await challenges.updateChallenge(req.params.gameId, challenge);
-    res.send(result);
-  } catch (err) {
+    const saved = await challenger.updateChallenge(req.params.gameId, challenge);
+    if (!saved) {
+      return res.status(500).send({message: 'Problem beim Speichern der Challenge'});
+    }
+    res.send(saved);
+  }
+  catch (err) {
     logger.error('Challenge konnte nicht gespeichert werden', err);
     res.status(err.name === 'ValidationError' || err.name === 'CastError' ? 400 : 500)
       .send({message: err.message});
@@ -64,18 +72,22 @@ router.delete('/:gameId/:id', async function (req, res) {
   }
   try {
     await gameplays.getGameplay(req.params.gameId, req.session.passport.user);
-  } catch (err) {
+  }
+  catch (err) {
     return res.status(403).send({message: 'Kein Zugriff auf dieses Spiel'});
   }
   try {
-    const deleted = await challenges.deleteChallenge(req.params.gameId, req.params.id);
+    const deleted = await challenger.deleteChallenge(req.params.gameId, req.params.id);
     if (!deleted) {
       const existing = await challenges.getChallenge(req.params.gameId, req.params.id);
-      return res.status(existing.length ? 409 : 404).send({message: existing.length ?
-        'Die Challenge hat bereits begonnen und kann nicht mehr gelöscht werden.' : 'Challenge nicht gefunden'});
+      return res.status(existing.length ? 409 : 404).send({
+        message: existing.length ?
+                   'Die Challenge hat bereits begonnen und kann nicht mehr gelöscht werden.' : 'Challenge nicht gefunden'
+      });
     }
     res.send({deleted: true});
-  } catch (err) {
+  }
+  catch (err) {
     logger.error('Challenge konnte nicht gelöscht werden', err);
     res.status(err.name === 'CastError' ? 400 : 500).send({message: err.message});
   }
@@ -89,5 +101,6 @@ module.exports = {
   init: function (app, _settings) {
     settings = _settings;
     app.use('/challenges', router);
+    challenger = getChallenger();
   }
 };
