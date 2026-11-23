@@ -53,3 +53,5 @@ yarn.lock
 .env
 
 .chrome-devtools-uuid
+
+*.DS_Store
