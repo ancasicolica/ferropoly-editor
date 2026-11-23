@@ -13,6 +13,7 @@ const teamAccountTransaction     = require('../../common/models/accounting/teamA
 const propertyAccountTransaction = require('../../common/models/accounting/propertyTransaction');
 const chancelleryTransaction     = require('../../common/models/accounting/chancelleryTransaction');
 const challenges                 = require('../../common/models/challengeModel');
+const getChallenger              = require('../../common/lib/Challenger');
 const teams                      = require('../../common/models/teamModel');
 const gameLog                    = require('../../common/models/gameLogModel');
 const schedulerEvents            = require('../../common/lib/schedulerEvents');
@@ -33,6 +34,7 @@ const path                       = require('path');
 const axios                      = require('axios');
 const rulesModel                 = require('../../common/models/rulesModel');
 const rulesCompiler              = require('./rulesCompiler');
+const challengeTemplates         = require('./ferropoly_challenges.json');
 const demoGameId                 = 'play-a-demo-game';
 const demoOrganisatorMail        = 'demo@ferropoly.ch';
 
@@ -559,6 +561,45 @@ async function createDemoTeams(gp, teamNb) {
 }
 
 /**
+ * Creates a series of random challenges
+ * @param finalizedGp
+ * @param gameId
+ * @return {Promise<void>}
+ */
+async function createChallenges(finalizedGp, gameId) {
+  const start        = finalizedGp.scheduling.gameStartTs.getTime();
+  const end          = finalizedGp.scheduling.gameEndTs.getTime();
+  const gameDuration = end - start;
+  if (gameDuration < 15 * 60 * 1000) {
+    throw new Error('Demo gameplay must last at least 15 minutes');
+  }
+  const count   = Math.ceil(gameDuration / (30 * 60 * 1000));
+  let templates = [];
+  for (let i = 0; i < count; i++) {
+    if (templates.length === 0) {
+      templates = _.shuffle(challengeTemplates);
+    }
+    const template = templates.pop();
+    const fixedReward = (i + 1) % 4 === 0;
+    const minReward = _.random(1, fixedReward ? 10 : 9) * 10000;
+    const saved = await getChallenger().updateChallenge(gameId, {
+      ...template,
+      reward: {
+        min: minReward,
+        max: fixedReward ? minReward : _.random(minReward / 10000 + 1, 10) * 10000
+      },
+      schedule: {
+        start: new Date(start + Math.floor(gameDuration * i / count)),
+        end:   new Date(start + Math.floor(gameDuration * (i + 1) / count))
+      }
+    });
+    if (!saved) {
+      throw new Error(`Could not create demo challenge for ${gameId}`);
+    }
+  }
+}
+
+/**
  * Create a demo gameplay (and delete if, it already existing)
  * @param settings
  */
@@ -618,7 +659,9 @@ async function createDemoGameplay(settings = {}) {
   await createDemoTeams(gp, options.teamNb);
 
   await pricelistLib.create(gameId, demoOrganisatorMail);
-  await finalizeGameplay(gp, demoOrganisatorMail, doNotNotifyMain);
+  const finalizedGp = await finalizeGameplay(gp, demoOrganisatorMail, doNotNotifyMain);
+  await createChallenges(finalizedGp, gameId);
+
   let endTs    = new Date();
   let duration = (endTs.getTime() - startTs.getTime()) / 1000;
   logger.info(
@@ -659,6 +702,7 @@ async function finalizeGameplay(gameplay, email, doNotNotifyMain = false) {
   } else {
     await updateFerropolyMainCache(4000);
   }
+  return gpSaved;
 }
 
 /**

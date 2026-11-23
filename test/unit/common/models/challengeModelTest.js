@@ -89,7 +89,7 @@ describe('Challenge Model', function () {
   });
 
   it('requires a duration of at least 15 minutes', async function () {
-    const challenge = new Challenge({gameId: 'spiel', title: 'Aufgabe',
+    const challenge = new Challenge({_id: 'challenge-id', gameId: 'spiel', title: 'Aufgabe',
       schedule: {start: new Date('2026-11-20T10:00:00Z'), end: new Date('2026-11-20T10:14:00Z')}});
     try {
       await challenge.validate();
