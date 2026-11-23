@@ -1,0 +1,362 @@
+[
+  {
+    "title": "Auf dem Fahrersitz eines Postautos",
+    "description": "<p>Schiesst ein Foto von einem Teammitglied auf dem <strong>Fahrersitz eines Postautos</strong>.</p><ul><li>Fragt die Chauffeurin oder den Chauffeur an einer Endhaltestelle freundlich um Erlaubnis.</li><li>Das Fahrzeug muss selbstverständlich stillstehen und darf nicht behindert werden.</li></ul>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Haltestellendurchsage im Zug oder Bus",
+    "description": "<p>Überzeugt das Zug- oder Buspersonal, dass eines eurer Teammitglieder eine <strong>offizielle Haltestellendurchsage</strong> über das Mikrofon machen darf.</p><p>Ruft die Spielleitung kurz vor der Durchsage an, damit sie live mithören kann!</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Selfie mit dem Zugpersonal",
+    "description": "<p>Macht ein freundliches <strong>Gruppenselfie zusammen mit einer Zugbegleiterin, einem Zugbegleiter oder einem Lokführer</strong>.</p><p><em>Hinweis:</em> Achtet darauf, dass die Person mit dem Foto einverstanden ist und nicht im Stress steht.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Das legendäre Dreiklanghorn live",
+    "description": "<p>Lasst die Spielleitung per Telefon das berühmte <strong>Dreiklanghorn (Cis-E-A) eines Postautos</strong> live mithören.</p><p>Findet eine Bergpoststrasse oder fragt an einer Endhaltestelle ganz nett nach einer kurzen Demonstration.</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Punktgenau vor der SBB-Bahnhofsuhr",
+    "description": "<p>Fotografiert euer ganzes Team vor einer klassischen <strong>SBB-Bahnhofsuhr</strong> exakt in dem Moment, in dem die rote Sekundenkelle oben auf der <strong>12</strong> pausiert.</p><p>Der Minutenzeiger muss klar erkennbar sein.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Kaffeepause im Speisewagen",
+    "description": "<p>Besucht ein <strong>SBB-Restaurant (Speisewagen)</strong> oder ein Bistro in einem Zug und stosst dort gemeinsam mit einem Getränk an.</p><p>Schickt ein Foto, auf dem sowohl die Getränke als auch das typische Speisewagen-Ambiente gut sichtbar sind.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Autogramm vom Chauffeur",
+    "description": "<p>Sammelt ein <strong>Autogramm einer Buschauffeurin, eines Tramfahrers oder einer Lokführerin</strong> auf einem Stück Papier, einem Fahrplan oder einem Quittungsbeleg.</p><p>Zusätzlich soll darauf die aktuelle <strong>Linien- oder Zugnummer</strong> stehen.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Ahoi! Unterwegs auf dem Wasser",
+    "description": "<p>Besteigt ein <strong>Kursschiff oder eine Fähre</strong> des öffentlichen Verkehrs und macht ein Foto auf dem Aussendeck mit Blick aufs Wasser.</p><p>Nennt dazu per Text den Namen des Schiffes und des Gewässers.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Hoch hinaus mit Bahn oder Seilbahn",
+    "description": "<p>Fahrt mit einer <strong>Zahnradbahn, Standseilbahn oder Luftseilbahn</strong>, die im ÖV-Netz verkehrt.</p><p>Schickt ein Foto aus der Kabine oder dem Wagen mit Sicht auf die Strecke oder das Panorama.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Über die Kantonsgrenze im ÖV",
+    "description": "<p>Überquert innerhalb dieser Stunde mindestens <strong>eine Kantonsgrenze</strong> mit einem öffentlichen Verkehrsmittel.</p><p>Schickt ein Foto von einer Bahnhofstafel im Startkanton und einer im Zielkanton (oder eine Fotocollage) und nennt beide Kantone im Text.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Im Doppeldecker ganz vorne",
+    "description": "<p>Ergattert die vordersten Plätze im <strong>Oberdeck eines Doppelstockzuges</strong> (oder in der ersten Reihe eines Panorama-Wagens) und macht ein Foto mit Blick durch die Frontscheibe bzw. nach vorne.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Der kurioseste Ortsname",
+    "description": "<p>Fahrt an einen Bahnhof oder eine Haltestelle mit einem <strong>lustigen, ungewöhnlichen oder besonders langen Namen</strong>.</p><p>Fotografiert euch vor dem Haltestellenschild und erklärt kurz per Text, was der Name bedeuten könnte (echt oder kreativ erfunden).</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Ständchen am Bahnhof",
+    "description": "<p>Singt gemeinsam ein kurzes <strong>Schweizer Volkslied oder ein Lied über Züge/Reisen</strong> (mindestens 20 Sekunden) auf einem Bahnhofplatz oder Perron.</p><p>Ruft die Spielleitung an und gebt euer Bestes live am Telefon!</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Ferropoly-Gedicht aus dem Zug",
+    "description": "<p>Dichtet während der Fahrt einen <strong>Vierzeiler</strong>, in dem folgende Wörter vorkommen:</p><ul><li><em>Perron</em></li><li><em>Verspätung</em></li><li><em>Generalabonnement</em> (oder <em>GA</em>)</li><li>Euer aktueller Zielort</li></ul><p>Sendet das Gedicht per Text ein.</p>",
+    "proof": {
+      "picture": false,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Drei verschiedene Verkehrsmittel in einer Stunde",
+    "description": "<p>Benutzt innerhalb dieser Challenge-Stunde <strong>drei unterschiedliche ÖV-Typen</strong> (z.B. Zug, Bus/Postauto, Tram, Schiff, Seilbahn).</p><p>Dokumentiert die letzte Fahrt mit einem Foto und listet alle drei Verbindungen inkl. Liniennummern im Text auf.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Fremde Hilfe: Ein Gruss an die Spielleitung",
+    "description": "<p>Findet eine freundliche Mitreisende oder einen freundlichen Mitreisenden, die/der der Spielleitung am Telefon <strong>einen kurzen Gruss ausrichtet</strong> und euren Teamnamen nennt.</p><p>Ruft dazu einfach die Spielleitung an.</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Höhenmeter-Check am Bahnhof",
+    "description": "<p>Findet eine <strong>Höhenangabe (m ü. M.)</strong> an einem Bahnhofsgebäude (meist auf einer blauen oder weissen Metalltafel).</p><p>Macht ein Foto davon und schreibt per Text, wie viele Höhenmeter euch noch bis zum Gipfel der Dufourspitze (4634 m) fehlen.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Kreative Pose im Wartehäuschen",
+    "description": "<p>Stellt in einem <strong>Bus- oder Bahn-Wartehäuschen</strong> eine bekannte Filmszene oder ein dramatisches «Wir-haben-den-Zug-verpasst»-Tableau nach.</p><p>Je theatralischer der Gesichtsausdruck, desto besser!</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Der kleinste Bahnhof weit und breit",
+    "description": "<p>Steigt an einer <strong>Haltestelle auf Verlangen</strong> aus und macht ein Foto von euch neben dem Haltewunsch-Knopf oder dem kleinen Haltestellenschild.</p><p><em>Tipp:</em> Prüft vorher den Fahrplan, damit ihr nicht eine Stunde dort feststeckt!</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Zugnummern-Detektive",
+    "description": "<p>Findet die genaue <strong>UIC-Wagennummer</strong> (die 12-stellige Nummer aussen am Bahnwagen) sowie das <strong>Eigengewicht (Tara)</strong> des Wagens, in dem ihr gerade sitzt.</p><p>Schickt beide Angaben per Text und ein Beweisfoto der Beschriftung.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Tauschgeschäft am Bahnhof",
+    "description": "<p>Startet mit einem kleinen Alltagsgegenstand (z.B. Büroklammer, Kugelschreiber, Kaugummi) und versucht, ihn bei Passanten oder Reisenden gegen etwas <strong>Grösseres oder Lustigeres</strong> einzutauschen.</p><p>Fotografiert das Endergebnis und schildert kurz den Tauschverlauf.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Picknick auf dem Perron",
+    "description": "<p>Kauft euch an einem Bahnhofskiosk oder Lebensmittelladen ein kleines <strong>Reise-Picknick</strong> (mindestens zwei verschiedene Snacks) und inszeniert ein stilvolles «Gourmet-Dinner» auf einer Perronbank.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Zungenbrecher-Challenge am Telefon",
+    "description": "<p>Ruft die Spielleitung an. Ein Teammitglied muss dreimal hintereinander fehlerfrei und zügig folgenden Satz aufsagen:</p><blockquote><strong>«Zwischen zwei Zwetschgenzweigen zwitschern zwei Zugbegleiter zwei Zugnummern.»</strong></blockquote>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Sektor-Alphabet",
+    "description": "<p>Stellt euch unter einer <strong>Sektor-Anzeige (A, B, C oder D)</strong> auf einem Perron auf und formt mit euren Körpern genau diesen Buchstaben nach.</p><p>Die Sektor-Tafel muss auf dem Foto deutlich lesbar sein.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Im Familienwagen auf der Rutschbahn",
+    "description": "<p>Findet einen <strong>SBB-Familienwagen (IC2000)</strong> mit Spielbereich im Oberdeck und fotografiert ein Teammitglied auf oder neben der Rutschbahn.</p><p><em>Wichtig:</em> Kinder haben natürlich jederzeit Vortritt!</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Sprachgrenzen-Gruss",
+    "description": "<p>Überquert eine <strong>Sprachgrenze</strong> (oder findet eine zweisprachige Bahnhofstafel, z.B. Biel/Bienne, Fribourg/Freiburg) und sendet ein Foto davon.</p><p>Schreibt der Spielleitung dazu einen kurzen Gruss in der jeweils anderen Landessprache.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Die Abfahrtstafel im Fokus",
+    "description": "<p>Sucht eine grosse <strong>digitale Abfahrtstafel (General-Anzeiger)</strong> an einem Bahnhof, auf der mindestens 8 verschiedene Verbindungen angezeigt werden.</p><p>Macht ein Foto davor und nennt per Text den Zug mit dem weitesten Zielort auf der Tafel.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Wagenklasse der Herzen",
+    "description": "<p>Fotografiert eine <strong>gelbe 1.-Klasse-Markierung</strong> (aussen am Zug oder auf dem Perron) und posiert daneben so vornehm und aristokratisch wie möglich – natürlich ohne gültiges Billett in die 1. Klasse einzusteigen!</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Live-Reportage aus dem ÖV",
+    "description": "<p>Ruft die Spielleitung an und liefert eine <strong>30-sekündige Live-Sportreportage</strong> über das aktuelle Geschehen an eurem Bahnhof oder in eurem Fahrzeug (z.B. Ein- und Aussteigen, Zugseinfahrt, Sprint aufs Perron).</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Historisches Eisenbahn-Relikt",
+    "description": "<p>Findet etwas <strong>Historisches rund um den ÖV</strong>: eine alte Dampflok, ein historisches Signal, ein altes Bahnhofsgebäude mit Jahreszahl oder eine Gedenktafel.</p><p>Macht ein Foto davon und schreibt die Jahreszahl oder ein kurzes Detail dazu.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Pünktlichkeits-Orakel",
+    "description": "<p>Wählt euren nächsten Zug oder Bus und schätzt vor der Abfahrt die <strong>exakte Ankunftszeit am Zielort auf die Sekunde genau</strong>.</p><p>Ruft die Spielleitung kurz vor der Einfahrt an und zählt live die Sekunden bis zum vollständigen Stillstand mit!</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Velo-Abteil-Check",
+    "description": "<p>Sucht das <strong>Velo-Abteil</strong> in einem Zug und macht ein kreatives Foto, auf dem ihr so tut, als würdet ihr ohne Fahrrad in die Pedale treten (Tour-de-Suisse-Style).</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Bahnhofskiosk-Rätsel",
+    "description": "<p>Geht an einen Bahnhofskiosk oder in einen Bahnhofsshop und sucht ein Produkt, dessen Name mit dem <strong>Anfangsbuchstaben eures aktuellen Bahnhofs</strong> beginnt.</p><p>Macht ein Foto von euch mit dem Produkt (kaufen ist optional).</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Piktogramm-Pantomime",
+    "description": "<p>Sucht im Zug oder am Bahnhof ein <strong>ungewöhnliches oder lustiges Piktogramm</strong> (z.B. Ruhezone, Notbremse, Hund, Ski, Kinderwagen) und imitiert genau diese Darstellung direkt daneben auf einem Foto.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  },
+  {
+    "title": "Grüsse aus dem Tunnel",
+    "description": "<p>Durchfahrt einen <strong>Eisenbahn- oder Strassentunnel</strong>, der mindestens 1 Kilometer lang ist.</p><p>Schickt per Text den Namen des Tunnels, dessen ungefähre Länge und ein Foto der Tunneleinfahrt oder -ausfahrt (aus dem Fenster).</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Tram- oder Bus-Farbenjagd",
+    "description": "<p>Fotografiert ein öffentliches Verkehrsmittel, das <strong>weder rot-weiss (SBB) noch postgelb</strong> ist, sondern eine markante regionale Verkehrsbetrieb-Farbe trägt (z.B. blau, grün, orange).</p><p>Nennt das Verkehrsunternehmen im Text.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Spontanes Bahnhofsquiz",
+    "description": "<p>Ruft die Spielleitung an und stellt euch einem <strong>Blitz-Quiz mit 3 Fragen</strong> rund um den Schweizer ÖV und Geografie.</p><p>Es gelten keine Hilfsmittel wie Google oder SBB-App – nur euer Teamwissen!</p>",
+    "proof": {
+      "picture": false,
+      "call": true,
+      "text": false
+    }
+  },
+  {
+    "title": "Fünf-Sterne-Bewertung für eine Haltestelle",
+    "description": "<p>Schreibt eine humorvolle <strong>Restaurant- oder Hotel-Kritik (mindestens 3 Sätze)</strong> für die unspektakulärste Haltestelle, an der ihr gerade vorbeikommt oder aussteigt.</p><p>Bewertet Ambiente, Sitzkomfort und Aussicht auf einer Skala von 1 bis 5 Sternen.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Der perfekte Anschluss-Sprint",
+    "description": "<p>Dokumentiert einen knappen Umstieg (unter 5 Minuten Umsteigezeit) mit einem <strong>«Geschafft!»-Siegerfoto</strong> im neuen Fahrzeug.</p><p>Nennt per Text die Ankunfts- und Abfahrtszeit sowie die beiden Perron- oder Haltestellennummern.</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": true
+    }
+  },
+  {
+    "title": "Blick ins Cockpit (von aussen)",
+    "description": "<p>Macht ein Foto von euch direkt vor der <strong>Front einer Lokomotive, eines Triebzuges oder eines Trams</strong> an einem Kopfbahnhof oder einer Endhaltestelle.</p><p><em>Sicherheit geht vor:</em> Bleibt selbstverständlich stets hinter der weissen Sicherheitslinie!</p>",
+    "proof": {
+      "picture": true,
+      "call": false,
+      "text": false
+    }
+  }
+]
