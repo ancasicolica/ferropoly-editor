@@ -23,11 +23,13 @@ const login = require('./routes/login');
 const useradmin = require('./routes/useradmin');
 const edit = require('./routes/edit');
 const newgame = require('./routes/newgame');
+const templates = require('./routes/templates');
 const gameplay = require('./routes/gameplay');
 const authtoken = require('./routes/authtoken');
 const infoRoute = require('../common/routes/info');
 const debugRoute = require('../common/routes/debug');
 const aboutRoute = require('../common/routes/about');
+const challengesRoute = require('../common/routes/challenges');
 const passport = require('passport');
 const session = require('express-session');
 const { MongoStore } = require('connect-mongo');
@@ -47,6 +49,7 @@ const { v4: uuid } = require('uuid');
 const gpLib = require('./lib/gameplayLib');
 const { DateTime } = require('luxon');
 const authTokenManager = require('../common/lib/authTokenManager');
+const {chromeDevtoolsWorkspace} = require('../common/lib/devtoolsWorkspace');
 
 let initServer = async function () {
   await ferropolyDb.init(settings);
@@ -65,6 +68,9 @@ let initServer = async function () {
 
   // Using compression speeds up the connection (and uses much less data for mobile)
   app.use(compression());
+
+  // Chrome tools
+  app.use(chromeDevtoolsWorkspace());
 
   app.use(express.static(path.join(__dirname, 'public')));
 
@@ -120,9 +126,11 @@ let initServer = async function () {
   authtoken.init(app);
   useradmin.init(app, settings, users);
   aboutRoute.init(app, settings);
+  challengesRoute.init(app, settings);
 
   app.use('/', routes);
   newgame.init(app);
+  templates.init(app);
   edit.init(app, gameplays, users, properties);
   gameplay.init(app);
   app.use('/pricelist', pricelist);
@@ -207,7 +215,7 @@ let initServer = async function () {
   server.listen(app.get('port'), app.get('ip'), async function () {
     logger.warn('**** FERROPOLY EDITOR START DETECTED ****');
     logger.info(
-      'Ferropoly Editor, Copyright (C) 2015-2025 Christian Kuster, CH-8342 Wernetshausen'
+      'Ferropoly Editor, Copyright (C) 2015-2026 Christian Kuster, CH-8342 Wernetshausen'
     );
     logger.info('This program comes with ABSOLUTELY NO WARRANTY;');
     logger.info(

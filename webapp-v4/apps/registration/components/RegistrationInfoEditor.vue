@@ -7,12 +7,12 @@
 <template>
   <div class="mt-3">
     <p>Infotext für die anmeldenden Personen:</p>
-    <Editor v-model="joiningText" editorStyle="height: 320px"></Editor>
+    <QuillEditor v-model="joiningText" placeholder="Schreib etwas für die anmeldenden Gruppen..." />
   </div>
 </template>
 
 <script setup>
-import Editor from 'primevue/editor';
+import QuillEditor from '../../../common/components/QuillEditor.vue'
 import {useGameplayStore} from '../../../lib/store/GamePlayStore';
 import {computed} from 'vue';
 

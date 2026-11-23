@@ -9,6 +9,8 @@ import {DateTime} from 'luxon';
 import axios from 'axios';
 import {useAuthTokenStoreStore} from '../../../common/store/authTokenStore';
 import {toRaw} from 'vue'
+import gameplayPresets from '../../../../common/lib/gameplayPresets';
+
 export const useNewGameStore = defineStore('NewGame', {
   state:   () => ({
     menuBarElements:  [],
@@ -16,11 +18,12 @@ export const useNewGameStore = defineStore('NewGame', {
     proposedGameName: '',
     gameMap:          'zvv',
     gameDate:         DateTime.now().plus({days: 7}).toJSDate(),
-    presets:          'moderate',
+    presets:          gameplayPresets.MODERATE,
     randomNb:         0,
     errorMessage:     undefined,
     proposedGameIds:  [],
-    importData:       {}
+    importData:       {},
+    templates:        []
   }),
   getters: {
     /**
@@ -52,6 +55,21 @@ export const useNewGameStore = defineStore('NewGame', {
     }
   },
   actions: {
+    /**
+     * Gets the templates
+     * @return {Promise<void>}
+     */
+    async getTemplates() {
+      try {
+        let result = await axios.get('/templates/list');
+        console.log(result);
+        this.templates = result.data.templates;
+
+      }
+      catch(err) {
+        console.error(err);
+      }
+    },
     /**
      * Sends a POST request to check the validity of a game ID and processes the response.
      * Updates the proposed game IDs and error message based on the server's response.
@@ -94,10 +112,10 @@ export const useNewGameStore = defineStore('NewGame', {
      *   in case of any error.
      */
     async createGame() {
-      const authToken = await useAuthTokenStoreStore().getAuthToken();
+      const authToken  = await useAuthTokenStoreStore().getAuthToken();
       const importData = toRaw(this.importData);
 
-      const creationSet =         {
+      const creationSet = {
         gamename:   this.gameName,
         map:        importData?.gameplay?.internal?.map || this.gameMap,
         gamedate:   this.gameDate,
@@ -111,7 +129,7 @@ export const useNewGameStore = defineStore('NewGame', {
 
       console.log('Creating new game', creationSet);
 
-      let result = await axios.post('/gameplay/createnew',creationSet);
+      let result = await axios.post('/gameplay/createnew', creationSet, {timeout: 12000});
 
       if (result.status === 200) {
         return this.proposedGameName;

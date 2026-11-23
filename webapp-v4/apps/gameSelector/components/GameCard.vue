@@ -3,193 +3,207 @@
   Christian Kuster, CH-8342 Wernetshausen, christian@kusti.ch
   Created: 20.05.2024
 -->
-<template lang="pug">
-  FerroCard(:title="getGpProperty('gamename')")
-    table(width="100%")
-      tbody
-        tr
-          td Spieldatum
-          td {{gameDate || 'Kein Datum angegeben'}}
-        tr
-          td Start
-          td {{gameStart}}
-        tr
-          td Ende
-          td {{gameEnd}}
-        tr
-          td Anmeldeschluss &nbsp;&nbsp;
-          td
-            span.registration-active(v-if="registrationActive") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
-            span.registration-soon(v-if="registrationEndingSoon") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
-            span.registration-finished(v-if="registrationFinished") {{joiningPossibleDate(getGpProperty('joining.possibleUntil'))}}
-        tr
-          td Karte
-          td {{getMapName()}}
-        tr
-          td Spielbereit
-          td
-            span(v-if="getGpProperty('internal.finalized')") Ja
-            a.no-underline(v-if="!getGpProperty('internal.finalized')" :href="url.viewPricelist") Nein (noch nicht finalisiert)
-        tr
-          td Löschdatum
-          td {{deletionDate}}
+<template>
+  <FerroCard :title="getGpProperty('gamename')">
+    <table width="100%">
+      <tbody>
+      <tr>
+        <td>Spieldatum</td>
+        <td>{{ gameDate || 'Kein Datum angegeben' }}</td>
+      </tr>
+      <tr>
+        <td>Start</td>
+        <td>{{ gameStart }}</td>
+      </tr>
+      <tr>
+        <td>Ende</td>
+        <td>{{ gameEnd }}</td>
+      </tr>
+      <tr>
+        <td>Anmeldeschluss &nbsp;&nbsp;</td>
+        <td>
+          <span v-if="registrationActive"
+                class="registration-active">{{ joiningPossibleDate(getGpProperty('joining.possibleUntil')) }}</span>
+          <span v-if="registrationEndingSoon"
+                class="registration-soon">{{ joiningPossibleDate(getGpProperty('joining.possibleUntil')) }}</span>
+          <span v-if="registrationFinished"
+                class="registration-finished">{{ joiningPossibleDate(getGpProperty('joining.possibleUntil')) }}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Karte</td>
+        <td>{{ getMapName() }}</td>
+      </tr>
+      <tr>
+        <td>Spielbereit</td>
+        <td>
+          <span v-if="getGpProperty('internal.finalized')">Ja</span>
+          <a v-if="!getGpProperty('internal.finalized')" class="no-underline" :href="url.viewPricelist">Nein (noch nicht
+            finalisiert)</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Löschdatum</td>
+        <td>{{ deletionDate }}</td>
+      </tr>
+      </tbody>
+    </table>
 
-    p.id  Id: {{getGpProperty('internal.gameId')}}
+    <p class="id">Id: {{ getGpProperty('internal.gameId') }}</p>
 
-    prime-button.btn-gameplay(label="Bearbeiten" icon="pi pi-pencil" severity="primary" v-if="editAllowed" @click="gotoUrl(url.edit)")
+    <prime-button v-if="editAllowed" class="btn-gameplay" label="Bearbeiten" icon="pi pi-pencil" severity="primary"
+                  @click="gotoUrl(url.edit)"></prime-button>
 
-    prime-button.btn-gameplay(label="Anmeldung" icon="pi pi-file-edit" severity="secondary"  @click="gotoUrl(url.registration)" v-if="getGpProperty('isOwner')")
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Anmeldung" icon="pi pi-file-edit"
+                  severity="secondary" @click="gotoUrl(url.registration)"></prime-button>
 
-    prime-button.btn-gameplay(label="Preisliste" icon="pi pi-list" severity="secondary"  @click="gotoUrl(url.viewPricelist)" v-if="getGpProperty('log.priceListVersion') > 0")
+    <prime-button v-if="getGpProperty('log.priceListVersion') > 0" class="btn-gameplay" label="Preisliste"
+                  icon="pi pi-list" severity="secondary" @click="gotoUrl(url.viewPricelist)"></prime-button>
 
-    prime-button.btn-gameplay(label="Spielregeln" :badge="badge" badge-severity="danger" icon="pi pi-pencil"  severity="secondary" @click="gotoUrl(url.rules)" v-if="getGpProperty('isOwner')")
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Spielregeln" :badge="badge"
+                  badge-severity="danger" icon="pi pi-pencil" severity="secondary"
+                  @click="gotoUrl(url.rules)"></prime-button>
 
-    prime-button.btn-gameplay(label="Gruppen" icon="pi pi-users" severity="secondary" @click="gotoUrl(url.editPlayer)" :badge="nbTeamsToConfirm"  badgeSeverity="contrast" v-if="getGpProperty('isOwner')")
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Gruppen" icon="pi pi-users"
+                  severity="secondary" @click="gotoUrl(url.editPlayer)" :badge="nbTeamsToConfirm"
+                  badgeSeverity="contrast"></prime-button>
 
-    prime-button.btn-gameplay(label="Spielleiter*innen" icon="pi pi-user" @click="gotoUrl(url.editAdmins)" severity="secondary" v-if="getGpProperty('isOwner')")
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Spielleiter*innen" icon="pi pi-user"
+                  @click="gotoUrl(url.editAdmins)" severity="secondary"></prime-button>
 
-    prime-button.btn-gameplay(label="Export" icon="pi pi-download" @click="gotoUrl(url.export)" severity="secondary" v-if="getGpProperty('isOwner')")
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Challenges" icon="pi pi-trophy"
+                  :disabled="challengesDisabled"
+                  @click="gotoUrl(url.challenges)" severity="secondary"></prime-button>
 
-    prime-button.btn-gameplay(label="Löschen" icon="pi pi-trash" @click="deleteGameplay" severity="danger" v-if="deletingAllowed")
+    <prime-button v-if="getGpProperty('isOwner')" class="btn-gameplay" label="Export" icon="pi pi-download"
+                  @click="gotoUrl(url.export)" severity="secondary"></prime-button>
 
+    <prime-button v-if="deletingAllowed" class="btn-gameplay" label="Löschen" icon="pi pi-trash" @click="deleteGameplay"
+                  severity="danger"></prime-button>
+  </FerroCard>
 </template>
-<script>
+<script setup>
 
 import FerroCard from '../../../common/components/FerroCard.vue';
+import {computed} from 'vue';
 import {get} from 'lodash';
 import {formatGameDate, formatGameTime, formatTimestampAsAgo, createLuxonDate} from '../../../common/lib/formatters'
 import {DateTime} from 'luxon';
-import {getMapName} from '../../../common/lib/mapTypes';
+import {getMapName as getMapTypeName} from '../../../common/lib/mapTypes';
 import PrimeButton from 'primevue/button';
 
-export default {
-  name      : 'GameCard',
-  components: {FerroCard, PrimeButton},
-  filters   : {},
-  mixins    : [],
-  model     : {},
-  props     : {
-    gameplay: {
-      type   : Object,
-      default: function () {
-        return {};
-      }
-    }
-  },
-  data      : function () {
-    return {
-      url: {
-        edit         : `/gameplay/edit/${this.gameplay.internal.gameId || 'undefined'}`,
-        viewPricelist: `/pricelist/view/${this.gameplay.internal.gameId || 'undefined'}`,
-        rules        : `/rules/${this.gameplay.internal.gameId || 'undefined'}`,
-        editPlayer   : `/player/edit/${this.gameplay.internal.gameId || 'undefined'}`,
-        editAdmins   : `/admins/edit/${this.gameplay.internal.gameId || 'undefined'}`,
-        registration : `/registration/${this.gameplay.internal.gameId || 'undefined'}`,
-        export : `/export/info/${this.gameplay.internal.gameId || 'undefined'}`,
-      }
-    }
-  },
-  computed  : {
-    gameDate() {
-      return formatGameDate(this.getGpProperty('scheduling.gameDate'));
-    },
-    gameStart() {
-      return formatGameTime(this.getGpProperty('scheduling.gameStart'));
-    },
-    gameEnd() {
-      return formatGameTime(this.getGpProperty('scheduling.gameEnd'));
-    },
-    deletionDate() {
-      return createLuxonDate(this.getGpProperty('scheduling.deleteTs')).toLocaleString(DateTime.DATE_MED);
-    },
-    registrationActive() {
-      const limit = createLuxonDate(this.gameplay.joining.possibleUntil).startOf('day').minus({days: 1});
-      return DateTime.local() <= limit.startOf('day');
-    },
-    registrationFinished() {
-      return DateTime.local() > createLuxonDate(this.gameplay.joining.possibleUntil);
-    },
-    registrationEndingSoon() {
-      return !(this.registrationActive || this.registrationFinished);
-    },
-    badge() {
-      if (this.gameplay?.rulesUpdateNeeded) {
-        return '!'
-      }
-      return null;
-    },
-    nbTeamsToConfirm() {
-      if (this.gameplay.teamsToConfirm) {
-        return `${this.gameplay.teamsToConfirm}`
-      }
-      return null;
-    },
-    editAllowed() {
-      if (this.getGpProperty('internal.finalized')) {
-        return false;
-      }
-      if (!this.getGpProperty('isOwner')) {
-        return false;
-      }
-      return this.getGpProperty('scheduling.gameDate', new Date()) >= new Date();
-    },
-    deletingAllowed() {
-      // At the time of playing, we do not delete gameplays
-      const gameDate = this.getGpProperty('scheduling.gameDate');
-      const finalized = this.getGpProperty('internal.finalized');
-      if (finalized && DateTime.now().hasSame(gameDate, 'day'))
-      {
-        console.log('Today we do not delete a finalized game');
-        return false;
-      }
-
-      //  Must be owner and not a demo game
-      return this.getGpProperty('isOwner') && !this.getGpProperty('internal.isDemo')
-    }
-   },
-  created   : function () {
-  },
-  methods   : {
-    /**
-     * Get the property of the gameplay object
-     * @param id
-     * @param proposed
-     */
-    getGpProperty(id, proposed='') {
-      return get(this.gameplay, id, proposed);
-    },
-    /**
-     * Returns a formatted timestamp as an "ago" string representing the time elapsed since the given ISO date string.
-     *
-     * @param {string} isoDateString - The ISO date string to be converted.
-     * @return {string} The formatted "ago" string representing the time elapsed.
-     */
-    joiningPossibleDate(isoDateString) {
-      return formatTimestampAsAgo(createLuxonDate(isoDateString));
-    },
-    /**
-     * Returns the name of the map
-     * @returns {string|string}
-     */
-    getMapName() {
-      return getMapName(this.getGpProperty('internal.map'));
-    },
-    /**
-     * Redirects the current window to the specified URL.
-     *
-     * @param {string} url - The URL to redirect to.
-     */
-    gotoUrl(url) {
-      window.location.href = url;
-    },
-    /**
-     * Gameplay shall be deleted: raise an event
-     */
-    deleteGameplay() {
-      console.log('deleting');
-      this.$emit('delete-gameplay', get(this.gameplay, 'internal.gameId', 'none'));
-    }
+const props = defineProps({
+  gameplay: {
+    type:    Object,
+    default: () => ({})
   }
+});
+const emit  = defineEmits(['delete-gameplay']);
+
+const url = computed(() => {
+  const gameId = props.gameplay.internal.gameId || 'undefined';
+  return {
+    edit:          `/gameplay/edit/${gameId}`,
+    viewPricelist: `/pricelist/view/${gameId}`,
+    rules:         `/rules/${gameId}`,
+    editPlayer:    `/player/edit/${gameId}`,
+    editAdmins:    `/admins/edit/${gameId}`,
+    registration:  `/registration/${gameId}`,
+    export:        `/export/info/${gameId}`,
+    challenges:    `/challenges/${gameId}`,
+  };
+});
+
+/**
+ * Get the property of the gameplay object
+ * @param id
+ * @param proposed
+ */
+function getGpProperty(id, proposed = '') {
+  return get(props.gameplay, id, proposed);
+}
+
+const gameDate               = computed(() => formatGameDate(getGpProperty('scheduling.gameDate')));
+const gameStart              = computed(() => formatGameTime(getGpProperty('scheduling.gameStart')));
+const gameEnd                = computed(() => formatGameTime(getGpProperty('scheduling.gameEnd')));
+const deletionDate           = computed(() => createLuxonDate(getGpProperty('scheduling.deleteTs')).toLocaleString(DateTime.DATE_MED));
+const registrationActive     = computed(() => {
+  const limit = createLuxonDate(props.gameplay.joining.possibleUntil).startOf('day').minus({days: 1});
+  return DateTime.local() <= limit.startOf('day');
+});
+const registrationFinished   = computed(() => DateTime.local() > createLuxonDate(props.gameplay.joining.possibleUntil));
+const registrationEndingSoon = computed(() => !(registrationActive.value || registrationFinished.value));
+const badge                  = computed(() => props.gameplay?.rulesUpdateNeeded ? '!' : null);
+const nbTeamsToConfirm       = computed(() => props.gameplay.teamsToConfirm ? `${props.gameplay.teamsToConfirm}` : null);
+const editAllowed            = computed(() => {
+  if (getGpProperty('internal.finalized')) {
+    return false;
+  }
+  if (!getGpProperty('isOwner')) {
+    return false;
+  }
+  return getGpProperty('scheduling.gameDate', new Date()) >= new Date();
+});
+const deletingAllowed        = computed(() => {
+  // At the time of playing, we do not delete gameplays
+  const gameDate  = getGpProperty('scheduling.gameDate');
+  const finalized = getGpProperty('internal.finalized');
+  if (finalized && DateTime.now().hasSame(gameDate, 'day')) {
+    console.log('Today we do not delete a finalized game');
+    return false;
+  }
+
+  //  Must be owner and not a demo game
+  return getGpProperty('isOwner') && !getGpProperty('internal.isDemo')
+});
+const challengesDisabled = computed(()=> {
+  // At the time of playing, we do not delete gameplays
+  const gameDate  = getGpProperty('scheduling.gameDate');
+  if (DateTime.now().hasSame(gameDate, 'day')) {
+    console.log('Today we use the main prog for challenges');
+    return true;
+  }
+
+  if (DateTime.now() > gameDate) {
+    console.log('Game expired, no challenges');
+    return true;
+  }
+  return false;
+})
+
+/**
+ * Returns a formatted timestamp as an "ago" string representing the time elapsed since the given ISO date string.
+ *
+ * @param {string} isoDateString - The ISO date string to be converted.
+ * @return {string} The formatted "ago" string representing the time elapsed.
+ */
+function joiningPossibleDate(isoDateString) {
+  return formatTimestampAsAgo(createLuxonDate(isoDateString));
+}
+
+/**
+ * Returns the name of the map
+ * @returns {string|string}
+ */
+function getMapName() {
+  return getMapTypeName(getGpProperty('internal.map'));
+}
+
+/**
+ * Redirects the current window to the specified URL.
+ *
+ * @param {string} url - The URL to redirect to.
+ */
+function gotoUrl(url) {
+  window.location.href = url;
+}
+
+/**
+ * Gameplay shall be deleted: raise an event
+ */
+function deleteGameplay() {
+  console.log('deleting');
+  emit('delete-gameplay', get(props.gameplay, 'internal.gameId', 'none'));
 }
 
 </script>

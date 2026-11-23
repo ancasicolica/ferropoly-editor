@@ -33,7 +33,7 @@ const teamSchema = mongoose.Schema({
     confirmationDate:   {type: Date},
     members:            {type: Array, default: []} // Array with objects (login, personalData) of all team members
   }
-}, {autoIndex: true});
+}, {timestamps: true, autoIndex: true});
 
 /**
  * The Property model

@@ -1,7 +1,29 @@
 # Changelog Ferropoly Editor
 
+## v4.5.0 19.11.26
+* Templates: Templates von Spielen können gespeichert und wieder geladen werden
+* Info Text wird neu bei Login-Screen angezeigt
+* Weg vom PrimeVue Editor, neu eigener QuillEditor
+* Alle Dependencies auf neustem Stand
+
+## v4.4.0 12.11.26
+* Update Location Model für Synchronisation mit opentransportdata.swiss (ferropoly-locations Projekt, https://github.com/ancasicolica/ferropoly-locations)
+* Testscript für TravelLog Stresstest hinzugefügt
+* Dependency Updates, inkl. Anpassung Google Log Credentials API
+
+## v4.3.2 25.10.26
+* Dependency Updates
+
+## v4.3.1 13.9.26
+* Bugfixes:
+  * Kein Sentry Eintrag mehr aufgrund falschem Login
+  * Timeout bei Anlegen Spiel explizit auf 12s gesetzt (Sentry)
+* Dependency Updates
+
+## v4.3.0 8.8.26
 * Nicht lineare Preisliste umgesetzt (Wunsch Silvan)
 * Prettier wieder entfernt und durch EditorConfig ersetzt
+* Dependency Updates
 
 ## v4.2.4 21.6.26 Released
 * Bugfix: finalisierte Spiele konnte Anmeldung nicht bearbeitet werden

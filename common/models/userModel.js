@@ -51,7 +51,7 @@ const userSchema = mongoose.Schema(
       agbAccepted: { type: Number, default: 0 },
     },
   },
-  { autoIndex: true }
+  {timestamps: true,  autoIndex: true }
 );
 
 /**

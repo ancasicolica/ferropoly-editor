@@ -22,7 +22,8 @@ let travelLogSchema = mongoose.Schema({
     lng:      Number,
     accuracy: Number
   },
-  timestamp:  {type: Date, default: Date.now}
+  timestamp:  {type: Date, default: Date.now},
+  test:       {type: Boolean, default: false}
 });
 
 
@@ -36,11 +37,11 @@ let TravelLog = mongoose.model('TravelLog', travelLogSchema);
  * @param gameId
  * @param teamId
  * @param propertyId
- * @param callback
+ * @param options
  * @returns {*}
  */
-let addEntry = async function (gameId, teamId, propertyId, callback) {
-  if (callback) {
+let addEntry = async function (gameId, teamId, propertyId, options = {}) {
+  if (_.isFunction(options)) {
     logger.error('>>>>>>>>>>>>>>>>>>>>>> Callback in addEntry is not supported anymore!!!!!!!!!!!!!!!!!!!!!!!!!');
     return callback('NOT SUPPORTED ANYMORE!');
   }
@@ -55,7 +56,8 @@ let addEntry = async function (gameId, teamId, propertyId, callback) {
   logEntry.gameId     = gameId;
   logEntry.teamId     = teamId;
   logEntry.propertyId = propertyId;
-  logEntry._id        = gameId + '-' + DateTime.now().toFormat('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  logEntry.timestamp  = options.timestamp || DateTime.now().toJSDate();
+  logEntry._id        = gameId + '-' + DateTime.now().toFormat('YYMMdd-HHmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 };
 
@@ -90,7 +92,7 @@ async function addPropertyEntry(gameId, teamId, property, callback) {
     lng:      property.location.position.lng,
     accuracy: 200
   };
-  logEntry._id        = gameId + '-' + DateTime.now().toFormat('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  logEntry._id        = gameId + '-' + DateTime.now().toFormat('yyMMdd-HHmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 }
 
@@ -121,7 +123,7 @@ async function addPositionEntry(gameId, teamId, user, position, callback) {
   logEntry.teamId   = teamId;
   logEntry.position = position;
   logEntry.user     = user;
-  logEntry._id      = gameId + '-' + DateTime.now().toFormat('YYMMDD-hhmmss:SSS') + '-' + _.random(100000, 999999);
+  logEntry._id      = gameId + '-' + DateTime.now().toFormat('yyMMdd-HHmmss:SSS') + '-' + _.random(100000, 999999);
   return await logEntry.save();
 }
 
@@ -191,12 +193,36 @@ let getAllLogEntries = async function (gameId, teamId, callback) {
   return await getLogEntries(gameId, teamId, undefined, undefined);
 };
 
+/**
+ * Get the latest log entry for a team within the specified duration
+ * @param gameId
+ * @param teamId
+ * @param duration Duration in seconds (default: 300)
+ * @returns {Promise<*|null>}
+ */
+async function getLastPosition(gameId, teamId, duration) {
+  if (!duration) {
+    duration = 300;
+  }
+
+  const tsStart = DateTime.now().minus({seconds: duration});
+
+  return await TravelLog
+    .findOne({gameId: gameId})
+    .where('teamId').equals(teamId)
+    .where('timestamp').gte(tsStart.toJSDate())
+    .sort('-timestamp')
+    .lean()
+    .exec();
+}
+
 module.exports = {
   Model:            TravelLog,
   addEntry:         addEntry,
   deleteAllEntries: deleteAllEntries,
   getLogEntries:    getLogEntries,
   getAllLogEntries: getAllLogEntries,
+  getLastPosition:  getLastPosition,
   addPositionEntry: addPositionEntry,
   addPropertyEntry: addPropertyEntry
 };

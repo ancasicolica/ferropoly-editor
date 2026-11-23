@@ -6,6 +6,8 @@
 const express = require('express');
 const router = express.Router();
 const gameplayLib = require('../lib/gameplayLib');
+const gameplayPresets = require('../../common/lib/gameplayPresets');
+const getGameInfoHandler = require('../../common/lib/getGameInfoHandler');
 const gameplayModel = require('../../common/models/gameplayModel');
 const userModel = require('../../common/models/userModel');
 const rulesModel = require('../../common/models/rulesModel');
@@ -43,23 +45,13 @@ router.get('/mygames', async function (req, res) {
 
     return res.send(retVal);
   } catch (ex) {
-    logger.error('Problem in getting /mygamse', ex);
+    logger.error('Problem in getting /mygames', ex);
     res.status(500).send({ message: ex.message });
   }
 });
 
 /* GET data of a specific gameplay */
-router.get('/info/:gameId', async function (req, res) {
-  try {
-    const gameplay = await gameplayModel.getGameplay(
-      req.params.gameId,
-      req.session.passport.user
-    );
-    return res.send(gameplay);
-  } catch (err) {
-    return res.status(500).send({ message: 'DB read error: ' + err.message });
-  }
-});
+router.get('/info/:gameId', getGameInfoHandler);
 
 /* Post params of a new game */
 router.post('/createnew', async function (req, res) {
@@ -103,7 +95,7 @@ router.post('/createnew', async function (req, res) {
       gamename: req.body.gamename,
       gamedate: req.body.gamedate,
       gameId: req.body.gameId || '',
-      presets: req.body.presets || 'classic',
+      presets: req.body.presets || gameplayPresets.CLASSIC,
       random: req.body.random,
       gameParams: req.body.gameParams,
       properties: req.body.properties,

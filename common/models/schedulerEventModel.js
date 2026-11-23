@@ -16,6 +16,7 @@ const scheduleEventSchema = mongoose.Schema({
   timestamp: Date,   // When it is going to happen
   type:      String, // What it is about
   message:   String, // Info text, optional
+  reference: {type: String, default: null}, // a reference to "something else" in the context of the type
   handled:   {type: Boolean, default: false},
   handler:   {
     id:       String, // ID of the handler
@@ -31,20 +32,78 @@ const scheduleEventModel  = mongoose.model('schedulerEvent', scheduleEventSchema
 /**
  * Creates an event
  */
-function createEvent(gameId, timestamp, type, message = null) {
+function createEvent(gameId, timestamp, type, message = null, options = {}) {
   let event       = new scheduleEventModel();
   event.gameId    = gameId;
   event.timestamp = timestamp;
   event.type      = type;
-  event._id       = gameId + '-' + DateTime.fromJSDate(timestamp).toFormat('yyMMdd-HHmm') + '-' + type;
-  event.message   = message;
+  if (options.reference) {
+    event._id       = gameId + '-referenced-' + options.reference + '-' + type;
+    event.reference = options?.reference;
+  } else {
+    event._id = gameId + '-' + DateTime.fromJSDate(timestamp).toFormat('yyMMdd-HHmm') + '-' + type;
+  }
+  event.message = message;
+
   return event;
+}
+
+/**
+ * Updates or creates an event with a reference
+ * @param gameId
+ * @param timestamp
+ * @param type
+ * @param reference
+ * @param options
+ * @return {Promise<Array<HydratedDocument<InferSchemaType<*>, ObtainSchemaGeneric<*, 'TInstanceMethods'>,
+ *   ObtainSchemaGeneric<*, 'TVirtuals'>>>>}
+ */
+async function createOrUpdateReferencedEvent(gameId, timestamp, type, reference, options = {}) {
+  let event = await scheduleEventModel
+    .findOne()
+    .where('gameId').equals(gameId)
+    .where('reference').equals(reference)
+    .where('type').equals(type)
+    .exec();
+
+  if (!(timestamp instanceof Date)) {
+    timestamp = new Date(timestamp);
+  }
+
+  if (event) {
+    event.timestamp = timestamp;
+    event.message   = options?.message;
+  } else {
+    // Create a new event
+    event = createEvent(gameId, timestamp, type, options?.message, {reference});
+  }
+  await event.save();
+  return event;
+}
+
+/**
+ * Delete referenced events, which can be more than one, all to the specific reference
+ * @param gameId
+ * @param reference
+ * @return {Promise<DeleteResult>}
+ */
+async function deleteReferencedEvents(gameId, reference) {
+  if (!gameId) {
+    throw new Error('No gameId supplied');
+  }
+  if (!reference) {
+    throw new Error('No reference supplied');
+  }
+  return await scheduleEventModel
+    .deleteMany({gameId, reference})
+    .exec();
 }
 
 /**
  * Returns all events of a game
  * @param gameId
- * @return {Promise<Array<HydratedDocument<InferSchemaType<*>, ObtainSchemaGeneric<*, "TInstanceMethods">, ObtainSchemaGeneric<*, "TVirtuals">>>>}
+ * @return {Promise<Array<HydratedDocument<InferSchemaType<*>, ObtainSchemaGeneric<*, 'TInstanceMethods'>,
+ *   ObtainSchemaGeneric<*, 'TVirtuals'>>>>}
  */
 async function getEvents(gameId) {
   return await scheduleEventModel
@@ -152,5 +211,7 @@ module.exports = {
   dumpEvents:        dumpEvents,
   getUpcomingEvents: getUpcomingEvents,
   requestEventSave:  requestEventSave,
-  saveAfterHandling: saveAfterHandling
+  saveAfterHandling: saveAfterHandling,
+  createOrUpdateReferencedEvent,
+  deleteReferencedEvents
 };

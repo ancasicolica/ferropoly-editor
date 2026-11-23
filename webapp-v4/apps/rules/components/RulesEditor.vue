@@ -10,8 +10,7 @@
     <ConfirmDialog></ConfirmDialog>
     <div class="grid grid-cols-12 gap-4">
       <div class="sm:col-span-12 lg:col-span-8">
-        <Editor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed">
-        </Editor>
+        <QuillEditor v-model="rulesStore.raw" :readonly="!rulesStore.editAllowed" />
       </div>
       <div class="sm:col-span-12 lg:col-span-4">
         <div v-if="rulesStore.editAllowed">
@@ -33,7 +32,7 @@
 
 <script setup>
 import Button from 'primevue/button';
-import Editor from 'primevue/editor';
+import QuillEditor from '../../../common/components/QuillEditor.vue'
 import Divider from 'primevue/divider';
 import Message from 'primevue/message';
 import {useRulesStore} from '../store/RulesStore';

@@ -10,6 +10,8 @@ es auf [www.ferropoly.ch](https://www.ferropoly.ch).
 Eine lokale Installation ist meist nicht nötig, das die Software wird auf www.ferropoly.ch online zur Verfügung gestellt. Eine 
 lokale Installation ist nur zu Entwicklungszwecken notwendig. Dazu sind Kenntnisse in node.js notwendig, ein MongoDB Server muss installiert sein.
 
+Für PrimeVue 5 wird eine gültige PrimeUI-Lizenz (Community oder Commercial) benötigt. Vor dem Webpack-Build den eigenen Schlüssel als `PRIMEUI_LICENSE` in der nicht versionierten `.env` im Editor-Verzeichnis oder als Umgebungsvariable setzen. Webpack bettet den Schlüssel in die öffentlich einsehbaren Browser-Bundles ein; laut PrimeUI darf er dort erscheinen, aber nicht für die Nutzung durch andere veröffentlicht werden. Wer den Editor selbst baut und betreibt, benötigt einen eigenen Schlüssel. Ohne gültigen Schlüssel erscheint die PrimeUI-Lizenzwarnung weiterhin.
+
 ## Tests
 ### Unit Tests
 Die Unit Test sind im Ordner test/unit. Diese Tests verifizieren diverse Funktionen des Spiels, der MongoDB muss aktiviert sein (kein Sandboxing in den Tests).al" unit tests).

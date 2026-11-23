@@ -17,7 +17,7 @@ const rulesSchema = mongoose.Schema({
   raw:       String, // The work in progress text, containing {{ placeholders }}
   changelog: {type: Array, default: []}, // changelog, Object contains info and current version of the rules
   date:      Date, // Date when changed
-}, {autoIndex: false});
+}, {timestamps: true, autoIndex: false});
 
 const Rules = mongoose.model('Rules', rulesSchema);
 

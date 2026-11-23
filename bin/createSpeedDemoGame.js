@@ -2,9 +2,10 @@
 /*
  Creates a demo game which is running today with high speed
  */
-const settings    = require('../editor/settings');
-const ferropolyDb = require('../common/lib/ferropolyDb');
-const gplib       = require('../editor/lib/gameplayLib');
+const settings        = require('../editor/settings');
+const ferropolyDb     = require('../common/lib/ferropolyDb');
+const gplib           = require('../editor/lib/gameplayLib');
+const gameplayPresets = require('../common/lib/gameplayPresets');
 
 async function main() {
   try {
@@ -14,7 +15,7 @@ async function main() {
       gameId:           'local-speed-game',
       gameStart:        '04:00',
       gameEnd:          '23:30',
-      presets:          'moderate',
+      presets:          gameplayPresets.MODERATE,
       gamename:         'Speed-Game',
       doNotNotifyMain:  false,
       random:           480,

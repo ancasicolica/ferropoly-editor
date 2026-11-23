@@ -18,6 +18,10 @@ class EventEmitter {
     this._events[name].push(listener);
   }
 
+  off(name, listenerToRemove) {
+    this.removeListener(name, listenerToRemove);
+  }
+
   removeListener(name, listenerToRemove) {
     if (!this._events[name]) {
       throw new Error(`Can't remove a listener. Event "${name}" doesn't exits.`);

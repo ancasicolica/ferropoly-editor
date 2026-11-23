@@ -47,7 +47,7 @@ const propertySchema = mongoose.Schema({
     }
   }
 
-}, {autoIndex: true});
+}, {timestamps: true, autoIndex: true});
 
 /**
  * The Property model

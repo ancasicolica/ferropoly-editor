@@ -25,43 +25,41 @@ describe('gameLogModel Tests', () => {
   });
 
   describe('Adding some log entries', () => {
-    it('fails without gameId', done => {
-      log.addEntry({
-        title:   'Unit Test',
-        options: {message: 'This is a message', teamId: teamIds[0]}
-      }, (err, res) => {
-        console.log(err, res);
-        expect(err).to.be.an('object');
-        done();
-      })
+    it('fails without gameId', async () => {
+      let error;
+      try {
+        await log.addEntry({
+          title:   'Unit Test',
+          options: {message: 'This is a message', teamId: teamIds[0]}
+        });
+      } catch (err) {
+        error = err;
+      }
+      expect(error).to.be.an('object');
+      expect(error.message).to.be('gameId in addEntry must be set');
     })
-    it('adds an entry with new API', done => {
-      log.addEntry({
+    it('adds an entry with new API', async () => {
+      const res = await log.addEntry({
         gameId:  gameId,
         title:   'Unit Test',
         options: {message: 'This is a message', teamId: teamIds[0]}
-      }, (err, res) => {
-        console.log(res);
-        expect(res.message).to.be('This is a message');
-        done(err);
-      })
+      });
+      console.log(res);
+      expect(res.message).to.be('This is a message');
     })
-    it('adds an entry with new API', done => {
-      log.addEntry({
+    it('adds an entry with new API', async () => {
+      const res = await log.addEntry({
         gameId:  gameId,
         title:   'Unit Test',
         options: {message: 'This is a message 2', teamId: teamIds[0]}
-      }, (err, res) => {
-        console.log(res);
-        done(err);
-      })
+      });
+      console.log(res);
+      expect(res.message).to.be('This is a message 2');
     })
-    it('adds an entry with legacy API', done => {
-      log.addEntry(gameId, 1, 'title', {message: 'This is a message', teamId: teamIds[1]}, (err, res) => {
-        console.log(res);
-        expect(res.message).to.be('This is a message');
-        done(err);
-      })
+    it('adds an entry with legacy API', async () => {
+      const res = await log.addEntry(gameId, 1, 'title', {message: 'This is a message', teamId: teamIds[1]});
+      console.log(res);
+      expect(res.message).to.be('This is a message');
     })
   });
 

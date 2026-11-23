@@ -105,4 +105,18 @@ describe('TravelLogModel Tests', function () {
       console.log(info);
     });
   });
+
+  describe('Get last position', function () {
+    it('should return the last entry for a team', async function () {
+      const last = await travelLogModel.getLastPosition(gameId, teamIds[0], 300);
+      expect(last).to.be.an('object');
+      expect(last).to.not.be.an('array');
+      expect(last.teamId).to.be(teamIds[0]);
+    });
+
+    it('should return null if no entry exists within the time window', async function () {
+      const last = await travelLogModel.getLastPosition('non-existent-game', teamIds[0], 300);
+      expect(last).to.be(null);
+    });
+  });
 });
