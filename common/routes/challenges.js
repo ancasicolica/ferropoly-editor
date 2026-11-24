@@ -22,15 +22,21 @@ router.get('/:id', function (req, res) {
   res.sendFile(path.join(__dirname, '..', '..', appPath, 'public', 'html', 'challenges.html'));
 });
 
-/* GET page for a specific challenge */
+/* GET a specific challenge */
 router.get('/single/:gameId/:id', async function (req, res) {
   const games = await challenges.getChallenge(req.params.gameId, req.params.id);
   res.send({templates: games});
 });
 
-/* GET page for all challenges of a gameplay */
+/* GET all challenges of a gameplay */
 router.get('/all/:gameId', async function (req, res) {
   const data = await challenges.getChallenges(req.params.gameId);
+  res.send(data);
+});
+
+/* GET current challenges */
+router.get('/current/:gameId', async function (req, res) {
+  const data = await challenges.getCurrentChallenges(req.params.gameId);
   res.send(data);
 });
 

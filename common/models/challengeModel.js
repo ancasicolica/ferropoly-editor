@@ -111,6 +111,22 @@ async function getChallenges(gameId) {
 }
 
 /**
+ * Returns the current active challenges
+ * @param gameId
+ */
+async function getCurrentChallenges(gameId) {
+  const now = new Date();
+  return await Challenge.find({
+    gameId: gameId,
+    'schedule.start': {$lte: now},
+    'schedule.end': {$gte: now}
+  })
+    .select('+description')
+    .lean()
+    .exec();
+}
+
+/**
  * Gets a single challenge
  * @param gameId
  * @param challengeId
@@ -169,6 +185,7 @@ module.exports = {
   challengeSchema,
   createChallenge,
   getChallenges,
+  getCurrentChallenges,
   getChallenge,
   deleteChallenge,
   deleteAllChallenges,

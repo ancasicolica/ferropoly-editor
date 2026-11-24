@@ -5,7 +5,7 @@
  **/
 
 import {defineStore} from 'pinia'
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import axios from 'axios';
 import {createNewChallenge} from '../lib/Challenge';
 import {onGameDate, defaultChallengeStart, challengeEndForDuration} from '../lib/challengeSchedule';
@@ -20,6 +20,18 @@ export const useChallengesStore = defineStore('Challenges', () => {
   const challenges       = ref([]);
   const currentChallenge = ref(null);
   let challengeTracker   = createChallengeTracker();
+
+  /**
+   * Returns true when a challenge is active
+   * @type {ComputedRef<boolean>}
+   */
+  const challengeActive = computed(() => {
+    const now = Date.now();
+    return challenges.value.some(c =>
+      new Date(c.schedule.start).getTime() <= now &&
+      now <= new Date(c.schedule.end).getTime()
+    );
+  });
 
   /**
    * Fetches the data from the server
@@ -45,7 +57,7 @@ export const useChallengesStore = defineStore('Challenges', () => {
       gameDate.value = null;
       throw new Error('Der Spieltag ist ungültig.');
     }
-    challenges.value       = resp.data.map(challenge => ({
+    challenges.value = resp.data.map(challenge => ({
       ...challenge,
       schedule: {
         start: onGameDate(gameDate.value, challenge.schedule?.start),
@@ -58,13 +70,37 @@ export const useChallengesStore = defineStore('Challenges', () => {
   }
 
   /**
+   * Fetches the current challenges only
+   * @param _gameId
+   * @return {Promise<void>}
+   */
+  async function fetchCurrentChallenges(_gameId = null) {
+    gameId.value       = gameId.value || _gameId;
+    const resp         = await axios.get(`/challenges/current/${gameId.value}`);
+    const incomingById = new Map(resp.data.map(challenge => [challenge._id, challenge]));
+    for (let index = challenges.value.length - 1; index >= 0; index--) {
+      const challenge = challenges.value[index];
+      if (incomingById.has(challenge._id)) {
+        Object.assign(challenge, incomingById.get(challenge._id));
+        incomingById.delete(challenge._id);
+      } else {
+        challenges.value.splice(index, 1);
+      }
+    }
+    challenges.value.push(...incomingById.values());
+    if (currentChallenge.value && !challenges.value.includes(currentChallenge.value)) {
+      currentChallenge.value = challenges.value[0] ?? null;
+    }
+  }
+
+  /**
    * Adds a new challenge
    */
   function addNewChallenge() {
-    const challenge = createNewChallenge(gameId.value, {title: `Challenge ${challenges.value.length + 1}`});
+    const challenge          = createNewChallenge(gameId.value, {title: `Challenge ${challenges.value.length + 1}`});
     challenge.schedule.start = defaultChallengeStart(gameDate.value);
-    challenge.schedule.end = challengeEndForDuration(gameDate.value, challenge.schedule.start, 60,
-        gameStart.value, gameEnd.value);
+    challenge.schedule.end   = challengeEndForDuration(gameDate.value, challenge.schedule.start, 60,
+      gameStart.value, gameEnd.value);
     challenges.value.push(challenge);
     currentChallenge.value = challenge;
   }
@@ -72,6 +108,7 @@ export const useChallengesStore = defineStore('Challenges', () => {
   function isChallengeUnsaved(challenge) {
     return challengeTracker.isUnsaved(challenge);
   }
+
 
   /**
    * Saves the current challenge
@@ -92,7 +129,9 @@ export const useChallengesStore = defineStore('Challenges', () => {
 
   async function deleteCurrentChallenge() {
     const challenge = currentChallenge.value;
-    if (!challenge) return;
+    if (!challenge) {
+      return;
+    }
     if (challenge._id) {
       const authToken = await getAuthToken();
       await axios.delete(`/challenges/${gameId.value}/${challenge._id}`, {data: {authToken}});
@@ -106,5 +145,19 @@ export const useChallengesStore = defineStore('Challenges', () => {
     }
   }
 
-  return {gameId, gameDate, gameStart, gameEnd, challenges, fetchData, currentChallenge, addNewChallenge, saveCurrentChallenge, deleteCurrentChallenge, isChallengeUnsaved}
+  return {
+    gameId,
+    gameDate,
+    gameStart,
+    gameEnd,
+    challenges,
+    challengeActive,
+    fetchData,
+    fetchCurrentChallenges,
+    currentChallenge,
+    addNewChallenge,
+    saveCurrentChallenge,
+    deleteCurrentChallenge,
+    isChallengeUnsaved
+  }
 })
